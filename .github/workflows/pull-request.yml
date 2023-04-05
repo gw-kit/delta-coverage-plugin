@@ -50,5 +50,5 @@ jobs:
         if: always()
         continue-on-error: true
         with:
-          paths: build/reports/jacoco/diffCoverage/report.xml
+          paths: build/reports/jacoco/deltaCoverage/report.xml
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -2,8 +2,6 @@ plugins {
     id 'jvm-test-suite'
 }
 
-group 'com.form.coverage'
-
 ext {
     jacoco_version = '0.8.8'
 }

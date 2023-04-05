@@ -13,12 +13,12 @@ A clear and concise description of what the bug is.
 **Desktop (please complete the following information):**
  - OS: [e.g. Windows 10]
  - Gradle version: [e.g. 7.4.2]
- - Diff Coverage plugin version [e.g. 0.9.3]
+ - Delta Coverage plugin version [e.g. 1.0.0]
 
 **To Reproduce**
 If possible, provide your configuration of the plugin, for example:
 ```groovy
-diffCoverageReport {
+deltaCoverageReport {
     diffSource.file = 'diff.patch'
 
     violationRules.failIfCoverageLessThan 0.9
