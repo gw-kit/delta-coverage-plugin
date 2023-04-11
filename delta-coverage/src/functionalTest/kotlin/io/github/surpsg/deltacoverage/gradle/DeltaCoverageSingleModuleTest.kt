@@ -37,7 +37,7 @@ class DeltaCoverageSingleModuleTest : BaseDeltaCoverageTest() {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = ["5.0", "5.3", "6.7.1", "7.4.2"])
+    @ValueSource(strings = ["5.0", "5.3", "6.7.1", "7.4.2", "8.0.2"])
     fun `deltaCoverage task should be completed successfully on Gradle release`(
         gradleVersion: String
     ) {

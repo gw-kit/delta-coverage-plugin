@@ -20,9 +20,9 @@ Why should I use it?
 
 Delta Coverage plugin compatibility table:
 
-| Diff Coverage plugin | Gradle                 |
-|----------------------|------------------------|
-| **1.0.0**            | **5.0** - **7.5.+**    |
+| Diff Coverage plugin | Gradle              |
+|----------------------|---------------------|
+| **1.0.0**            | **5.0** - **8.0.+** |
 
 ### Apply `Delta Coverage` plugin
 
