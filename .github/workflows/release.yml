@@ -21,7 +21,7 @@ jobs:
       - name: Get version
         id: release_version
         run: |
-          echo ::set-output name=version::$(grep 'version=' gradle.properties | cut -d '=' -f 2)
+          echo "version=$(grep 'version=' gradle.properties | cut -d '=' -f 2)" >> $GITHUB_OUTPUT
 
       - name: Create Github release
         uses: marvinpinto/action-automatic-releases@latest
