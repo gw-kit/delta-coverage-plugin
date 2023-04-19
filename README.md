@@ -1,9 +1,11 @@
 # Delta Coverage gradle plugin 
-[![](https://jitpack.io/v/SurpSG/delta-coverage.svg)](https://jitpack.io/#SurpSG/delta-coverage) 
-![CI](https://github.com/SurpSG/delta-coverage/workflows/CI/badge.svg) 
-[![codecov](https://codecov.io/gh/form-com/diff-coverage-gradle/branch/develop/graph/badge.svg)](https://codecov.io/gh/form-com/diff-coverage-gradle)
-[![GitHub issues](https://img.shields.io/github/issues/SurpSG/delta-coverage)](https://github.com/SurpSG/delta-coverage/issues)
-[![GitHub stars](https://img.shields.io/github/stars/SurpSG/delta-coverage?style=flat-square)](https://github.com/SurpSG/delta-coverage/stargazers) 
+[![](https://jitpack.io/v/SurpSG/delta-coverage-plugin.svg)](https://jitpack.io/#SurpSG/delta-coverage-plugin)
+![CI](https://github.com/SurpSG/delta-coverage-plugin/workflows/CI/badge.svg) 
+[![codecov](https://codecov.io/gh/SurpSG/delta-coverage-plugin/branch/main/graph/badge.svg)](https://codecov.io/gh/SurpSG/delta-coverage-plugin)
+[![GitHub issues](https://img.shields.io/github/issues/SurpSG/delta-coverage-plugin)](https://github.com/SurpSG/delta-coverage-plugin/issues)
+[![GitHub stars](https://img.shields.io/github/stars/SurpSG/delta-coverage-plugin?style=flat-square)](https://github.com/SurpSG/delta-coverage-plugin/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/SurpSG/offlins-gradle-plugin)](https://github.com/SurpSG/delta-coverage-plugin/issues)
+[![GitHub stars](https://img.shields.io/github/stars/SurpSG/delta-coverage-plugin?style=flat-square)](https://github.com/SurpSG/delta-coverage-plugin/stargazers)
 
 `Delta Coverage` is JaCoCo extension that computes code coverage of new/modified code based on a provided [diff](https://en.wikipedia.org/wiki/Diff#Unified_format). 
 The diff content can be provided via path to patch file, URL or using embedded git(see [parameters description](#Parameters-description)).   
@@ -22,7 +24,7 @@ Delta Coverage plugin compatibility table:
 
 | Delta Coverage plugin | Gradle              |
 |----------------------|---------------------|
-| **1.0.0**            | **5.0** - **8.0.+** |
+| **1.0.0**            | **5.0** - **8.1.+** |
 
 ### Apply `Delta Coverage` plugin
 
