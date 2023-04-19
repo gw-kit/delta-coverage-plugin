@@ -1,6 +1,6 @@
 package org.jacoco.core.internal.analysis
 
-import com.form.coverage.diff.parse.ClassFile
+import io.github.surpsg.deltacoverage.diff.parse.ClassFile
 import org.jacoco.core.analysis.Analyzer
 import org.jacoco.core.analysis.IClassCoverage
 import org.jacoco.core.analysis.ICoverageVisitor
@@ -15,10 +15,10 @@ import org.objectweb.asm.Opcodes
 import java.io.IOException
 
 class FilteringAnalyzer(
-        private val executionData: ExecutionDataStore,
-        private val coverageVisitor: ICoverageVisitor,
-        private val classFilter: (ClassFile) -> Boolean,
-        private val customFilterProvider: (IClassCoverage) -> IFilter
+    private val executionData: ExecutionDataStore,
+    private val coverageVisitor: ICoverageVisitor,
+    private val classFilter: (ClassFile) -> Boolean,
+    private val customFilterProvider: (IClassCoverage) -> IFilter
 ) : Analyzer(executionData, coverageVisitor) {
 
     override fun analyzeClass(buffer: ByteArray, location: String) {

@@ -1,0 +1,12 @@
+plugins {
+    id 'io.github.surpsg.delta-coverage'
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+}

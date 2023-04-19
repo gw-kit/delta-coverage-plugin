@@ -1,9 +1,7 @@
 name: Release plugin
 
 on:
-  create:
-    tags:
-      - '*.*'
+  workflow_dispatch:
 
 jobs:
 
@@ -23,7 +21,7 @@ jobs:
       - name: Get version
         id: release_version
         run: |
-          echo ::set-output name=version::$(grep 'version=' gradle.properties | cut -d '=' -f 2)
+          echo "version=$(grep 'version=' gradle.properties | cut -d '=' -f 2)" >> $GITHUB_OUTPUT
 
       - name: Create Github release
         uses: marvinpinto/action-automatic-releases@latest
@@ -39,7 +37,7 @@ jobs:
       - name: Create PR main to develop
         uses: repo-sync/pull-request@v2
         with:
-          source_branch: 'master'
+          source_branch: 'main'
           destination_branch: 'develop'
-          pr_title: 'Merge master to develop'
+          pr_title: 'Merge main to develop'
           github_token: ${{ secrets.GITHUB_TOKEN }}
