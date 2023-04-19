@@ -1,4 +1,4 @@
-# Diff coverage gradle plugin 
+# Delta Coverage gradle plugin 
 [![](https://jitpack.io/v/SurpSG/delta-coverage.svg)](https://jitpack.io/#SurpSG/delta-coverage) 
 ![CI](https://github.com/SurpSG/delta-coverage/workflows/CI/badge.svg) 
 [![codecov](https://codecov.io/gh/form-com/diff-coverage-gradle/branch/develop/graph/badge.svg)](https://codecov.io/gh/form-com/diff-coverage-gradle)
@@ -20,7 +20,7 @@ Why should I use it?
 
 Delta Coverage plugin compatibility table:
 
-| Diff Coverage plugin | Gradle              |
+| Delta Coverage plugin | Gradle              |
 |----------------------|---------------------|
 | **1.0.0**            | **5.0** - **8.0.+** |
 
