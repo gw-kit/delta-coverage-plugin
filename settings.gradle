@@ -1,4 +1,0 @@
-rootProject.name = 'diff-coverage-gradle-plugin'
-include 'jacoco-filtering-extension'
-include 'diff-coverage'
-
