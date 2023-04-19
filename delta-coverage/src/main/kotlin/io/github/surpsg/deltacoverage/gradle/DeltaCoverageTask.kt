@@ -55,7 +55,7 @@ open class DeltaCoverageTask @Inject constructor(
     fun getOutputDir(): File {
         return getReportOutputDir().toFile().apply {
             log.debug(
-                "Diff Coverage output dir: $absolutePath, " +
+                "Delta Coverage output dir: $absolutePath, " +
                         "exists=${exists()}, isDir=$isDirectory, canRead=${canRead()}, canWrite=${canWrite()}"
             )
         }

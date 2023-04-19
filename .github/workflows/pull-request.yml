@@ -41,11 +41,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Run diff coverage check
+      - name: Run Delta Coverage check
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'ignore-diff-coverage') }}
         run: ./gradlew diffCoverage -Pgithub -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
 
-      - name: Add diff coverage report to PR
+      - name: Add Delta Coverage report to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.2
         if: always()
