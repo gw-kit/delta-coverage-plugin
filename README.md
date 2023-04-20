@@ -1,6 +1,6 @@
 # Delta Coverage gradle plugin 
 [![](https://jitpack.io/v/SurpSG/delta-coverage-plugin.svg)](https://jitpack.io/#SurpSG/delta-coverage-plugin)
-![CI](https://github.com/SurpSG/delta-coverage-plugin/workflows/CI/badge.svg)
+[![Main branch checks](https://github.com/SurpSG/delta-coverage-plugin/actions/workflows/main-branch.yml/badge.svg?branch=main)](https://github.com/SurpSG/delta-coverage-plugin/actions/workflows/main-branch.yml)
 [![codecov](https://codecov.io/gh/SurpSG/delta-coverage-plugin/branch/main/graph/badge.svg?token=69BAXyEhse)](https://codecov.io/gh/SurpSG/delta-coverage-plugin)
 [![GitHub issues](https://img.shields.io/github/issues/SurpSG/delta-coverage-plugin)](https://github.com/SurpSG/delta-coverage-plugin/issues)
 [![GitHub stars](https://img.shields.io/github/stars/SurpSG/delta-coverage-plugin?style=flat-square)](https://github.com/SurpSG/delta-coverage-plugin/stargazers)
