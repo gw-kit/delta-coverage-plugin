@@ -31,6 +31,9 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
       - name: Pull tests artifacts
         uses: actions/download-artifact@master
         with:
