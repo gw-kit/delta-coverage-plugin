@@ -11,7 +11,7 @@
 - Support of classes exclusion #69
 
 ### Changed
-- Official support Gradle `8.0.+`.
+- Official support Gradle `8.1.+`.
 - Updated JaCoCo dependency to [0.8.9](https://github.com/jacoco/jacoco/releases/tag/v0.8.9)
 - Min supported Gradle is `5.0`.
 - `compareWith` and `failIfCoverageLessThan` are changed to infix function: 
