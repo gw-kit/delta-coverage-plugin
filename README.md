@@ -22,7 +22,7 @@ Delta Coverage plugin compatibility table:
 
 | Delta Coverage plugin | Gradle              |
 |----------------------|---------------------|
-| **1.0.0**            | **5.0** - **8.1.+** |
+| **1.0.0**            | **5.1** - **8.1.+** |
 
 ### Apply `Delta Coverage` plugin
 
@@ -72,7 +72,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
 
     violationRules.failIfCoverageLessThan(0.9)
     reports {
-        html = true
+        html.set(true)
     }
 }
 ```
@@ -86,10 +86,10 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
 deltaCoverageReport {
     diffSource.file = file("${PATH_TO_DIFF_FILE}") 
 
-    violationRules.failIfCoverageLessThan 0.9
+    violationRules.failIfCoverageLessThan 0.9d
     
     reports {
-        html = true
+        html.set(true)
     }
 }
 ```
@@ -111,9 +111,9 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     violationRules.failIfCoverageLessThan(0.9)
     
     reports {
-        html = true
-        xml = true
-        csv = true
+        html.set(true)
+        xml.set(true)
+        csv.set(true)
     }
 }
 ```  
@@ -132,37 +132,37 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
 ```groovy
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     diffSource { // Required. Only one of `file`, `url` or git must be spesified
-        file = file("path/to/file.diff") //  Path to diff file 
-        url = "http://domain.com/file.diff" // URL to retrieve diff by
-        git.compareWith = "refs/remotes/origin/develop" // Compares current HEAD and all uncommited with provided branch, revision or tag 
+        file.set(file("path/to/file.diff")) //  Path to diff file 
+        url.set("http://domain.com/file.diff") // URL to retrieve diff by
+        git.compareWith.set("refs/remotes/origin/develop") // Compares current HEAD and all uncommited with provided branch, revision or tag 
     }
     jacocoExecFiles = files("/path/to/jacoco/exec/file.exec") // Required. By default exec files are taken from jacocoTestReport configuration if any
     srcDirs = files("/path/to/sources")  // Required. By default sources are taken from jacocoTestReport configuration if any
     classesDirs = files("/path/to/compiled/classes") // Required. By default classes are taken from jacocoTestReport configuration if any
     
-    excludeClasses += listOf[ // Optional. Excludes classes from coverage report by set of patterns 
+    excludeClasses..value(listOf[ // Optional. Excludes classes from coverage report by set of patterns 
             "*/com/package/ExcludeClass.class", // Excludes class "com.package.ExcludeClass"
             "**/com/package/**/ExcludeClass.class", // Excludes classes like "com.package.ExcludeClass", "com.package.sub1.sub2.ExcludeClass", etc.
             "**/ExcludeClass$NestedClass.class", // Excludes nested class(es) "<any-package>.ExcludeClass.NestedClass"
             "**/com/package/exclude/**/*.*" // Excludes all in package "com.package.exclude"
             // See more info about pattern rules: https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/util/PatternFilterable.html
-    ]
+    ])
     
     reports {
-        html = true // Optional. default `false`
-        xml = true // Optional. default `false`
-        csv = true // Optional. default `false`
-        reportDir = "dir/to/store/reports" // Optional. Default 'build/reports/jacoco/deltaCoverage'
+        html.set(true) // Optional. default `false`
+        xml.set(true) // Optional. default `false`
+        csv.set(true) // Optional. default `false`
+        reportDir.set("dir/to/store/reports") // Optional. Default 'build/reports/jacoco/deltaCoverage'
     }
 
-    violationRules.failIfCoverageLessThan(0.9) // Optional. The function sets all coverage metrics to a single value, sets failOnViolation to true
+    violationRules.failIfCoverageLessThan(0.9d) // Optional. The function sets all coverage metrics to a single value, sets failOnViolation to true
     
     // configuration below is equivalent to the configuration above
     violationRules {        
-        minBranches = 0.9 // Optional. Default `0.0`
-        minLines = 0.9 // Optional. Default `0.0`
-        minInstructions = 0.9 // Optional. Default `0.0`
-        failOnViolation = true // Optional. Default `false`
+        minBranches.set(0.9d) // Optional. Default `0.0`
+        minLines.set(0.9d) // Optional. Default `0.0`
+        minInstructions.set(0.9d) // Optional. Default `0.0`
+        failOnViolation.set(true) // Optional. Default `false`
     }
 }
 ```

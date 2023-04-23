@@ -37,20 +37,20 @@ class DeltaCoverageExcludesTest : BaseDeltaCoverageTest() {
             """
 
             deltaCoverageReport {
-                diffSource.file = '$diffFilePath'
+                diffSource.file.set('$diffFilePath')
                
                 violationRules {
                     failIfCoverageLessThan 1.0
                 }
                 
-                excludeClasses = [
+                excludeClasses.value([
                     '**/CoveredClass${dollarSign}UncoveredNestedClass.*',
                     '**/excludes/**/UncoveredClass.*', 
                     '**/excludes/sub/**/*.*'
-                ]
+                ])
                 
                 reports {
-                    html = true
+                    html.set(true)
                 }
             }
         """.trimIndent()
@@ -81,13 +81,13 @@ class DeltaCoverageExcludesTest : BaseDeltaCoverageTest() {
             """
 
             deltaCoverageReport {
-                diffSource.file = '$diffFilePath'
+                diffSource.file.set('$diffFilePath')
                
                 violationRules {
                     failIfCoverageLessThan 1.0
                 }
                 
-                excludeClasses = []
+                excludeClasses.value([])
             }
         """.trimIndent()
         )

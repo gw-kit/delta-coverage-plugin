@@ -34,7 +34,7 @@ class DeltaCoverageSourcesAutoConfiguratorTest : StringSpec() {
             ) { expectedError, sourceAccessor ->
                 // setup
                 val autoConfigurator = DeltaCoverageSourcesAutoConfigurator(
-                    property(DeltaCoverageConfiguration()),
+                    property(DeltaCoverageConfiguration(project.objects)),
                     emptyFileCollection,
                     emptyFileCollection,
                     emptyFileCollection
@@ -67,7 +67,7 @@ class DeltaCoverageSourcesAutoConfiguratorTest : StringSpec() {
                 )
             ) { expectedError, sourceAccessor ->
                 // setup
-                val deltaCoverageReport = DeltaCoverageConfiguration().apply {
+                val deltaCoverageReport = DeltaCoverageConfiguration(project.objects).apply {
                     jacocoExecFiles = emptyFileCollection
                     classesDirs = emptyFileCollection
                     srcDirs = emptyFileCollection

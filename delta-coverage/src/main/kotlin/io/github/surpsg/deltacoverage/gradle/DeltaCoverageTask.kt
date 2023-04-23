@@ -86,7 +86,7 @@ open class DeltaCoverageTask @Inject constructor(
     }
 
     private fun getReportOutputDir(): Path {
-        return Paths.get(deltaCoverageReport.get().reportConfiguration.baseReportDir).let { path ->
+        return Paths.get(deltaCoverageReport.get().reportConfiguration.baseReportDir.get()).let { path ->
             if (path.isAbsolute) {
                 path
             } else {
@@ -100,22 +100,22 @@ open class DeltaCoverageTask @Inject constructor(
         return DeltaCoverageConfig(
             reportName = projectDirProperty.map { it.name }.get(),
             diffSourceConfig = DiffSourceConfig(
-                file = diffCovConfig.diffSource.file,
-                url = diffCovConfig.diffSource.url,
-                diffBase = diffCovConfig.diffSource.git.diffBase
+                file = diffCovConfig.diffSource.file.get(),
+                url = diffCovConfig.diffSource.url.get(),
+                diffBase = diffCovConfig.diffSource.git.diffBase.get()
             ),
             reportsConfig = ReportsConfig(
                 baseReportDir = getReportOutputDir().toAbsolutePath().toString(),
-                html = ReportConfig(enabled = diffCovConfig.reportConfiguration.html, "html"),
-                csv = ReportConfig(enabled = diffCovConfig.reportConfiguration.csv, "report.csv"),
-                xml = ReportConfig(enabled = diffCovConfig.reportConfiguration.xml, "report.xml"),
-                fullCoverageReport = diffCovConfig.reportConfiguration.fullCoverageReport
+                html = ReportConfig(enabled = diffCovConfig.reportConfiguration.html.get(), "html"),
+                csv = ReportConfig(enabled = diffCovConfig.reportConfiguration.csv.get(), "report.csv"),
+                xml = ReportConfig(enabled = diffCovConfig.reportConfiguration.xml.get(), "report.xml"),
+                fullCoverageReport = diffCovConfig.reportConfiguration.fullCoverageReport.get()
             ),
             violationRuleConfig = ViolationRuleConfig(
-                minBranches = diffCovConfig.violationRules.minBranches,
-                minInstructions = diffCovConfig.violationRules.minInstructions,
-                minLines = diffCovConfig.violationRules.minLines,
-                failOnViolation = diffCovConfig.violationRules.failOnViolation
+                minBranches = diffCovConfig.violationRules.minBranches.get(),
+                minInstructions = diffCovConfig.violationRules.minInstructions.get(),
+                minLines = diffCovConfig.violationRules.minLines.get(),
+                failOnViolation = diffCovConfig.violationRules.failOnViolation.get()
             ),
             execFiles = sourcesConfigurator.obtainExecFiles().files,
             classFiles = collectClassesToAnalyze(diffCovConfig).files,
@@ -127,11 +127,12 @@ open class DeltaCoverageTask @Inject constructor(
         diffCovConfig: DeltaCoverageConfiguration
     ): FileCollection {
         val classesFromConfiguration: FileCollection = sourcesConfigurator.obtainClassesFiles()
-        return if (diffCovConfig.excludeClasses.isEmpty()) {
+        val excludes: List<String> = diffCovConfig.excludeClasses.get()
+        return if (excludes.isEmpty()) {
             classesFromConfiguration
         } else {
             return classesFromConfiguration.asFileTree.matching { pattern ->
-                pattern.exclude(diffCovConfig.excludeClasses)
+                pattern.exclude(excludes)
             }
         }
     }
