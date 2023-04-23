@@ -37,7 +37,7 @@ class DeltaCoverageSingleModuleTest : BaseDeltaCoverageTest() {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = ["5.0", "5.3", "6.7.1", "7.4.2", "8.1"])
+    @ValueSource(strings = ["5.1", "5.3", "6.7.1", "7.4.2", "8.1"])
     fun `deltaCoverage task should be completed successfully on Gradle release`(
         gradleVersion: String
     ) {
@@ -45,7 +45,7 @@ class DeltaCoverageSingleModuleTest : BaseDeltaCoverageTest() {
         buildFile.appendText(
             """
             deltaCoverageReport {
-                diffSource.file = '$diffFilePath'
+                diffSource.file.set('$diffFilePath')
                 jacocoExecFiles = fileTree('build') { include '*/**/*.exec' }
             }
         """.trimIndent()
@@ -65,11 +65,11 @@ class DeltaCoverageSingleModuleTest : BaseDeltaCoverageTest() {
         buildFile.appendText(
             """
             deltaCoverageReport {
-                diffSource.file = '$diffFilePath'
-                reportConfiguration.baseReportDir = '$baseReportDir'
+                diffSource.file.set('$diffFilePath')
+                reportConfiguration.baseReportDir.set('$baseReportDir')
                 violationRules {
                     failIfCoverageLessThan 1.0
-                    failOnViolation = true
+                    failOnViolation.set(true)
                 }
             }
         """.trimIndent()
@@ -104,9 +104,9 @@ class DeltaCoverageSingleModuleTest : BaseDeltaCoverageTest() {
         buildFile.appendText(
             """
             deltaCoverageReport {
-                diffSource.file = '$diffFilePath'
-                reportConfiguration.baseReportDir = '$baseReportDir'
-                reportConfiguration.$reportToGenerate = true
+                diffSource.file.set('$diffFilePath')
+                reportConfiguration.baseReportDir.set('$baseReportDir')
+                reportConfiguration.$reportToGenerate.set(true)
             }
         """.trimIndent()
         )
@@ -134,7 +134,7 @@ class DeltaCoverageSingleModuleTest : BaseDeltaCoverageTest() {
         buildFile.appendText(
             """
             deltaCoverageReport {
-                diffSource.file = '$diffFilePath'
+                diffSource.file.set('$diffFilePath')
                 classesDirs = files()
             }
         """.trimIndent()
@@ -156,18 +156,18 @@ class DeltaCoverageSingleModuleTest : BaseDeltaCoverageTest() {
             
             deltaCoverageReport {
                 diffSource {
-                    file = '$diffFilePath'
+                    file.set('$diffFilePath')
                 }
                 jacocoExecFiles = jacocoTestReport.executionData
                 classesDirs = jacocoTestReport.classDirectories
                 srcDirs = jacocoTestReport.sourceDirectories
                 
                 reports {
-                    html = true
-                    xml = true
-                    csv = true
-                    fullCoverageReport = true
-                    baseReportDir = '$baseReportDir'
+                    html.set(true)
+                    xml.set(true)
+                    csv.set(true)
+                    fullCoverageReport.set(true)
+                    baseReportDir.set('$baseReportDir')
                 }
             }
         """.trimIndent()
@@ -238,16 +238,16 @@ class DeltaCoverageSingleModuleTest : BaseDeltaCoverageTest() {
             """
 
             deltaCoverageReport {
-                diffSource.file = '$diffFilePath'
+                diffSource.file.set('$diffFilePath')
                 reports {
-                    html = true
-                    baseReportDir = '$absolutePathBaseReportDir'
+                    html.set(true)
+                    baseReportDir.set('$absolutePathBaseReportDir')
                 }
                 violationRules {
-                    minBranches = 0.6
-                    minLines = 0.7
-                    minInstructions = 0.8
-                    failOnViolation = true
+                    minBranches.set(0.6d)
+                    minLines.set(0.7d)
+                    minInstructions.set(0.8d)
+                    failOnViolation.set(true)
                 }
             }
         """.trimIndent()
@@ -278,10 +278,10 @@ class DeltaCoverageSingleModuleTest : BaseDeltaCoverageTest() {
             """
 
             deltaCoverageReport {
-                diffSource.file = '$diffFilePath'
+                diffSource.file.set('$diffFilePath')
                 violationRules {
-                    failIfCoverageLessThan 1.0
-                    failOnViolation = false
+                    failIfCoverageLessThan 1.0d
+                    failOnViolation.set(false)
                 }
             }
         """.trimIndent()
@@ -302,11 +302,10 @@ class DeltaCoverageSingleModuleTest : BaseDeltaCoverageTest() {
             """
 
             deltaCoverageReport {
-                diffSource.url = 'http://localhost:$MOCK_SERVER_PORT/'
-                println diffSource.url
+                diffSource.url.set('http://localhost:$MOCK_SERVER_PORT/')
                 violationRules {
-                    minInstructions = 1
-                    failOnViolation = true
+                    minInstructions.set(1d)
+                    failOnViolation.set(true)
                 }
             }
         """.trimIndent()

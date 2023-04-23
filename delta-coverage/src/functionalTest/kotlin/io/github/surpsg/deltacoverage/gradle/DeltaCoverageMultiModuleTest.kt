@@ -34,10 +34,10 @@ class DeltaCoverageMultiModuleTest : BaseDeltaCoverageTest() {
             """
             
             deltaCoverageReport {
-                diffSource.file = '$diffFilePath'
+                diffSource.file.set('$diffFilePath')
                 reports {
-                    html = true
-                    baseReportDir = '$baseReportDir'
+                    html.set(true)
+                    baseReportDir.set('$baseReportDir')
                 }
                 violationRules.failIfCoverageLessThan 0.9
             }
@@ -115,7 +115,7 @@ class DeltaCoverageMultiModuleTest : BaseDeltaCoverageTest() {
             }
         }
         deltaCoverageReport {
-            diffSource.file = '$diffFilePath'
+            diffSource.file.set('$diffFilePath')
             violationRules.failIfCoverageLessThan $expectedCoverageRatio
         }
     """.trimIndent()
