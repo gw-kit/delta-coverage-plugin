@@ -26,7 +26,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build & Test
-        run: ./gradlew check -s
+        run: ./gradlew check -s --parallel
 
       - name: Build Coverage report
         run: ./gradlew jacocoRootReport

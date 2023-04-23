@@ -38,6 +38,8 @@ testing.suites {
 
                 maxParallelForks = 4
                 setForkEvery(1L)
+
+                systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_method")
             }
         }
     }
