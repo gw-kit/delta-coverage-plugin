@@ -1,6 +1,6 @@
 # Delta-Coverage Gradle plugin Changelog
 
-## [<NEXT-RELEASE>]
+## 1.0.0
 ### Added
 - `Delta Coverage` plugin applies JaCoCo plugin to a project and all it's subprojects
   - could be disabled by adding property to `gradle.properties`:
@@ -13,7 +13,7 @@
 ### Changed
 - Official support Gradle `8.1.+`.
 - Updated JaCoCo dependency to [0.8.9](https://github.com/jacoco/jacoco/releases/tag/v0.8.9)
-- Min supported Gradle is `5.0`.
+- Min supported Gradle is `5.1`.
 - `compareWith` and `failIfCoverageLessThan` are changed to infix function: 
   - <details>
     <summary>Usage example</summary>
@@ -33,5 +33,4 @@
     ```
     </details>
 - `deltaCoverage` task depends on `classes` tasks.
-  
-### Fixed
+- Replaced the plugin extension values with [properties](https://docs.gradle.org/current/userguide/lazy_configuration.html)
