@@ -30,7 +30,8 @@ open class DeltaCoveragePlugin @Inject constructor(
             deltaCoverageTask.deltaCoverageReport.set(
                 project.extensions.create(
                     DELTA_COVERAGE_REPORT_EXTENSION,
-                    DeltaCoverageConfiguration::class.java
+                    DeltaCoverageConfiguration::class.java,
+                    project.objects
                 )
             )
 

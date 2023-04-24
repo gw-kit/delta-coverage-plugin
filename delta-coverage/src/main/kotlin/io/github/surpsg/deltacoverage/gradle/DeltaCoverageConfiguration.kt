@@ -2,22 +2,45 @@ package io.github.surpsg.deltacoverage.gradle
 
 import org.gradle.api.Action
 import org.gradle.api.file.FileCollection
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
 import java.nio.file.Paths
+import javax.inject.Inject
 
-@Suppress("LongParameterList")
-open class DeltaCoverageConfiguration(
-    @Optional @InputFiles var jacocoExecFiles: FileCollection? = null,
-    @Optional @InputFiles var classesDirs: FileCollection? = null,
-    @Optional @InputFiles var srcDirs: FileCollection? = null,
-    @Optional @Input var excludeClasses: MutableList<String> = mutableListOf(),
-    @Nested val diffSource: DiffSourceConfiguration = DiffSourceConfiguration(),
-    @Nested val reportConfiguration: ReportsConfiguration = ReportsConfiguration(),
-    @Nested val violationRules: ViolationRules = ViolationRules()
+open class DeltaCoverageConfiguration @Inject constructor(
+    objectFactory: ObjectFactory,
 ) {
+
+    @Optional
+    @InputFiles
+    var jacocoExecFiles: FileCollection? = null
+
+    @Optional
+    @InputFiles
+    var classesDirs: FileCollection? = null
+
+    @Optional
+    @InputFiles
+    var srcDirs: FileCollection? = null
+
+    @Input
+    val excludeClasses: ListProperty<String> = objectFactory
+        .listProperty(String::class.javaObjectType)
+        .convention(emptyList())
+
+    @Nested
+    val diffSource: DiffSourceConfiguration = DiffSourceConfiguration(objectFactory)
+
+    @Nested
+    val reportConfiguration: ReportsConfiguration = ReportsConfiguration(objectFactory)
+
+    @Nested
+    val violationRules: ViolationRules = ViolationRules(objectFactory)
 
     fun reports(action: Action<in ReportsConfiguration>) {
         action.execute(reportConfiguration)
@@ -36,7 +59,7 @@ open class DeltaCoverageConfiguration(
                 "jacocoExecFiles=$jacocoExecFiles, " +
                 "classesDirs=$classesDirs, " +
                 "srcDirs=$srcDirs, " +
-                "excludeClasses=$excludeClasses, " +
+                "excludeClasses=${excludeClasses.get()}, " +
                 "diffSource=$diffSource, " +
                 "reportConfiguration=$reportConfiguration, " +
                 "violationRules=$violationRules)"
@@ -44,59 +67,114 @@ open class DeltaCoverageConfiguration(
 }
 
 open class DiffSourceConfiguration(
-    @Input var file: String = "",
-    @Input var url: String = "",
-    @Nested val git: GitConfiguration = GitConfiguration()
+    objectFactory: ObjectFactory,
 ) {
+
+    @Input
+    val file: Property<String> = objectFactory.stringProperty("")
+
+    @Input
+    val url: Property<String> = objectFactory.stringProperty("")
+
+    @Nested
+    val git: GitConfiguration = GitConfiguration(objectFactory)
+
     override fun toString(): String {
-        return "DiffSourceConfiguration(file='$file', url='$url', git=$git)"
+        return "DiffSourceConfiguration(file='${file.get()}', url='${url.get()}', git=$git)"
     }
 }
 
-open class GitConfiguration(@Input var diffBase: String = "") {
+open class GitConfiguration(
+    objectFactory: ObjectFactory,
+) {
+
+    @Input
+    val diffBase: Property<String> = objectFactory.stringProperty("")
+
     infix fun compareWith(diffBase: String) {
-        this.diffBase = diffBase
+        this.diffBase.set(diffBase)
     }
 
     override fun toString(): String {
-        return "GitConfiguration(diffBase='$diffBase')"
+        return "GitConfiguration(diffBase='${diffBase.get()}')"
     }
 }
 
 open class ReportsConfiguration(
-    @Input var html: Boolean = false,
-    @Input var xml: Boolean = false,
-    @Input var csv: Boolean = false,
-    @Input var baseReportDir: String = Paths.get("build", "reports", "jacoco").toString(),
-    @Input var fullCoverageReport: Boolean = false
+    objectFactory: ObjectFactory,
 ) {
 
+    @Input
+    val html: Property<Boolean> = objectFactory.booleanProperty(false)
+
+    @Input
+    val xml: Property<Boolean> = objectFactory.booleanProperty(false)
+
+    @Input
+    val csv: Property<Boolean> = objectFactory.booleanProperty(false)
+
+    @Input
+    val baseReportDir: Property<String> = objectFactory.stringProperty {
+        Paths.get("build", "reports", "jacoco").toString()
+    }
+
+    @Input
+    val fullCoverageReport: Property<Boolean> = objectFactory.booleanProperty(false)
+
     override fun toString() = "ReportsConfiguration(" +
-            "html=$html, " +
-            "xml=$xml, " +
-            "csv=$csv, " +
+            "html=${html.get()}, " +
+            "xml=${xml.get()}, " +
+            "csv=${csv.get()}, " +
             "baseReportDir='$baseReportDir'"
 }
 
 open class ViolationRules(
-    @Input var minLines: Double = 0.0,
-    @Input var minBranches: Double = 0.0,
-    @Input var minInstructions: Double = 0.0,
-    @Input var failOnViolation: Boolean = false
+    objectFactory: ObjectFactory,
 ) {
+
+    @Input
+    val minLines: Property<Double> = objectFactory.doubleProperty(0.0)
+
+    @Input
+    val minBranches: Property<Double> = objectFactory.doubleProperty(0.0)
+
+    @Input
+    val minInstructions: Property<Double> = objectFactory.doubleProperty(0.0)
+
+    @Input
+    val failOnViolation: Property<Boolean> = objectFactory.booleanProperty(false)
+
     infix fun failIfCoverageLessThan(minCoverage: Double) {
-        minLines = minCoverage
-        minBranches = minCoverage
-        minInstructions = minCoverage
-        failOnViolation = true
+        minLines.set(minCoverage)
+        minBranches.set(minCoverage)
+        minInstructions.set(minCoverage)
+        failOnViolation.set(true)
     }
 
     override fun toString(): String {
         return "ViolationRules(" +
-                "minLines=$minLines, " +
-                "minBranches=$minBranches, " +
-                "minInstructions=$minInstructions, " +
-                "failOnViolation=$failOnViolation" +
+                "minLines=${minLines.get()}, " +
+                "minBranches=${minBranches.get()}, " +
+                "minInstructions=${minInstructions.get()}, " +
+                "failOnViolation=${failOnViolation.get()}" +
                 ")"
     }
+}
+
+private fun ObjectFactory.booleanProperty(default: Boolean): Property<Boolean> {
+    return property(Boolean::class.javaObjectType).convention(default)
+}
+
+private fun ObjectFactory.doubleProperty(default: Double): Property<Double> {
+    return property(Double::class.javaObjectType).convention(default)
+}
+
+private fun ObjectFactory.stringProperty(default: String): Property<String> {
+    return property(String::class.javaObjectType).convention(default)
+}
+
+private fun ObjectFactory.stringProperty(default: () -> String): Property<String> {
+    return property(String::class.javaObjectType).convention(
+        default()
+    )
 }
