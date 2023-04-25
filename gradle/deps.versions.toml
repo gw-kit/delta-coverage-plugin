@@ -12,7 +12,7 @@ kotestVer = "5.5.5"
 kotlinJvm = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version = "1.6.20" }
 
 # Plugins
-pluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "1.1.0" }
+pluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "1.2.0" }
 diffCoverage = { module = "com.github.form-com.diff-coverage-gradle:diff-coverage", version = "0.9.5" }
 jacocoTestkit = { module = "gradle.plugin.pl.droidsonroids.gradle.jacoco:jacoco-gradle-testkit-plugin", version = "1.0.9" }
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.22.0" }
