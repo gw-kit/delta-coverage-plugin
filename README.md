@@ -34,7 +34,7 @@ The plugin should be applied to the **root** project.
 
 ```groovy
 plugins {
-  id("io.github.surpsg.delta-coverage") version "0.9.5"
+  id("io.github.surpsg.delta-coverage") version "1.0.0"
 }
 ```
 
@@ -102,7 +102,7 @@ deltaCoverageReport {
 
 ```kotlin
 plugins {
-    id("io.github.surpsg.delta-coverage") version "0.9.5"
+    id("io.github.surpsg.delta-coverage") version "1.0.0"
 }
 
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
@@ -140,7 +140,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     srcDirs = files("/path/to/sources")  // Required. By default sources are taken from jacocoTestReport configuration if any
     classesDirs = files("/path/to/compiled/classes") // Required. By default classes are taken from jacocoTestReport configuration if any
     
-    excludeClasses..value(listOf[ // Optional. Excludes classes from coverage report by set of patterns 
+    excludeClasses.value(listOf[ // Optional. Excludes classes from coverage report by set of patterns 
             "*/com/package/ExcludeClass.class", // Excludes class "com.package.ExcludeClass"
             "**/com/package/**/ExcludeClass.class", // Excludes classes like "com.package.ExcludeClass", "com.package.sub1.sub2.ExcludeClass", etc.
             "**/ExcludeClass$NestedClass.class", // Excludes nested class(es) "<any-package>.ExcludeClass.NestedClass"

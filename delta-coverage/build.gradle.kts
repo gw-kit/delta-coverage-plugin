@@ -13,7 +13,7 @@ gradlePlugin {
             displayName = "Delta Coverage"
             description = "Plugin that computes code coverage on modified code"
             implementationClass = "io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin"
-            tags.set(listOf("differential", "diff", "delta", "coverage", "jacoco", "gradle", "plugin"))
+            tags.set(listOf("differential", "diff", "delta", "coverage", "jacoco"))
         }
     }
 }

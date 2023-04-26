@@ -41,7 +41,7 @@ jobs:
           title: "Release ${{ steps.release_version.outputs.version }}"
 
       - name: Publish plugin
-        run: ./gradlew publishPlugins -Pgradle.publish.key=${{ secrets.GRADLE_PUBLISH_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PUBLISH_SECRET }} --dry-run
+        run: ./gradlew publishPlugins -Pgradle.publish.key=${{ secrets.GRADLE_PUBLISH_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PUBLISH_SECRET }}
 
       - name: Create PR main to develop
         uses: repo-sync/pull-request@v2

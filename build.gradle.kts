@@ -4,7 +4,6 @@ plugins {
     `test-report-aggregation`
     `jacoco-aggregate-conventions`
 }
-group = "io.github.surpsg.deltacoverage"
 
 repositories {
     mavenCentral()
