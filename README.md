@@ -68,7 +68,7 @@ io.github.surpsg.delta-coverage.auto-apply-jacoco=false
 
 ```kotlin
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-    diffSource.file = file("${PATH_TO_DIFF_FILE}")
+    diffSource.file.set("${PATH_TO_DIFF_FILE}")
 
     violationRules.failIfCoverageLessThan(0.9)
     reports {
