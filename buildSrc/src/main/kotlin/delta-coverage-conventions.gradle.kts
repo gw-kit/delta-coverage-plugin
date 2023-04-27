@@ -1,14 +1,15 @@
 plugins {
     `base`
     `jacoco`
-    id("com.form.diff-coverage")
+    id("io.github.surpsg.delta-coverage")
 }
 
 val isGithub = project.hasProperty("github")
 
-diffCoverageReport {
+deltaCoverageReport {
     diffSource {
-        git.diffBase = project.properties["diffBase"]?.toString() ?: "refs/remotes/origin/main"
+        val targetBranch = project.properties["diffBase"]?.toString() ?: "refs/remotes/origin/main"
+        git.diffBase.set(targetBranch)
     }
 
     if (isGithub) {
@@ -16,8 +17,8 @@ diffCoverageReport {
     }
 
     reports {
-        html = true
-        xml = true
+        html.set(true)
+        xml.set(true)
     }
 
     violationRules.failIfCoverageLessThan(0.9)

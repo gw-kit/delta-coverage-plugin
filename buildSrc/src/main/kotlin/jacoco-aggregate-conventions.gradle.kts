@@ -6,7 +6,11 @@ tasks.register<JacocoReport>("jacocoRootReport") {
     group = "verification"
     description = "Generates an aggregate report from all subprojects"
 
-    dependsOn(subprojects.map { it.tasks.named("test") })
+    dependsOn(
+        provider {
+            subprojects.map { it.tasks.named("test") }
+        }
+    )
 
     sourceDirectories.from(sourceFromJacoco { sourceDirectories })
     classDirectories.from(sourceFromJacoco { classDirectories })

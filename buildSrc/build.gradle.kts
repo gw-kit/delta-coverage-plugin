@@ -11,6 +11,6 @@ dependencies {
     implementation(deps.pluginPublish)
 
     implementation(deps.detekt)
-    implementation(deps.diffCoverage)
+    implementation(deps.deltaCoverage)
     implementation(deps.jacocoTestkit)
 }

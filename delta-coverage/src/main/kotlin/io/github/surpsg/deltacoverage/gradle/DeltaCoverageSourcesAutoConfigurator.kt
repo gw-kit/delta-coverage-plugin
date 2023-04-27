@@ -103,7 +103,7 @@ internal class DeltaCoverageSourcesAutoConfigurator(
     }
 
     private enum class FileCollectionSource(val pluginName: String) {
-        JACOCO("JaCoCo"), DELTA_COVERAGE("Diff-Coverage")
+        JACOCO("JaCoCo"), DELTA_COVERAGE("Delta-Coverage")
     }
 
     companion object {

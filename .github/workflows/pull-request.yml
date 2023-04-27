@@ -10,7 +10,7 @@ jobs:
   build-and-test:
     uses: ./.github/workflows/base-ci.yml
 
-  diff-coverage-check:
+  delta-coverage-check:
     needs: build-and-test
     runs-on: ubuntu-latest
 
@@ -51,8 +51,8 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run Delta Coverage check
-        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'ignore-diff-coverage') }}
-        run: ./gradlew diffCoverage -Pgithub -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
+        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'ignore-delta-coverage') }}
+        run: ./gradlew deltaCoverage -Pgithub -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
 
       - name: Add Delta Coverage report to PR
         id: jacoco
@@ -60,5 +60,5 @@ jobs:
         if: always()
         continue-on-error: true
         with:
-          paths: build/reports/jacoco/diffCoverage/report.xml
+          paths: build/reports/jacoco/deltaCoverage/report.xml
           token: ${{ secrets.GITHUB_TOKEN }}
