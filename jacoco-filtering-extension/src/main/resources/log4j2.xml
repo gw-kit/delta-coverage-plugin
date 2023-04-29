@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration status="OFF">
     <Properties>
-        <Property name="log-project-name">diff-coverage</Property>
+        <Property name="log-project-name">delta-coverage</Property>
         <Property name="log-pattern">%d{ISO8601} %-5p [%c] %m\n</Property>
     </Properties>
     <appenders>
