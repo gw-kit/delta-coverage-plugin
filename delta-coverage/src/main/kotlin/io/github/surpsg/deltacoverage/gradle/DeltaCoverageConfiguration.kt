@@ -61,6 +61,7 @@ open class DeltaCoverageConfiguration @Inject constructor(
 
     override fun toString(): String {
         return "DeltaCoverageConfiguration(" +
+                "coverageEngine=$coverageEngine, " +
                 "coverageBinaryFiles=$coverageBinaryFiles, " +
                 "classesDirs=$classesDirs, " +
                 "srcDirs=$srcDirs, " +

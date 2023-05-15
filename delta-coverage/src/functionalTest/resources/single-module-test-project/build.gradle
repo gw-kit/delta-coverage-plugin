@@ -1,6 +1,6 @@
 plugins {
-    id 'io.github.surpsg.delta-coverage'
     id 'java'
+    id 'io.github.surpsg.delta-coverage'
     id 'jacoco'
 }
 

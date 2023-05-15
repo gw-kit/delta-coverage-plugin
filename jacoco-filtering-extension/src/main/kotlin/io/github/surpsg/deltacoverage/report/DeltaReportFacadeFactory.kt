@@ -4,6 +4,7 @@ import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
 import io.github.surpsg.deltacoverage.diff.DiffSource
 import io.github.surpsg.deltacoverage.diff.diffSourceFactory
+import io.github.surpsg.deltacoverage.report.intellij.IntellijDeltaReportGeneratorFacade
 import io.github.surpsg.deltacoverage.report.jacoco.JacocoDeltaReportGeneratorFacade
 import java.io.File
 
@@ -19,6 +20,7 @@ object DeltaReportFacadeFactory {
 
         return when (coverageEngine) {
             CoverageEngine.JACOCO -> JacocoDeltaReportGeneratorFacade(reportContext)
+            CoverageEngine.INTELLIJ -> IntellijDeltaReportGeneratorFacade(reportContext)
         }
     }
 

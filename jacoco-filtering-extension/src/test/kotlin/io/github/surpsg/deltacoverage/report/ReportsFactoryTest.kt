@@ -96,7 +96,7 @@ class ReportsFactoryTest {
         }
     }
 
-    class StubDiffSource: DiffSource {
+    class StubDiffSource : DiffSource {
 
         override val sourceDescription: String = ""
         override fun pullDiff(): List<String> = emptyList()

@@ -1,8 +1,6 @@
-package io.github.surpsg.deltacoverage.coverage.diff
+package io.github.surpsg.deltacoverage.diff
 
 import io.github.surpsg.deltacoverage.diff.parse.ClassFile
-import io.github.surpsg.deltacoverage.diff.ClassModifications
-import io.github.surpsg.deltacoverage.diff.CodeUpdateInfo
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.data.blocking.forAll
 import io.kotest.data.row

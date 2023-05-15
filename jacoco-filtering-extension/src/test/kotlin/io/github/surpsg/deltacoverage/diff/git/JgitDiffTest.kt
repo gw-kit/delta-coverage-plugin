@@ -1,8 +1,5 @@
-package io.github.surpsg.deltacoverage.coverage.diff.git
+package io.github.surpsg.deltacoverage.diff.git
 
-import io.github.surpsg.deltacoverage.diff.git.JgitDiff
-import io.github.surpsg.deltacoverage.diff.git.UnknownRevisionException
-import io.github.surpsg.deltacoverage.diff.git.getCrlf
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.should

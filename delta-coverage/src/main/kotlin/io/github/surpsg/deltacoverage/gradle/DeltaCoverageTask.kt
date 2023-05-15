@@ -1,6 +1,5 @@
 package io.github.surpsg.deltacoverage.gradle
 
-import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
@@ -80,7 +79,7 @@ open class DeltaCoverageTask @Inject constructor(
         DeltaReportFacadeFactory
             .buildFacade(
                 rootProjectDirProperty.get().asFile,
-                CoverageEngine.JACOCO,
+                deltaCoverageConfigProperty.get().coverageEngine,
                 deltaCoverageConfig
             )
             .saveDiffTo(reportDir) { diffFile ->

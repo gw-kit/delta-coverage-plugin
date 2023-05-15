@@ -33,4 +33,3 @@ data class Violation(
     val failOnViolation: Boolean,
     val violationRules: List<Rule>
 )
-

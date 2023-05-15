@@ -24,10 +24,20 @@ tasks.withType(ShadowJar::class.java) {
     archiveClassifier.set("")
 }
 
+repositories {
+    maven {
+        url = uri("https://plugins.gradle.org/m2/")
+    }
+}
+
 dependencies {
     implementation(project(":jacoco-filtering-extension"))
+    implementation("org.jetbrains.kotlinx:kover-gradle-plugin:0.7.3")
 
     testImplementation(gradleApi()) // required to add this dependency explicitly after applying shadowJar plugin
+    testImplementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10")
+    testImplementation("org.jetbrains.kotlinx:kover-gradle-plugin:0.7.3")
+    testImplementation("com.google.jimfs:jimfs:1.3.0")
 
     functionalTestImplementation(project(":jacoco-filtering-extension"))
     functionalTestImplementation(deps.jgit)
