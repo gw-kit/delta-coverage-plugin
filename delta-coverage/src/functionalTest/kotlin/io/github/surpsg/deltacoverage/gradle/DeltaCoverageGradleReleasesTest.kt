@@ -24,7 +24,7 @@ class DeltaCoverageGradleReleasesTest {
     @ParameterizedTest
     @ValueSource(
         strings = [
-            "5.1", "5.3",
+            "5.6",
             "6.7.1",
             "7.4.2",
             "8.0",

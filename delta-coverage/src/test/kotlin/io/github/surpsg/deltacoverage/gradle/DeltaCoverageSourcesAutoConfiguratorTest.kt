@@ -1,5 +1,8 @@
 package io.github.surpsg.deltacoverage.gradle
 
+import io.github.surpsg.deltacoverage.gradle.sources.SourceType
+import io.github.surpsg.deltacoverage.gradle.sources.lookup.JacocoPluginSourcesLookup
+import io.github.surpsg.deltacoverage.gradle.sources.lookup.SourcesAutoLookup
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.data.forAll
@@ -7,7 +10,6 @@ import io.kotest.data.row
 import io.kotest.matchers.string.shouldBeEqualIgnoringCase
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.provider.Property
 import org.gradle.testfixtures.ProjectBuilder
 
 class DeltaCoverageSourcesAutoConfiguratorTest : StringSpec() {
@@ -20,29 +22,30 @@ class DeltaCoverageSourcesAutoConfiguratorTest : StringSpec() {
         "get input file collection should throw when source files are not specified" {
             forAll(
                 row(
-                    "'deltaCoverageReport.jacocoExecFiles' is not configured.",
-                    DeltaCoverageSourcesAutoConfigurator::obtainExecFiles
+                    SourceType.COVERAGE_BINARIES,
+                    "'deltaCoverageReport.jacocoExecFiles' is not configured."
                 ),
                 row(
+                    SourceType.CLASSES,
                     "'deltaCoverageReport.classesDirs' is not configured.",
-                    DeltaCoverageSourcesAutoConfigurator::obtainClassesFiles
                 ),
                 row(
+                    SourceType.SOURCES,
                     "'deltaCoverageReport.srcDirs' is not configured.",
-                    DeltaCoverageSourcesAutoConfigurator::obtainSourcesFiles
                 )
-            ) { expectedError, sourceAccessor ->
+            ) { source, expectedError ->
                 // setup
-                val autoConfigurator = DeltaCoverageSourcesAutoConfigurator(
-                    property(DeltaCoverageConfiguration(project.objects)),
-                    emptyFileCollection,
-                    emptyFileCollection,
-                    emptyFileCollection
+                val autoConfigurator = JacocoPluginSourcesLookup(
+                    SourcesAutoLookup.Context(
+                        project,
+                        DeltaCoverageConfiguration(project.objects),
+                        project.objects
+                    )
                 )
 
                 // run
                 val exception = shouldThrow<IllegalArgumentException> {
-                    sourceAccessor(autoConfigurator)
+                    autoConfigurator.lookup(source)
                 }
 
                 // assert
@@ -54,46 +57,40 @@ class DeltaCoverageSourcesAutoConfiguratorTest : StringSpec() {
         "get input file collection should throw when file collection is empty" {
             forAll(
                 row(
+                    SourceType.COVERAGE_BINARIES,
                     "'deltaCoverageReport.jacocoExecFiles' file collection is empty.",
-                    DeltaCoverageSourcesAutoConfigurator::obtainExecFiles
                 ),
                 row(
+                    SourceType.COVERAGE_BINARIES,
                     "'deltaCoverageReport.classesDirs' file collection is empty.",
-                    DeltaCoverageSourcesAutoConfigurator::obtainClassesFiles
                 ),
                 row(
+                    SourceType.COVERAGE_BINARIES,
                     "'deltaCoverageReport.srcDirs' file collection is empty.",
-                    DeltaCoverageSourcesAutoConfigurator::obtainSourcesFiles
                 )
-            ) { expectedError, sourceAccessor ->
+            ) { source, expectedError ->
                 // setup
-                val deltaCoverageReport = DeltaCoverageConfiguration(project.objects).apply {
-                    jacocoExecFiles = emptyFileCollection
+                val deltaCoverageConfig = DeltaCoverageConfiguration(project.objects).apply {
+                    coverageBinaryFiles = emptyFileCollection
                     classesDirs = emptyFileCollection
                     srcDirs = emptyFileCollection
                 }
-                val autoConfigurator = DeltaCoverageSourcesAutoConfigurator(
-                    property(deltaCoverageReport),
-                    emptyFileCollection,
-                    emptyFileCollection,
-                    emptyFileCollection
+                val autoConfigurator = JacocoPluginSourcesLookup(
+                    SourcesAutoLookup.Context(
+                        project,
+                        deltaCoverageConfig,
+                        project.objects
+                    )
                 )
 
                 // run
                 val exception = shouldThrow<IllegalArgumentException> {
-                    sourceAccessor(autoConfigurator)
+                    autoConfigurator.lookup(source)
                 }
 
                 // assert
                 exception.message shouldBeEqualIgnoringCase expectedError
             }
-        }
-
-    }
-
-    private inline fun <reified T> property(propertyValue: T): Property<T> {
-        return project.objects.property(T::class.java).apply {
-            set(propertyValue)
         }
     }
 

@@ -1,5 +1,9 @@
 # Delta-Coverage Gradle plugin Changelog
 
+# <NEXT-RELEASE>
+### Changed
+- Min supported Gradle version is **5.6**
+
 ## 1.1.0
 ### Added
 - Ignore coverage violation if a coverage entity count is less than threshold

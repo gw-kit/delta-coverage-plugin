@@ -7,9 +7,7 @@ import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @GradlePluginTest(TestProjects.SINGLE_MODULE)
 class DeltaCoverageConfigurationsTest {
 

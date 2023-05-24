@@ -11,10 +11,8 @@ import io.github.surpsg.deltacoverage.gradle.test.mockserver.MockHttpServer
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import java.io.File
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @GradlePluginTest(TestProjects.SINGLE_MODULE)
 class DeltaCoverageDiffSourcesTest {
 

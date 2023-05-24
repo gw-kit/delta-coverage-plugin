@@ -1,4 +1,4 @@
-package org.jacoco.core.internal.analysis
+package io.github.surpsg.deltacoverage.report.jacoco.analyzable
 
 import io.github.surpsg.deltacoverage.diff.parse.ClassFile
 import io.github.surpsg.deltacoverage.jvm.readClassFileName
@@ -6,6 +6,9 @@ import org.jacoco.core.analysis.Analyzer
 import org.jacoco.core.analysis.IClassCoverage
 import org.jacoco.core.analysis.ICoverageVisitor
 import org.jacoco.core.data.ExecutionDataStore
+import org.jacoco.core.internal.analysis.ClassCoverageImpl
+import org.jacoco.core.internal.analysis.FilteringClassAnalyzer
+import org.jacoco.core.internal.analysis.StringPool
 import org.jacoco.core.internal.analysis.filter.IFilter
 import org.jacoco.core.internal.data.CRC64
 import org.jacoco.core.internal.flow.ClassProbesAdapter

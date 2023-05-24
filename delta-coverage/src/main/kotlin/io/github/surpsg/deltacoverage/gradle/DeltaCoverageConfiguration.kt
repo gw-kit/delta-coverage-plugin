@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle
 
+import io.github.surpsg.deltacoverage.CoverageEngine
 import org.gradle.api.Action
 import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
@@ -17,9 +18,12 @@ open class DeltaCoverageConfiguration @Inject constructor(
     objectFactory: ObjectFactory,
 ) {
 
+    @Input
+    var coverageEngine: CoverageEngine = CoverageEngine.JACOCO
+
     @Optional
     @InputFiles
-    var jacocoExecFiles: FileCollection? = null
+    var coverageBinaryFiles: FileCollection? = null
 
     @Optional
     @InputFiles
@@ -57,7 +61,7 @@ open class DeltaCoverageConfiguration @Inject constructor(
 
     override fun toString(): String {
         return "DeltaCoverageConfiguration(" +
-                "jacocoExecFiles=$jacocoExecFiles, " +
+                "coverageBinaryFiles=$coverageBinaryFiles, " +
                 "classesDirs=$classesDirs, " +
                 "srcDirs=$srcDirs, " +
                 "excludeClasses=${excludeClasses.get()}, " +
@@ -126,7 +130,7 @@ open class ReportsConfiguration(
             "html=${html.get()}, " +
             "xml=${xml.get()}, " +
             "csv=${csv.get()}, " +
-            "baseReportDir='$baseReportDir'"
+            "baseReportDir='${baseReportDir.get()}'"
 }
 
 enum class CoverageEntity {

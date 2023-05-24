@@ -27,7 +27,11 @@ private fun composeGradleArgs(vararg gradleArgs: String): Array<String> {
 
 private fun BuildResult.printLogs(enabled: Boolean) {
     if (enabled) {
-        println(output)
+        println("""
+            =================== <Build logs> ===================
+            $output
+            =================== </Build logs> ==================
+        """.trimIndent())
     }
 }
 

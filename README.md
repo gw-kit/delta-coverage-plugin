@@ -21,8 +21,9 @@ Why should I use it?
 Delta Coverage plugin compatibility table:
 
 | Delta Coverage plugin | Gradle              |
-|----------------------|---------------------|
-| **1.0.0**            | **5.1** - **8.1.+** |
+|-----------------------|---------------------|
+| **2.0.0**             | **5.6** - **8.+**   |
+| **1.+**               | **5.1** - **8.1.+** |
 
 ### Apply `Delta Coverage` plugin
 
