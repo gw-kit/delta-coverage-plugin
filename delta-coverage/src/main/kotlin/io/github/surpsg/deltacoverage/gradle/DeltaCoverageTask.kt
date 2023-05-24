@@ -9,6 +9,8 @@ import io.github.surpsg.deltacoverage.config.ReportConfig
 import io.github.surpsg.deltacoverage.config.ReportsConfig
 import io.github.surpsg.deltacoverage.config.ViolationRule
 import io.github.surpsg.deltacoverage.report.DeltaReportFacadeFactory
+import io.github.surpsg.deltacoverage.report.CoverageEngine
+import io.github.surpsg.deltacoverage.report.DeltaReportFacadeFactory
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
