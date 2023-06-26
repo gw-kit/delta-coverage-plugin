@@ -132,14 +132,23 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
 ```groovy
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     diffSource { // Required. Only one of `file`, `url` or git must be spesified
-        file.set(file("path/to/file.diff")) //  Path to diff file 
-        url.set("http://domain.com/file.diff") // URL to retrieve diff by
-        git.compareWith.set("refs/remotes/origin/develop") // Compares current HEAD and all uncommited with provided branch, revision or tag 
+        //  Path to diff file 
+        file.set(file("path/to/file.diff")) 
+        
+        // URL to retrieve diff by
+        url.set("http://domain.com/file.diff") 
+        
+        // Compares current HEAD and all uncommited with provided branch, revision or tag 
+        git.compareWith.set("refs/remotes/origin/develop")
     }
-    jacocoExecFiles = files("/path/to/jacoco/exec/file.exec") // Required. By default exec files are taken from jacocoTestReport configuration if any
-    srcDirs = files("/path/to/sources")  // Required. By default sources are taken from jacocoTestReport configuration if any
-    classesDirs = files("/path/to/compiled/classes") // Required. By default classes are taken from jacocoTestReport configuration if any
-    
+
+    // Required. By default exec files are taken from jacocoTestReport configuration if any
+    jacocoExecFiles = files("/path/to/jacoco/exec/file.exec")
+    // Required. By default sources are taken from jacocoTestReport configuration if any
+    srcDirs = files("/path/to/sources")
+    // Required. By default classes are taken from jacocoTestReport configuration if any
+    classesDirs = files("/path/to/compiled/classes")
+
     excludeClasses.value(listOf[ // Optional. Excludes classes from coverage report by set of patterns 
             "*/com/package/ExcludeClass.class", // Excludes class "com.package.ExcludeClass"
             "**/com/package/**/ExcludeClass.class", // Excludes classes like "com.package.ExcludeClass", "com.package.sub1.sub2.ExcludeClass", etc.
@@ -147,7 +156,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
             "**/com/package/exclude/**/*.*" // Excludes all in package "com.package.exclude"
             // See more info about pattern rules: https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/util/PatternFilterable.html
     ])
-    
+
     reports {
         html.set(true) // Optional. default `false`
         xml.set(true) // Optional. default `false`
@@ -155,14 +164,42 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
         reportDir.set("dir/to/store/reports") // Optional. Default 'build/reports/jacoco/deltaCoverage'
     }
 
-    violationRules.failIfCoverageLessThan(0.9d) // Optional. The function sets all coverage metrics to a single value, sets failOnViolation to true
-    
-    // configuration below is equivalent to the configuration above
-    violationRules {        
-        minBranches.set(0.9d) // Optional. Default `0.0`
-        minLines.set(0.9d) // Optional. Default `0.0`
-        minInstructions.set(0.9d) // Optional. Default `0.0`
-        failOnViolation.set(true) // Optional. Default `false`
+    // If violation rules are not configured, then no violations will be checked.
+    violationRules {
+        failOnViolation.set(true) // Optional. Default `false`. If `true` then task will fail if any violation is found.
+
+        // [Option 1]---------------------------------------------------------------------------------------------------
+        // Optional. The function sets min coverage ration for instructions, branches and lines to '0.9'. 
+        // Sets failOnViolation to 'true'.
+        failIfCoverageLessThan(0.9d)
+
+        // [Option 2]---------------------------------------------------------------------------------------------------
+        rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.INSTRUCTION) {
+            // Optional. If coverage ration is set then the plugin will check coverage ratio for this entity.
+            minCoverageRatio.set(0.9d)
+            // Optional. Disabled by default. The plugin ignores violation if the entity count is less than the threshold.
+            entityCountThreshold.set(1234)
+        }
+        rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.LINE) {
+            // ...
+        }
+        rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.BRANCH) {
+            // ...
+        }
+
+        // [Option 3]---------------------------------------------------------------------------------------------------
+        // [.kts only] Alternative way to set violation rule.
+        io.github.surpsg.deltacoverage.gradle.CoverageEntity.BRANCH {
+            minCoverageRatio.set(0.7d)
+            entityCountThreshold.set(890)
+        }
+
+        // [Option 4]---------------------------------------------------------------------------------------------------
+        // Sets violation rule for all entities: LINE, BRANCH, INSTRUCTION
+        all {
+            minCoverageRatio.set(0.7d)
+            entityCountThreshold.set(890)
+        }
     }
 }
 ```
