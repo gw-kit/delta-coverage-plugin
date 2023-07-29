@@ -34,4 +34,7 @@ dependencies {
     functionalTestImplementation(testFixtures(project))
 
     testFixturesImplementation(deps.assertj)
+    testFixturesImplementation(deps.junitApi)
+    testFixturesImplementation(deps.jgit)
+    testFixturesImplementation(project(":jacoco-filtering-extension"))
 }

@@ -1,29 +1,38 @@
 package io.github.surpsg.deltacoverage.gradle
 
-import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.DELTA_COVERAGE_TASK
+import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
+import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
+import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
+import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
+import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
 import org.assertj.core.api.Assertions.assertThat
-import org.gradle.testkit.runner.TaskOutcome.SUCCESS
+import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import java.io.File
 
-class DeltaCoverageReportsTest : BaseDeltaCoverageTest() {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@GradlePluginTest(TestProjects.SINGLE_MODULE)
+class DeltaCoverageReportsTest {
 
-    companion object {
-        const val TEST_PROJECT_RESOURCE_NAME = "single-module-test-project"
-    }
+    @RootProjectDir
+    lateinit var rootProjectDir: File
 
-    override fun buildTestConfiguration() = TestConfiguration(
-        TEST_PROJECT_RESOURCE_NAME,
-        "build.gradle",
-        "test.diff.file"
-    )
+    @ProjectFile("test.diff.file")
+    lateinit var diffFilePath: String
+
+    @ProjectFile("build.gradle")
+    lateinit var buildFile: RestorableFile
+
+    @GradleRunnerInstance
+    lateinit var gradleRunner: GradleRunner
 
     @BeforeEach
-    fun setup() {
-        initializeGradleTest()
+    fun beforeEach() {
+        buildFile.restoreOriginContent()
     }
 
     @ParameterizedTest
@@ -41,7 +50,7 @@ class DeltaCoverageReportsTest : BaseDeltaCoverageTest() {
     ) {
         // setup
         val baseReportDir = "build/custom/reports/dir/jacoco/"
-        buildFile.appendText(
+        buildFile.file.appendText(
             """
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
@@ -51,28 +60,26 @@ class DeltaCoverageReportsTest : BaseDeltaCoverageTest() {
         """.trimIndent()
         )
 
-        // run
-        val result = gradleRunner.runTask(DELTA_COVERAGE_TASK)
-
-        // assert
-        result.assertDeltaCoverageStatusEqualsTo(SUCCESS)
+        // run // assert
+        gradleRunner
+            .runDeltaCoverageTask()
             .assertOutputContainsStrings("Fail on violations: false. Found violations: 0")
 
-        val diffReportDir: File = rootProjectDir.resolve(baseReportDir).resolve("deltaCoverage")
-        assertThat(diffReportDir.list()!!.toList())
-            .hasSize(1).first()
-            .extracting(
-                { it },
-                { diffReportDir.resolve(it).isDirectory }
-            )
-            .containsExactly(expectedReportFile, isDirectory)
+        // and assert
+        val actualReport: File = rootProjectDir.resolve(baseReportDir)
+            .resolve("deltaCoverage")
+            .resolve(expectedReportFile)
+        assertThat(actualReport).exists()
+        assertThat(actualReport.isDirectory)
+            .`as`("isDirectory")
+            .isEqualTo(isDirectory)
     }
 
     @Test
     fun `delta-coverage should create deltaCoverage dir and full coverage with html, csv and xml reports`() {
         // setup
         val baseReportDir = "build/custom/reports/dir/jacoco/"
-        buildFile.appendText(
+        buildFile.file.appendText(
             """
             
             deltaCoverageReport {
@@ -94,11 +101,10 @@ class DeltaCoverageReportsTest : BaseDeltaCoverageTest() {
         """.trimIndent()
         )
 
-        // run
-        val result = gradleRunner.runTask(DELTA_COVERAGE_TASK)
+        // run // assert
+        gradleRunner.runDeltaCoverageTask()
 
-        // assert
-        result.assertDeltaCoverageStatusEqualsTo(SUCCESS)
+        // and assert
         rootProjectDir.resolve(baseReportDir).apply {
             assertAllReportsCreated(resolve("deltaCoverage"))
             assertAllReportsCreated(resolve("fullReport"))

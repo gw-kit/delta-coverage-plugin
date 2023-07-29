@@ -1,30 +1,36 @@
 package io.github.surpsg.deltacoverage.gradle
 
-import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.DELTA_COVERAGE_TASK
+import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
+import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
+import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
+import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome.SUCCESS
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import java.io.File
 
-class DeltaCoverageGradleReleasesTest : BaseDeltaCoverageTest() {
+@GradlePluginTest(TestProjects.SINGLE_MODULE)
+class DeltaCoverageGradleReleasesTest {
 
-    companion object {
-        const val TEST_PROJECT_RESOURCE_NAME = "single-module-test-project"
-    }
+    @ProjectFile("test.diff.file")
+    lateinit var diffFilePath: String
 
-    override fun buildTestConfiguration() = TestConfiguration(
-        TEST_PROJECT_RESOURCE_NAME,
-        "build.gradle",
-        "test.diff.file"
-    )
+    @ProjectFile("build.gradle")
+    lateinit var buildFile: File
 
-    @BeforeEach
-    fun setup() {
-        initializeGradleTest()
-    }
+    @GradleRunnerInstance
+    lateinit var gradleRunner: GradleRunner
 
     @ParameterizedTest
-    @ValueSource(strings = ["5.1", "5.3", "6.7.1", "7.4.2", "8.1"])
+    @ValueSource(
+        strings = [
+            "5.1", "5.3",
+            "6.7.1",
+            "7.4.2",
+            "8.0",
+            "8.2.1", // the latest Gradle version here
+        ]
+    )
     fun `deltaCoverage task should be completed successfully on Gradle release`(
         gradleVersion: String
     ) {
@@ -33,16 +39,15 @@ class DeltaCoverageGradleReleasesTest : BaseDeltaCoverageTest() {
             """
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
-                jacocoExecFiles = fileTree('build') { include '*/**/*.exec' }
             }
         """.trimIndent()
         )
 
-        // run
-        val result = gradleRunner.withGradleVersion(gradleVersion).runTask(DELTA_COVERAGE_TASK)
-
-        // assert
-        result.assertDeltaCoverageStatusEqualsTo(SUCCESS)
+        // run // assert
+        gradleRunner
+            .withGradleVersion(gradleVersion)
+            .runDeltaCoverageTask()
+            .assertDeltaCoverageStatusEqualsTo(SUCCESS)
     }
 
 }

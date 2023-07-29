@@ -1,10 +1,8 @@
 package io.github.surpsg.deltacoverage.gradle
 
-import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.DELTA_COVERAGE_TASK
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.TaskOutcome
 import java.io.File
 
 fun buildGradleRunner(
@@ -39,21 +37,7 @@ private fun GradleRunner.tasksWithDebugOption(vararg task: String): GradleRunner
     return withArguments(*arguments.toTypedArray())
 }
 
-fun expectedHtmlReportFiles(vararg packages: String): Array<String> = arrayOf(
-    "index.html",
-    "jacoco-resources",
-    "jacoco-sessions.html"
-) + packages
-
 fun BuildResult.assertOutputContainsStrings(vararg expectedString: String): BuildResult {
     assertThat(output).contains(*expectedString)
-    return this
-}
-
-fun BuildResult.assertDeltaCoverageStatusEqualsTo(status: TaskOutcome): BuildResult {
-    assertThat(task(":$DELTA_COVERAGE_TASK"))
-        .isNotNull
-        .extracting { it?.outcome }
-        .isEqualTo(status)
     return this
 }
