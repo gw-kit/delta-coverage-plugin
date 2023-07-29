@@ -1,6 +1,7 @@
 package org.jacoco.core.internal.analysis
 
 import io.github.surpsg.deltacoverage.diff.parse.ClassFile
+import io.github.surpsg.deltacoverage.jvm.readClassFileName
 import org.jacoco.core.analysis.Analyzer
 import org.jacoco.core.analysis.IClassCoverage
 import org.jacoco.core.analysis.ICoverageVisitor
@@ -9,7 +10,6 @@ import org.jacoco.core.internal.analysis.filter.IFilter
 import org.jacoco.core.internal.data.CRC64
 import org.jacoco.core.internal.flow.ClassProbesAdapter
 import org.jacoco.core.internal.instr.InstrSupport
-import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.Opcodes
 import java.io.IOException
@@ -38,14 +38,14 @@ class FilteringAnalyzer(
         if (reader.access and Opcodes.ACC_SYNTHETIC != 0) {
             return
         }
-        val shouldComputeClassCoverage = SourceFileNameReader(source).readFileName()
-                ?.let { ClassFile(it, reader.className) }
-                ?.let { classFilter(it) }
-                ?: false
+        val shouldComputeClassCoverage = readClassFileName(source)
+            ?.let { ClassFile(it, reader.className) }
+            ?.let { classFilter(it) }
+            ?: false
         if (shouldComputeClassCoverage) {
             reader.accept(
-                    createAnalyzingVisitor(classId, reader.className),
-                    0
+                createAnalyzingVisitor(classId, reader.className),
+                0
             )
         }
     }
@@ -60,23 +60,23 @@ class FilteringAnalyzer(
         }
 
         return ClassProbesAdapter(
-                buildClassAnalyzer(
-                        ClassCoverageImpl(className, classid, noMatch),
-                        probes
-                ),
-                false
+            buildClassAnalyzer(
+                ClassCoverageImpl(className, classid, noMatch),
+                probes
+            ),
+            false
         )
     }
 
     private fun buildClassAnalyzer(
-            coverage: ClassCoverageImpl,
-            probes: BooleanArray?
+        coverage: ClassCoverageImpl,
+        probes: BooleanArray?
     ): FilteringClassAnalyzer {
         return object : FilteringClassAnalyzer(
-                coverage,
-                probes,
-                StringPool(),
-                customFilterProvider(coverage)
+            coverage,
+            probes,
+            StringPool(),
+            customFilterProvider(coverage)
         ) {
             override fun visitEnd() {
                 super.visitEnd()
@@ -92,44 +92,7 @@ class FilteringAnalyzer(
     }
 
     private data class ExecutionInfo(
-            val probes: BooleanArray?,
-            val noMatch: Boolean
+        val probes: BooleanArray?,
+        val noMatch: Boolean
     )
-
-    private class SourceFileNameReader(source: ByteArray): ClassReader(source) {
-
-        fun readFileName(): String? {
-            val charBuffer = CharArray(maxStringLength)
-            var shift = computeAttributesShift()
-            for (i in readUnsignedShort(shift) downTo 1) {
-                val attrName = readUTF8(shift + 2, charBuffer)
-                if ("SourceFile" == attrName) {
-                    return readUTF8(shift + 8, charBuffer)
-                }
-                shift += 6 + readInt(shift + 4)
-            }
-            return null
-        }
-
-        private fun computeAttributesShift(): Int {
-            // skips the header
-            var shift = header + 8 + readUnsignedShort(header + 6) * 2
-            // skips fields and methods
-            for (i in readUnsignedShort(shift) downTo 1) {
-                for (j in readUnsignedShort(shift + 8) downTo 1) {
-                    shift += 6 + readInt(shift + 12)
-                }
-                shift += 8
-            }
-            shift += 2
-            for (i in readUnsignedShort(shift) downTo 1) {
-                for (j in readUnsignedShort(shift + 8) downTo 1) {
-                    shift += 6 + readInt(shift + 12)
-                }
-                shift += 8
-            }
-            // the attribute_info structure starts just after the methods
-            return shift + 2
-        }
-    }
 }
