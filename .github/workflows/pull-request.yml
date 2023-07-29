@@ -51,7 +51,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run Delta Coverage check
-        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'ignore-delta-coverage') }}
+        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
         run: ./gradlew deltaCoverage -Pgithub -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
 
       - name: Add Delta Coverage report to PR
