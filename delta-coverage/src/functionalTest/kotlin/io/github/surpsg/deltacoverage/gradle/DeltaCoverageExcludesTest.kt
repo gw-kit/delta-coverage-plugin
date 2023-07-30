@@ -1,39 +1,48 @@
 package io.github.surpsg.deltacoverage.gradle
 
-import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.DELTA_COVERAGE_TASK
+import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
+import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
+import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
+import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
+import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
 import org.assertj.core.api.Assertions.assertThat
-import org.gradle.testkit.runner.TaskOutcome.FAILED
-import org.gradle.testkit.runner.TaskOutcome.SUCCESS
+import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 import kotlin.io.path.name
 import kotlin.streams.toList
 
-class DeltaCoverageExcludesTest : BaseDeltaCoverageTest() {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@GradlePluginTest(TestProjects.EXCLUDE_CLASSES)
+class DeltaCoverageExcludesTest {
 
-    companion object {
-        const val TEST_PROJECT_RESOURCE_NAME = "test-excludes-classes-project"
-    }
+    @RootProjectDir
+    lateinit var rootProjectDir: File
 
-    override fun buildTestConfiguration() = TestConfiguration(
-        TEST_PROJECT_RESOURCE_NAME,
-        "build.gradle",
-        "test.diff.file"
-    )
+    @ProjectFile("test.diff.file")
+    lateinit var diffFilePath: String
+
+    @ProjectFile("build.gradle")
+    lateinit var buildFile: RestorableFile
+
+    @GradleRunnerInstance
+    lateinit var gradleRunner: GradleRunner
 
     @BeforeEach
-    fun setup() {
-        initializeGradleTest()
+    fun beforeEach() {
+        buildFile.restoreOriginContent()
     }
 
     @Test
     fun `delta-coverage should not fail when all not covered classes are excluded`() {
         // setup
         val dollarSign = '$'
-        buildFile.appendText(
+        buildFile.file.appendText(
             """
 
             deltaCoverageReport {
@@ -56,14 +65,12 @@ class DeltaCoverageExcludesTest : BaseDeltaCoverageTest() {
         """.trimIndent()
         )
 
-        // run
-        val result = gradleRunner.runTask(DELTA_COVERAGE_TASK)
-
-        // assert
-        println(result.output)
-        result.assertDeltaCoverageStatusEqualsTo(SUCCESS)
+        // run // assert
+        gradleRunner
+            .runDeltaCoverageTask()
             .assertOutputContainsStrings("Fail on violations: true. Found violations: 0")
 
+        // and assert
         val htmlReportDir: Path = rootProjectDir.toPath().resolve("build/reports/jacoco/deltaCoverage/html/")
         val classReportFiles: List<Path> = findAllFiles(htmlReportDir) { file ->
             file.name.endsWith("Class.html")
@@ -77,7 +84,7 @@ class DeltaCoverageExcludesTest : BaseDeltaCoverageTest() {
     @Test
     fun `delta-coverage should fail when not covered classes are not excluded`() {
         // setup
-        buildFile.appendText(
+        buildFile.file.appendText(
             """
 
             deltaCoverageReport {
@@ -93,8 +100,8 @@ class DeltaCoverageExcludesTest : BaseDeltaCoverageTest() {
         )
 
         // run // assert
-        gradleRunner.runTaskAndFail(DELTA_COVERAGE_TASK)
-            .assertDeltaCoverageStatusEqualsTo(FAILED)
+        gradleRunner
+            .runDeltaCoverageTaskAndFail()
             .assertOutputContainsStrings("Fail on violations: true. Found violations: 2")
     }
 

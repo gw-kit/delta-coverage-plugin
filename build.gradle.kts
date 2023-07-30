@@ -1,6 +1,6 @@
 plugins {
     `base`
-    id("diff-coverage-conventions")
+    id("delta-coverage-conventions")
     `test-report-aggregation`
     `jacoco-aggregate-conventions`
 }
@@ -24,6 +24,9 @@ dependencies {
 }
 
 tasks.named("check") {
-    dependsOn(tasks.named("testAggregateTestReport"))
-    dependsOn(subprojects.map { it.tasks.named("check") })
+    dependsOn(
+        provider {
+            subprojects.map { it.tasks.named("check") }
+        }
+    )
 }

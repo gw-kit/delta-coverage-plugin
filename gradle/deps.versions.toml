@@ -1,5 +1,5 @@
 [versions]
-jacocoVer = "0.8.9"
+jacocoVer = "0.8.10"
 httpClientVer = "5.1.3"
 jgitVer = "5.12.0.202106070339-r"
 
@@ -13,8 +13,8 @@ kotlinJvm = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version = "1
 
 # Plugins
 pluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "1.2.0" }
-diffCoverage = { module = "com.github.form-com.diff-coverage-gradle:diff-coverage", version = "0.9.5" }
-jacocoTestkit = { module = "gradle.plugin.pl.droidsonroids.gradle.jacoco:jacoco-gradle-testkit-plugin", version = "1.0.9" }
+deltaCoverage = { module = "io.github.surpsg:delta-coverage", version = "1.0.0" }
+jacocoTestkit = { module = "pl.droidsonroids.gradle.jacoco:pl.droidsonroids.gradle.jacoco", version = "1.0.12" }
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.22.0" }
 
 # Project deps
