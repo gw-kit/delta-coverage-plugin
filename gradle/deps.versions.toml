@@ -13,7 +13,7 @@ kotlinJvm = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version = "1
 
 # Plugins
 pluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "1.2.0" }
-deltaCoverage = { module = "io.github.surpsg:delta-coverage", version = "1.0.0" }
+deltaCoverage = { module = "io.github.surpsg:delta-coverage", version = "1.1.0" }
 jacocoTestkit = { module = "pl.droidsonroids.gradle.jacoco:pl.droidsonroids.gradle.jacoco", version = "1.0.12" }
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.22.0" }
 
