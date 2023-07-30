@@ -32,6 +32,10 @@
         
     ```
     </details>
+### Dependency updates
+- Updated JaCoCo dependency to [0.8.10](https://github.com/jacoco/jacoco/releases/tag/v0.8.10)
+- Official support Gradle `7.2.+`.
+
 
 ## 1.0.0
 ### Added
