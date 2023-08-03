@@ -18,9 +18,9 @@ import io.github.surpsg.deltacoverage.diff.parse.ClassFile
 import java.io.IOException
 
 fun getProjectData(
-    binaryCoverageReports: List<BinaryReport>,
-    sources: List<Module>,
-    codeUpdateInfo: CodeUpdateInfo
+        binaryCoverageReports: List<BinaryReport>,
+        sources: List<Module>,
+        codeUpdateInfo: CodeUpdateInfo
 ): ProjectData {
     val hasRawHitsReport: Boolean = binaryCoverageReports.any { it.isRawHitsReport }
 
@@ -58,10 +58,10 @@ private fun collectCoverageInformationFromOutputs(modules: List<Module>): Projec
         annotationsToIgnore = emptyList()
     }
     UnloadedUtil.appendUnloaded(
-        projectData,
-        OutputClassFinder(modules),
-        true,
-        true
+            projectData,
+            OutputClassFinder(modules),
+            true,
+            true
     )
     return projectData
 }
@@ -120,12 +120,12 @@ private fun copyProjectDataWithFiltering(projectData: ProjectData, codeUpdateInf
 }
 
 private fun classFileFrom(classData: ClassData) = ClassFile(
-    sourceFileName = classData.source,
-    className = classData.name
+        sourceFileName = classData.source,
+        className = classData.name
 )
 
 internal class OutputClassFinder(
-    private val modules: List<Module>
+        private val modules: List<Module>
 ) : ClassFinder(filter) {
 
     override fun getClassPathEntries(): Collection<ClassPathEntry> {
