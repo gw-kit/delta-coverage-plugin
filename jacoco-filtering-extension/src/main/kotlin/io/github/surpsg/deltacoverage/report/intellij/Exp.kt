@@ -7,7 +7,7 @@ import io.github.surpsg.deltacoverage.config.DiffSourceConfig
 import io.github.surpsg.deltacoverage.config.ReportConfig
 import io.github.surpsg.deltacoverage.config.ReportsConfig
 import io.github.surpsg.deltacoverage.config.ViolationRule
-import io.github.surpsg.deltacoverage.report.CoverageEngine
+import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.report.DeltaReportFacadeFactory
 import java.io.File
 

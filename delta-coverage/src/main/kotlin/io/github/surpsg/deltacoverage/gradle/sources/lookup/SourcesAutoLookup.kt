@@ -37,6 +37,7 @@ internal interface SourcesAutoLookup {
             context: Context,
         ): SourcesAutoLookup = when (coverageEngine) {
             CoverageEngine.JACOCO -> JacocoPluginSourcesLookup(context)
+            CoverageEngine.INTELLIJ -> TODO()
         }
 
         fun ObjectFactory.newAutoDetectedSources() = AutoDetectedSources(

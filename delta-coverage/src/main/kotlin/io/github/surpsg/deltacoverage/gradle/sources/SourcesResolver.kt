@@ -129,6 +129,7 @@ internal class SourcesResolver {
 
             fun fromEngine(engine: CoverageEngine): Provider = when (engine) {
                 CoverageEngine.JACOCO -> JACOCO
+                CoverageEngine.INTELLIJ -> KOVER
             }
         }
     }
