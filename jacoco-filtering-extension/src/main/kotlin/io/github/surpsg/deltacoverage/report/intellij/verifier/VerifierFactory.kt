@@ -26,23 +26,11 @@ internal object VerifierFactory {
     private fun CoverageEntity.buildVerifier(
         id: Int,
         violationRule: ViolationRule
-    ): Verifier.Bound {
-        return Verifier.Bound(
-            id,
-            this.toVerifierType(),
-            Verifier.ValueType.COVERED_RATE,
-            BigDecimal.valueOf(violationRule.minCoverageRatio),
-            violationRule.entityCountThreshold?.let {
-                throw UnsupportedOperationException(
-                    "[${violationRule.coverageEntity}]. Entity count threshold is not supported yet."
-                )
-            },
-        )
-    }
-
-    private fun CoverageEntity.toVerifierType(): Verifier.Counter = when (this) {
-        CoverageEntity.INSTRUCTION -> Verifier.Counter.INSTRUCTION
-        CoverageEntity.BRANCH -> Verifier.Counter.BRANCH
-        CoverageEntity.LINE -> Verifier.Counter.LINE
-    }
+    ) = CoverageRuleWithThreshold( // TODO maybe extract common part from jacoco and this one
+        id,
+        this,
+        Verifier.ValueType.COVERED_RATE,
+        BigDecimal.valueOf(violationRule.minCoverageRatio),
+        violationRule.entityCountThreshold,
+    )
 }

@@ -12,11 +12,12 @@ import io.github.surpsg.deltacoverage.report.DeltaReportFacadeFactory
 import java.io.File
 
 fun main() {
+    val basicDir = "/home/sergnat/ideaProjects/delta-coverage-gradle"
     val config = DeltaCoverageConfig {
         reportName = "Delta Coverage Report"
-        diffSourceConfig = DiffSourceConfig { file = "/Users/sergnat/ideaProjects/delta-coverage-plugin/patchik.diff" }
+        diffSourceConfig = DiffSourceConfig { file = "$basicDir/diff.patch" }
         reportsConfig = ReportsConfig {
-            baseReportDir = "/Users/sergnat/ideaProjects/delta-coverage-plugin/build/rep"
+            baseReportDir = "$basicDir/build/delta-coverage-reports/exp"
             html = ReportConfig { enabled = true; outputFileName = "khtml" }
             xml = ReportConfig { enabled = true; outputFileName = "kxml" }
             csv = ReportConfig { enabled = false; outputFileName = "kcsv" }
@@ -27,16 +28,27 @@ fun main() {
             violationRules += ViolationRule {
                 minCoverageRatio = 1.0
                 coverageEntity = CoverageEntity.LINE
+                entityCountThreshold = 6
+            }
+            violationRules += ViolationRule {
+                minCoverageRatio = 1.0
+                coverageEntity = CoverageEntity.INSTRUCTION
+                entityCountThreshold = 40
+            }
+            violationRules += ViolationRule {
+                minCoverageRatio = 1.0
+                coverageEntity = CoverageEntity.BRANCH
+                entityCountThreshold = 7
             }
         }
-        binaryCoverageFiles += setOf(File("/Users/sergnat/ideaProjects/delta-coverage-plugin/jacoco-filtering-extension/build/kover/bin-reports/test.ic"))
+        binaryCoverageFiles += setOf(File("$basicDir/jacoco-filtering-extension/build/kover/raw-reports/test.ic"))
         sourceFiles += setOf(
-            File("/Users/sergnat/ideaProjects/delta-coverage-plugin/jacoco-filtering-extension/src/main/kotlin"),
-            File("/Users/sergnat/ideaProjects/delta-coverage-plugin/delta-coverage/src/main/kotlin"),
+            File("$basicDir/jacoco-filtering-extension/src/main/kotlin"),
+            File("$basicDir/delta-coverage/src/main/kotlin"),
         )
         classFiles += setOf(
-            File("/Users/sergnat/ideaProjects/delta-coverage-plugin/jacoco-filtering-extension/build/classes/kotlin/main"),
-            File("/Users/sergnat/ideaProjects/delta-coverage-plugin/delta-coverage/build/classes/kotlin/main")
+            File("$basicDir/jacoco-filtering-extension/build/classes/kotlin/main"),
+            File("$basicDir/delta-coverage/build/classes/kotlin/main")
         )
     }
     val baseReportDir = File(config.reportsConfig.baseReportDir)
