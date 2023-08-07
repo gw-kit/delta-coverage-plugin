@@ -1,6 +1,6 @@
 plugins {
     `basic-subproject-conventions`
-    id("org.jetbrains.kotlinx.kover") version "0.7.0-Beta"
+    id("org.jetbrains.kotlinx.kover") version "0.7.3"
 }
 
 publishing {
