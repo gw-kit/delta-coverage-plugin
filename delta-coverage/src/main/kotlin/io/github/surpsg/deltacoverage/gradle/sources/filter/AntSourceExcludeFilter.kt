@@ -10,14 +10,14 @@ internal class AntSourceExcludeFilter(
 
     override fun filter(inputSource: SourceFilter.InputSource): FileCollection {
         return if (patterns.isEmpty()) {
-            inputSource.originSourcesToFilter
+            inputSource.originSources
         } else {
             log.debug(
                 "Applied exclude patterns {} to source: {}",
                 patterns,
                 inputSource.sourceType.resourceName(inputSource.provider)
             )
-            inputSource.originSourcesToFilter.asFileTree.matching { pattern ->
+            inputSource.originSources.asFileTree.matching { pattern ->
                 pattern.exclude(patterns)
             }
         }

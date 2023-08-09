@@ -11,7 +11,7 @@ internal fun interface SourceFilter {
 
     companion object {
 
-        private val NOOP_FILTER: SourceFilter = SourceFilter { it.originSourcesToFilter }
+        private val NOOP_FILTER: SourceFilter = SourceFilter { it.originSources }
 
         fun build(
             config: DeltaCoverageConfiguration,
@@ -25,7 +25,7 @@ internal fun interface SourceFilter {
     }
 
     data class InputSource(
-        val originSourcesToFilter: FileCollection,
+        val originSources: FileCollection,
         val provider: SourcesResolver.Provider,
         val sourceType: SourceType
     )
