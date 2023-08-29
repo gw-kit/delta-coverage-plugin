@@ -10,7 +10,7 @@ internal fun readClassFileName(classBytes: ByteArray): String? {
     return customClassVisitor.sourceName
 }
 
-private class CustomClassVisitor : ClassVisitor(Opcodes.ASM7) {
+private class CustomClassVisitor : ClassVisitor(Opcodes.ASM9) {
 
     var sourceName: String? = null
 
