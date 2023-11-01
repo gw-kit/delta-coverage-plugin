@@ -4,6 +4,10 @@
 ### Changed
 - Min supported Gradle version is **5.6**
 
+## 1.2.0
+- Support java records
+- Official support of Gradle 8.3
+
 ## 1.1.0
 ### Added
 - Ignore coverage violation if a coverage entity count is less than threshold

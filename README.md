@@ -23,7 +23,7 @@ Delta Coverage plugin compatibility table:
 | Delta Coverage plugin | Gradle              |
 |-----------------------|---------------------|
 | **2.0.0**             | **5.6** - **8.+**   |
-| **1.+**               | **5.1** - **8.1.+** |
+| **1.+**               | **5.1** - **8.3.+** |
 
 ### Apply `Delta Coverage` plugin
 
