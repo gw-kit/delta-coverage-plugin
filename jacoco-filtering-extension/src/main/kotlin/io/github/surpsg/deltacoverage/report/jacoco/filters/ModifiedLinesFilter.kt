@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.filters
+package io.github.surpsg.deltacoverage.report.jacoco.filters
 
 import io.github.surpsg.deltacoverage.diff.CodeUpdateInfo
 import io.github.surpsg.deltacoverage.diff.parse.ClassFile
@@ -37,9 +37,8 @@ class ModifiedLinesFilter(private val codeUpdateInfo: CodeUpdateInfo) : IFilter 
             groupedModifiedLines[true]
                 ?.map { it.lineNode.line }
                 ?.takeIf { it.isNotEmpty() }
-                ?.let {
-                    log.debug("Modified lines in ${context.className}#${methodNode.name}")
-                    log.debug("\tlines: $it")
+                ?.let { lines ->
+                    log.debug("Matched modified lines in {}#{}: {}", context.className, methodNode.name, lines)
                 }
         }
     }

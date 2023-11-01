@@ -206,9 +206,9 @@ class DeltaCoverageConfig private constructor(
                 ", diffSourceConfig=$diffSourceConfig" +
                 ", reportsConfig=$reportsConfig" +
                 ", coverageRulesConfig=$coverageRulesConfig" +
-                ", binaryCoverageFiles=$binaryCoverageFiles" +
-                ", classFiles=$classFiles" +
-                ", sourceFiles=$sourceFiles" +
+                ", binaryCoverageFiles=${binaryCoverageFiles.stringifyLongCollection()}" +
+                ", classFiles=${classFiles.stringifyLongCollection()}" +
+                ", sourceFiles=${sourceFiles.stringifyLongCollection()}" +
                 ")"
     }
 
@@ -233,7 +233,12 @@ class DeltaCoverageConfig private constructor(
         )
     }
 
+    private fun <T> Iterable<T>.stringifyLongCollection(): String {
+        return joinToString(prefix = "[", separator = ", ", postfix = "]", limit = MAX_ITEMS_TO_STRINGIFY)
+    }
+
     companion object {
+        private const val MAX_ITEMS_TO_STRINGIFY = 3
 
         operator fun invoke(customize: Builder.() -> Unit): DeltaCoverageConfig {
             return Builder().apply(customize).build()

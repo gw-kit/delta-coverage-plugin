@@ -11,13 +11,11 @@ import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import java.io.File
 import java.nio.file.Paths
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @GradlePluginTest(TestProjects.SINGLE_MODULE)
 class DeltaCoverageViolationsTest {
 

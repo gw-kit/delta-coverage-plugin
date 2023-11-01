@@ -1,21 +1,16 @@
 package io.github.surpsg.deltacoverage.gradle
 
+import io.github.surpsg.deltacoverage.gradle.sources.SourceType
+import io.github.surpsg.deltacoverage.gradle.sources.SourcesResolver
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.testing.Test
-import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
-import org.gradle.testing.jacoco.tasks.JacocoReportBase
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import javax.inject.Inject
 
-open class DeltaCoveragePlugin @Inject constructor(
-    private val fileOperations: FileOperations
-) : Plugin<Project> {
+open class DeltaCoveragePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
 
@@ -23,25 +18,26 @@ open class DeltaCoveragePlugin @Inject constructor(
             autoApplyJacocoPlugin(project)
         }
 
+        val deltaCoverageConfig: DeltaCoverageConfiguration = project.extensions.create(
+            DELTA_COVERAGE_REPORT_EXTENSION,
+            DeltaCoverageConfiguration::class.java,
+            project.objects
+        )
+
         project.tasks.create(DELTA_COVERAGE_TASK, DeltaCoverageTask::class.java) { deltaCoverageTask ->
-            deltaCoverageTask.projectDirProperty.set(project.projectDir)
-            deltaCoverageTask.rootProjectDirProperty.set(project.rootProject.projectDir)
+            with(deltaCoverageTask) {
+                configureDependencies()
 
-            deltaCoverageTask.deltaCoverageReport.set(
-                project.extensions.create(
-                    DELTA_COVERAGE_REPORT_EXTENSION,
-                    DeltaCoverageConfiguration::class.java,
-                    project.objects
-                )
-            )
-
-            deltaCoverageTask.applyInputsFromJacocoPlugin()
-
-            configureDependencies(project, deltaCoverageTask)
+                projectDirProperty.set(project.projectDir)
+                rootProjectDirProperty.set(project.rootProject.projectDir)
+                deltaCoverageConfigProperty.set(deltaCoverageConfig)
+                applySourcesInputs(deltaCoverageConfig)
+            }
         }
     }
 
-    private fun configureDependencies(project: Project, deltaCoverageTask: DeltaCoverageTask) = project.afterEvaluate {
+    private fun DeltaCoverageTask.configureDependencies() = project.afterEvaluate {
+        val deltaCoverageTask: DeltaCoverageTask = this
         project.getAllTasks(true).values.asSequence()
             .flatMap { it.asSequence() }
             .forEach { task ->
@@ -56,19 +52,27 @@ open class DeltaCoveragePlugin @Inject constructor(
         }
 
         if (task is Test) {
-            val isJacocoExtensionConfigured = task.extensions.findByType(JacocoTaskExtension::class.java) != null
-            if (isJacocoExtensionConfigured) {
-                log.info("Configuring {} to run after {}", deltaCoverageTask, task)
-                deltaCoverageTask.mustRunAfter(task)
-            }
+            log.info("Configuring {} to run after {}", deltaCoverageTask, task)
+            deltaCoverageTask.mustRunAfter(task)
         }
     }
 
-    private fun DeltaCoverageTask.applyInputsFromJacocoPlugin() = project.gradle.taskGraph.whenReady {
-        val jacocoPluginInputs: JacocoInputs = collectJacocoPluginInputs(project)
-        jacocoExecFiles.set(jacocoPluginInputs.allExecFiles)
-        jacocoClassesFiles.set(jacocoPluginInputs.allClasses)
-        jacocoSourceFiles.set(jacocoPluginInputs.allSources)
+    private fun DeltaCoverageTask.applySourcesInputs(
+        config: DeltaCoverageConfiguration
+    ) = project.gradle.taskGraph.whenReady {
+        val contextBuilder = SourcesResolver.Context.Builder.newBuilder(project, project.objects, config)
+        listOf(
+            classesFiles to SourceType.CLASSES,
+            sourcesFiles to SourceType.SOURCES,
+            coverageBinaryFiles to SourceType.COVERAGE_BINARIES,
+        ).forEach { (taskSourceProperty, sourceType) ->
+            taskSourceProperty.value(
+                project.provider {
+                    val resolveContext: SourcesResolver.Context = contextBuilder.build(sourceType)
+                    SourcesResolver().resolve(resolveContext)
+                }
+            )
+        }
     }
 
     private fun autoApplyJacocoPlugin(project: Project) {
@@ -88,42 +92,11 @@ open class DeltaCoveragePlugin @Inject constructor(
         return autoApplyValue.toString().toBoolean()
     }
 
-    private fun collectJacocoPluginInputs(project: Project): JacocoInputs {
-        return project.allprojects.asSequence()
-            .map { it.tasks.findByName(JACOCO_REPORT_TASK) }
-            .filterNotNull()
-            .map { it as JacocoReportBase }
-            .fold(newJacocoInputs()) { jacocoInputs, jacocoReport ->
-                log.debug("Found JaCoCo configuration in gradle project '{}'", jacocoReport.project.name)
-
-                jacocoInputs.apply {
-                    allExecFiles.from(jacocoReport.executionData)
-                    allClasses.from(jacocoReport.allClassDirs)
-                    allSources.from(jacocoReport.allSourceDirs)
-                }
-            }
-    }
-
-    private fun newJacocoInputs() = JacocoInputs(
-        // FileOperations is used to support Gradle < v5.3
-        // If min supported Gradle version is 5.3 then it could be replaced with ObjectFactory#fileCollection
-        fileOperations.configurableFiles(),
-        fileOperations.configurableFiles(),
-        fileOperations.configurableFiles()
-    )
-
-    private class JacocoInputs(
-        val allExecFiles: ConfigurableFileCollection,
-        val allClasses: ConfigurableFileCollection,
-        val allSources: ConfigurableFileCollection
-    )
-
     companion object {
         const val AUTO_APPLY_JACOCO_PROPERTY_NAME = "io.github.surpsg.delta-coverage.auto-apply-jacoco"
         const val DELTA_COVERAGE_REPORT_EXTENSION = "deltaCoverageReport"
         const val DELTA_COVERAGE_TASK = "deltaCoverage"
         const val JACOCO_PLUGIN = "jacoco"
-        const val JACOCO_REPORT_TASK = "jacocoTestReport"
 
         val log: Logger = LoggerFactory.getLogger(DeltaCoveragePlugin::class.java)
     }

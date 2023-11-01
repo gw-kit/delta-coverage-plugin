@@ -1,33 +1,31 @@
-package io.github.surpsg.deltacoverage.report.analyzable
+package io.github.surpsg.deltacoverage.report.jacoco.analyzable
 
 import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.diff.CodeUpdateInfo
 import io.github.surpsg.deltacoverage.diff.parse.ClassFile
-import io.github.surpsg.deltacoverage.diff.parse.ModifiedLinesDiffParser
-import io.github.surpsg.deltacoverage.filters.ModifiedLinesFilter
-import io.github.surpsg.deltacoverage.report.DiffReport
+import io.github.surpsg.deltacoverage.report.JacocoDeltaReport
+import io.github.surpsg.deltacoverage.report.analyzable.ViolationsOutputResolver
+import io.github.surpsg.deltacoverage.report.jacoco.filters.ModifiedLinesFilter
 import org.jacoco.core.analysis.Analyzer
 import org.jacoco.core.analysis.ICoverageVisitor
 import org.jacoco.core.data.ExecutionDataStore
-import org.jacoco.core.internal.analysis.FilteringAnalyzer
 import org.jacoco.report.IReportVisitor
 import org.jacoco.report.MultiReportVisitor
 import org.jacoco.report.check.Rule
 import org.jacoco.report.check.RulesChecker
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 internal class DeltaCoverageAnalyzableReport(
     private val violationRuleConfig: CoverageRulesConfig,
-    private val diffReport: DiffReport
-) : FullCoverageAnalyzableReport(diffReport) {
+    private val jacocoDeltaReport: JacocoDeltaReport
+) : FullCoverageAnalyzableReport(jacocoDeltaReport) {
 
     override fun buildVisitor(): IReportVisitor {
         val visitors: MutableList<IReportVisitor> = mutableListOf(super.buildVisitor())
 
         visitors += createViolationCheckVisitor(
-            diffReport.violation.failOnViolation,
-            diffReport.violation.violationRules
+            jacocoDeltaReport.violation.failOnViolation,
+            jacocoDeltaReport.violation.violationRules
         )
 
         return MultiReportVisitor(visitors)
@@ -37,23 +35,14 @@ internal class DeltaCoverageAnalyzableReport(
         executionDataStore: ExecutionDataStore,
         coverageVisitor: ICoverageVisitor
     ): Analyzer {
-        val codeUpdateInfo = obtainCodeUpdateInfo()
+        val codeUpdateInfo: CodeUpdateInfo = jacocoDeltaReport.codeUpdateInfo
+
         val classFileFilter: (ClassFile) -> Boolean = {
             codeUpdateInfo.isInfoExists(it)
         }
         return FilteringAnalyzer(executionDataStore, coverageVisitor, classFileFilter) {
             ModifiedLinesFilter(codeUpdateInfo)
         }
-    }
-
-    private fun obtainCodeUpdateInfo(): CodeUpdateInfo {
-        val changesMap = ModifiedLinesDiffParser().collectModifiedLines(
-            diffReport.diffSource.pullDiff()
-        )
-        changesMap.forEach { (file, rows) ->
-            log.debug("File $file has ${rows.size} modified lines")
-        }
-        return CodeUpdateInfo(changesMap)
     }
 
     private fun createViolationCheckVisitor(
@@ -79,9 +68,5 @@ internal class DeltaCoverageAnalyzableReport(
             .apply { setRules(rules) }
             .createVisitor(violationsOutputResolver)
             .let { CoverageRulesVisitor(it) }
-    }
-
-    private companion object {
-        val log: Logger = LoggerFactory.getLogger(DeltaCoverageAnalyzableReport::class.java)
     }
 }

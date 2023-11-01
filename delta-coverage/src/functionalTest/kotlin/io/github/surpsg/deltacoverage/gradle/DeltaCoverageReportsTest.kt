@@ -9,12 +9,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import java.io.File
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @GradlePluginTest(TestProjects.SINGLE_MODULE)
 class DeltaCoverageReportsTest {
 
@@ -86,7 +84,7 @@ class DeltaCoverageReportsTest {
                 diffSource {
                     file.set('$diffFilePath')
                 }
-                jacocoExecFiles = jacocoTestReport.executionData
+                coverageBinaryFiles = jacocoTestReport.executionData
                 classesDirs = jacocoTestReport.classDirectories
                 srcDirs = jacocoTestReport.sourceDirectories
                 
