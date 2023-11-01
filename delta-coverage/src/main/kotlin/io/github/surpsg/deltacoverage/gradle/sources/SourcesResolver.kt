@@ -62,7 +62,7 @@ internal class SourcesResolver {
         } else {
             "'${sourceType.sourceConfigurationPath}' is not configured."
         }
-        throw IllegalArgumentException(errorMessage)
+        error(errorMessage)
     }
 
     private fun getDeltaPluginConfiguredSource(
