@@ -80,7 +80,7 @@ open class DeltaCoverageTask @Inject constructor(
         DeltaReportFacadeFactory
             .buildFacade(
                 rootProjectDirProperty.get().asFile,
-                CoverageEngine.JACOCO,
+                deltaCoverageConfigProperty.get().coverageEngine,
                 deltaCoverageConfig
             )
             .saveDiffTo(reportDir) { diffFile ->
