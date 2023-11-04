@@ -1,5 +1,10 @@
 # Delta-Coverage Gradle plugin Changelog
 
+# <NEXT-RELEASE>
+### Changed
+- Min supported Gradle version is **5.6**
+- Official support of Gradle 8.4
+
 ## 1.2.0
 - Support java records
 - Official support of Gradle 8.3
