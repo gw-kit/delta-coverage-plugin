@@ -7,9 +7,6 @@ import io.github.surpsg.deltacoverage.config.DiffSourceConfig
 import io.github.surpsg.deltacoverage.config.ViolationRule
 import io.github.surpsg.deltacoverage.diff.DiffSource
 import io.github.surpsg.deltacoverage.report.jacoco.reportFactory
-import io.github.surpsg.deltacoverage.diff.DiffSource
-import io.github.surpsg.deltacoverage.diff.FileDiffSource
-import io.github.surpsg.deltacoverage.report.jacoco.reportFactory
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
@@ -99,7 +96,7 @@ class ReportsFactoryTest {
         }
     }
 
-    class StubDiffSource: DiffSource {
+    class StubDiffSource : DiffSource {
 
         override val sourceDescription: String = ""
         override fun pullDiff(): List<String> = emptyList()
