@@ -3,14 +3,19 @@
 # <NEXT-RELEASE>
 ### Changed
 - Min supported Gradle version is **5.6**
+
+
+## 1.3.0
 ### Dependency updates
 - Official support of Gradle 8.4
 - Updated JaCoCo dependency to [0.8.11](https://github.com/jacoco/jacoco/releases/tag/v0.8.11)
+
 
 ## 1.2.0
 - Support java records
 ### Dependency updates
 - Official support of Gradle 8.3
+
 
 ## 1.1.0
 ### Added
