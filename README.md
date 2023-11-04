@@ -22,9 +22,8 @@ Delta Coverage plugin compatibility table:
 
 | Delta Coverage plugin | Gradle              |
 |-----------------------|---------------------|
-| **1.2.0**             | **5.1** - **8.3.+** |
-| **1.1.0**             | **5.1** - **8.2.+** |
-| **1.0.0**             | **5.1** - **8.1.+** |
+| **1.3.+**             | **5.6** - **8.4.+** |
+| **1.0.0** - **1.2.0** | **5.1** - **8.3.+** |
 
 ### Apply `Delta Coverage` plugin
 
@@ -36,7 +35,7 @@ The plugin should be applied to the **root** project.
 
 ```groovy
 plugins {
-  id("io.github.surpsg.delta-coverage") version "1.0.0"
+  id("io.github.surpsg.delta-coverage") version "1.3.0"
 }
 ```
 
@@ -48,7 +47,7 @@ plugins {
 
 ```groovy
 plugins {
-  id "io.github.surpsg.delta-coverage" version "1.0.0"
+  id "io.github.surpsg.delta-coverage" version "1.3.0"
 }
 ```
 </details>
@@ -104,7 +103,7 @@ deltaCoverageReport {
 
 ```kotlin
 plugins {
-    id("io.github.surpsg.delta-coverage") version "1.0.0"
+    id("io.github.surpsg.delta-coverage") version "1.3.0"
 }
 
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {

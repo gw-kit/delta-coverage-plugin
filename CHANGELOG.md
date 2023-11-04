@@ -1,6 +1,6 @@
 # Delta-Coverage Gradle plugin Changelog
 
-# <NEXT-RELEASE>
+## 1.3.0
 ### Changed
 - Min supported Gradle version is **5.6**
 ### Dependency updates
