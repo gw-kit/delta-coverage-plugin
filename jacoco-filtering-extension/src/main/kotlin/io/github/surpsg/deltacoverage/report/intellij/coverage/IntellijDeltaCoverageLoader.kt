@@ -194,7 +194,7 @@ internal object IntellijDeltaCoverageLoader {
             return entries
         }
 
-        private object IncludeAllClassFilter: ClassFilter {
+        private object IncludeAllClassFilter : ClassFilter {
             override fun shouldInclude(className: String?): Boolean = true
         }
     }
