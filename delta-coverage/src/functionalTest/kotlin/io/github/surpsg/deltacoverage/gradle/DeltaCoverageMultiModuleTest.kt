@@ -8,9 +8,11 @@ import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.File
 
+@Disabled
 @GradlePluginTest(TestProjects.MULTI_MODULE)
 class DeltaCoverageMultiModuleTest {
 

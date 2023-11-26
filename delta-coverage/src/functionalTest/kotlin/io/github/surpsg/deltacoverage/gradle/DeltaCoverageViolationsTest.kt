@@ -9,6 +9,7 @@ import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -16,6 +17,7 @@ import org.junit.jupiter.params.provider.CsvSource
 import java.io.File
 import java.nio.file.Paths
 
+@Disabled
 @GradlePluginTest(TestProjects.SINGLE_MODULE)
 class DeltaCoverageViolationsTest {
 

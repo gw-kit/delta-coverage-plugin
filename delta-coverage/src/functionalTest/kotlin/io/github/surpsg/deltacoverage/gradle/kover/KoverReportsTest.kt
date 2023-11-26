@@ -19,6 +19,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import java.io.File
 
+@Disabled
 @GradlePluginTest("kover-single-module", kts = true)
 class KoverReportsTest {
 

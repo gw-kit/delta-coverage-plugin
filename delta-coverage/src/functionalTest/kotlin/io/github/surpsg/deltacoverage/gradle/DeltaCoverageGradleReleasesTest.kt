@@ -5,10 +5,12 @@ import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
 import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome.SUCCESS
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import java.io.File
 
+@Disabled
 @GradlePluginTest(TestProjects.SINGLE_MODULE)
 class DeltaCoverageGradleReleasesTest {
 

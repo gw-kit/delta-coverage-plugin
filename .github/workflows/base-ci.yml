@@ -5,9 +5,8 @@ on:
 
 jobs:
 
-  build-and-check:
+  prepare-env:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
         with:
@@ -26,9 +25,34 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build & Test
-        run: ./gradlew check -s --parallel
+      - name: Assemble
+        run: ./gradlew classes testClasses funTestClasses -s --parallel
 
+  run-checks:
+    needs: prepare-env
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assemble
+        run: ./gradlew check -x test -x funTest -s --parallel
+
+  run-unit-tests:
+    needs: prepare-env
+    runs-on: ubuntu-latest
+    steps:
+      - name: Unit Tests
+        run: ./gradlew test -s --parallel
+
+  run-functional-tests:
+    needs: prepare-env
+    runs-on: ubuntu-latest
+    steps:
+      - name: Functional Tests
+        run: ./gradlew funTest -s --parallel
+
+  post-build:
+    needs: [run-checks, run-unit-tests, run-functional-tests]
+    runs-on: ubuntu-latest
+    steps:
       - name: Build Coverage report
         run: ./gradlew jacocoRootReport
 
