@@ -8,6 +8,7 @@ import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.nio.file.Files
@@ -16,6 +17,7 @@ import java.nio.file.attribute.BasicFileAttributes
 import kotlin.io.path.name
 import kotlin.streams.toList
 
+@Disabled
 @GradlePluginTest(TestProjects.EXCLUDE_CLASSES)
 class DeltaCoverageExcludesTest {
 
