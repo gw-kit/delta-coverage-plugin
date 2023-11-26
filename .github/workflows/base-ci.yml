@@ -29,21 +29,21 @@ jobs:
         run: ./gradlew classes testClasses funTestClasses -s --parallel
 
   run-checks:
-    needs: prepare-env
+    needs: [prepare-env]
     runs-on: ubuntu-latest
     steps:
       - name: Assemble
         run: ./gradlew check -x test -x funTest -s --parallel
 
   run-unit-tests:
-    needs: prepare-env
+    needs: [prepare-env]
     runs-on: ubuntu-latest
     steps:
       - name: Unit Tests
         run: ./gradlew test -s --parallel
 
   run-functional-tests:
-    needs: prepare-env
+    needs: [prepare-env]
     runs-on: ubuntu-latest
     steps:
       - name: Functional Tests
