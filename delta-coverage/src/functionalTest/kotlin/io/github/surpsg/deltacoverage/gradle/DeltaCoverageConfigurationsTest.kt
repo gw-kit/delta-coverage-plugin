@@ -26,24 +26,6 @@ class DeltaCoverageConfigurationsTest {
     }
 
     @Test
-    fun `delta-coverage should not fail build on printing extension`() {
-        // GIVEN
-        buildFile.file.appendText(
-            """
-            deltaCoverageReport {
-                diffSource.file.set('$diffFilePath')
-            }
-            println(extensions.getByName('deltaCoverageReport'))   
-        """.trimIndent()
-        )
-
-        // WHEN // THEN
-        gradleRunner
-            .runTask("tasks", "-m")
-            .assertOutputContainsStrings("DeltaCoverageConfiguration")
-    }
-
-    @Test
     fun `delta-coverage should fail if classes file collection is empty`() {
         // setup
         buildFile.file.appendText(

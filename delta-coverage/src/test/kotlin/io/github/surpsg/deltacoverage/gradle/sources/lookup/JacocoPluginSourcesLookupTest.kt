@@ -25,7 +25,7 @@ internal class JacocoPluginSourcesLookupTest {
             apply("jacoco")
         }
 
-        val autoConfigurator = JacocoPluginSourcesLookup(
+        val sourcesLookup = JacocoPluginSourcesLookup(
             SourcesAutoLookup.Context(
                 project,
                 DeltaCoverageConfiguration(project.objects),
@@ -33,7 +33,7 @@ internal class JacocoPluginSourcesLookupTest {
             )
         )
         // WHEN
-        val actualSources: FileCollection = autoConfigurator.lookup(sourceType)
+        val actualSources: FileCollection = sourcesLookup.lookup(sourceType)
 
         // THEN
         actualSources shouldHaveAtLeastSize 1
@@ -47,7 +47,7 @@ internal class JacocoPluginSourcesLookupTest {
         // GIVEN
         project.pluginManager.apply("java")
 
-        val autoConfigurator = JacocoPluginSourcesLookup(
+        val sourcesLookup = JacocoPluginSourcesLookup(
             SourcesAutoLookup.Context(
                 project,
                 DeltaCoverageConfiguration(project.objects),
@@ -55,7 +55,7 @@ internal class JacocoPluginSourcesLookupTest {
             )
         )
         // WHEN
-        val actualSources: FileCollection = autoConfigurator.lookup(sourceType)
+        val actualSources: FileCollection = sourcesLookup.lookup(sourceType)
 
         // THEN
         actualSources shouldHaveSize 0
