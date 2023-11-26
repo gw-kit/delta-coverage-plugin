@@ -1,6 +1,6 @@
 plugins {
     `basic-subproject-conventions`
-    id("org.jetbrains.kotlinx.kover") version "0.7.3"
+    jacoco
 }
 
 publishing {
@@ -12,8 +12,8 @@ publishing {
 }
 
 dependencies {
-    implementation("org.jetbrains.intellij.deps:intellij-coverage-reporter:1.0.716")
     implementation(deps.jgit)
+    implementation(deps.intellijCoverage) // TODO upgrade to latest version
     implementation(deps.jacocoCore)
     implementation(deps.jacocoReport)
     implementation(deps.httpClient)

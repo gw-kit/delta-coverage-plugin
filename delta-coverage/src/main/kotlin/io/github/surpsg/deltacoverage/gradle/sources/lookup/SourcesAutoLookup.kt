@@ -7,6 +7,7 @@ import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
+import java.nio.file.FileSystems
 
 internal interface SourcesAutoLookup {
 
@@ -25,7 +26,7 @@ internal interface SourcesAutoLookup {
     )
 
     data class AutoDetectedSources(
-        val allExecFiles: ConfigurableFileCollection,
+        val allBinaryCoverageFiles: ConfigurableFileCollection,
         val allClasses: ConfigurableFileCollection,
         val allSources: ConfigurableFileCollection
     )
@@ -37,7 +38,7 @@ internal interface SourcesAutoLookup {
             context: Context,
         ): SourcesAutoLookup = when (coverageEngine) {
             CoverageEngine.JACOCO -> JacocoPluginSourcesLookup(context)
-            CoverageEngine.INTELLIJ -> TODO()
+            CoverageEngine.INTELLIJ -> KoverPluginSourcesLookup(FileSystems.getDefault(), context)
         }
 
         fun ObjectFactory.newAutoDetectedSources() = AutoDetectedSources(

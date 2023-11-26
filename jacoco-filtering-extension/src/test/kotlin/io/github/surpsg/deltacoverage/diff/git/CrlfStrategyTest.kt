@@ -1,6 +1,5 @@
-package io.github.surpsg.deltacoverage.coverage.diff.git
+package io.github.surpsg.deltacoverage.diff.git
 
-import io.github.surpsg.deltacoverage.diff.git.getCrlf
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import org.eclipse.jgit.lib.CoreConfig

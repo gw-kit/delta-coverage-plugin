@@ -1,10 +1,6 @@
-package io.github.surpsg.deltacoverage.coverage.diff
+package io.github.surpsg.deltacoverage.diff
 
 import io.github.surpsg.deltacoverage.config.DiffSourceConfig
-import io.github.surpsg.deltacoverage.diff.FileDiffSource
-import io.github.surpsg.deltacoverage.diff.GitDiffSource
-import io.github.surpsg.deltacoverage.diff.UrlDiffSource
-import io.github.surpsg.deltacoverage.diff.diffSourceFactory
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.should

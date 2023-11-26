@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.coverage.diff
+package io.github.surpsg.deltacoverage.diff
 
 import io.github.surpsg.deltacoverage.diff.parse.ModifiedLinesDiffParser
 import io.kotest.assertions.throwables.shouldThrow

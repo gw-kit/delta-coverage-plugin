@@ -1,4 +1,5 @@
 [versions]
+intellijCoverageVer = "1.0.716"
 jacocoVer = "0.8.11"
 httpClientVer = "5.1.3"
 jgitVer = "5.12.0.202106070339-r"
@@ -18,6 +19,7 @@ jacocoTestkit = { module = "pl.droidsonroids.gradle.jacoco:pl.droidsonroids.grad
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.22.0" }
 
 # Project deps
+intellijCoverage = { module = "org.jetbrains.intellij.deps:intellij-coverage-reporter", version.ref = "intellijCoverageVer" }
 jacocoCore = { module = "org.jacoco:org.jacoco.core", version.ref = "jacocoVer" }
 jacocoReport = { module = "org.jacoco:org.jacoco.report", version.ref = "jacocoVer" }
 httpClient = { module = "org.apache.httpcomponents.client5:httpclient5", version.ref = "httpClientVer" }

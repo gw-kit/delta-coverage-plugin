@@ -1,6 +1,5 @@
-package io.github.surpsg.deltacoverage.coverage.diff
+package io.github.surpsg.deltacoverage.diff
 
-import io.github.surpsg.deltacoverage.diff.UrlDiffSource
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import java.net.UnknownHostException

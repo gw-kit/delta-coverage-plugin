@@ -1,32 +1,15 @@
 package io.github.surpsg.deltacoverage.gradle.sources.lookup
 
-import io.github.surpsg.deltacoverage.gradle.sources.SourceType
 import io.github.surpsg.deltacoverage.gradle.sources.lookup.SourcesAutoLookup.Companion.newAutoDetectedSources
-import org.gradle.api.file.FileCollection
 import org.gradle.testing.jacoco.tasks.JacocoReportBase
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 internal class JacocoPluginSourcesLookup(
-    private val lookupContext: SourcesAutoLookup.Context
-) : SourcesAutoLookup {
+    lookupContext: SourcesAutoLookup.Context
+) : CacheableLookupSources(lookupContext) {
 
-    private val cachedSources: SourcesAutoLookup.AutoDetectedSources by lazy {
-        lookupJacocoSources()
-    }
-
-    /**
-     * Lookups sources that are configured for JaCoCo plugin.
-     */
-    override fun lookup(sourceType: SourceType): FileCollection {
-        return when (sourceType) {
-            SourceType.CLASSES -> cachedSources.allClasses
-            SourceType.SOURCES -> cachedSources.allSources
-            SourceType.COVERAGE_BINARIES -> cachedSources.allExecFiles
-        }
-    }
-
-    private fun lookupJacocoSources(): SourcesAutoLookup.AutoDetectedSources {
+    override fun lookupSources(lookupContext: SourcesAutoLookup.Context): SourcesAutoLookup.AutoDetectedSources {
         return lookupContext.project.allprojects.asSequence()
             .map { it.tasks.findByName(JACOCO_REPORT_TASK) }
             .filterNotNull()
@@ -35,7 +18,7 @@ internal class JacocoPluginSourcesLookup(
                 log.debug("Found JaCoCo configuration in gradle project '{}'", jacocoReport.project.name)
 
                 jacocoInputs.apply {
-                    allExecFiles.from(jacocoReport.executionData)
+                    allBinaryCoverageFiles.from(jacocoReport.executionData)
                     allClasses.from(jacocoReport.allClassDirs)
                     allSources.from(jacocoReport.allSourceDirs)
                 }

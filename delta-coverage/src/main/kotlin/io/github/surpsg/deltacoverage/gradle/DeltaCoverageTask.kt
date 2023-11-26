@@ -1,6 +1,5 @@
 package io.github.surpsg.deltacoverage.gradle
 
-import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig

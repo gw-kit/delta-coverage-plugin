@@ -1,6 +1,5 @@
-package io.github.surpsg.deltacoverage.coverage.diff.parse
+package io.github.surpsg.deltacoverage.diff.parse
 
-import io.github.surpsg.deltacoverage.diff.parse.ClassFile
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
