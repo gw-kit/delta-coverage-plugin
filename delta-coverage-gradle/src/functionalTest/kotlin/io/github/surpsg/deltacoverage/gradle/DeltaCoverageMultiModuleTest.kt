@@ -35,7 +35,7 @@ class DeltaCoverageMultiModuleTest {
     fun `delta-coverage should automatically collect jacoco configuration from submodules in multimodule project`() {
         // setup
         val baseReportDir = "build/custom/"
-        val htmlReportDir = rootProjectDir.resolve(baseReportDir).resolve(File("deltaCoverage", "html"))
+        val htmlReportDir = rootProjectDir.resolve(baseReportDir).resolve(File("delta-coverage", "html"))
         buildFile.file.appendText(
             """
             

@@ -1,11 +1,13 @@
 package io.github.surpsg.deltacoverage.report.intellij
 
-import com.intellij.rt.coverage.report.ReportLoadStrategy
-import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
+import com.intellij.rt.coverage.data.ProjectData
 import io.github.surpsg.deltacoverage.report.DeltaReportGeneratorFacade
 import io.github.surpsg.deltacoverage.report.ReportContext
+import io.github.surpsg.deltacoverage.report.intellij.coverage.NamedReportLoadStrategy
 import io.github.surpsg.deltacoverage.report.intellij.coverage.ReportLoadStrategyFactory
 import io.github.surpsg.deltacoverage.report.intellij.report.CoverageReportFactory
+import io.github.surpsg.deltacoverage.report.intellij.report.ReportBound
+import io.github.surpsg.deltacoverage.report.intellij.report.ReportBuilder
 import io.github.surpsg.deltacoverage.report.intellij.verifier.CoverageAssertion
 
 internal class IntellijDeltaReportGeneratorFacade(
@@ -13,20 +15,31 @@ internal class IntellijDeltaReportGeneratorFacade(
 ) : DeltaReportGeneratorFacade(reportContext) {
 
     override fun generateReport(): DeltaReportGeneratorFacade {
-        generate(reportContext.deltaCoverageConfig)
-
+        generate()
         return this
     }
 
-    private fun generate(deltaCoverageConfig: DeltaCoverageConfig) {
-        val reportLoadStrategy: ReportLoadStrategy = ReportLoadStrategyFactory.buildReportLoadStrategy(reportContext)
+    private fun generate() {
+        val reportBoundToLoadStrategy: Map<ReportBound, NamedReportLoadStrategy> =
+            ReportLoadStrategyFactory.buildReportLoadStrategies(reportContext)
+                .associateBy { it.reportBound }
 
         CoverageReportFactory
-            .reportBuildersBy(deltaCoverageConfig, reportLoadStrategy)
-            .forEach { reportBuilder ->
-                reportBuilder.buildReport()
-            }
+            .reportBuildersBy(
+                reportContext.deltaCoverageConfig.reportsConfig,
+                reportBoundToLoadStrategy.values
+            )
+            .forEach(ReportBuilder::buildReport)
 
-        CoverageAssertion.verify(reportLoadStrategy.projectData, deltaCoverageConfig.coverageRulesConfig)
+        verifyCoverage(reportBoundToLoadStrategy)
+    }
+
+    private fun verifyCoverage(reportBoundToLoadStrategy: Map<ReportBound, NamedReportLoadStrategy>) {
+        val projectData: ProjectData = reportBoundToLoadStrategy.getValue(ReportBound.DELTA_REPORT)
+            .reportLoadStrategy.projectData
+        CoverageAssertion.verify(
+            projectData,
+            reportContext.deltaCoverageConfig.coverageRulesConfig
+        )
     }
 }

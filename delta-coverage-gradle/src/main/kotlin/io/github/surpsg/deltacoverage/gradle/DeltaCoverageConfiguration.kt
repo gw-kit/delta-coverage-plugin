@@ -121,7 +121,7 @@ open class ReportsConfiguration(
 
     @Input
     val baseReportDir: Property<String> = objectFactory.stringProperty {
-        Paths.get("build", "reports", "jacoco").toString()
+        Paths.get("build", "reports").toString()
     }
 
     @Input

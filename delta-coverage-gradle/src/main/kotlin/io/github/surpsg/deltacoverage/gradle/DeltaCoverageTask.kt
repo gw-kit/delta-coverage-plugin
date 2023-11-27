@@ -95,7 +95,7 @@ open class DeltaCoverageTask @Inject constructor(
             file
         } else {
             projectDirProperty.get().asFile.resolve(baseReportDirPath)
-        }
+        }.resolve(BASE_COVERAGE_REPORTS_DIR)
     }
 
     private fun buildDeltaCoverageConfig(): DeltaCoverageConfig {
@@ -168,6 +168,6 @@ open class DeltaCoverageTask @Inject constructor(
 
     companion object {
         val log: Logger = LoggerFactory.getLogger(DeltaCoverageTask::class.java)
+        const val BASE_COVERAGE_REPORTS_DIR = "coverage-reports"
     }
-
 }

@@ -20,7 +20,7 @@ internal fun reportFactory(
     val baseReportDir = Paths.get(diffSourceConfig.reportsConfig.baseReportDir)
     val report: MutableSet<FullReport> = mutableSetOf(
         JacocoDeltaReport(
-            baseReportDir.resolve("deltaCoverage"),
+            baseReportDir,
             reports,
             reportContext.codeUpdateInfo,
             Violation(
@@ -32,7 +32,7 @@ internal fun reportFactory(
 
     if (diffSourceConfig.reportsConfig.fullCoverageReport) {
         report += FullReport(
-            baseReportDir.resolve("fullReport"),
+            baseReportDir.resolve("full-coverage-report"), // TODO think about reusing of [ReportPathStrategy]
             reports
         )
     }
@@ -42,7 +42,7 @@ internal fun reportFactory(
 
 private fun ReportsConfig.toReportTypes(): Set<Report> = sequenceOf(
     ReportType.HTML to html,
-    ReportType.CSV to csv,
+    ReportType.CSV to csv, // TODO DEPRECATE it
     ReportType.XML to xml
 ).filter { it.second.enabled }.map {
     Report(it.first, it.second.outputFileName)

@@ -2,6 +2,7 @@ package io.github.surpsg.deltacoverage.gradle
 
 import io.github.surpsg.deltacoverage.gradle.sources.SourceType
 import io.github.surpsg.deltacoverage.gradle.sources.SourcesResolver
+import io.github.surpsg.deltacoverage.gradle.sources.lookup.KoverPluginSourcesLookup
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -46,7 +47,7 @@ open class DeltaCoveragePlugin : Plugin<Project> {
     }
 
     private fun configureDependencyFromTask(deltaCoverageTask: DeltaCoverageTask, task: Task) {
-        if (task.name == JavaPlugin.CLASSES_TASK_NAME) {
+        if (task.name in DELTA_TASK_DEPENDENCIES) {
             log.info("Configuring {} to depend on {}", deltaCoverageTask, task)
             deltaCoverageTask.dependsOn(task)
         }
@@ -98,6 +99,10 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         const val DELTA_COVERAGE_TASK = "deltaCoverage"
         const val JACOCO_PLUGIN = "jacoco"
 
+        val DELTA_TASK_DEPENDENCIES = setOf(
+            JavaPlugin.CLASSES_TASK_NAME,
+            KoverPluginSourcesLookup.KOVER_GENERATE_ARTIFACTS_TASK_NAME,
+        )
         val log: Logger = LoggerFactory.getLogger(DeltaCoveragePlugin::class.java)
     }
 

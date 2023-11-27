@@ -6,13 +6,13 @@ import java.io.File
 
 internal class XmlReportBuilder(
     reportsConfig: ReportsConfig,
+    reportBound: ReportBound,
     reporter: Reporter,
-) : ReportBuilder(reporter, reportsConfig) {
+) : ReportBuilder(reporter, reportBound, reportsConfig) {
 
-    override val reportOutputFilePath: String = reportsConfig.xml.outputFileName
-
-    override fun buildReport(reportPath: File, reporter: Reporter) {
+    override fun buildReport() {
+        val reportPath: File = ReportPathStrategy.Xml(reportsConfig).buildReportPath(reportBound)
         reporter.createXMLReport(reportPath)
     }
-
 }
+

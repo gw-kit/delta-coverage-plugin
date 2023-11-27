@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle.kover
 
+import io.github.surpsg.deltacoverage.gradle.TestProjects
 import io.github.surpsg.deltacoverage.gradle.assertOutputContainsStrings
 import io.github.surpsg.deltacoverage.gradle.runDeltaCoverageTask
 import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
@@ -9,7 +10,6 @@ import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
 import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.file.shouldBeADirectory
-import io.kotest.matchers.file.shouldBeAFile
 import io.kotest.matchers.file.shouldContainFile
 import io.kotest.matchers.file.shouldExist
 import org.gradle.testkit.runner.GradleRunner
@@ -17,13 +17,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
-@GradlePluginTest("kover-single-module", kts = true)
-class KoverReportsTest {
+@GradlePluginTest(resourceProjectDir = TestProjects.MULTI_MODULE, kts = true)
+class KoverMultiModuleTest {
 
     @RootProjectDir
     lateinit var rootProjectDir: File
 
-    @ProjectFile("test.diff.file")
+    @ProjectFile("test.diff")
     lateinit var diffFilePath: String
 
     @ProjectFile("build.gradle.kts")
@@ -38,19 +38,21 @@ class KoverReportsTest {
     }
 
     @Test
-    fun `delta-coverage should create all reports`() {
+    fun `should build delta coverage report from multi module project `() {
         // GIVEN
-        val baseReportDir = "build/custom/reports/dir/kover/"
+        val baseReportDir = "build/custom/kover/"
         buildFile.file.appendText(
             """
             configure<DeltaCoverageConfiguration> {
                 coverageEngine = CoverageEngine.INTELLIJ
                 diffSource.file.set("$diffFilePath")
                 reports {
-                    baseReportDir.set("$baseReportDir")
                     html.set(true)
-                    xml.set(true)
-                    fullCoverageReport.set(true)
+                    baseReportDir.set("$baseReportDir")
+                }
+                violationRules {
+                    failIfCoverageLessThan(0.9)
+                    failOnViolation.set(false)
                 }
             }
         """.trimIndent()
@@ -66,25 +68,20 @@ class KoverReportsTest {
         // WHEN // THEN
         gradleRunner
             .runDeltaCoverageTask()
-            .assertOutputContainsStrings("Fail on violations: false. Found violations: 0")
+            .assertOutputContainsStrings(
+                "Fail on violations: false. Found violations: 3",
+                "BRANCH: expectedMin=0.9, actual=0.5",
+                "LINE: expectedMin=0.9, actual=1.0",
+                "INSTRUCTION: expectedMin=0.9, actual=0.8",
+            )
 
         // AND THEN
-        val baseReportDirFile = rootProjectDir.resolve(baseReportDir).resolve("coverage-reports")
-        assertAllReportsCreated(baseReportDirFile.resolve("delta-coverage"))
-        assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report"))
-    }
-
-    private fun assertAllReportsCreated(baseReportDir: File) {
-        val htmlReportDir = baseReportDir.resolve("html")
+        val htmlReportDir = rootProjectDir.resolve(baseReportDir)
+            .resolve(File("coverage-reports/delta-coverage/html"))
         assertSoftly(htmlReportDir) {
             shouldExist()
             shouldBeADirectory()
             shouldContainFile("index.html")
-        }
-        val xmlReportFile = baseReportDir.resolve("report.xml")
-        assertSoftly(xmlReportFile) {
-            shouldExist()
-            shouldBeAFile()
         }
     }
 }

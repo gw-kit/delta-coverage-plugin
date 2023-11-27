@@ -7,17 +7,20 @@ import java.io.File
 internal class HtmlReportBuilder(
     private val reportName: String,
     reportsConfig: ReportsConfig,
+    reportBound: ReportBound,
     reporter: Reporter,
-) : ReportBuilder(reporter, reportsConfig) {
+) : ReportBuilder(
+    reporter = reporter,
+    reportBound = reportBound,
+    reportsConfig = reportsConfig
+) {
 
-    override val reportOutputFilePath: String = reportsConfig.html.outputFileName
-
-    override fun buildReport(reportPath: File, reporter: Reporter) {
+    override fun buildReport() {
+        val reportPath: File = ReportPathStrategy.Html(reportsConfig).buildReportPath(reportBound)
         reporter.createHTMLReport(
             reportPath,
             reportName,
             null
         )
     }
-
 }
