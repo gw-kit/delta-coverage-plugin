@@ -4,6 +4,14 @@ import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import java.io.File
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
+
+val GRADLE_HOME: String
+    get() {
+        val userHome: String = System.getProperty("user.home") ?: error("Cannot obtain 'user.home'.")
+        return Path(userHome, ".gradle").absolutePathString()
+    }
 
 fun buildGradleRunner(
     projectRoot: File
@@ -11,9 +19,9 @@ fun buildGradleRunner(
     return GradleRunner.create()
         .withPluginClasspath()
         .withProjectDir(projectRoot)
-        .withTestKitDir(projectRoot.resolve("TestKitDir").apply {
-            mkdir()
-        })
+        .withTestKitDir(
+            projectRoot.resolve(GRADLE_HOME).apply { mkdirs() }
+        )
         .apply {
             // gradle testkit jacoco support
             javaClass.classLoader.getResourceAsStream("testkit-gradle.properties")?.use { inputStream ->
