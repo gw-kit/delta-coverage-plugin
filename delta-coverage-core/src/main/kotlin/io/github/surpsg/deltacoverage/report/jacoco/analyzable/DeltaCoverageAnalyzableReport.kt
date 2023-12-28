@@ -24,7 +24,7 @@ internal class DeltaCoverageAnalyzableReport(
         val visitors: MutableList<IReportVisitor> = mutableListOf(super.buildVisitor())
 
         visitors += createViolationCheckVisitor(
-            jacocoDeltaReport.violation.violationRules
+            jacocoDeltaReport.violations.violationRules
         )
 
         return MultiReportVisitor(visitors)

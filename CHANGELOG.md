@@ -4,6 +4,8 @@
 ### Changed
 - Min supported Gradle version is **5.6**
 
+### Breaking changes
+- Base report directory is changed from `build/reports/jacoco/deltaCoverage` to `build/reports/coverage-reports`
 
 ## 1.3.0
 ### Dependency updates

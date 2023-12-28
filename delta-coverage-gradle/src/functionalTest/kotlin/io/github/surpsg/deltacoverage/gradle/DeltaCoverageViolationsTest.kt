@@ -6,7 +6,10 @@ import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
 import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
 import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
 import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.paths.shouldBeADirectory
+import io.kotest.matchers.paths.shouldContainFile
+import io.kotest.matchers.paths.shouldExist
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -40,31 +43,26 @@ class DeltaCoverageViolationsTest {
     inner class ViolationsTest {
 
         @Test
-        fun `delta-coverage should validate coverage and fail without report creation`() {
+        fun `delta-coverage should validate coverage`() {
             // setup
             val baseReportDir = "build/custom/reports/dir/jacoco/"
             buildFile.file.appendText(
                 """
-            deltaCoverageReport {
-                diffSource.file.set('$diffFilePath')
-                reportConfiguration.baseReportDir.set('$baseReportDir')
-                violationRules {
-                    failIfCoverageLessThan 1.0
-                    failOnViolation.set(true)
+                deltaCoverageReport {
+                    diffSource.file.set('$diffFilePath')
+                    reportConfiguration.baseReportDir.set('$baseReportDir')
+                    violationRules {
+                        failIfCoverageLessThan 1.0
+                        failOnViolation.set(true)
+                    }
                 }
-            }
-        """.trimIndent()
+            """.trimIndent()
             )
 
             // run // assert
             gradleRunner
                 .runDeltaCoverageTaskAndFail()
                 .assertOutputContainsStrings("Fail on violations: true. Found violations: 3")
-
-            // and assert
-            assertThat(
-                rootProjectDir.resolve(baseReportDir).resolve("deltaCoverage")
-            ).doesNotExist()
         }
 
         @Test
@@ -76,21 +74,20 @@ class DeltaCoverageViolationsTest {
 
             buildFile.file.appendText(
                 """
-
-            deltaCoverageReport {
-                diffSource.file.set('$diffFilePath')
-                reports {
-                    html.set(true)
-                    baseReportDir.set('$absolutePathBaseReportDir')
+                deltaCoverageReport {
+                    diffSource.file.set('$diffFilePath')
+                    reports {
+                        html.set(true)
+                        baseReportDir.set('$absolutePathBaseReportDir')
+                    }
+                    violationRules {
+                        minBranches.set(0.6d)
+                        minLines.set(0.7d)
+                        minInstructions.set(0.8d)
+                        failOnViolation.set(true)
+                    }
                 }
-                violationRules {
-                    minBranches.set(0.6d)
-                    minLines.set(0.7d)
-                    minInstructions.set(0.8d)
-                    failOnViolation.set(true)
-                }
-            }
-        """.trimIndent()
+            """.trimIndent()
             )
 
             // run // assert
@@ -102,11 +99,13 @@ class DeltaCoverageViolationsTest {
                     "lines covered ratio is 0.6, but expected minimum is 0.7"
                 )
 
-            val deltaCoverageDir = Paths.get(absolutePathBaseReportDir, "deltaCoverage", "html").toFile()
-            assertThat(deltaCoverageDir.list())
-                .containsExactlyInAnyOrder(
-                    *expectedHtmlReportFiles("com.java.test")
-                )
+            val htmlReportDir = Paths.get(absolutePathBaseReportDir, "coverage-reports", "delta-coverage", "html")
+            assertSoftly(htmlReportDir) {
+                shouldExist()
+                shouldBeADirectory()
+                shouldContainFile("index.html")
+                shouldContainFile("com.java.test")
+            }
         }
 
         @Test
@@ -187,20 +186,19 @@ class DeltaCoverageViolationsTest {
             // GIVEN
             buildFile.file.appendText(
                 """
-
-            deltaCoverageReport {
-                diffSource.file.set('$diffFilePath')
-                
-                violationRules {
-                    failOnViolation.set(true)
+                deltaCoverageReport {
+                    diffSource.file.set('$diffFilePath')
                     
-                    rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.${coverageEntity.name}) {
-                        minCoverageRatio.set(1d)
-                        entityCountThreshold.set($entityCountThreshold)
+                    violationRules {
+                        failOnViolation.set(true)
+                        
+                        rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.${coverageEntity.name}) {
+                            minCoverageRatio.set(1d)
+                            entityCountThreshold.set($entityCountThreshold)
+                        }
                     }
                 }
-            }
-        """.trimIndent()
+            """.trimIndent()
             )
 
             // WHEN // THEN

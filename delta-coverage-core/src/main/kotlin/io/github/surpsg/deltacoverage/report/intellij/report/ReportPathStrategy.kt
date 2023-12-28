@@ -37,6 +37,14 @@ sealed class ReportPathStrategy(
         override val reportFileName: String = reportsConfig.html.outputFileName
     }
 
+    @Deprecated("CSV report is deprecated")
+    internal class Csv(
+        reportsConfig: ReportsConfig,
+    ) : ReportPathStrategy(reportsConfig) {
+
+        override val reportFileName: String = reportsConfig.csv.outputFileName
+    }
+
     companion object {
         const val DELTA_COVERAGE_REPORT_DIR = "delta-coverage"
         const val FULL_COVERAGE_REPORT_DIR = "full-coverage-report"

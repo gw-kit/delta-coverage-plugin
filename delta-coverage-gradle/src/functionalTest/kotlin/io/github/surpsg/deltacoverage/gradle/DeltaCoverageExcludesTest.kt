@@ -69,7 +69,8 @@ class DeltaCoverageExcludesTest {
             .assertOutputContainsStrings("Fail on violations: true. Found violations: 0")
 
         // and assert
-        val htmlReportDir: Path = rootProjectDir.toPath().resolve("build/reports/jacoco/deltaCoverage/html/")
+        val htmlReportDir: Path = rootProjectDir.toPath()
+            .resolve("build/reports/coverage-reports/delta-coverage/html/")
         val classReportFiles: List<Path> = findAllFiles(htmlReportDir) { file ->
             file.name.endsWith("Class.html")
         }

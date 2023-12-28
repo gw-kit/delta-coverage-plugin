@@ -64,7 +64,7 @@ class ReportsFactoryTest {
             .shouldHaveSize(1)
             .first()
             .shouldBeInstanceOf<JacocoDeltaReport>()
-            .violation.violationRules
+            .violations.violationRules
             .shouldBeEmpty()
     }
 
@@ -72,7 +72,7 @@ class ReportsFactoryTest {
         expectedMinCoverage: Double,
         expectedEntity: CounterEntity
     ) {
-        val limit: Limit = violation.violationRules
+        val limit: Limit = violations.violationRules
             .shouldHaveSize(1).first()
             .limits.shouldHaveSize(1).first()
         assertSoftly(limit) {

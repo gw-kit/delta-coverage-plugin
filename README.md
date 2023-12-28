@@ -163,7 +163,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
         html.set(true) // Optional. default `false`
         xml.set(true) // Optional. default `false`
         csv.set(true) // Optional. default `false`
-        reportDir.set("dir/to/store/reports") // Optional. Default 'build/reports/jacoco/deltaCoverage'
+        reportDir.set("dir/to/store/reports") // Optional. Default 'build/reports/coverage-reports'
     }
 
     // If violation rules are not configured, then no violations will be checked.

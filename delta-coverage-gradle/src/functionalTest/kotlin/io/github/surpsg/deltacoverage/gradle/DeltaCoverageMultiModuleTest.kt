@@ -35,7 +35,6 @@ class DeltaCoverageMultiModuleTest {
     fun `delta-coverage should automatically collect jacoco configuration from submodules in multimodule project`() {
         // setup
         val baseReportDir = "build/custom/"
-        val htmlReportDir = rootProjectDir.resolve(baseReportDir).resolve(File("delta-coverage", "html"))
         buildFile.file.appendText(
             """
             
@@ -60,6 +59,7 @@ class DeltaCoverageMultiModuleTest {
             )
 
         // and assert
+        val htmlReportDir = rootProjectDir.resolve(baseReportDir).resolve("coverage-reports/delta-coverage/html")
         assertThat(htmlReportDir.list()).containsExactlyInAnyOrder(
             *expectedHtmlReportFiles("com.module1", "com.module2")
         )
@@ -118,8 +118,13 @@ class DeltaCoverageMultiModuleTest {
             repositories {
                 mavenCentral()
             }
+            tasks.withType(Test) {
+                useJUnitPlatform()
+            }
+        
             dependencies {
-                testImplementation 'junit:junit:4.13.2'
+                testImplementation(platform("org.junit:junit-bom:5.10.0"))
+                testImplementation("org.junit.jupiter:junit-jupiter")
             }
         }
         deltaCoverageReport {

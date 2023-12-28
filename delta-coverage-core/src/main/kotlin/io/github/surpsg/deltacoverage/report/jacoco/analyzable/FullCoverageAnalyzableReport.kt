@@ -19,8 +19,8 @@ internal open class FullCoverageAnalyzableReport(
 ) : AnalyzableReport {
 
     override fun buildVisitor(): IReportVisitor {
-        return report.reports.map {
-            val reportFile: File = report.resolveReportAbsolutePath(it).toFile()
+        return report.jacocoReports.map {
+            val reportFile: File = report.resolveReportAbsolutePath(it)
             when (it.reportType) {
                 ReportType.HTML -> FileMultiReportOutput(reportFile).let(HTMLFormatter()::createVisitor)
                 ReportType.XML -> reportFile.createFileOutputStream().let(XMLFormatter()::createVisitor)
