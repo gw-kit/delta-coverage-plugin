@@ -5,7 +5,7 @@ import com.intellij.rt.coverage.verify.Verifier
 
 internal class CoverageVerifier(
     private val projectData: ProjectData,
-    private val rule: CoverageRuleWithThreshold,
+    internal val rule: CoverageRuleWithThreshold,
 ) {
 
     fun verify(): Iterable<Violation> {

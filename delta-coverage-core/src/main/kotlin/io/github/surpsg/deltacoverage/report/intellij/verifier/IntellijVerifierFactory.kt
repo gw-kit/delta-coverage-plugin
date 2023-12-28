@@ -7,23 +7,21 @@ import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.config.ViolationRule
 import java.math.BigDecimal
 
-internal object VerifierFactory {
+internal object IntellijVerifierFactory {
 
     fun buildVerifiers(
         projectData: ProjectData,
         violationRuleConfig: CoverageRulesConfig,
     ): Iterable<CoverageVerifier> {
-        return violationRuleConfig.entitiesRules
-            .asSequence()
-            .filter { (_, rule) -> rule.minCoverageRatio > 0.0 }
+        return violationRuleConfig.entitiesRules.asSequence()
             .mapIndexed { index, (entity, rule) ->
-                entity.buildVerifier(index, rule)
+                entity.buildRule(index, rule)
             }
-            .map { verifierBound -> CoverageVerifier(projectData, verifierBound) }
+            .map { rule -> CoverageVerifier(projectData, rule) }
             .toList()
     }
 
-    private fun CoverageEntity.buildVerifier(
+    private fun CoverageEntity.buildRule(
         id: Int,
         violationRule: ViolationRule
     ) = CoverageRuleWithThreshold( // TODO maybe extract common part from jacoco and this one

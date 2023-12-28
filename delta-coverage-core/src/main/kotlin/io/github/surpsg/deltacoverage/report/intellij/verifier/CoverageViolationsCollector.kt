@@ -16,9 +16,12 @@ internal class CoverageViolationsCollector(
     val violations: List<CoverageVerifier.Violation> = foundViolations
 
     override fun consume(name: String, coverage: Verifier.CollectedCoverage) {
-        val counter: Verifier.CollectedCoverage.Counter = rule.counter.toVerifierType().getCounter(coverage)
+        val counter: Verifier.CollectedCoverage.Counter = rule.coverageEntity.toVerifierType().getCounter(coverage)
 
-        val violationResolveContext: ViolationResolveContext = buildViolationResolveContext(counter, rule.counter)
+        val violationResolveContext: ViolationResolveContext = buildViolationResolveContext(
+            counter,
+            rule.coverageEntity
+        )
         if (violationResolveContext.isIgnoredByThreshold()) {
             log.info(
                 "Coverage violation of {} was ignored because threshold={} but total={}",
@@ -29,7 +32,7 @@ internal class CoverageViolationsCollector(
         } else {
             val actualValue: BigDecimal = rule.valueType.getValue(counter) ?: 0.0.toBigDecimal()
             foundViolations += CoverageVerifier.Violation(
-                coverageTrackType = rule.counter.name,
+                coverageTrackType = rule.coverageEntity.name,
                 expectedMinValue = rule.min.toDouble(),
                 actualValue = actualValue.toDouble()
             )

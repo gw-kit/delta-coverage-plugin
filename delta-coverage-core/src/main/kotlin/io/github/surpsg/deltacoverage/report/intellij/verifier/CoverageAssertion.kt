@@ -12,7 +12,7 @@ internal object CoverageAssertion {
         projectData: ProjectData,
         coverageRulesConfig: CoverageRulesConfig
     ) {
-        val violations: List<String> = VerifierFactory
+        val violations: List<String> = IntellijVerifierFactory
             .buildVerifiers(projectData, coverageRulesConfig)
             .flatMap { coverageVerifier -> coverageVerifier.verify() }
             .map { it.buildCoverageViolatedMessage() }

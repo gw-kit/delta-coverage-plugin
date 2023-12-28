@@ -21,7 +21,7 @@ internal fun reportFactory(
         reportContext.codeUpdateInfo,
         Violations(
             reportContext.deltaCoverageConfig.coverageRulesConfig.failOnViolation,
-            reportContext.deltaCoverageConfig.coverageRulesConfig.buildRules()
+            JacocoVerifierFactory.buildRules(reportContext.deltaCoverageConfig.coverageRulesConfig)
         )
     )
 

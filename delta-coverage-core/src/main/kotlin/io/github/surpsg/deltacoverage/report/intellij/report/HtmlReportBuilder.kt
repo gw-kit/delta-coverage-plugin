@@ -5,7 +5,7 @@ import io.github.surpsg.deltacoverage.config.ReportsConfig
 import java.io.File
 
 internal class HtmlReportBuilder(
-    private val reportName: String,
+    val reportName: String,
     reportsConfig: ReportsConfig,
     reportBound: ReportBound,
     reporter: Reporter,

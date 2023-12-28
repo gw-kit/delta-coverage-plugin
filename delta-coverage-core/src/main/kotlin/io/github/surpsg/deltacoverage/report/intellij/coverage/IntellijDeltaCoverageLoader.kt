@@ -16,7 +16,6 @@ import com.intellij.rt.coverage.util.classFinder.ClassPathEntry
 import io.github.surpsg.deltacoverage.diff.ClassModifications
 import io.github.surpsg.deltacoverage.diff.CodeUpdateInfo
 import io.github.surpsg.deltacoverage.diff.parse.ClassFile
-import java.io.IOException
 
 internal object IntellijDeltaCoverageLoader {
 
@@ -38,11 +37,7 @@ internal object IntellijDeltaCoverageLoader {
         }
         for (report in binaryCoverageReports) {
             if (report.isRawHitsReport) {
-                try {
-                    RawReportLoader.load(report.dataFile, projectDataCopy)
-                } catch (e: IOException) {
-                    throw RuntimeException(e)
-                }
+                RawReportLoader.load(report.dataFile, projectDataCopy)
             } else {
                 val data = ProjectDataLoader.load(report.dataFile).apply {
                     setInstructionsCoverage(true)
