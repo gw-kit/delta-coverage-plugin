@@ -55,12 +55,18 @@ open class DeltaCoverageTask @Inject constructor(
 
     @OutputDirectory
     fun getOutputDir(): File {
-        return getReportOutputDir().apply {
+        val reportOutputDir: File = getReportOutputDir()
+        if (log.isDebugEnabled) {
             log.debug(
-                "Delta Coverage output dir: $absolutePath, " +
-                        "exists=${exists()}, isDir=$isDirectory, canRead=${canRead()}, canWrite=${canWrite()}"
+                "Delta Coverage output dir: {}, exists={}, isDir={}, canRead={}, canWrite={}",
+                reportOutputDir.absolutePath,
+                reportOutputDir.exists(),
+                reportOutputDir.isDirectory,
+                reportOutputDir.canRead(),
+                reportOutputDir.canWrite(),
             )
         }
+        return reportOutputDir
     }
 
     @TaskAction

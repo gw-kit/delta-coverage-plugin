@@ -12,11 +12,11 @@ internal object JacocoVerifierFactory {
         violationRuleConfig: CoverageRulesConfig,
     ): List<Rule> {
         val limits: List<Limit> = violationRuleConfig.entitiesRules.asSequence()
-            .map { (coverageEntity, minCoverage) ->
+            .map { (coverageEntity, violationRule) ->
                 val jacocoEntity: ICoverageNode.CounterEntity = coverageEntity.toJacocoEntity()
                 Limit().apply {
                     setCounter(jacocoEntity.name)
-                    minimum = minCoverage.toString()
+                    minimum = violationRule.minCoverageRatio.toString()
                 }
             }
             .toList()
