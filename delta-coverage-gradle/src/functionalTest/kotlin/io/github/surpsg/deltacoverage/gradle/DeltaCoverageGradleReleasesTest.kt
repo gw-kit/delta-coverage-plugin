@@ -26,9 +26,8 @@ class DeltaCoverageGradleReleasesTest {
         strings = [
             "5.6",
             "6.7.1",
-            "7.4.2",
-            "8.0",
-            "8.4", // the latest Gradle version here
+            "7.6.3",
+            "8.5", // the latest Gradle version here
         ]
     )
     fun `deltaCoverage task should be completed successfully on Gradle release`(
