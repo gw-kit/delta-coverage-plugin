@@ -63,6 +63,16 @@ Auto-applying of JaCoCo plugin could be disabled by adding property to `gradle.p
 io.github.surpsg.delta-coverage.auto-apply-jacoco=false
 ```
 
+### Coverage engine
+
+Delta Coverage plugin uses supports both JaCoCo and Intellij coverage engines.
+- [JaCoCo](https://github.com/jacoco/jacoco) is standard coverage engine for JVM projects.
+- [Intellij coverage](https://github.com/JetBrains/intellij-coverage) is coverage engine that used by default in Intellij IDE.
+  Intellij coverage could be applied to your Gradle project by applying [Kover](https://github.com/Kotlin/kotlinx-kover) plugin.
+  Intellij coverage is better choice for **Kotlin** projects.
+
+See section below to configure coverage engine.
+
 ### Delta Coverage report configuration
 
 <details open>
@@ -108,6 +118,8 @@ plugins {
 }
 
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
+    coverage.engine = CoverageEngine.INTELLIJ // See parameters description for more info
+    
     git.compareWith("refs/remotes/origin/main")
 
     violationRules.failIfCoverageLessThan(0.9)
@@ -133,25 +145,34 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
 ## Parameters description
 ```groovy
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-    diffSource { // Required. Only one of `file`, `url` or git must be spesified
-        //  Path to diff file 
+    coverage {
+        engine = CoverageEngine.JACOCO // Required. Default is 'JACOCO'. Could be set to INTELLIJ engine.
+        autoApplyPlugin = true // Required. Default is 'true'. If 'true' then the corresponding coverage engine plugin is applied to a project and all it's subprojects.
+    }
+    diffSource { // Required. Only one of `file`, `url` or git must be specified.
+        //  Path to diff file.
         file.set(file("path/to/file.diff")) 
         
-        // URL to retrieve diff by
+        // URL to retrieve diff by.
         url.set("http://domain.com/file.diff") 
         
-        // Compares current HEAD and all uncommited with provided branch, revision or tag 
+        // Compares current HEAD and all uncommited with provided branch, revision or tag.
         git.compareWith.set("refs/remotes/origin/develop")
     }
 
-    // Required. By default exec files are taken from jacocoTestReport configuration if any
-    jacocoExecFiles = files("/path/to/jacoco/exec/file.exec")
-    // Required. By default sources are taken from jacocoTestReport configuration if any
+    // Required. 
+    // For JaCoCo engine: by default '.exec' coverage binary files are configured from jacoco plugin.
+    // For Intellij engine: by default '.ic' coverage binary files are configured from kover plugin.
+    coverageBinaryFiles = files("/path/to/jacoco/exec/file.exec")
+    
+    // Required. By default sources are taken from jacoco plugin(or intellij) if the plugin is applied to a project.
     srcDirs = files("/path/to/sources")
-    // Required. By default classes are taken from jacocoTestReport configuration if any
+    
+    // Required. By default classes are taken from jacoco plugin(or intellij) if the plugin is applied to a project.
     classesDirs = files("/path/to/compiled/classes")
 
-    excludeClasses.value(listOf[ // Optional. Excludes classes from coverage report by set of patterns 
+    // Optional. Excludes classes from coverage report by set of patterns .
+    excludeClasses.value(listOf[ 
             "*/com/package/ExcludeClass.class", // Excludes class "com.package.ExcludeClass"
             "**/com/package/**/ExcludeClass.class", // Excludes classes like "com.package.ExcludeClass", "com.package.sub1.sub2.ExcludeClass", etc.
             "**/ExcludeClass$NestedClass.class", // Excludes nested class(es) "<any-package>.ExcludeClass.NestedClass"
@@ -209,7 +230,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
 
 ## Gradle task description
 The plugin adds a task `deltaCoverage` that has no dependencies
-  * loads code coverage data specified by `deltaCoverageReport.jacocoExecFiles`
+  * loads code coverage data specified by `deltaCoverageReport.coverageBinaryFiles`
   * analyzes the coverage data and filters according to `diffSource.url`/`diffSource.file`
   * generates html report(if enabled: `reports.html = true`) to directory `reports.baseReportsDir`
   * checks coverage ratio if `violationRules` is specified. 

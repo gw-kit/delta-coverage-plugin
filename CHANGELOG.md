@@ -1,11 +1,29 @@
 # Delta-Coverage Gradle plugin Changelog
 
-# <NEXT-RELEASE>
-### Changed
-- Min supported Gradle version is **5.6**
+## <NEXT-RELEASE>
+### Added
+- Added support of [Intellij coverage](https://github.com/JetBrains/intellij-coverage).
 
 ### Breaking changes
-- Base report directory is changed from `build/reports/jacoco/deltaCoverage` to `build/reports/coverage-reports`
+- Base report directory is changed from `build/reports/jacoco/deltaCoverage` to `build/reports/coverage-reports`.
+- `jacocoExecFiles` property of `DeltaCoverageConfiguration` extension is renamed to `coverageBinaryFiles`.
+- Now auto-applying of JaCoCo(or Kover) plugin is configured via the Delta Coverage plugin extension:
+  ```kts
+  // kotlin gradle dsl 
+  configure<DeltaCoverageConfiguration> {
+    coverage {
+        engine = CoverageEngine.JACOCO // Default is 'JACOCO'.
+        autoApplyPlugin = true // Default is 'true'.
+    } 
+  }
+  ```
+  Auto-applying via a project property `io.github.surpsg.delta-coverage.auto-apply-jacoco` is removed.
+
+### Changed
+- Min supported Gradle version is **5.6**.
+
+### Dependency updates
+- Official support of Gradle **8.5**.
 
 ## 1.3.0
 ### Dependency updates
