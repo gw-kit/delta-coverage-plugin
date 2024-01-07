@@ -1,5 +1,5 @@
 plugins {
-    `jacoco`
+    jacoco
 }
 
 tasks.register<JacocoReport>("jacocoRootReport") {

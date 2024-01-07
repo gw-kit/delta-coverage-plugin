@@ -3,8 +3,8 @@ plugins {
 }
 
 rootProject.name = "delta-coverage-gradle-plugin"
-include("jacoco-filtering-extension")
-include("delta-coverage")
+include("delta-coverage-core")
+include("delta-coverage-gradle")
 
 dependencyResolutionManagement {
     versionCatalogs {
