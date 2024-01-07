@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle.kover
 
+import io.github.surpsg.deltacoverage.gradle.TestProjects
 import io.github.surpsg.deltacoverage.gradle.assertOutputContainsStrings
 import io.github.surpsg.deltacoverage.gradle.runDeltaCoverageTask
 import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
@@ -17,7 +18,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
-@GradlePluginTest("kover-single-module", kts = true)
+@GradlePluginTest(TestProjects.SINGLE_MODULE, kts = true)
 class KoverReportsTest {
 
     @RootProjectDir
@@ -44,8 +45,11 @@ class KoverReportsTest {
         buildFile.file.appendText(
             """
             configure<DeltaCoverageConfiguration> {
-                coverageEngine = CoverageEngine.INTELLIJ
-                diffSource.file.set("$diffFilePath")
+                coverage {
+                    engine = CoverageEngine.INTELLIJ
+                    autoApplyPlugin = true
+                }
+                diffSource.file = "$diffFilePath"
                 reports {
                     baseReportDir.set("$baseReportDir")
                     html.set(true)
@@ -53,13 +57,6 @@ class KoverReportsTest {
                     fullCoverageReport.set(true)
                 }
             }
-        """.trimIndent()
-        )
-
-        // disable jacoco auto-apply
-        rootProjectDir.resolve("gradle.properties").appendText(
-            """
-            io.github.surpsg.delta-coverage.auto-apply-jacoco=false // TODO
         """.trimIndent()
         )
 

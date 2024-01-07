@@ -34,7 +34,7 @@ internal class SourcesResolverTest {
         // GIVEN
         val expectedFile = "expected/path/$sourceType"
         val context: SourcesResolver.Context = project.sourceContext(sourceType) {
-            coverageEngine = CoverageEngine.JACOCO
+            coverage.engine.set(CoverageEngine.JACOCO)
             deltaConfigSetter.set(this, project.files(expectedFile))
         }
 
@@ -57,7 +57,7 @@ internal class SourcesResolverTest {
         // GIVEN
         val emptyFiles = project.files()
         val context: SourcesResolver.Context = project.sourceContext(sourceType) {
-            coverageEngine = CoverageEngine.JACOCO
+            coverage.engine.set(CoverageEngine.JACOCO)
             deltaConfigSetter.set(this, emptyFiles)
         }
 
@@ -80,7 +80,7 @@ internal class SourcesResolverTest {
     ) {
         // GIVEN
         val context: SourcesResolver.Context = project.sourceContext(sourceType) {
-            coverageEngine = CoverageEngine.JACOCO
+            coverage.engine.set(CoverageEngine.JACOCO)
         }
 
         // WHEN // THEN
@@ -107,7 +107,7 @@ internal class SourcesResolverTest {
             executionData.setFrom(project.files())
         }
         val context: SourcesResolver.Context = project.sourceContext(sourceType) {
-            coverageEngine = CoverageEngine.JACOCO
+            coverage.engine.set(CoverageEngine.JACOCO)
         }
 
         // WHEN // THEN

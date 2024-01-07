@@ -6,13 +6,11 @@ plugins {
     java
     kotlin("jvm") version "1.9.10"
     id("io.github.surpsg.delta-coverage")
-    id("org.jetbrains.kotlinx.kover") version "0.7.4"
 }
 
 repositories {
     mavenCentral()
 }
-
 
 subprojects {
     apply(plugin = "java")

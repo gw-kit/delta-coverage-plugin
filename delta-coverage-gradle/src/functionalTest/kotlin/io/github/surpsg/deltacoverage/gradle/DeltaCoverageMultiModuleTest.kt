@@ -33,12 +33,14 @@ class DeltaCoverageMultiModuleTest {
 
     @Test
     fun `delta-coverage should automatically collect jacoco configuration from submodules in multimodule project`() {
-        // setup
+        // GIVEN
         val baseReportDir = "build/custom/"
         buildFile.file.appendText(
             """
             
             deltaCoverageReport {
+                coverage.engine.set(CoverageEngine.JACOCO)
+            
                 diffSource.file.set('$diffFilePath')
                 reports {
                     html.set(true)
@@ -49,9 +51,9 @@ class DeltaCoverageMultiModuleTest {
         """.trimIndent()
         )
 
-        // run // assert
+        // WHEN // THEN
         gradleRunner
-            .runDeltaCoverageTaskAndFail()
+            .runDeltaCoverageTaskAndFail(printLogs = true)
             .assertOutputContainsStrings(
                 "Fail on violations: true. Found violations: 1.",
                 "Rule violated for bundle ${TestProjects.MULTI_MODULE}: " +
@@ -66,31 +68,40 @@ class DeltaCoverageMultiModuleTest {
     }
 
     @Test
-    fun `delta-coverage plugin should auto-apply jacoco to project and subprojects`() {
-        // setup
-        val expectedCoverageRatio = 0.8
-        buildFile.file.writeText(rootBuildScriptWithoutJacocoPlugin(expectedCoverageRatio))
-
-        // run // assert
-        gradleRunner
-            .runDeltaCoverageTaskAndFail()
-            .assertOutputContainsStrings(
-                "Fail on violations: true. Found violations: 1.",
-                "Rule violated for bundle ${TestProjects.MULTI_MODULE}: " +
-                        "branches covered ratio is 0.5, but expected minimum is $expectedCoverageRatio"
-            )
-    }
-
-    @Test
-    fun `delta-coverage plugin should not apply jacoco plugin if jacoco auto-apply is disabled`() {
-        // setup
-        buildFile.file.writeText(rootBuildScriptWithoutJacocoPlugin(1.0))
-
-        // disable jacoco auto-apply
-        rootProjectDir.resolve("gradle.properties").appendText(
+    fun `deltaCoverage task should pass if coverage engine auto-apply disabled and jacoco applied manually`() {
+        // GIVEN
+        buildFile.file.writeText(
             """
-            io.github.surpsg.delta-coverage.auto-apply-jacoco=false
-        """.trimIndent()
+                plugins {
+                    id 'java'
+                    id 'io.github.surpsg.delta-coverage'
+                }
+                repositories {
+                    mavenCentral()
+                }
+                subprojects {
+                    apply plugin: 'java'
+                    repositories {
+                        mavenCentral()
+                    }
+                    tasks.withType(Test) {
+                        useJUnitPlatform()
+                    }
+                
+                    dependencies {
+                        testImplementation(platform("org.junit:junit-bom:5.10.0"))
+                        testImplementation("org.junit.jupiter:junit-jupiter")
+                    }
+                }
+                deltaCoverageReport {
+                    coverage {
+                        engine.set(io.github.surpsg.deltacoverage.CoverageEngine.JACOCO)
+                        autoApplyPlugin.set(false)
+                    }
+                    diffSource.file.set('$diffFilePath')
+                    violationRules.failIfCoverageLessThan 1.0
+                }
+            """.trimIndent()
         )
 
         // manually apply jacoco only to 'module1'
@@ -101,36 +112,7 @@ class DeltaCoverageMultiModuleTest {
         """.trimIndent()
         )
 
-        // run // assert
+        // WHEN // THEN
         gradleRunner.runDeltaCoverageTask()
     }
-
-    private fun rootBuildScriptWithoutJacocoPlugin(expectedCoverageRatio: Double) = """
-        plugins {
-            id 'java'
-            id 'io.github.surpsg.delta-coverage'
-        }
-        repositories {
-            mavenCentral()
-        }
-        subprojects {
-            apply plugin: 'java'
-            repositories {
-                mavenCentral()
-            }
-            tasks.withType(Test) {
-                useJUnitPlatform()
-            }
-        
-            dependencies {
-                testImplementation(platform("org.junit:junit-bom:5.10.0"))
-                testImplementation("org.junit.jupiter:junit-jupiter")
-            }
-        }
-        deltaCoverageReport {
-            diffSource.file.set('$diffFilePath')
-            violationRules.failIfCoverageLessThan $expectedCoverageRatio
-        }
-    """.trimIndent()
-
 }

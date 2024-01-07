@@ -1,5 +1,6 @@
 [versions]
 intellijCoverageVer = "1.0.716"
+koverVer = "0.7.5"
 jacocoVer = "0.8.11"
 httpClientVer = "5.1.3"
 jgitVer = "5.12.0.202106070339-r"
@@ -7,6 +8,7 @@ jgitVer = "5.12.0.202106070339-r"
 junitVer = "5.8.2"
 mockkVer = "1.12.3"
 kotestVer = "5.5.5"
+jimfsVer = "1.3.0"
 
 [libraries]
 # Kotlin
@@ -19,6 +21,7 @@ jacocoTestkit = { module = "pl.droidsonroids.gradle.jacoco:pl.droidsonroids.grad
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.22.0" }
 
 # Project deps
+koverPlugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "koverVer" }
 intellijCoverage = { module = "org.jetbrains.intellij.deps:intellij-coverage-reporter", version.ref = "intellijCoverageVer" }
 jacocoCore = { module = "org.jacoco:org.jacoco.core", version.ref = "jacocoVer" }
 jacocoReport = { module = "org.jacoco:org.jacoco.report", version.ref = "jacocoVer" }
@@ -33,6 +36,7 @@ assertj = { module = "org.assertj:assertj-core", version = "3.20.2" }
 kotestRunnerJunit5 = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotestVer" }
 kotestAssertions = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotestVer" }
 kotestProperty = { module = "io.kotest:kotest-property-jvm", version.ref = "kotestVer" }
+jimFs = { module = "com.google.jimfs:jimfs", version.ref = "jimfsVer" }
 
 [plugins]
 shadowPlugin = { id = "com.github.johnrengelman.shadow", version = "7.1.2" }

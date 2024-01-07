@@ -85,7 +85,7 @@ open class DeltaCoverageTask @Inject constructor(
         DeltaReportFacadeFactory
             .buildFacade(
                 rootProjectDirProperty.get().asFile,
-                deltaCoverageConfigProperty.get().coverageEngine,
+                deltaCoverageConfigProperty.get().coverage.engine.get(),
                 deltaCoverageConfig
             )
             .saveDiffTo(reportDir) { diffFile ->

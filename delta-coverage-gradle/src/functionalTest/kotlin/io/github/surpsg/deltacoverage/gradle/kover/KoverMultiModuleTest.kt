@@ -44,8 +44,8 @@ class KoverMultiModuleTest {
         buildFile.file.appendText(
             """
             configure<DeltaCoverageConfiguration> {
-                coverageEngine = CoverageEngine.INTELLIJ
-                diffSource.file.set("$diffFilePath")
+                coverage.engine = CoverageEngine.INTELLIJ
+                diffSource.file = "$diffFilePath"
                 reports {
                     html.set(true)
                     baseReportDir.set("$baseReportDir")
@@ -55,13 +55,6 @@ class KoverMultiModuleTest {
                     failOnViolation.set(false)
                 }
             }
-        """.trimIndent()
-        )
-
-        // disable jacoco auto-apply
-        rootProjectDir.resolve("gradle.properties").appendText(
-            """
-            io.github.surpsg.delta-coverage.auto-apply-jacoco=false // TODO
         """.trimIndent()
         )
 

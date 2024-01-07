@@ -86,7 +86,7 @@ internal class SourcesResolver {
             get() = builder.config
 
         val provider: Provider
-            get() = Provider.fromEngine(builder.config.coverageEngine)
+            get() = Provider.fromEngine(builder.config.coverage.engine.get())
 
         class Builder private constructor(
             private val objectFactory: ObjectFactory,
@@ -98,7 +98,7 @@ internal class SourcesResolver {
                 sourceType: SourceType
             ): Context {
                 val sourceAutoLookup = SourcesAutoLookup.build(
-                    config.coverageEngine,
+                    config.coverage.engine.get(),
                     SourcesAutoLookup.Context(project, config, objectFactory)
                 )
                 return Context(sourceAutoLookup, sourceType, this)

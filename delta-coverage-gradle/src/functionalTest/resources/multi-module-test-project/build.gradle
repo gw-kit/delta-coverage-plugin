@@ -1,6 +1,7 @@
+import io.github.surpsg.deltacoverage.CoverageEngine
+
 plugins {
     id 'java'
-    id 'jacoco'
     id 'io.github.surpsg.delta-coverage'
 }
 
@@ -13,7 +14,6 @@ repositories {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'jacoco'
 
     sourceCompatibility = 1.8
 

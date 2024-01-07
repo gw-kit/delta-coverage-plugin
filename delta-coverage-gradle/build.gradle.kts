@@ -32,19 +32,18 @@ repositories {
 
 dependencies {
     implementation(project(":delta-coverage-core"))
-    implementation("org.jetbrains.kotlinx:kover-gradle-plugin:0.7.3")
+    implementation(deps.koverPlugin)
 
     testImplementation(gradleApi()) // required to add this dependency explicitly after applying shadowJar plugin
-    testImplementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10")
-    testImplementation("org.jetbrains.kotlinx:kover-gradle-plugin:0.7.3")
-    testImplementation("com.google.jimfs:jimfs:1.3.0")
+    testImplementation(deps.kotlinJvm)
+    implementation(deps.jimFs)
 
     functionalTestImplementation(project(":delta-coverage-gradle"))
-    functionalTestImplementation(deps.jgit)
     functionalTestImplementation(testFixtures(project))
+    functionalTestImplementation(deps.jgit)
 
+    testFixturesImplementation(project(":delta-coverage-core"))
     testFixturesImplementation(deps.assertj)
     testFixturesImplementation(deps.junitApi)
     testFixturesImplementation(deps.jgit)
-    testFixturesImplementation(project(":delta-coverage-core"))
 }

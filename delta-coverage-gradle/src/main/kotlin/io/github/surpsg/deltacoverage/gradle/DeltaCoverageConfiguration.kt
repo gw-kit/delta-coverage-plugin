@@ -1,6 +1,11 @@
 package io.github.surpsg.deltacoverage.gradle
 
 import io.github.surpsg.deltacoverage.CoverageEngine
+import io.github.surpsg.deltacoverage.gradle.utils.booleanProperty
+import io.github.surpsg.deltacoverage.gradle.utils.doubleProperty
+import io.github.surpsg.deltacoverage.gradle.utils.map
+import io.github.surpsg.deltacoverage.gradle.utils.new
+import io.github.surpsg.deltacoverage.gradle.utils.stringProperty
 import org.gradle.api.Action
 import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
@@ -18,8 +23,8 @@ open class DeltaCoverageConfiguration @Inject constructor(
     objectFactory: ObjectFactory,
 ) {
 
-    @Input
-    var coverageEngine: CoverageEngine = CoverageEngine.JACOCO
+    @Nested
+    val coverage: Coverage = objectFactory.new<Coverage>()
 
     @Optional
     @InputFiles
@@ -45,7 +50,9 @@ open class DeltaCoverageConfiguration @Inject constructor(
     val reportConfiguration: ReportsConfiguration = ReportsConfiguration(objectFactory)
 
     @Nested
-    val violationRules: ViolationRules = objectFactory.newInstance(ViolationRules::class.java)
+    val violationRules: ViolationRules = objectFactory.new<ViolationRules>()
+
+    fun coverage(action: Action<in Coverage>): Unit = action.execute(coverage)
 
     fun reports(action: Action<in ReportsConfiguration>) {
         action.execute(reportConfiguration)
@@ -61,7 +68,7 @@ open class DeltaCoverageConfiguration @Inject constructor(
 
     override fun toString(): String {
         return "DeltaCoverageConfiguration(" +
-                "coverageEngine=$coverageEngine, " +
+                "coverageEngine=${coverage.engine.get()}, " +
                 "coverageBinaryFiles=$coverageBinaryFiles, " +
                 "classesDirs=$classesDirs, " +
                 "srcDirs=$srcDirs, " +
@@ -70,6 +77,17 @@ open class DeltaCoverageConfiguration @Inject constructor(
                 "reportConfiguration=$reportConfiguration, " +
                 "violationRules=$violationRules)"
     }
+}
+
+open class Coverage @Inject constructor(
+    objectFactory: ObjectFactory,
+) {
+    @Input
+    val engine: Property<CoverageEngine> = objectFactory.property(CoverageEngine::class.java)
+        .convention(CoverageEngine.JACOCO)
+
+    @Input
+    val autoApplyPlugin: Property<Boolean> = objectFactory.booleanProperty(true)
 }
 
 open class DiffSourceConfiguration(
@@ -131,7 +149,7 @@ open class ReportsConfiguration(
             "html=${html.get()}, " +
             "xml=${xml.get()}, " +
             "csv=${csv.get()}, " +
-            "baseReportDir='${baseReportDir.get()}'"
+            "baseReportDir='${baseReportDir.get()}')"
 }
 
 enum class CoverageEntity {
@@ -149,8 +167,8 @@ open class ViolationRules @Inject constructor(
 
     init {
         rules.putAll(
-            CoverageEntity.values().associateWith {
-                objectFactory.newInstance(ViolationRule::class.java)
+            CoverageEntity.entries.associateWith {
+                objectFactory.new<ViolationRule>()
             }
         )
     }
@@ -302,24 +320,3 @@ open class ViolationRule @Inject constructor(
                 "entityCountThreshold=${entityCountThreshold.orNull})"
     }
 }
-
-private fun ObjectFactory.booleanProperty(default: Boolean): Property<Boolean> {
-    return property(Boolean::class.javaObjectType).convention(default)
-}
-
-private fun ObjectFactory.doubleProperty(default: Double): Property<Double> {
-    return property(Double::class.javaObjectType).convention(default)
-}
-
-private fun ObjectFactory.stringProperty(default: String): Property<String> {
-    return property(String::class.javaObjectType).convention(default)
-}
-
-private fun ObjectFactory.stringProperty(default: () -> String): Property<String> {
-    return property(String::class.javaObjectType).convention(
-        default()
-    )
-}
-
-private inline fun <reified K, reified V> ObjectFactory.map(): MapProperty<K, V> =
-    mapProperty(K::class.java, V::class.java)

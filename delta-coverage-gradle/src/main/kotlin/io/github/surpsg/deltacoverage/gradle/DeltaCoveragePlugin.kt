@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle
 
+import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply
 import io.github.surpsg.deltacoverage.gradle.sources.SourceType
 import io.github.surpsg.deltacoverage.gradle.sources.SourcesResolver
 import io.github.surpsg.deltacoverage.gradle.sources.lookup.KoverPluginSourcesLookup
@@ -14,16 +15,13 @@ import org.slf4j.LoggerFactory
 open class DeltaCoveragePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-
-        if (project.isAutoApplyJacocoEnabled()) {
-            autoApplyJacocoPlugin(project)
-        }
-
         val deltaCoverageConfig: DeltaCoverageConfiguration = project.extensions.create(
             DELTA_COVERAGE_REPORT_EXTENSION,
             DeltaCoverageConfiguration::class.java,
             project.objects
         )
+
+        CoverageEngineAutoApply().apply(project, deltaCoverageConfig)
 
         project.tasks.create(DELTA_COVERAGE_TASK, DeltaCoverageTask::class.java) { deltaCoverageTask ->
             with(deltaCoverageTask) {
@@ -76,28 +74,9 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         }
     }
 
-    private fun autoApplyJacocoPlugin(project: Project) {
-        val jacocoApplied: Boolean = project.allprojects.any {
-            it.pluginManager.hasPlugin(JACOCO_PLUGIN)
-        }
-        if (!jacocoApplied) {
-            project.allprojects.forEach {
-                log.info("Auto-applying $JACOCO_PLUGIN plugin to project '{}'", it.name)
-                it.pluginManager.apply(JACOCO_PLUGIN)
-            }
-        }
-    }
-
-    private fun Project.isAutoApplyJacocoEnabled(): Boolean {
-        val autoApplyValue = project.properties.getOrDefault(AUTO_APPLY_JACOCO_PROPERTY_NAME, "true")!!
-        return autoApplyValue.toString().toBoolean()
-    }
-
     companion object {
-        const val AUTO_APPLY_JACOCO_PROPERTY_NAME = "io.github.surpsg.delta-coverage.auto-apply-jacoco"
         const val DELTA_COVERAGE_REPORT_EXTENSION = "deltaCoverageReport"
         const val DELTA_COVERAGE_TASK = "deltaCoverage"
-        const val JACOCO_PLUGIN = "jacoco"
 
         val DELTA_TASK_DEPENDENCIES = setOf(
             JavaPlugin.CLASSES_TASK_NAME,
@@ -105,5 +84,4 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         )
         val log: Logger = LoggerFactory.getLogger(DeltaCoveragePlugin::class.java)
     }
-
 }
