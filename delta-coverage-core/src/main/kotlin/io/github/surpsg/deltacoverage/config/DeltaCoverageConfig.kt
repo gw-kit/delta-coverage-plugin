@@ -150,6 +150,7 @@ class ReportsConfig private constructor(
     class Builder internal constructor() {
         var html: ReportConfig = ReportConfig {}
         var xml: ReportConfig = ReportConfig {}
+        @Deprecated(message = "This property will be removed in the next major release.")
         var csv: ReportConfig = ReportConfig {}
         var baseReportDir: String = ""
         var fullCoverageReport: Boolean = false

@@ -18,6 +18,12 @@
   }
   ```
   Auto-applying via a project property `io.github.surpsg.delta-coverage.auto-apply-jacoco` is removed.
+- Removed deprecated properties from `DeltaCoverageConfiguration` extension:
+  - `minLines`
+  - `minBranches`
+  - `minInstructions`
+  See README for the new API.
+  
 
 ### Changed
 - Min supported Gradle version is **5.6**.

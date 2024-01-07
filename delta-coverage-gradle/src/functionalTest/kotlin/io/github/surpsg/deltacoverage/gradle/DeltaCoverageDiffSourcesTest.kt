@@ -41,8 +41,10 @@ class DeltaCoverageDiffSourcesTest {
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
                 violationRules {
-                    minInstructions.set(1d)
                     failOnViolation.set(true)
+                    rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.INSTRUCTION) {
+                        minCoverageRatio.set(1d)
+                    }
                 }
             }
             """.trimIndent()
@@ -64,7 +66,9 @@ class DeltaCoverageDiffSourcesTest {
             deltaCoverageReport {
                 diffSource.url.set('http://localhost:${MOCK_SERVER_PORT}/')
                 violationRules {
-                    minInstructions.set(1d)
+                    rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.INSTRUCTION) {
+                        minCoverageRatio.set(1d)
+                    }
                     failOnViolation.set(true)
                 }
             }

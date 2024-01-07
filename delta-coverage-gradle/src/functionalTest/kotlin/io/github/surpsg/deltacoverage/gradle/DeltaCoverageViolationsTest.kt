@@ -81,10 +81,16 @@ class DeltaCoverageViolationsTest {
                         baseReportDir.set('$absolutePathBaseReportDir')
                     }
                     violationRules {
-                        minBranches.set(0.6d)
-                        minLines.set(0.7d)
-                        minInstructions.set(0.8d)
                         failOnViolation.set(true)
+                        rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.LINE) {
+                            minCoverageRatio.set(0.7d)
+                        }
+                        rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.INSTRUCTION) {
+                            minCoverageRatio.set(0.8d)
+                        }
+                        rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.BRANCH) {
+                            minCoverageRatio.set(0.6d)
+                        }
                     }
                 }
             """.trimIndent()

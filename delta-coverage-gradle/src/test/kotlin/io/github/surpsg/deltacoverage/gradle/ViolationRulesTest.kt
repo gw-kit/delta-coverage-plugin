@@ -1,16 +1,18 @@
 package io.github.surpsg.deltacoverage.gradle
 
 import io.kotest.assertions.assertSoftly
-import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.comparables.shouldBeEqualComparingTo
+import io.kotest.matchers.maps.shouldContainKey
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.jupiter.api.Test
 
-class ViolationRulesTest : StringSpec({
+class ViolationRulesTest {
 
-    val project: Project = ProjectBuilder.builder().build()
+    private val project: Project = ProjectBuilder.builder().build()
 
-    "failOnCoverageLessThan should set all coverage values to a single value and set failOnViolation=true" {
+    @Test
+    fun `failOnCoverageLessThan should set all coverage values to a single value and failOnViolation is set to true`() {
         val expectedCoverage = 0.9
         val actualViolationRules = ViolationRules(project.objects).apply {
             failIfCoverageLessThan(expectedCoverage)
@@ -18,9 +20,12 @@ class ViolationRulesTest : StringSpec({
 
         assertSoftly {
             actualViolationRules.failOnViolation.get() shouldBeEqualComparingTo true
-            actualViolationRules.minBranches.get() shouldBeEqualComparingTo expectedCoverage
-            actualViolationRules.minInstructions.get() shouldBeEqualComparingTo expectedCoverage
-            actualViolationRules.minLines.get() shouldBeEqualComparingTo expectedCoverage
+
+            val allRules: MutableMap<CoverageEntity, ViolationRule> = actualViolationRules.rules.get()
+            CoverageEntity.entries.forEach { coverageEntity ->
+                allRules shouldContainKey coverageEntity
+                allRules.getValue(coverageEntity).minCoverageRatio.get() shouldBeEqualComparingTo expectedCoverage
+            }
         }
     }
-})
+}
