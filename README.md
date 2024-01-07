@@ -127,7 +127,6 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     reports {
         html.set(true)
         xml.set(true)
-        csv.set(true)
     }
 }
 ```  
@@ -183,7 +182,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     reports {
         html.set(true) // Optional. default `false`
         xml.set(true) // Optional. default `false`
-        csv.set(true) // Optional. default `false`
+        csv.set(true) // [Deprecated]. Optional. default `false`
         reportDir.set("dir/to/store/reports") // Optional. Default 'build/reports/coverage-reports'
     }
 

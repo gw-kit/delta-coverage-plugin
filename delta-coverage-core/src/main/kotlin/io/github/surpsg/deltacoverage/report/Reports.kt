@@ -33,7 +33,10 @@ data class JacocoReport(
 )
 
 enum class ReportType {
-    HTML, XML, CSV
+    HTML,
+    XML,
+    @Deprecated("CSV will be removed soon.")
+    CSV,
 }
 
 data class Violations(

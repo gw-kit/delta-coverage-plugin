@@ -21,6 +21,7 @@
 
 ### Changed
 - Min supported Gradle version is **5.6**.
+- CSV report generation is deprecated and will be removed in the next major release.
 
 ### Dependency updates
 - Official support of Gradle **8.5**.

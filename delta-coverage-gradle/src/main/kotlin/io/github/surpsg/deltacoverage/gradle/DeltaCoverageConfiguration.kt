@@ -134,6 +134,7 @@ open class ReportsConfiguration(
     @Input
     val xml: Property<Boolean> = objectFactory.booleanProperty(false)
 
+    @Deprecated(message = "This property will be removed in the next major release.")
     @Input
     val csv: Property<Boolean> = objectFactory.booleanProperty(false)
 
