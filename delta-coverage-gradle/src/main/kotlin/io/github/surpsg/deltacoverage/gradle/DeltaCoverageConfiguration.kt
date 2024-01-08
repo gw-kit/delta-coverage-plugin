@@ -174,60 +174,6 @@ open class ViolationRules @Inject constructor(
         )
     }
 
-    @Deprecated(
-        message = """
-        This property will be removed in the next major release.
-        
-        Use the following syntax instead: 
-        deltaCoverageReport {
-            violationRules {
-                rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.LINE) {
-                    minCoverageRatio.set(0.7d)
-                }
-            }
-        }
-    """,
-        replaceWith = ReplaceWith("this.rule(coverageEntity, action)")
-    )
-    @Input
-    val minLines: Property<Double> = objectFactory.doubleProperty(0.0)
-
-    @Deprecated(
-        message = """
-        This property will be removed in the next major release.
-        
-        Use the following syntax instead: 
-        deltaCoverageReport {
-            violationRules {
-                rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.BRANCH) {
-                    minCoverageRatio.set(0.7d)
-                }
-            }
-        }
-    """,
-        replaceWith = ReplaceWith("this.rule(coverageEntity, action)")
-    )
-    @Input
-    val minBranches: Property<Double> = objectFactory.doubleProperty(0.0)
-
-    @Deprecated(
-        message = """
-        This property will be removed in the next major release.
-        
-        Use the following syntax instead: 
-        deltaCoverageReport {
-            violationRules {
-                rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.INSTRUCTION) {
-                    minCoverageRatio.set(0.7d)
-                }
-            }
-        }
-    """,
-        replaceWith = ReplaceWith("this.rule(coverageEntity, action)")
-    )
-    @Input
-    val minInstructions: Property<Double> = objectFactory.doubleProperty(0.0)
-
     @Input
     val failOnViolation: Property<Boolean> = objectFactory.booleanProperty(false)
 
@@ -284,25 +230,10 @@ open class ViolationRules @Inject constructor(
     fun rule(coverageEntity: CoverageEntity, action: Action<in ViolationRule>) {
         val newViolationRule: ViolationRule = rules.get().getValue(coverageEntity)
         action.execute(newViolationRule)
-
-        when (coverageEntity) {
-            CoverageEntity.INSTRUCTION -> minInstructions.set(newViolationRule.minCoverageRatio.get())
-            CoverageEntity.BRANCH -> minBranches.set(newViolationRule.minCoverageRatio.get())
-            CoverageEntity.LINE -> minLines.set(newViolationRule.minCoverageRatio.get())
-        }
     }
 
-    override fun toString(): String {
-        return "ViolationRules(" +
-                "allRules=${rules.get()}, " +
-                "failOnViolation=${failOnViolation.get()} " +
-                "Deprecated[" +
-                "minLines=${minLines.get()}, " +
-                "minBranches=${minBranches.get()}, " +
-                "minInstructions=${minInstructions.get()}]" +
-                ")"
-    }
-
+    override fun toString(): String =
+        "ViolationRules(allRules=${rules.get()}, failOnViolation=${failOnViolation.get()})"
 }
 
 open class ViolationRule @Inject constructor(

@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import javax.inject.Inject
 import io.github.surpsg.deltacoverage.gradle.CoverageEntity as GradleCoverageEntity
+import io.github.surpsg.deltacoverage.gradle.ViolationRule as GradleViolationRule
 
 open class DeltaCoverageTask @Inject constructor(
     objectFactory: ObjectFactory,
@@ -141,35 +142,28 @@ open class DeltaCoverageTask @Inject constructor(
     }
 
     private fun buildCoverageRulesConfig(diffCovConfig: DeltaCoverageConfiguration) = CoverageRulesConfig {
-        val deltaCoverageConfigRules: ViolationRules = diffCovConfig.violationRules
-        violationRules += listOf(
-            ViolationRule {
-                coverageEntity = CoverageEntity.INSTRUCTION
-                minCoverageRatio = deltaCoverageConfigRules.minInstructions.get()
-                applyNonNullableThreshold(deltaCoverageConfigRules, GradleCoverageEntity.INSTRUCTION)
-            },
-            ViolationRule {
-                coverageEntity = CoverageEntity.LINE
-                minCoverageRatio = deltaCoverageConfigRules.minLines.get()
-                applyNonNullableThreshold(deltaCoverageConfigRules, GradleCoverageEntity.LINE)
-            },
-            ViolationRule {
-                coverageEntity = CoverageEntity.BRANCH
-                minCoverageRatio = deltaCoverageConfigRules.minBranches.get()
-                applyNonNullableThreshold(deltaCoverageConfigRules, GradleCoverageEntity.BRANCH)
-            },
-        )
-        failOnViolation = deltaCoverageConfigRules.failOnViolation.get()
+        val rules: ViolationRules = diffCovConfig.violationRules
+        violationRules += rules.rules.get().map { (entity, rule) ->
+            buildCoreViolationRule(entity, rule)
+        }
+        failOnViolation = rules.failOnViolation.get()
     }
 
-    private fun ViolationRule.Builder.applyNonNullableThreshold(
-        deltaCoverageConfigRules: ViolationRules,
+    private fun buildCoreViolationRule(
         entity: GradleCoverageEntity,
-    ) {
-        deltaCoverageConfigRules.rules.get()
-            .getValue(entity)
-            .entityCountThreshold.orNull
-            ?.let { instructionThreshold -> entityCountThreshold = instructionThreshold }
+        rule: GradleViolationRule,
+    ): ViolationRule = ViolationRule {
+        coverageEntity = entity.mapToCoreCoverageEntity()
+        minCoverageRatio = rule.minCoverageRatio.get()
+        rule.entityCountThreshold.orNull?.let { threshold ->
+            entityCountThreshold = threshold
+        }
+    }
+
+    private fun GradleCoverageEntity.mapToCoreCoverageEntity(): CoverageEntity = when (this) {
+        GradleCoverageEntity.INSTRUCTION -> CoverageEntity.INSTRUCTION
+        GradleCoverageEntity.BRANCH -> CoverageEntity.BRANCH
+        GradleCoverageEntity.LINE -> CoverageEntity.LINE
     }
 
     companion object {
