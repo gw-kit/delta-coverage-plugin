@@ -2,9 +2,8 @@ package io.github.surpsg.deltacoverage.report.intellij.coverage
 
 import com.intellij.rt.coverage.data.ProjectData
 import com.intellij.rt.coverage.report.ReportLoadStrategy
+import com.intellij.rt.coverage.report.api.Filters
 import com.intellij.rt.coverage.report.data.BinaryReport
-import com.intellij.rt.coverage.report.data.Filters
-import com.intellij.rt.coverage.report.data.Module
 import io.github.surpsg.deltacoverage.report.ReportContext
 import io.github.surpsg.deltacoverage.report.intellij.report.ReportBound
 
@@ -14,11 +13,14 @@ internal object ReportLoadStrategyFactory {
 
     fun buildReportLoadStrategies(reportContext: ReportContext): Sequence<NamedReportLoadStrategy> {
         val binaryReports: List<BinaryReport> = buildBinaryReports(reportContext)
-        val modules: List<Module> = buildModules(reportContext)
+        val intellijSourceInputs = IntellijSourceInputs(
+            classesFiles = reportContext.deltaCoverageConfig.classFiles.toList(),
+            sourcesFiles = reportContext.deltaCoverageConfig.sourceFiles.toList()
+        )
 
         val filterProjectData: ProjectData = IntellijDeltaCoverageLoader.getDeltaProjectData(
             binaryReports,
-            modules,
+            intellijSourceInputs,
             reportContext.codeUpdateInfo
         )
 
@@ -26,14 +28,14 @@ internal object ReportLoadStrategyFactory {
             NamedReportLoadStrategy(
                 reportContext.deltaCoverageConfig.reportName,
                 ReportBound.DELTA_REPORT,
-                PreloadedCoverageReportLoadStrategy(filterProjectData, binaryReports, modules),
+                PreloadedCoverageReportLoadStrategy(filterProjectData, binaryReports, intellijSourceInputs),
             )
         )
         return if (reportContext.deltaCoverageConfig.reportsConfig.fullCoverageReport) {
             deltaReportLoadStrategy + NamedReportLoadStrategy(
                 FULL_COVERAGE_REPORT,
                 ReportBound.FULL_REPORT,
-                ReportLoadStrategy.RawReportLoadStrategy(binaryReports, modules, Filters.EMPTY)
+                buildRawReportLoadStrategy(binaryReports, intellijSourceInputs)
             )
         } else {
             deltaReportLoadStrategy
@@ -46,22 +48,25 @@ internal object ReportLoadStrategyFactory {
         }
     }
 
-    private fun buildModules(reportContext: ReportContext): List<Module> {
-        return listOf(
-            Module(
-                reportContext.deltaCoverageConfig.classFiles.toList(),
-                reportContext.deltaCoverageConfig.sourceFiles.toList()
-            )
-        )
-    }
-
     private class PreloadedCoverageReportLoadStrategy(
         private val coverageData: ProjectData,
         binaryReports: List<BinaryReport>,
-        modules: List<Module>
-    ) : ReportLoadStrategy(binaryReports, modules) {
-
+        intellijSourceInputs: IntellijSourceInputs
+    ) : ReportLoadStrategy(
+        binaryReports,
+        intellijSourceInputs.classesFiles,
+        intellijSourceInputs.sourcesFiles,
+    ) {
         override fun loadProjectData(): ProjectData = coverageData
     }
 
+    private fun buildRawReportLoadStrategy(
+        binaryReports: List<BinaryReport>,
+        intellijSourceInputs: IntellijSourceInputs
+    ): ReportLoadStrategy = ReportLoadStrategy.RawReportLoadStrategy(
+        binaryReports,
+        intellijSourceInputs.classesFiles,
+        intellijSourceInputs.sourcesFiles,
+        Filters.EMPTY
+    )
 }

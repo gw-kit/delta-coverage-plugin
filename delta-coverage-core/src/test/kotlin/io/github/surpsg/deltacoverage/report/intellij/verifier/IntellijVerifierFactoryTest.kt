@@ -1,7 +1,7 @@
 package io.github.surpsg.deltacoverage.report.intellij.verifier
 
 import com.intellij.rt.coverage.data.ProjectData
-import com.intellij.rt.coverage.verify.Verifier
+import com.intellij.rt.coverage.verify.api.ValueType
 import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.config.ViolationRule
@@ -38,7 +38,7 @@ class IntellijVerifierFactoryTest {
             first().rule shouldBe CoverageRuleWithThreshold(
                 id = 0,
                 coverageEntity = entity,
-                valueType = Verifier.ValueType.COVERED_RATE,
+                valueType = ValueType.COVERED_RATE,
                 min = expectedMinCoverage.toBigDecimal(),
                 threshold = expectedThreshold,
             )

@@ -1,7 +1,7 @@
 package io.github.surpsg.deltacoverage.report.intellij.verifier
 
 import com.intellij.rt.coverage.data.ProjectData
-import com.intellij.rt.coverage.verify.Verifier
+import com.intellij.rt.coverage.verify.api.ValueType
 import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.config.ViolationRule
@@ -27,7 +27,7 @@ internal object IntellijVerifierFactory {
     ) = CoverageRuleWithThreshold( // TODO maybe extract common part from jacoco and this one
         id,
         this,
-        Verifier.ValueType.COVERED_RATE,
+        ValueType.COVERED_RATE,
         BigDecimal.valueOf(violationRule.minCoverageRatio),
         violationRule.entityCountThreshold,
     )
