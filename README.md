@@ -36,7 +36,7 @@ The plugin should be applied to the **root** project.
 
 ```groovy
 plugins {
-  id("io.github.surpsg.delta-coverage") version "1.3.0"
+  id("io.github.surpsg.delta-coverage") version "2.0.0"
 }
 ```
 
@@ -48,7 +48,7 @@ plugins {
 
 ```groovy
 plugins {
-  id "io.github.surpsg.delta-coverage" version "1.3.0"
+  id "io.github.surpsg.delta-coverage" version "2.0.0"
 }
 ```
 </details>
@@ -109,7 +109,7 @@ deltaCoverageReport {
 
 ```kotlin
 plugins {
-    id("io.github.surpsg.delta-coverage") version "1.3.0"
+    id("io.github.surpsg.delta-coverage") version "2.0.0"
 }
 
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {

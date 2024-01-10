@@ -1,6 +1,6 @@
 # Delta-Coverage Gradle plugin Changelog
 
-## <NEXT-RELEASE>
+## 2.0.0
 ### Added
 - Added support of [Intellij coverage](https://github.com/JetBrains/intellij-coverage).
 
@@ -23,7 +23,6 @@
   - `minBranches`
   - `minInstructions`
   See README for the new API.
-  
 
 ### Changed
 - Min supported Gradle version is **5.6**.
@@ -31,6 +30,7 @@
 
 ### Dependency updates
 - Official support of Gradle **8.5**.
+
 
 ## 1.3.0
 ### Dependency updates
