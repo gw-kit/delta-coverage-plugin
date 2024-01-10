@@ -41,7 +41,6 @@ class KoverViolationsTest {
             configure<DeltaCoverageConfiguration> {
                 coverage.engine = CoverageEngine.INTELLIJ
                 diffSource.file = "$diffFilePath"
-                
                 violationRules failIfCoverageLessThan 1.0
             }
         """.trimIndent()
@@ -53,7 +52,7 @@ class KoverViolationsTest {
             .assertOutputContainsStrings(
                 "BRANCH: expectedMin=1.0, actual=0.5",
                 "LINE: expectedMin=1.0, actual=0.6",
-                "INSTRUCTION: expectedMin=1.0, actual=0.5"
+                "INSTRUCTION: expectedMin=1.0, actual=0.6"
             )
     }
 }

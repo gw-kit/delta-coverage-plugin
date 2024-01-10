@@ -12,7 +12,7 @@ internal class IntellijDeltaCoverageLoaderTest {
         // WHEN
         val deltaProjectData: ProjectData = IntellijDeltaCoverageLoader.getDeltaProjectData(
             emptyList(),
-            emptyList(),
+            IntellijSourceInputs(emptyList(), emptyList()),
             CodeUpdateInfo(emptyMap())
         )
 

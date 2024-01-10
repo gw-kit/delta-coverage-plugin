@@ -2,7 +2,7 @@ package io.github.surpsg.deltacoverage.report.intellij.report
 
 import com.intellij.rt.coverage.report.ReportLoadStrategy
 import com.intellij.rt.coverage.report.Reporter
-import com.intellij.rt.coverage.report.data.Filters
+import com.intellij.rt.coverage.report.api.Filters
 import io.github.surpsg.deltacoverage.config.ReportConfig
 import io.github.surpsg.deltacoverage.config.ReportsConfig
 import io.github.surpsg.deltacoverage.report.intellij.coverage.NamedReportLoadStrategy
@@ -116,6 +116,7 @@ class CoverageReportFactoryTest {
         reportName = REPORT_NAME,
         reportBound = REPORT_BOUND,
         reportLoadStrategy = ReportLoadStrategy.RawReportLoadStrategy(
+            emptyList(),
             emptyList(),
             emptyList(),
             Filters.EMPTY

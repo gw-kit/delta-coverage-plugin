@@ -5,10 +5,9 @@ import com.intellij.rt.coverage.data.FileMapData
 import com.intellij.rt.coverage.data.LineData
 import com.intellij.rt.coverage.data.ProjectData
 import com.intellij.rt.coverage.data.instructions.ClassInstructions
+import com.intellij.rt.coverage.instrument.RawReportLoader
 import com.intellij.rt.coverage.instrumentation.UnloadedUtil
-import com.intellij.rt.coverage.instrumentation.offline.RawReportLoader
 import com.intellij.rt.coverage.report.data.BinaryReport
-import com.intellij.rt.coverage.report.data.Module
 import com.intellij.rt.coverage.util.ProjectDataLoader
 import com.intellij.rt.coverage.util.classFinder.ClassFilter
 import com.intellij.rt.coverage.util.classFinder.ClassFinder
@@ -21,7 +20,7 @@ internal object IntellijDeltaCoverageLoader {
 
     fun getDeltaProjectData(
         binaryCoverageReports: List<BinaryReport>,
-        sources: List<Module>,
+        sources: IntellijSourceInputs,
         codeUpdateInfo: CodeUpdateInfo
     ): ProjectData {
         val hasRawHitsReport: Boolean = binaryCoverageReports.any { it.isRawHitsReport }
@@ -52,14 +51,16 @@ internal object IntellijDeltaCoverageLoader {
         return copyProjectDataWithFiltering(projectData, codeUpdateInfo)
     }
 
-    private fun collectCoverageInformationFromOutputs(modules: List<Module>): ProjectData {
+    private fun collectCoverageInformationFromOutputs(
+        sources: IntellijSourceInputs
+    ): ProjectData {
         val projectData = ProjectData().apply {
             setInstructionsCoverage(true)
             annotationsToIgnore = emptyList()
         }
         UnloadedUtil.appendUnloaded(
             projectData,
-            OutputClassFinder(modules),
+            OutputClassFinder(sources),
             true,
             true
         )
@@ -101,7 +102,7 @@ internal object IntellijDeltaCoverageLoader {
         sourceProjectData: ProjectData,
         codeUpdateInfo: CodeUpdateInfo
     ): ProjectData {
-        val projectDataCopy = ProjectData.createProjectData(true).apply {
+        val projectDataCopy = ProjectData().apply {
             setInstructionsCoverage(true)
         }
         sourceProjectData.copyAllClassDataWithFiltering(projectDataCopy, codeUpdateInfo)
@@ -175,19 +176,13 @@ internal object IntellijDeltaCoverageLoader {
     )
 
     private class OutputClassFinder(
-        private val modules: List<Module>
+        private val sources: IntellijSourceInputs
     ) : ClassFinder(IncludeAllClassFilter) {
 
-        override fun getClassPathEntries(): Collection<ClassPathEntry> {
-            val entries: MutableList<ClassPathEntry> = ArrayList()
-            for (module in modules) {
-                val outputs = module.outputRoots ?: continue
-                for (outputRoot in outputs) {
-                    entries.add(ClassPathEntry(outputRoot.absolutePath))
-                }
+        override fun getClassPathEntries(): Collection<ClassPathEntry> =
+            sources.classesFiles.map { aClass ->
+                ClassPathEntry(aClass.absolutePath)
             }
-            return entries
-        }
 
         private object IncludeAllClassFilter : ClassFilter {
             override fun shouldInclude(className: String?): Boolean = true

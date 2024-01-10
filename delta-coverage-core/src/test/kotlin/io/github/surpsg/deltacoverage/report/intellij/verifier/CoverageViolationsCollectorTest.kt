@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.report.intellij.verifier
 
 import com.intellij.rt.coverage.verify.Verifier
+import com.intellij.rt.coverage.verify.api.ValueType
 import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
@@ -118,7 +119,7 @@ class CoverageViolationsCollectorTest {
         CoverageRuleWithThreshold(
             id = 1,
             coverageEntity = this,
-            valueType = Verifier.ValueType.COVERED_RATE,
+            valueType = ValueType.COVERED_RATE,
             min = minCoverage.toBigDecimal(),
             threshold = threshold
         )
