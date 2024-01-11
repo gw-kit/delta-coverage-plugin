@@ -30,6 +30,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+          cache: gradle
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
@@ -52,7 +53,7 @@ jobs:
 
       - name: Run Delta Coverage check
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
-        run: ./gradlew deltaCoverage -Pgithub -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
+        run: ./gradlew deltaCoverage -Pgithub -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"  --configuration-cache
 
       - name: Add Delta Coverage report to PR
         id: jacoco

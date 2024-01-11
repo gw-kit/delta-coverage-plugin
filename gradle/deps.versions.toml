@@ -1,23 +1,28 @@
 [versions]
+intellijCoverageVer = "1.0.744"
+koverVer = "0.7.5"
 jacocoVer = "0.8.11"
-httpClientVer = "5.1.3"
-jgitVer = "5.12.0.202106070339-r"
+httpClientVer = "5.3"
+jgitVer = "5.13.2.202306221912-r"
 
-junitVer = "5.8.2"
+junitVer = "5.10.1"
 mockkVer = "1.12.3"
 kotestVer = "5.5.5"
+jimfsVer = "1.3.0"
 
 [libraries]
 # Kotlin
 kotlinJvm = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version = "1.6.20" }
 
 # Plugins
-pluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "1.2.0" }
-deltaCoverage = { module = "io.github.surpsg:delta-coverage", version = "1.1.0" }
+pluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "1.2.1" }
+deltaCoverage = { module = "io.github.surpsg:delta-coverage", version = "1.3.0" }
 jacocoTestkit = { module = "pl.droidsonroids.gradle.jacoco:pl.droidsonroids.gradle.jacoco", version = "1.0.12" }
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.22.0" }
 
 # Project deps
+koverPlugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "koverVer" }
+intellijCoverage = { module = "org.jetbrains.intellij.deps:intellij-coverage-reporter", version.ref = "intellijCoverageVer" }
 jacocoCore = { module = "org.jacoco:org.jacoco.core", version.ref = "jacocoVer" }
 jacocoReport = { module = "org.jacoco:org.jacoco.report", version.ref = "jacocoVer" }
 httpClient = { module = "org.apache.httpcomponents.client5:httpclient5", version.ref = "httpClientVer" }
@@ -31,6 +36,8 @@ assertj = { module = "org.assertj:assertj-core", version = "3.20.2" }
 kotestRunnerJunit5 = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotestVer" }
 kotestAssertions = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotestVer" }
 kotestProperty = { module = "io.kotest:kotest-property-jvm", version.ref = "kotestVer" }
+jimFs = { module = "com.google.jimfs:jimfs", version.ref = "jimfsVer" }
 
 [plugins]
-shadowPlugin = { id = "com.github.johnrengelman.shadow", version = "7.1.2" }
+shadowPlugin = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
+depUpdatesPlugin = { id = "com.github.ben-manes.versions", version = "0.50.0" }

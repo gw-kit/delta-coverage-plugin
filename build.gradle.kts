@@ -1,8 +1,9 @@
 plugins {
-    `base`
+    base
     id("delta-coverage-conventions")
     `test-report-aggregation`
     `jacoco-aggregate-conventions`
+    alias(deps.plugins.depUpdatesPlugin)
 }
 
 repositories {
