@@ -13,6 +13,29 @@ class CoverageViolationsCollectorTest {
 
     @ParameterizedTest
     @EnumSource
+    fun `should not build violations if coverage rule is satisfied`(
+        coverageEntity: CoverageEntity,
+    ) {
+        // GIVEN
+        val minCoverage = 0.8
+        val missedCount = 2L
+        val coveredCount = 8L
+        val collectedCoverage = coverageEntity.buildCollectedCoverage {
+            covered = coveredCount
+            missed = missedCount
+        }
+        val coverageViolationsCollector: CoverageViolationsCollector =
+            coverageEntity.buildCoverageViolationsCollector(minCoverage = minCoverage)
+
+        // WHEN
+        coverageViolationsCollector.consume("any", collectedCoverage)
+
+        // THEN
+        coverageViolationsCollector.violations.shouldBeEmpty()
+    }
+
+    @ParameterizedTest
+    @EnumSource
     fun `should build violations`(
         coverageEntity: CoverageEntity,
     ) {

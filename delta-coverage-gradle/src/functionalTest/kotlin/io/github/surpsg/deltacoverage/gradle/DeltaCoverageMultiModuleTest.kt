@@ -53,7 +53,7 @@ class DeltaCoverageMultiModuleTest {
 
         // WHEN // THEN
         gradleRunner
-            .runDeltaCoverageTaskAndFail(printLogs = true)
+            .runDeltaCoverageTaskAndFail()
             .assertOutputContainsStrings(
                 "Fail on violations: true. Found violations: 1.",
                 "Rule violated for bundle ${TestProjects.MULTI_MODULE}: " +

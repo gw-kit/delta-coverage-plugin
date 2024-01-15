@@ -62,9 +62,8 @@ class KoverMultiModuleTest {
         gradleRunner
             .runDeltaCoverageTask()
             .assertOutputContainsStrings(
-                "Fail on violations: false. Found violations: 3",
+                "Fail on violations: false. Found violations: 2",
                 "BRANCH: expectedMin=0.9, actual=0.5",
-                "LINE: expectedMin=0.9, actual=1.0",
                 "INSTRUCTION: expectedMin=0.9, actual=0.8",
             )
 
