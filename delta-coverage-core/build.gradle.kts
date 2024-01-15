@@ -1,6 +1,5 @@
 plugins {
     `basic-subproject-conventions`
-    jacoco
 }
 
 publishing {
