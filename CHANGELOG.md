@@ -1,5 +1,10 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## 2.0.1
+### Fixed
+- Fixed build failure when coverage rules are satisfied and coverage engine is INTELLIJ.
+
+
 ## 2.0.0
 ### Added
 - Added support of [Intellij coverage](https://github.com/JetBrains/intellij-coverage).
