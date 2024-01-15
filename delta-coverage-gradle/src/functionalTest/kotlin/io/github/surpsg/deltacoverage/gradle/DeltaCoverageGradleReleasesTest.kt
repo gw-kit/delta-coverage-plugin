@@ -3,8 +3,10 @@ package io.github.surpsg.deltacoverage.gradle
 import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
 import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
 import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
+import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome.SUCCESS
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import java.io.File
@@ -16,10 +18,15 @@ class DeltaCoverageGradleReleasesTest {
     lateinit var diffFilePath: String
 
     @ProjectFile("build.gradle")
-    lateinit var buildFile: File
+    lateinit var buildFile: RestorableFile
 
     @GradleRunnerInstance
     lateinit var gradleRunner: GradleRunner
+
+    @BeforeEach
+    fun beforeEach() {
+        buildFile.restoreOriginContent()
+    }
 
     @ParameterizedTest
     @ValueSource(
@@ -35,7 +42,7 @@ class DeltaCoverageGradleReleasesTest {
         gradleVersion: String
     ) {
         // setup
-        buildFile.appendText(
+        buildFile.file.appendText(
             """
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
