@@ -37,9 +37,8 @@ testing.suites {
                 group = "verification"
 
                 maxParallelForks = 4
-                setForkEvery(1L)
 
-                systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_method")
+                systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
             }
         }
     }
