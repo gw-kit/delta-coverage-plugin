@@ -31,7 +31,13 @@ internal class CoverageViolationsCollector(
                 violationResolveContext.totalCount
             )
         } else {
-            val actualValue: BigDecimal = rule.valueType.getValue(counter) ?: 0.0.toBigDecimal()
+            addViolation(counter)
+        }
+    }
+
+    private fun addViolation(counter: Verifier.CollectedCoverage.Counter) {
+        val actualValue: BigDecimal = rule.valueType.getValue(counter) ?: 0.0.toBigDecimal()
+        if (actualValue < rule.min) {
             foundViolations += CoverageVerifier.Violation(
                 coverageTrackType = rule.coverageEntity.name,
                 expectedMinValue = rule.min.toDouble(),
