@@ -9,11 +9,9 @@ import io.github.surpsg.deltacoverage.config.ReportsConfig
 import io.github.surpsg.deltacoverage.config.ViolationRule
 import io.github.surpsg.deltacoverage.report.DeltaReportFacadeFactory
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputDirectory
@@ -32,13 +30,8 @@ open class DeltaCoverageTask @Inject constructor(
     init {
         group = "verification"
         description = "Builds coverage report only for modified code"
+        outputs.upToDateWhen { false }
     }
-
-    @get:InputDirectory
-    val projectDirProperty: DirectoryProperty = objectFactory.directoryProperty()
-
-    @get:InputDirectory
-    val rootProjectDirProperty: DirectoryProperty = objectFactory.directoryProperty()
 
     @get:InputFiles
     val coverageBinaryFiles: Property<FileCollection> = objectFactory.property(FileCollection::class.java)
@@ -53,6 +46,11 @@ open class DeltaCoverageTask @Inject constructor(
     val deltaCoverageConfigProperty: Property<DeltaCoverageConfiguration> = objectFactory.property(
         DeltaCoverageConfiguration::class.java
     )
+
+    private val projectDirProperty: File
+        get() = project.projectDir
+    private val rootProjectDirProperty: File
+        get() = project.rootProject.projectDir
 
     @OutputDirectory
     fun getOutputDir(): File {
@@ -85,7 +83,7 @@ open class DeltaCoverageTask @Inject constructor(
 
         DeltaReportFacadeFactory
             .buildFacade(
-                rootProjectDirProperty.get().asFile,
+                rootProjectDirProperty,
                 deltaCoverageConfigProperty.get().coverage.engine.get(),
                 deltaCoverageConfig
             )
@@ -101,14 +99,14 @@ open class DeltaCoverageTask @Inject constructor(
         return if (file.isAbsolute) {
             file
         } else {
-            projectDirProperty.get().asFile.resolve(baseReportDirPath)
+            projectDirProperty.resolve(baseReportDirPath)
         }.resolve(BASE_COVERAGE_REPORTS_DIR)
     }
 
     private fun buildDeltaCoverageConfig(): DeltaCoverageConfig {
         val deltaCovConfig: DeltaCoverageConfiguration = deltaCoverageConfigProperty.get()
         return DeltaCoverageConfig {
-            reportName = projectDirProperty.map { it.asFile.name }.get()
+            reportName = projectDirProperty.name
 
             diffSourceConfig = DiffSourceConfig {
                 file = deltaCovConfig.diffSource.file.get()
