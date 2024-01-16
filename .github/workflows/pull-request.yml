@@ -53,7 +53,7 @@ jobs:
 
       - name: Run Delta Coverage check
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
-        run: ./gradlew deltaCoverage -Pgithub -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"  --configuration-cache
+        run: ./gradlew deltaCoverage -Pgithub -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
 
       - name: Add Delta Coverage report to PR
         id: jacoco
@@ -61,5 +61,5 @@ jobs:
         if: always()
         continue-on-error: true
         with:
-          paths: build/reports/jacoco/deltaCoverage/report.xml
+          paths: build/reports/coverage-reports/delta-coverage/report.xml
           token: ${{ secrets.GITHUB_TOKEN }}

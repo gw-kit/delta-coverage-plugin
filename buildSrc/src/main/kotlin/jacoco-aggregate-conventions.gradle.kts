@@ -1,14 +1,14 @@
 plugins {
-    jacoco
+    id("basic-coverage-conventions")
 }
 
 tasks.register<JacocoReport>("jacocoRootReport") {
     group = "verification"
     description = "Generates an aggregate report from all subprojects"
 
-    dependsOn(
+    mustRunAfter(
         provider {
-            subprojects.map { it.tasks.named("test") }
+            subprojects.flatMap { proj -> proj.tasks.withType<Test>() }
         }
     )
 
@@ -25,9 +25,7 @@ tasks.register<JacocoReport>("jacocoRootReport") {
 fun sourceFromJacoco(jacocoSource: JacocoReportBase.() -> FileCollection): FileCollection {
     val sourcesProvider: Provider<FileCollection> = provider {
         subprojects.asSequence()
-            .map { it.tasks.findByName("jacocoTestReport") }
-            .filterNotNull()
-            .map { it as JacocoReportBase }
+            .flatMap { it.tasks.withType<JacocoReportBase>() }
             .map { it.jacocoSource() }
             .fold(files() as FileCollection) { all, next ->
                 all + next

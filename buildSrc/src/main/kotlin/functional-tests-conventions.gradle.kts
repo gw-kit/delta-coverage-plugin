@@ -6,7 +6,7 @@ plugins {
     base
     kotlin("jvm")
     `jvm-test-suite`
-    `jacoco`
+    id("basic-coverage-conventions")
 }
 
 testing.suites {
