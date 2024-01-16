@@ -27,7 +27,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build & Test
-        run: ./gradlew check jacocoRootReport --rerun -s --console=plain --no-daemon
+        run: ./gradlew check --rerun -s --console=plain
+
+      - name: Build Aggregated Coverage report
+        run: ./gradlew jacocoRootReport
 
       - name: Upload Coverage Data
         uses: actions/upload-artifact@master
