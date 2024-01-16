@@ -49,6 +49,6 @@ tasks.named("check") {
     dependsOn(tasks.named("functionalTest"))
 }
 
-tasks.jacocoTestReport {
-    executionData.setFrom(fileTree(buildDir).include("/jacoco/*.exec"))
-}
+//tasks.jacocoTestReport {
+//    executionData.setFrom(fileTree(buildDir).include("/jacoco/*.exec"))
+//}

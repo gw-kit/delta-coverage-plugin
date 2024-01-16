@@ -1,7 +1,4 @@
 import io.gradle.surpsg.deltacoverage.libDeps
-import org.gradle.kotlin.dsl.`jvm-test-suite`
-import org.gradle.kotlin.dsl.kotlin
-import org.gradle.kotlin.dsl.`maven-publish`
 
 plugins {
     kotlin("jvm")
