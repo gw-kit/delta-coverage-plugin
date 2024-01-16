@@ -101,7 +101,7 @@ class DeltaCoverageDiffSourcesTest {
 
         // run // assert
         gradleRunner
-            .runDeltaCoverageTaskAndFail(printLogs = true)
+            .runDeltaCoverageTaskAndFail()
             .assertOutputContainsStrings(
                 "instructions covered ratio is 0.5, but expected minimum is 0.7",
                 "branches covered ratio is 0.5, but expected minimum is 0.7",

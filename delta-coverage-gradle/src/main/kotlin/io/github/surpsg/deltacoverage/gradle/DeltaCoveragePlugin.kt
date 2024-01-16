@@ -26,9 +26,6 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         project.tasks.create(DELTA_COVERAGE_TASK, DeltaCoverageTask::class.java) { deltaCoverageTask ->
             with(deltaCoverageTask) {
                 configureDependencies()
-
-                projectDirProperty.set(project.projectDir)
-                rootProjectDirProperty.set(project.rootProject.projectDir)
                 deltaCoverageConfigProperty.set(deltaCoverageConfig)
                 applySourcesInputs(deltaCoverageConfig)
             }

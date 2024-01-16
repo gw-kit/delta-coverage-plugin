@@ -27,7 +27,7 @@ class DeltaCoverageConfigurationsTest {
 
     @Test
     fun `delta-coverage should fail if classes file collection is empty`() {
-        // setup
+        // GIVEN
         buildFile.file.appendText(
             """
             deltaCoverageReport {
@@ -37,9 +37,25 @@ class DeltaCoverageConfigurationsTest {
         """.trimIndent()
         )
 
-        // run // assert
+        // WHEN // THEN
         gradleRunner
             .runDeltaCoverageTaskAndFail()
             .assertOutputContainsStrings("'deltaCoverageReport.classesDirs' file collection is empty.")
+    }
+
+    @Test
+    fun `delta-coverage outputs caching should be disabled`() {
+        // GIVEN
+        buildFile.file.appendText(
+            """
+            deltaCoverageReport {
+                diffSource.file.set('$diffFilePath')
+            }
+        """.trimIndent()
+        )
+        gradleRunner.runDeltaCoverageTask()
+
+        // WHEN // THEN
+        gradleRunner.runDeltaCoverageTask()
     }
 }

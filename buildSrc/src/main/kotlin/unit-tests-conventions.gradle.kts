@@ -21,6 +21,11 @@ testing {
                 implementation(libDeps.kotestAssertions)
                 implementation(libDeps.kotestProperty)
             }
+            targets.all {
+                testTask.configure {
+                    testLogging.showStandardStreams = true
+                }
+            }
         }
     }
 }
