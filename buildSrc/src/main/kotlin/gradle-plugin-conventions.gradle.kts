@@ -3,7 +3,7 @@ plugins {
 
     id("java-gradle-plugin")
     id("functional-tests-conventions")
-    id("pl.droidsonroids.jacoco.testkit")
+//    id("pl.droidsonroids.jacoco.testkit")
     `java-test-fixtures`
 
     id("com.gradle.plugin-publish")
@@ -16,7 +16,7 @@ configure<GradlePluginDevelopmentExtension> {
         project.extensions.getByType(JavaPluginExtension::class).sourceSets.getByName("testFixtures")
     )
 }
-
-configure<pl.droidsonroids.gradle.jacoco.testkit.JacocoTestKitExtension> {
-    applyTo("functionalTestRuntimeOnly", tasks.named("functionalTest"))
-}
+//
+//configure<pl.droidsonroids.gradle.jacoco.testkit.JacocoTestKitExtension> {
+//    applyTo("functionalTestRuntimeOnly", tasks.named("functionalTest"))
+//}

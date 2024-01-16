@@ -35,8 +35,8 @@ dependencies {
     implementation(deps.koverPlugin)
 
     testImplementation(gradleApi()) // required to add this dependency explicitly after applying shadowJar plugin
-    testImplementation(deps.kotlinJvm)
-    implementation(deps.jimFs)
+    testImplementation(deps.jimFs)
+    testRuntimeOnly(deps.kotlinJvm)
 
     functionalTestImplementation(project(":delta-coverage-gradle"))
     functionalTestImplementation(testFixtures(project))
@@ -46,4 +46,10 @@ dependencies {
     testFixturesImplementation(deps.assertj)
     testFixturesImplementation(deps.junitApi)
     testFixturesImplementation(deps.jgit)
+}
+
+kover {
+    excludeInstrumentation {
+        packages("org.jetbrains.kotlin.gradle") // exclude to avoid coverage collecting failure
+    }
 }

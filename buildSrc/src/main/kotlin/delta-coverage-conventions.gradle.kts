@@ -9,20 +9,20 @@ plugins {
 val isGithub = project.hasProperty("github")
 
 deltaCoverageReport {
-    coverage.engine = CoverageEngine.JACOCO
+    coverage.engine = CoverageEngine.INTELLIJ
 
     diffSource {
-        val targetBranch = project.properties["diffBase"]?.toString() ?: "refs/remotes/origin/main"
-        git.diffBase.set(targetBranch)
+        git.diffBase = project.properties["diffBase"]?.toString() ?: "refs/remotes/origin/main"
     }
 
     if (isGithub) {
-        coverageBinaryFiles = fileTree("tests-artifacts/") { include("**/*.exec") }
+        coverageBinaryFiles = fileTree("tests-artifacts/") { include("**/*.ic") }
     }
 
     reports {
-        html.set(true)
-        xml.set(true)
+        html = true
+        xml = true
+        fullCoverageReport = true
     }
 
     violationRules.failIfCoverageLessThan(0.9)

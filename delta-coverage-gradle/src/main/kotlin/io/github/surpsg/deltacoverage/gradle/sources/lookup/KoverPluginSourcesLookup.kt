@@ -12,7 +12,7 @@ import kotlin.io.path.name
 import kotlin.io.path.readLines
 
 internal class KoverPluginSourcesLookup(
-    val fileSystem: FileSystem,
+    private val fileSystem: FileSystem,
     lookupContext: SourcesAutoLookup.Context
 ) : CacheableLookupSources(lookupContext) {
 
