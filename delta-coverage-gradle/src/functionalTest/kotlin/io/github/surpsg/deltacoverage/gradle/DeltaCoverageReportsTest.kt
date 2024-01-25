@@ -57,7 +57,6 @@ class DeltaCoverageReportsTest {
         // WHEN // THEN
         gradleRunner
             .runDeltaCoverageTask()
-            .apply { println(output) }
             .assertOutputContainsStrings("Fail on violations: false. Found violations: 0")
 
         // AND THEN
