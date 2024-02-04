@@ -34,7 +34,7 @@ jobs:
         with:
           name: tests-artifacts
           path: |
-            */build/kover/**/*.ic
+            */build/**/*.ic
             */build/test-results
 
       - name: Upload coverage to Codecov
