@@ -2,6 +2,7 @@ package io.github.surpsg.deltacoverage.gradle.kover
 
 import io.github.surpsg.deltacoverage.gradle.TestProjects
 import io.github.surpsg.deltacoverage.gradle.assertOutputContainsStrings
+import io.github.surpsg.deltacoverage.gradle.runDeltaCoverageTask
 import io.github.surpsg.deltacoverage.gradle.runDeltaCoverageTaskAndFail
 import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
 import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
@@ -34,7 +35,7 @@ class KoverViolationsTest {
     }
 
     @Test
-    fun `delta-coverage should fail build if coverage x are violated`() {
+    fun `delta-coverage should fail build if coverage rules are violated`() {
         // GIVEN
         buildFile.file.appendText(
             """
@@ -54,5 +55,42 @@ class KoverViolationsTest {
                 "LINE: expectedMin=1.0, actual=0.6",
                 "INSTRUCTION: expectedMin=1.0, actual=0.6"
             )
+    }
+
+    @Test
+    fun `delta-coverage should not fail build if no branches`() {
+        // GIVEN
+        val diffFile: File = rootProjectDir.resolve("no-branches.diff")
+        diffFile.writeText(
+            """
+                --- a/src/main/java/com/java/test/Class1.java
+                +++ b/src/main/java/com/java/test/Class1.java
+                @@ -16,10 +16,10 @@
+                         } else {
+                             result = 0;
+                         }
+                -        return result;
+                +        return result; //
+                     }
+            """.trimIndent()
+        )
+
+        buildFile.file.appendText(
+            """
+            configure<DeltaCoverageConfiguration> {
+                coverage.engine = CoverageEngine.INTELLIJ
+                diffSource.file = "${diffFile.absolutePath}"
+                violationRules {
+                    failOnViolation = true
+                    rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.BRANCH) {
+                        minCoverageRatio = 1.0
+                    }
+                }
+            }
+        """.trimIndent()
+        )
+
+        // WHEN // THEN
+        gradleRunner.runDeltaCoverageTask().apply { println(output) }
     }
 }
