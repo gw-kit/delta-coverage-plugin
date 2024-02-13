@@ -27,7 +27,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build & Test
-        run: ./gradlew check :koverHtmlReport :koverXmlReport --rerun -s --console=plain
+        run: ./gradlew check :koverXmlReport --rerun -s --console=plain
 
       - name: Upload Coverage Data
         uses: actions/upload-artifact@master

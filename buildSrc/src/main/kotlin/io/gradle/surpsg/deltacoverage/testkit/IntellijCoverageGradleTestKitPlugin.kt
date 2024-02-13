@@ -1,5 +1,6 @@
 package io.gradle.surpsg.deltacoverage.testkit
 
+import gradle.kotlin.dsl.accessors._3f43988357485d31034aa73ecb58fd1e.main
 import gradle.kotlin.dsl.accessors._3f43988357485d31034aa73ecb58fd1e.sourceSets
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -11,7 +12,11 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.WriteProperties
 import org.gradle.kotlin.dsl.register
 import org.gradle.language.jvm.tasks.ProcessResources
+import java.io.File
+import java.nio.file.Path
 import javax.inject.Inject
+import kotlin.io.path.isDirectory
+import kotlin.io.path.listDirectoryEntries
 
 abstract class IntellijCoverageTestKitExtension @Inject constructor(
     objects: ObjectFactory,
@@ -56,12 +61,22 @@ internal abstract class IntellijCoverageGradleTestKitPlugin : Plugin<Project> {
             val argsFile = temporaryDir.resolve(propertiesFile)
 
             doLast {
+                val includePatterns: Set<String> = project.buildIncludeSourcesPatterns().get()
                 argsFile.printWriter().use { pw ->
-                    pw.appendLine(binaryCoverageFilePath.get())
-                    pw.appendLine(TRACKING_PER_TEST.toString())
-                    pw.appendLine(CALCULATE_FOR_UNLOADED_CLASSES.toString())
-                    pw.appendLine(APPEND_TO_DATA_FILE.toString())
-                    pw.appendLine(LINING_ONLY_MODE.toString())
+                    with(pw) {
+                        appendLine(binaryCoverageFilePath.get())
+                        appendLine(TRACKING_PER_TEST.toString())
+                        appendLine(CALCULATE_FOR_UNLOADED_CLASSES.toString())
+                        appendLine(APPEND_TO_DATA_FILE.toString())
+                        appendLine(LINING_ONLY_MODE.toString())
+
+                        includePatterns.forEach { appendLine(it) }
+
+                        appendLine("-exclude")
+                        appendLine("android\\..*")
+                        appendLine("com\\.android\\..*")
+                        appendLine("org\\.jetbrains\\.kotlin\\.gradle\\..*")
+                    }
                 }
             }
 
@@ -114,6 +129,44 @@ internal abstract class IntellijCoverageGradleTestKitPlugin : Plugin<Project> {
                 }
             }
         }
+    }
+
+    private fun Project.buildIncludeSourcesPatterns(): Provider<Set<String>> {
+        return project.rootProject.allprojects.map { proj ->
+            proj.sourceSets.main.map { it.allJava.srcDirs }
+        }.fold(
+            project.provider<Set<File>> { emptySet() },
+            ::merge
+        ).map { allSourceFiles ->
+            allSourceFiles.asSequence()
+                .filter { it.exists() }
+                .map { file -> obtainCommonPackage(file) }
+                .map { it.toIncludePackageRegex() }
+                .toSet()
+        }
+    }
+
+    private fun <T : Any, C : Iterable<T>> merge(
+        first: Provider<out C>,
+        second: Provider<out C>
+    ): Provider<Iterable<T>> = first.zip(second) { left, right ->
+        left + right
+    }
+
+    private fun obtainCommonPackage(srcDir: File): String {
+        val getSingleChildOrNull: Path.() -> Path? = {
+            listDirectoryEntries().singleOrNull()?.takeIf(Path::isDirectory)
+        }
+
+        return generateSequence(srcDir.toPath().getSingleChildOrNull()) { currentDir ->
+            currentDir.getSingleChildOrNull()
+        }
+            .map { it.fileName.toString() }
+            .joinToString(".")
+    }
+
+    private fun String.toIncludePackageRegex(): String {
+        return this.replace(".", "\\.") + "\\..*"
     }
 
     private fun intellijAgentDep(version: Provider<String>): Provider<String> = version.map {
