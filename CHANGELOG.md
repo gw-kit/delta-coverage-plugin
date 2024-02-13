@@ -3,7 +3,8 @@
 ## <NEXT-RELEASE>
 
 ### Fixed
-- Fixed deltaCoverage task inputs. Now the task is dependent only on required files. 
+- Fixed deltaCoverage task inputs. Now the task is dependent only on required files.
+- #46 Fixed build failure when total branches count is 0. 
 
 
 ## 2.0.1
