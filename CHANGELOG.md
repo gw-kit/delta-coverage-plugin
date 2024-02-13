@@ -1,5 +1,12 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## 2.0.2
+
+### Fixed
+- Fixed deltaCoverage task inputs. Now the task is dependent only on required files.
+- #46 Fixed build failure when total branches count is 0. 
+
+
 ## 2.0.1
 ### Fixed
 - Fixed build failure when coverage rules are satisfied and coverage engine is INTELLIJ.

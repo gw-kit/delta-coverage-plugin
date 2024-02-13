@@ -1,8 +1,3 @@
-import io.gradle.surpsg.deltacoverage.libDeps
-import org.gradle.jvm.toolchain.JavaLanguageVersion
-import org.gradle.kotlin.dsl.kotlin
-import org.gradle.kotlin.dsl.`maven-publish`
-
 plugins {
     kotlin("jvm")
     `maven-publish`
@@ -10,7 +5,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt")
     id("unit-tests-conventions")
 
-    `jacoco`
+    id("basic-coverage-conventions")
 }
 
 val targetJvmVersion = JavaLanguageVersion.of(8)
@@ -28,15 +23,4 @@ java {
 
 repositories {
     mavenCentral()
-}
-
-jacoco {
-    toolVersion = libDeps.versions.jacocoVer.get()
-}
-
-tasks.jacocoTestReport {
-    reports {
-        xml.required.set(true)
-        html.required.set(true)
-    }
 }

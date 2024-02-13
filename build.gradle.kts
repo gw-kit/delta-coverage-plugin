@@ -10,14 +10,6 @@ repositories {
     mavenCentral()
 }
 
-reporting {
-    reports {
-        val testAggregateTestReport by creating(AggregateTestReport::class) {
-            testType.set(TestSuiteType.UNIT_TEST)
-        }
-    }
-}
-
 dependencies {
     allprojects {
         testReportAggregation(this)

@@ -27,12 +27,12 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build & Test
-        run: ./gradlew check -s --parallel --configuration-cache
+        run: ./gradlew check --rerun -s --console=plain
 
-      - name: Build Coverage report
-        run: ./gradlew jacocoRootReport --configuration-cache
+      - name: Build Aggregated Coverage report
+        run: ./gradlew jacocoRootReport
 
-      - name: Upload JaCoCo coverage data
+      - name: Upload Coverage Data
         uses: actions/upload-artifact@master
         with:
           name: tests-artifacts

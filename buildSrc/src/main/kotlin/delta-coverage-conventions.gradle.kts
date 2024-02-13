@@ -1,19 +1,23 @@
+import io.github.surpsg.deltacoverage.CoverageEngine
+
 plugins {
-    `base`
-    `jacoco`
+    base
+    id("basic-coverage-conventions")
     id("io.github.surpsg.delta-coverage")
 }
 
 val isGithub = project.hasProperty("github")
 
 deltaCoverageReport {
+    coverage.engine = CoverageEngine.JACOCO
+
     diffSource {
         val targetBranch = project.properties["diffBase"]?.toString() ?: "refs/remotes/origin/main"
         git.diffBase.set(targetBranch)
     }
 
     if (isGithub) {
-        jacocoExecFiles = fileTree("tests-artifacts/") { include("**/*.exec") }
+        coverageBinaryFiles = fileTree("tests-artifacts/") { include("**/*.exec") }
     }
 
     reports {

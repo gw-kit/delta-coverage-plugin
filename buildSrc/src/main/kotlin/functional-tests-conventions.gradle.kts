@@ -6,7 +6,7 @@ plugins {
     base
     kotlin("jvm")
     `jvm-test-suite`
-    `jacoco`
+    id("basic-coverage-conventions")
 }
 
 testing.suites {
@@ -36,10 +36,10 @@ testing.suites {
                 description = "Runs the functional tests."
                 group = "verification"
 
+                testLogging.showStandardStreams = true
                 maxParallelForks = 4
-                setForkEvery(1L)
 
-                systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_method")
+                systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
             }
         }
     }
