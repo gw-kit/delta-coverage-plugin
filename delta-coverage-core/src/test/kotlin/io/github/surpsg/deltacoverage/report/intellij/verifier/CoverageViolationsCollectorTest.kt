@@ -62,26 +62,21 @@ class CoverageViolationsCollectorTest {
     }
 
     @Test
-    fun `should build violation with actual value equal to zero if neither missed nor covered data`() {
+    fun `should not build violation if neither missed nor covered data`() {
         // GIVEN
-        val minCoverage = 0.8
         val coverageEntity = CoverageEntity.LINE
         val collectedCoverage = coverageEntity.buildCollectedCoverage {
             covered = 0
             missed = 0
         }
         val coverageViolationsCollector: CoverageViolationsCollector =
-            coverageEntity.buildCoverageViolationsCollector(minCoverage = minCoverage)
+            coverageEntity.buildCoverageViolationsCollector(minCoverage = 0.999)
 
         // WHEN
         coverageViolationsCollector.consume("any", collectedCoverage)
 
         // THEN
-        coverageViolationsCollector.violations shouldContain CoverageVerifier.Violation(
-            coverageTrackType = coverageEntity.name,
-            expectedMinValue = minCoverage,
-            actualValue = 0.0
-        )
+        coverageViolationsCollector.violations.shouldBeEmpty()
     }
 
     @ParameterizedTest
