@@ -15,10 +15,8 @@ deltaCoverageReport {
         git.diffBase = project.properties["diffBase"]?.toString() ?: "refs/remotes/origin/main"
     }
 
-    coverageBinaryFiles = if (isGithub) {
-        fileTree("tests-artifacts/") { include("**/*.ic") }
-    } else {
-        fileTree(".") { include("*/build/**/*.ic") }
+    if (isGithub) {
+        coverageBinaryFiles = fileTree("tests-artifacts/") { include("**/*.ic") }
     }
 
     reports {
