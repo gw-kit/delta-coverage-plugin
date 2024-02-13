@@ -16,7 +16,7 @@ kotlinJvm = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version = "1
 
 # Plugins
 pluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "1.2.1" }
-deltaCoverage = { module = "io.github.surpsg:delta-coverage-gradle", version = "2.0.1" }
+deltaCoverage = { module = "io.github.surpsg:delta-coverage-gradle", version = "2.0.2" }
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.22.0" }
 
 # Project deps
