@@ -1,6 +1,6 @@
 # Delta-Coverage Gradle plugin Changelog
 
-## <NEXT-RELEASE>
+## 2.0.2
 
 ### Fixed
 - Fixed deltaCoverage task inputs. Now the task is dependent only on required files.
