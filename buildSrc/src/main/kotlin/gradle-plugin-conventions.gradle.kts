@@ -5,7 +5,7 @@ plugins {
 
     id("java-gradle-plugin")
     id("functional-tests-conventions")
-    id("exps-koverage")
+    id("kover-config-convention")
     `java-test-fixtures`
 
     id("com.gradle.plugin-publish")
