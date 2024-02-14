@@ -54,8 +54,7 @@ jobs:
       - name: Run Delta Coverage check
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
         run: |
-            ./gradlew deltaCoverage -Pgithub -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" \ 
-              -x test -x functionalTest
+            ./gradlew deltaCoverage -Pgithub -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
 
       - name: Add Delta Coverage report to PR
         id: coverage-in-PR
