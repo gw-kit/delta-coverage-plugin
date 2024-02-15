@@ -1,15 +1,18 @@
+import io.gradle.surpsg.deltacoverage.testkit.IntellijCoverageTestKitExtension
+
 plugins {
     id("basic-subproject-conventions")
 
     id("java-gradle-plugin")
     id("functional-tests-conventions")
-    id("pl.droidsonroids.jacoco.testkit")
+    id("kover-config-convention")
     `java-test-fixtures`
 
     id("com.gradle.plugin-publish")
 }
 
-val functionalTestSuite: JvmTestSuite = testing.suites.getByName("functionalTest") as JvmTestSuite
+val functionalTestTaskName = "functionalTest"
+val functionalTestSuite: JvmTestSuite = testing.suites.getByName(functionalTestTaskName) as JvmTestSuite
 configure<GradlePluginDevelopmentExtension> {
     testSourceSets(
         functionalTestSuite.sources,
@@ -17,6 +20,6 @@ configure<GradlePluginDevelopmentExtension> {
     )
 }
 
-configure<pl.droidsonroids.gradle.jacoco.testkit.JacocoTestKitExtension> {
-    applyTo("functionalTestRuntimeOnly", tasks.named("functionalTest"))
+configure<IntellijCoverageTestKitExtension> {
+    testTaskName = functionalTestTaskName
 }

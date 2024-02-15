@@ -27,21 +27,18 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build & Test
-        run: ./gradlew check --rerun -s --console=plain
-
-      - name: Build Aggregated Coverage report
-        run: ./gradlew jacocoRootReport
+        run: ./gradlew check :koverXmlReport --rerun -s --console=plain
 
       - name: Upload Coverage Data
         uses: actions/upload-artifact@master
         with:
           name: tests-artifacts
           path: |
-            */build/jacoco/**/*.exec
+            */build/**/*.ic
             */build/test-results
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml
+          file: build/reports/kover/report.xml
