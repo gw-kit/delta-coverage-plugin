@@ -1,7 +1,7 @@
 package io.github.surpsg.deltacoverage.report.jacoco.analyzable
 
 import io.github.surpsg.deltacoverage.diff.parse.ClassFile
-import io.github.surpsg.deltacoverage.jvm.readClassFileName
+import io.github.surpsg.deltacoverage.lib.jvm.readClassFileName
 import org.jacoco.core.analysis.Analyzer
 import org.jacoco.core.analysis.IClassCoverage
 import org.jacoco.core.analysis.ICoverageVisitor

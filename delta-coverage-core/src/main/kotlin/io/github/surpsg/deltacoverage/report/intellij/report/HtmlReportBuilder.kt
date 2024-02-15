@@ -8,14 +8,10 @@ import java.io.File
 
 internal class HtmlReportBuilder(
     val reportName: String,
-    reportsConfig: ReportsConfig,
-    reportBound: ReportBound,
-    reporter: Reporter,
-) : ReportBuilder(
-    reporter = reporter,
-    reportBound = reportBound,
-    reportsConfig = reportsConfig
-) {
+    val reportBound: ReportBound,
+    private val reportsConfig: ReportsConfig,
+    private val reporter: Reporter,
+) : ReportBuilder {
 
     override fun buildReport() {
         val reportPath: File = ReportPathStrategy.Html(reportsConfig).buildReportPath(reportBound)

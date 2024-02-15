@@ -44,6 +44,12 @@ sealed class ReportPathStrategy(
         override val reportFileName: String = reportsConfig.csv.outputFileName
     }
 
+    class Console(
+        reportsConfig: ReportsConfig
+    ) : ReportPathStrategy(reportsConfig) {
+        override val reportFileName: String = reportsConfig.console.outputFileName
+    }
+
     companion object {
         const val DELTA_COVERAGE_REPORT_DIR = "delta-coverage"
         const val FULL_COVERAGE_REPORT_DIR = "full-coverage-report"

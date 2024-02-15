@@ -54,6 +54,7 @@ class KoverReportsTest {
                     baseReportDir.set("$baseReportDir")
                     html.set(true)
                     xml.set(true)
+                    console = true
                     fullCoverageReport.set(true)
                 }
             }
@@ -64,6 +65,13 @@ class KoverReportsTest {
         gradleRunner
             .runDeltaCoverageTask()
             .assertOutputContainsStrings("Fail on violations: false. Found violations: 0")
+            .assertOutputContainsStrings(
+                "| Delta Coverage Stats                                   |",
+                "| Source      | Class                | Lines  | Branches |",
+                "+-------------+----------------------+--------+----------+",
+                "| Class1.java | com.java.test.Class1 | 66.67% | 50%      |",
+                "| Total       |                      | 66.67% | 50%      |",
+            )
 
         // AND THEN
         val baseReportDirFile = rootProjectDir.resolve(baseReportDir).resolve("coverage-reports")

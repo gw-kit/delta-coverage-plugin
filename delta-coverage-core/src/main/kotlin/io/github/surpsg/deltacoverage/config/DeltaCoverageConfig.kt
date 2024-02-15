@@ -139,12 +139,13 @@ class ReportsConfig private constructor(
     val html: ReportConfig,
     val xml: ReportConfig,
     val csv: ReportConfig,
+    val console: ReportConfig,
     val baseReportDir: String,
     val fullCoverageReport: Boolean,
 ) {
 
-    override fun toString(): String = "ReportsConfig(html=$html, xml=$xml, csv=$csv" +
-            ", baseReportDir='$baseReportDir', fullCoverageReport=$fullCoverageReport)"
+    override fun toString(): String = "ReportsConfig(html=$html, xml=$xml, csv=$csv, console=$console," +
+            " baseReportDir='$baseReportDir', fullCoverageReport=$fullCoverageReport)"
 
     @DeltaCoverageConfigMarker
     class Builder internal constructor() {
@@ -152,10 +153,11 @@ class ReportsConfig private constructor(
         var xml: ReportConfig = ReportConfig {}
         @Deprecated(message = "This property will be removed in the next major release.")
         var csv: ReportConfig = ReportConfig {}
+        var console: ReportConfig = ReportConfig {}
         var baseReportDir: String = ""
         var fullCoverageReport: Boolean = false
 
-        fun build(): ReportsConfig = ReportsConfig(html, xml, csv, baseReportDir, fullCoverageReport)
+        fun build(): ReportsConfig = ReportsConfig(html, xml, csv, console, baseReportDir, fullCoverageReport)
     }
 
     companion object {
