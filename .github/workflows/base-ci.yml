@@ -3,6 +3,9 @@ name: basic-steps
 on:
   workflow_call:
 
+env:
+  gradle_cmd: "./gradlew -Pgithub --no-daemon --parallel --console=plain --no-watch-fs -s "
+
 jobs:
 
   build-and-check:
@@ -27,7 +30,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build & Test
-        run: ./gradlew check :koverXmlReport --rerun -s --console=plain
+        run: ${gradle_cmd} check :koverXmlReport --rerun
 
       - name: Upload Coverage Data
         uses: actions/upload-artifact@master
@@ -36,6 +39,8 @@ jobs:
           path: |
             */build/**/*.ic
             */build/test-results
+            */**/build/libs/
+            */**/build/classes/
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

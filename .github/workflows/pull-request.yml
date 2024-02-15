@@ -5,6 +5,9 @@ on:
     branches:
       - '*'
 
+env:
+  gradle_cmd: "./gradlew -Pgithub --no-daemon --parallel --console=plain --no-watch-fs -s "
+
 jobs:
 
   build-and-test:
@@ -35,11 +38,14 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Pull tests artifacts
+      - name: Pull artifacts
         uses: actions/download-artifact@master
         with:
           name: tests-artifacts
           path: tests-artifacts
+
+      - name: Populate cache
+        run: cp -r tests-artifacts/* . && ls -la delta-coverage-core/build/classes && ls -la delta-coverage-gradle/build/kover/bin-reports
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.7.0
@@ -53,8 +59,7 @@ jobs:
 
       - name: Run Delta Coverage check
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
-        run: |
-            ./gradlew deltaCoverage -Pgithub -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
+        run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
 
       - name: Add Delta Coverage report to PR
         id: coverage-in-PR
