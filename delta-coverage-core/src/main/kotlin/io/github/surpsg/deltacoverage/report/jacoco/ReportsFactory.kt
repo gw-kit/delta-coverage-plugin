@@ -7,7 +7,7 @@ import io.github.surpsg.deltacoverage.report.JacocoReport
 import io.github.surpsg.deltacoverage.report.ReportContext
 import io.github.surpsg.deltacoverage.report.ReportType
 import io.github.surpsg.deltacoverage.report.Violations
-import io.github.surpsg.deltacoverage.report.intellij.report.ReportBound
+import io.github.surpsg.deltacoverage.report.ReportBound
 
 internal fun reportFactory(
     reportContext: ReportContext
