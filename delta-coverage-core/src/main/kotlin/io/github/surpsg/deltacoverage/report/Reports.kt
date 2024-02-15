@@ -2,7 +2,6 @@ package io.github.surpsg.deltacoverage.report
 
 import io.github.surpsg.deltacoverage.config.ReportsConfig
 import io.github.surpsg.deltacoverage.diff.CodeUpdateInfo
-import io.github.surpsg.deltacoverage.report.intellij.report.ReportBound
 import io.github.surpsg.deltacoverage.report.intellij.report.ReportPathStrategy
 import org.jacoco.report.check.Rule
 import java.io.File

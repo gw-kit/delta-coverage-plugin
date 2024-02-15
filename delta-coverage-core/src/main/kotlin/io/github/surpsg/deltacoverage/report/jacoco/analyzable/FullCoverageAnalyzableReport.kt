@@ -1,6 +1,8 @@
 package io.github.surpsg.deltacoverage.report.jacoco.analyzable
 
+import io.github.surpsg.deltacoverage.report.ConsoleHtmlReportLinkRenderer
 import io.github.surpsg.deltacoverage.report.FullReport
+import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportType
 import org.jacoco.core.analysis.Analyzer
 import org.jacoco.core.analysis.ICoverageVisitor
@@ -22,7 +24,10 @@ internal open class FullCoverageAnalyzableReport(
         return report.jacocoReports.map {
             val reportFile: File = report.resolveReportAbsolutePath(it)
             when (it.reportType) {
-                ReportType.HTML -> FileMultiReportOutput(reportFile).let(HTMLFormatter()::createVisitor)
+                ReportType.HTML -> {
+                    ConsoleHtmlReportLinkRenderer.render(reportBound, reportFile)
+                    FileMultiReportOutput(reportFile).let(HTMLFormatter()::createVisitor)
+                }
                 ReportType.XML -> reportFile.createFileOutputStream().let(XMLFormatter()::createVisitor)
                 ReportType.CSV -> reportFile.createFileOutputStream().let(CSVFormatter()::createVisitor)
             }
@@ -41,4 +46,5 @@ internal open class FullCoverageAnalyzableReport(
         return Analyzer(executionDataStore, coverageVisitor)
     }
 
+    open val reportBound: ReportBound = ReportBound.FULL_REPORT
 }

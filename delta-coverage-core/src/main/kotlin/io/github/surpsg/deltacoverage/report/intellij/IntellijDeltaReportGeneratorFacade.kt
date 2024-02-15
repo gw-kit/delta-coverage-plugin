@@ -6,7 +6,7 @@ import io.github.surpsg.deltacoverage.report.ReportContext
 import io.github.surpsg.deltacoverage.report.intellij.coverage.NamedReportLoadStrategy
 import io.github.surpsg.deltacoverage.report.intellij.coverage.ReportLoadStrategyFactory
 import io.github.surpsg.deltacoverage.report.intellij.report.CoverageReportFactory
-import io.github.surpsg.deltacoverage.report.intellij.report.ReportBound
+import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.intellij.report.ReportBuilder
 import io.github.surpsg.deltacoverage.report.intellij.verifier.CoverageAssertion
 
