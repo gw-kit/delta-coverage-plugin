@@ -6,7 +6,7 @@ on:
       - '*'
 
 env:
-  gradle_cmd: "./gradlew -Pgithub --no-daemon --parallel --console=plain --no-watch-fs -s "
+  gradle_cmd: "./gradlew -Pgithub --no-daemon --parallel --console=plain --no-watch-fs -si "
 
 jobs:
 
