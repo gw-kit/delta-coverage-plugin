@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.report.console
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -83,6 +84,35 @@ class RawCoverageDataTest {
             branchesTotal = 20
             linesCovered = 10
             linesTotal = 20
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        nullValues = ["null"],
+        value = [
+            "null, 1, 1, 1",
+            "1, null, 1, 1",
+            "1, 1, null, 1",
+            "1, 1, 1, null",
+        ]
+    )
+    fun `should throw if fields not set`(
+        branchesCovered: Int?,
+        branchesTotal: Int?,
+        linesCovered: Int?,
+        linesTotal: Int?,
+    ) {
+
+        shouldThrow<IllegalArgumentException> {
+            RawCoverageData {
+                group = "source"
+                aClass = "class"
+                this.branchesCovered = branchesCovered
+                this.branchesTotal = branchesTotal
+                this.linesCovered = linesCovered
+                this.linesTotal = linesTotal
+            }
         }
     }
 }
