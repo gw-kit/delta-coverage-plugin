@@ -48,6 +48,7 @@ class CoverageReportFactoryTest {
             html = ReportConfig { enabled = true }
             xml = ReportConfig { enabled = true }
             csv = ReportConfig { enabled = true }
+            console = ReportConfig { enabled = true }
         }
 
         // WHEN

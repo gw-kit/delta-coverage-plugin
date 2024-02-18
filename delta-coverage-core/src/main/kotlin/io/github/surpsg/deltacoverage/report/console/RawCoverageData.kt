@@ -58,7 +58,7 @@ internal class RawCoverageData private constructor(
             Builder().apply(initialize).build()
 
         fun newBlank(
-            customize: Builder.() -> Unit = {}
+            customize: Builder.() -> Unit
         ) = RawCoverageData {
             group = ""
             aClass = ""
