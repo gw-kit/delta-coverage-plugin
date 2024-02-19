@@ -1,8 +1,6 @@
 package io.github.surpsg.deltacoverage.report.console
 
 import io.kotest.matchers.shouldBe
-import io.mockk.every
-import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
 
