@@ -6,6 +6,9 @@
 - Render clickable HTML report path in console output.
 - Added console report. 
 
+### Fixed
+- File changes detecting when there are few classes with similar names in different packages. 
+
 
 ## 2.0.2
 
