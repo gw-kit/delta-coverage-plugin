@@ -20,7 +20,7 @@ open class FullReport(
     }
 }
 
-class JacocoDeltaReport(
+internal class JacocoDeltaReport(
     reports: List<JacocoReport>,
     val codeUpdateInfo: CodeUpdateInfo,
     val violations: Violations
