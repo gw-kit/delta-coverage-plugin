@@ -9,6 +9,11 @@ jobs:
 
   build-and-test:
     uses: ./.github/workflows/base-ci.yml
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
 
   delta-coverage-check:
     needs: build-and-test
