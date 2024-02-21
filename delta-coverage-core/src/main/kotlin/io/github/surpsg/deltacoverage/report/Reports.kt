@@ -14,6 +14,7 @@ open class FullReport(
             ReportType.HTML -> ReportPathStrategy.Html(jacocoReport.reportsConfig)
             ReportType.XML -> ReportPathStrategy.Xml(jacocoReport.reportsConfig)
             ReportType.CSV -> ReportPathStrategy.Csv(jacocoReport.reportsConfig)
+            ReportType.CONSOLE -> ReportPathStrategy.Console(jacocoReport.reportsConfig)
         }
         return reportPathStrategy.buildReportPath(jacocoReport.reportBound)
     }
@@ -36,6 +37,7 @@ enum class ReportType {
     XML,
     @Deprecated("CSV will be removed soon.")
     CSV,
+    CONSOLE,
 }
 
 data class Violations(

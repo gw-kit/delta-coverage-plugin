@@ -17,7 +17,6 @@ internal interface AnalyzableReport {
 internal fun analyzableReportFactory(
     reportContext: ReportContext
 ): Set<AnalyzableReport> {
-    reportContext.deltaCoverageConfig.coverageRulesConfig
     return reportFactory(reportContext)
         .map { reportMode ->
             when (reportMode) {

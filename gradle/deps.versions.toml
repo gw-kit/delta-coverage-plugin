@@ -4,6 +4,7 @@ koverVer = "0.7.5"
 jacocoVer = "0.8.11"
 httpClientVer = "5.3"
 jgitVer = "5.13.2.202306221912-r"
+csvVer = "5.3"
 
 junitVer = "5.10.1"
 mockkVer = "1.12.3"
@@ -26,6 +27,7 @@ jacocoCore = { module = "org.jacoco:org.jacoco.core", version.ref = "jacocoVer" 
 jacocoReport = { module = "org.jacoco:org.jacoco.report", version.ref = "jacocoVer" }
 httpClient = { module = "org.apache.httpcomponents.client5:httpclient5", version.ref = "httpClientVer" }
 jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version.ref = "jgitVer" }
+openCsv = { module = "com.opencsv:opencsv", version.ref = "csvVer" }
 
 # Testing
 junitApi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junitVer" }

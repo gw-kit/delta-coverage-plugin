@@ -4,6 +4,7 @@
 
 ### Added
 - Render clickable HTML report path in console output.
+- Added console report. 
 
 
 ## 2.0.2

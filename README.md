@@ -36,7 +36,7 @@ The plugin should be applied to the **root** project.
 
 ```groovy
 plugins {
-  id("io.github.surpsg.delta-coverage") version "2.0.2"
+  id("io.github.surpsg.delta-coverage") version "<the-plugin-version>"
 }
 ```
 
@@ -48,7 +48,7 @@ plugins {
 
 ```groovy
 plugins {
-  id "io.github.surpsg.delta-coverage" version "2.0.2"
+  id "io.github.surpsg.delta-coverage" version "<the-plugin-version>"
 }
 ```
 </details>
@@ -109,7 +109,7 @@ deltaCoverageReport {
 
 ```kotlin
 plugins {
-    id("io.github.surpsg.delta-coverage") version "2.0.0"
+    id("io.github.surpsg.delta-coverage") version "2.0.2"
 }
 
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
@@ -180,6 +180,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     reports {
         html.set(true) // Optional. default `false`
         xml.set(true) // Optional. default `false`
+        console.set(true) // Optional. default `false`
         csv.set(true) // [Deprecated]. Optional. default `false`
         reportDir.set("dir/to/store/reports") // Optional. Default 'build/reports/coverage-reports'
     }
@@ -258,7 +259,9 @@ Failed:
 > Rule violated for bundle delta-coverage-gradle: lines covered ratio is 0.0, but expected minimum is 0.9
 
 
-## HTML report example
+## Delta Coverage report examples
+
+### HTML report
 
 `Delta Coverage` plugin generates standard JaCoCo HTML report, but highlights only modified code
 
@@ -269,3 +272,15 @@ Failed:
   <img src="https://user-images.githubusercontent.com/8483470/77781534-a61e0780-704d-11ea-871e-879fb45757cd.png" width=500 alt="JaCoCo HTML report"/>        
 </details>
 
+### Console report
+```
++----------------------------+----------------------+--------+----------+
+| Delta Coverage Stats                                                  |
++----------------------------+----------------------+--------+----------+
+| Source                     | Class                | Lines  | Branches |
++----------------------------+----------------------+--------+----------+
+| single-module-test-project | com.java.test.Class1 | 66.67% | 50%      |
++----------------------------+----------------------+--------+----------+
+| Total                      |                      | 66.67% | 50%      |
++----------------------------+----------------------+--------+----------+
+```

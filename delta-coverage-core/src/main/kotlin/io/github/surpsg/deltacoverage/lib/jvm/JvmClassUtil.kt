@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.jvm
+package io.github.surpsg.deltacoverage.lib.jvm
 
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
