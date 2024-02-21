@@ -7,7 +7,7 @@ import io.github.surpsg.deltacoverage.report.JacocoReport
 import io.github.surpsg.deltacoverage.report.ReportContext
 import io.github.surpsg.deltacoverage.report.ReportType
 import io.github.surpsg.deltacoverage.report.Violations
-import io.github.surpsg.deltacoverage.report.intellij.report.ReportBound
+import io.github.surpsg.deltacoverage.report.ReportBound
 
 internal fun reportFactory(
     reportContext: ReportContext
@@ -50,6 +50,7 @@ private fun obtainEnabledReportTypes(reportsConfig: ReportsConfig): Set<ReportTy
     ReportType.HTML to reportsConfig.html.enabled,
     ReportType.XML to reportsConfig.xml.enabled,
     ReportType.CSV to reportsConfig.csv.enabled,
+    ReportType.CONSOLE to reportsConfig.console.enabled,
 )
     .filter { (_, enabled) -> enabled }
     .map { (reportType, _) -> reportType }

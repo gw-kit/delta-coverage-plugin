@@ -5,7 +5,7 @@ import com.intellij.rt.coverage.report.ReportLoadStrategy
 import com.intellij.rt.coverage.report.api.Filters
 import com.intellij.rt.coverage.report.data.BinaryReport
 import io.github.surpsg.deltacoverage.report.ReportContext
-import io.github.surpsg.deltacoverage.report.intellij.report.ReportBound
+import io.github.surpsg.deltacoverage.report.ReportBound
 
 internal object ReportLoadStrategyFactory {
 

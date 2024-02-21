@@ -22,7 +22,6 @@ deltaCoverageReport {
     reports {
         html = true
         xml = true
-        fullCoverageReport = true
     }
 
     violationRules.failIfCoverageLessThan(0.9)

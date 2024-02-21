@@ -6,6 +6,8 @@ import io.kotest.data.blocking.forAll
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
 import io.kotest.property.checkAll
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
 class ClassModificationsTest : StringSpec({
 
@@ -121,4 +123,43 @@ class CodeUpdateInfoTest : StringSpec({
         }
     }
 
-})
+}) {
+
+    @ParameterizedTest
+    @CsvSource(
+        value = [
+            "io.github.deltacoverage.analyzable.AnalyzableReportKt, AnalyzableReport.kt, 1",
+            "io.github.deltacoverage.analyzable.AnalyzableReport, AnalyzableReport.kt, 1",
+            "io.github.deltacoverage.analyzable.DeltaCoverageAnalyzableReport, DeltaCoverageAnalyzableReport.kt, 2",
+            "io.github.deltacoverage.analyzable.FullCoverageAnalyzableReport, FullCoverageAnalyzableReport.kt, 3",
+        ]
+    )
+    fun `getClassModifications should return correct modifications for class when there are class with similar names`(
+        className: String,
+        sourceFile: String,
+        expectedModifiedLine: Int,
+    ) {
+        // GIVEN
+        val codeUpdateInfo = CodeUpdateInfo(
+            linkedMapOf(
+                // another package, same file name
+                "b/src/main/kotlin/io/github/another/AnalyzableReport.kt" to setOf(4),
+
+                // common file name suffix
+                "b/src/main/kotlin/io/github/deltacoverage/analyzable/FullCoverageAnalyzableReport.kt" to setOf(3),
+                // common file name suffix
+                "b/src/main/kotlin/io/github/deltacoverage/analyzable/DeltaCoverageAnalyzableReport.kt" to setOf(2),
+                // common file name suffix
+                "b/src/main/kotlin/io/github/deltacoverage/analyzable/AnalyzableReport.kt" to setOf(1),
+            )
+        )
+
+        // WHEN
+        val actualModifiedLines: ClassModifications = codeUpdateInfo.getClassModifications(
+            ClassFile(sourceFile, className)
+        )
+
+        // THEN
+        actualModifiedLines.isLineModified(expectedModifiedLine) shouldBe true
+    }
+}

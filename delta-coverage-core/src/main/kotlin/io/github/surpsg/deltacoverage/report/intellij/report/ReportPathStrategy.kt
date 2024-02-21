@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.report.intellij.report
 
 import io.github.surpsg.deltacoverage.config.ReportsConfig
+import io.github.surpsg.deltacoverage.report.ReportBound
 import java.io.File
 
 sealed class ReportPathStrategy(
@@ -18,8 +19,6 @@ sealed class ReportPathStrategy(
             ReportBound.FULL_REPORT -> File(reportsConfig.baseReportDir)
                 .resolve(FULL_COVERAGE_REPORT_DIR)
                 .resolve(reportFileName)
-        }.apply {
-            println("$reportBound Report path: $this")
         }
     }
 
@@ -43,6 +42,12 @@ sealed class ReportPathStrategy(
     ) : ReportPathStrategy(reportsConfig) {
 
         override val reportFileName: String = reportsConfig.csv.outputFileName
+    }
+
+    class Console(
+        reportsConfig: ReportsConfig
+    ) : ReportPathStrategy(reportsConfig) {
+        override val reportFileName: String = reportsConfig.console.outputFileName
     }
 
     companion object {

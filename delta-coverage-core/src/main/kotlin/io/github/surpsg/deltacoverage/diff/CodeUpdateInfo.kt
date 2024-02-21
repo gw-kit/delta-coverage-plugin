@@ -3,7 +3,7 @@ package io.github.surpsg.deltacoverage.diff
 
 import io.github.surpsg.deltacoverage.diff.parse.ClassFile
 
-class CodeUpdateInfo(
+internal class CodeUpdateInfo(
     private val fileNameToModifiedLineNumbers: Map<String, Set<Int>>
 ) {
 
@@ -25,6 +25,6 @@ class CodeUpdateInfo(
     }
 }
 
-class ClassModifications(private val modifiedLines: Set<Int>) {
+internal class ClassModifications(private val modifiedLines: Set<Int>) {
     fun isLineModified(lineNumber: Int): Boolean = modifiedLines.contains(lineNumber)
 }

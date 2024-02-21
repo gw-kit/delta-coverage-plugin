@@ -12,8 +12,9 @@ publishing {
 
 dependencies {
     implementation(deps.jgit)
-    implementation(deps.intellijCoverage) // TODO upgrade to latest version
+    implementation(deps.intellijCoverage)
     implementation(deps.jacocoCore)
     implementation(deps.jacocoReport)
     implementation(deps.httpClient)
+    implementation(deps.openCsv)
 }

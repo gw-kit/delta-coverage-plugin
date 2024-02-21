@@ -5,6 +5,7 @@ import io.github.surpsg.deltacoverage.diff.CodeUpdateInfo
 import io.github.surpsg.deltacoverage.diff.parse.ClassFile
 import io.github.surpsg.deltacoverage.report.CoverageViolationsPropagator
 import io.github.surpsg.deltacoverage.report.JacocoDeltaReport
+import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.jacoco.ViolationsOutputResolver
 import io.github.surpsg.deltacoverage.report.jacoco.filters.ModifiedLinesFilter
 import org.jacoco.core.analysis.Analyzer
@@ -65,4 +66,6 @@ internal class DeltaCoverageAnalyzableReport(
             .createVisitor(violationsOutputResolver)
             .let { CoverageRulesVisitor(it) }
     }
+
+    override val reportBound: ReportBound = ReportBound.DELTA_REPORT
 }

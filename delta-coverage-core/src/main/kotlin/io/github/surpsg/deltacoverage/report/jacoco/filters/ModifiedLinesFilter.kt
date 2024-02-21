@@ -12,7 +12,7 @@ import org.objectweb.asm.tree.LineNumberNode
 import org.objectweb.asm.tree.MethodNode
 import org.slf4j.LoggerFactory
 
-class ModifiedLinesFilter(private val codeUpdateInfo: CodeUpdateInfo) : IFilter {
+internal class ModifiedLinesFilter(private val codeUpdateInfo: CodeUpdateInfo) : IFilter {
 
     override fun filter(
         methodNode: MethodNode,

@@ -28,14 +28,19 @@ internal object CoverageReportFactory {
         }
     }
 
-    private fun obtainEnabledReportTypes(reportsConfig: ReportsConfig): List<ReportType> = sequenceOf(
-        ReportType.HTML to reportsConfig.html.enabled,
-        ReportType.XML to reportsConfig.xml.enabled,
-        ReportType.CSV to reportsConfig.csv.enabled,
-    )
-        .filter { (_, enabled) -> enabled }
-        .map { (reportType, _) -> reportType }
-        .toList()
+    private fun obtainEnabledReportTypes(reportsConfig: ReportsConfig): List<ReportType> =
+        ReportType.entries.asSequence()
+            .map { reportType ->
+                when (reportType) {
+                    ReportType.HTML -> ReportType.HTML to reportsConfig.html.enabled
+                    ReportType.XML -> ReportType.XML to reportsConfig.xml.enabled
+                    ReportType.CONSOLE -> ReportType.CONSOLE to reportsConfig.console.enabled
+                    ReportType.CSV -> ReportType.CSV to reportsConfig.csv.enabled
+                }
+            }
+            .filter { (_, enabled) -> enabled }
+            .map { (reportType, _) -> reportType }
+            .toList()
 
     private fun ReportType.buildReportBuilder(
         reportLoadStrategy: NamedReportLoadStrategy,
@@ -45,18 +50,20 @@ internal object CoverageReportFactory {
         return when (this) {
             ReportType.HTML -> HtmlReportBuilder(
                 reportLoadStrategy.reportName,
-                reportsConfig,
                 reportLoadStrategy.reportBound,
+                reportsConfig,
                 reporter,
             )
 
             ReportType.XML -> XmlReportBuilder(
-                reportsConfig,
                 reportLoadStrategy.reportBound,
+                reportsConfig,
                 reporter,
             )
 
-            else -> error("Unsupported report type: $this")
+            ReportType.CONSOLE -> ConsoleReportBuilder(reportLoadStrategy.reportBound, reporter)
+
+            ReportType.CSV -> error("Unsupported report type: $this")
         }
     }
 }

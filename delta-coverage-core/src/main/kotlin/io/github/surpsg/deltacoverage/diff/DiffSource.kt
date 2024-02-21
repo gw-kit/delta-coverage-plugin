@@ -2,7 +2,7 @@ package io.github.surpsg.deltacoverage.diff
 
 import io.github.surpsg.deltacoverage.config.DiffSourceConfig
 import io.github.surpsg.deltacoverage.diff.git.JgitDiff
-import io.github.surpsg.deltacoverage.http.executeGetRequest
+import io.github.surpsg.deltacoverage.lib.http.executeGetRequest
 import java.io.File
 
 const val DEFAULT_PATCH_FILE_NAME: String = "diff.patch"

@@ -132,6 +132,10 @@ open class DeltaCoverageTask @Inject constructor(
                     outputFileName = "report.xml"
                     enabled = deltaCovConfig.reportConfiguration.xml.get()
                 }
+                console = ReportConfig {
+                    outputFileName = "console.txt"
+                    enabled = deltaCovConfig.reportConfiguration.console.get()
+                }
                 fullCoverageReport = deltaCovConfig.reportConfiguration.fullCoverageReport.get()
             }
 
