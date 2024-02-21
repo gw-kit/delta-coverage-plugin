@@ -12,12 +12,16 @@ class ClassFile(
     }
 
     private fun computePath(): String {
-        return Paths.get(className).resolveClassPathByParentOrDefault(::guessPathFromPackage)
+        return Paths.get(className).resolveClassPathByParentOrDefault {
+            guessPathFromPackage()
+        }
     }
 
     private fun guessPathFromPackage(): String {
         val filePathSuffix = className.replace(".", "/")
-        return Paths.get(filePathSuffix).resolveClassPathByParentOrDefault(::sourceFileNameWithSlash)
+        return Paths.get(filePathSuffix).resolveClassPathByParentOrDefault {
+            sourceFileNameWithSlash()
+        }
     }
 
     private fun sourceFileNameWithSlash(): String {
