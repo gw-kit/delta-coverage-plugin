@@ -58,7 +58,7 @@ jobs:
 
       - name: Add Delta Coverage report to PR
         id: coverage-in-PR
-        uses: madrapps/jacoco-report@v1.5
+        uses: madrapps/jacoco-report@v1.6.1
         if: always()
         continue-on-error: true
         with:
