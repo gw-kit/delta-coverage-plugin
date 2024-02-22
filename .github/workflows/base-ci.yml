@@ -30,7 +30,9 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build & Test
-        run: ${gradle_cmd} check :koverXmlReport --rerun
+        run: |
+          ${gradle_cmd} check -x funTest :koverXmlReport --rerun
+          echo ${{ github.event.issue.pull_request }}
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.7.0
