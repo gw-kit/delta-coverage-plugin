@@ -11,6 +11,7 @@ jobs:
     env:
       gradle_cmd: "./gradlew --parallel --console=plain --no-watch-fs -s "
       is_pull_request: github.event_name == 'pull_request'
+      is_pull_request_ev: ${{ github.event_name == 'pull_request' }}
 
     steps:
       - uses: actions/checkout@v3
@@ -28,7 +29,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+        run: chmod +x gradlew && echo ${is_pull_request_ev}
 
       - name: Build & Test
         run: ${gradle_cmd} check :koverXmlReport --rerun
