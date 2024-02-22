@@ -28,28 +28,28 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Grant execute permission for gradlew
-        run: chmod +x gradlew && echo ${is_pull_request_ev}
+        run: chmod +x gradlew
 
       - name: Build & Test
         run: ${gradle_cmd} check :koverXmlReport --rerun
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.7.0
-        if: ${is_pull_request}
+        if: ${{ is_pull_request }}
         continue-on-error: true
         with:
           files:
             '**/tests-artifacts/**/test-results/**/*.xml'
 
       - name: Run Delta Coverage check
-        if: ${is_pull_request}
+        if: ${{ is_pull_request }}
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
         run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
 
       - name: Add Delta Coverage report to PR
         id: coverage-in-PR
         uses: madrapps/jacoco-report@v1.6.1
-        if: ${is_pull_request}
+        if: ${{ is_pull_request }}
         continue-on-error: true
         with:
           paths:
