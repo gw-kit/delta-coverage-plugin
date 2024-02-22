@@ -3,7 +3,6 @@ name: basic-steps
 on:
   workflow_call:
 
-
 jobs:
 
   build-and-check:
@@ -32,9 +31,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build & Test
-        run: |
-          echo 'is_pull_request=${{ env.is_pull_request }}'
-          ${gradle_cmd} check -x funTest :koverXmlReport --rerun -m
+        run: ${gradle_cmd} check :koverXmlReport --rerun
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.7.0
