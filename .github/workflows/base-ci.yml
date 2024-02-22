@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      gradle_cmd: "./gradlew -Pgithub --no-daemon --parallel --console=plain --no-watch-fs -s "
+      gradle_cmd: "./gradlew -Pgithub --parallel --console=plain --no-watch-fs -s "
       is_pull_request: github.event_name == 'pull_request'
 
     steps:
