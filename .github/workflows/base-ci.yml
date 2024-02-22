@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      gradle_cmd: "./gradlew -Pgithub --parallel --console=plain --no-watch-fs -s "
+      gradle_cmd: "./gradlew --parallel --console=plain --no-watch-fs -s "
       is_pull_request: github.event_name == 'pull_request'
 
     steps:
@@ -38,7 +38,8 @@ jobs:
         if: ${{ env.is_pull_request }}
         continue-on-error: true
         with:
-          files: "tests-artifacts/**/test-results/**/*.xml"
+          files:
+            '**/tests-artifacts/**/test-results/**/*.xml'
 
       - name: Run Delta Coverage check
         if: ${{ env.is_pull_request }}
@@ -51,8 +52,15 @@ jobs:
         if: ${{ env.is_pull_request }}
         continue-on-error: true
         with:
-          paths: build/reports/coverage-reports/delta-coverage/report.xml
+          paths:
+            'build/reports/coverage-reports/delta-coverage/report.xml'
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: list files
+        run: | 
+          ls -la build/reports/coverage-reports/delta-coverage/report.xml || true
+          ls -la build/reports/coverage-reports/delta-coverage/ || true
+          
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
