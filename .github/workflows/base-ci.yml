@@ -3,13 +3,15 @@ name: basic-steps
 on:
   workflow_call:
 
-env:
-  gradle_cmd: "./gradlew -Pgithub --no-daemon --parallel --console=plain --no-watch-fs -s "
 
 jobs:
 
   build-and-check:
     runs-on: ubuntu-latest
+
+    env:
+      gradle_cmd: "./gradlew -Pgithub --no-daemon --parallel --console=plain --no-watch-fs -s "
+      is_pull_request: github.event_name == 'pull_request'
 
     steps:
       - uses: actions/checkout@v3
@@ -31,25 +33,25 @@ jobs:
 
       - name: Build & Test
         run: |
-          ${gradle_cmd} check -x funTest :koverXmlReport --rerun
-          echo ${{ github.event.issue.pull_request }}
+          echo 'is_pull_request=${{ env.is_pull_request }}'
+          ${gradle_cmd} check -x funTest :koverXmlReport --rerun -m
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.7.0
-        if: ${{ github.event.issue.pull_request }}
+        if: ${{ env.is_pull_request }}
         continue-on-error: true
         with:
           files: "tests-artifacts/**/test-results/**/*.xml"
 
       - name: Run Delta Coverage check
-        if: ${{ github.event.issue.pull_request }}
+        if: ${{ env.is_pull_request }}
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
         run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
 
       - name: Add Delta Coverage report to PR
         id: coverage-in-PR
         uses: madrapps/jacoco-report@v1.6.1
-        if: ${{ github.event.issue.pull_request }}
+        if: ${{ env.is_pull_request }}
         continue-on-error: true
         with:
           paths: build/reports/coverage-reports/delta-coverage/report.xml
