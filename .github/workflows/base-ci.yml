@@ -10,7 +10,7 @@ jobs:
 
     env:
       gradle_cmd: "./gradlew --parallel --console=plain --no-watch-fs -s "
-      is_pull_request: ${{ github.event_name == 'pull_request' }}
+      is_pull_request: github.event_name == 'pull_request'
 
     steps:
       - uses: actions/checkout@v3
