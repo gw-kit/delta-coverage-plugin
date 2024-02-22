@@ -10,8 +10,7 @@ jobs:
 
     env:
       gradle_cmd: "./gradlew --parallel --console=plain --no-watch-fs -s "
-      is_pull_request: github.event_name == 'pull_request'
-      is_pull_request_ev: ${{ github.event_name == 'pull_request' }}
+      is_pull_request: ${{ github.event_name == 'pull_request' }}
 
     steps:
       - uses: actions/checkout@v3
@@ -36,32 +35,26 @@ jobs:
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.7.0
-        if: ${{ env.is_pull_request }}
+        if: ${is_pull_request}
         continue-on-error: true
         with:
           files:
             '**/tests-artifacts/**/test-results/**/*.xml'
 
       - name: Run Delta Coverage check
-        if: ${{ env.is_pull_request }}
+        if: ${is_pull_request}
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
         run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
 
       - name: Add Delta Coverage report to PR
         id: coverage-in-PR
         uses: madrapps/jacoco-report@v1.6.1
-        if: ${{ env.is_pull_request }}
+        if: ${is_pull_request}
         continue-on-error: true
         with:
           paths:
             'build/reports/coverage-reports/delta-coverage/report.xml'
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: list files
-        run: | 
-          ls -la build/reports/coverage-reports/delta-coverage/report.xml || true
-          ls -la build/reports/coverage-reports/delta-coverage/ || true
-          
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
