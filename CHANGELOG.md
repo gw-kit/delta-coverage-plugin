@@ -1,6 +1,6 @@
 # Delta-Coverage Gradle plugin Changelog
 
-## <NEXT-RELEASE>
+## 2.1.0
 
 ### Added
 - Render clickable HTML report path in console output.

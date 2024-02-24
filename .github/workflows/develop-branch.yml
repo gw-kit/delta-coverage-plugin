@@ -3,7 +3,6 @@ name: Main branch checks
 on:
   push:
     branches:
-      - 'main'
       - 'develop'
 
 jobs:
