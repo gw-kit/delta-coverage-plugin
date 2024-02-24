@@ -10,10 +10,31 @@ import io.mockk.mockkClass
 import io.mockk.verify
 import org.jacoco.core.internal.analysis.filter.IFilterContext
 import org.jacoco.core.internal.analysis.filter.IFilterOutput
-import org.objectweb.asm.tree.*
+import org.objectweb.asm.tree.AbstractInsnNode
+import org.objectweb.asm.tree.FieldInsnNode
+import org.objectweb.asm.tree.FrameNode
+import org.objectweb.asm.tree.IincInsnNode
+import org.objectweb.asm.tree.InsnList
+import org.objectweb.asm.tree.InsnNode
+import org.objectweb.asm.tree.JumpInsnNode
+import org.objectweb.asm.tree.LabelNode
+import org.objectweb.asm.tree.LdcInsnNode
+import org.objectweb.asm.tree.LineNumberNode
+import org.objectweb.asm.tree.MethodInsnNode
+import org.objectweb.asm.tree.MethodNode
+import org.objectweb.asm.tree.TypeInsnNode
+import org.objectweb.asm.tree.VarInsnNode
+import org.slf4j.Logger
+import org.slf4j.helpers.NOPLogger
 import kotlin.reflect.KClass
 
 class ModifiedLinesFilterTest : StringSpec({
+
+    beforeTest {
+        ModifiedLinesFilter.log = object : Logger by NOPLogger.NOP_LOGGER {
+            override fun isDebugEnabled(): Boolean = true
+        }
+    }
 
     "filter should ignore all non-modified lines" {
         // setup
@@ -105,6 +126,7 @@ class ModifiedLinesFilterTest : StringSpec({
         }
 
         val methodNode = MethodNode().apply {
+            name = "method"
             instructions = instructionsList
         }
 
@@ -157,6 +179,7 @@ class ModifiedLinesFilterTest : StringSpec({
             }
 
             val methodNode = MethodNode().apply {
+                name = "testMethod"
                 instructions = instructionsList
             }
 
@@ -178,11 +201,10 @@ class ModifiedLinesFilterTest : StringSpec({
                 output.ignore(modifiedLine.first(), modifiedLine.last())
             }
         }
-
     }
 })
 
-fun lineNode(
+private fun lineNode(
     line: Int,
     vararg lineNodes: KClass<out AbstractInsnNode>
 ): Set<AbstractInsnNode> {

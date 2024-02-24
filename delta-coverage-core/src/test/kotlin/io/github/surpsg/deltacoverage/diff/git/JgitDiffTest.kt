@@ -26,7 +26,7 @@ class JgitDiffTest : StringSpec() {
             rootProjectDir.delete()
         }
 
-        "JgitDiff should throw when git is not initialized"{
+        "JgitDiff should throw when git is not initialized" {
             val exception = shouldThrow<IllegalArgumentException> {
                 JgitDiff(rootProjectDir)
             }
@@ -34,7 +34,7 @@ class JgitDiffTest : StringSpec() {
             exception.message should startWith("Git directory not found in the project root")
         }
 
-        "jgit diff must encode file path with special symbols" {
+        "jgit diff should encode file path with special symbols" {
             Git(initRepository(rootProjectDir)).use { git ->
                 rootProjectDir.resolve("# 1 } 2.txt").appendText("new-text\n")
                 git.command(Git::add) { addFilepattern(".") }
@@ -45,7 +45,7 @@ class JgitDiffTest : StringSpec() {
             diff shouldContainOnlyOnce "+++ \"b/\\043 1 \\175 2.txt\""
         }
 
-        "jgit diff must throw if branch name is unknown" {
+        "jgit diff should throw if branch name is unknown" {
             // setup
             val branchName = "unknown-branch"
             initRepository(rootProjectDir)
@@ -61,26 +61,28 @@ class JgitDiffTest : StringSpec() {
             )
         }
 
-        "jgit diff must merge changes from target branch" {
+        "jgit diff should merge changes from target branch" {
             // setup
             val master = "master"
             val testBranch = "current_branch"
 
             val testFile: File = rootProjectDir.resolve("test-file.txt").apply {
-                writeText("""
+                writeText(
+                    """
                     1
                     2
                     3
                     
-                """.trimIndent())
+                """.trimIndent()
+                )
             }
             Git(initRepository(rootProjectDir)).use { git ->
                 // create new branch, checkout and apply changes with further commit
                 git.apply {
                     checkout(testBranch, true)
                     writeToFileAndCommit(
-                            testFile,
-                            """
+                        testFile,
+                        """
                                 1
                                 2 $testBranch
                                 3
@@ -92,8 +94,8 @@ class JgitDiffTest : StringSpec() {
                 git.apply {
                     checkout(master)
                     writeToFileAndCommit(
-                            testFile,
-                            """
+                        testFile,
+                        """
                                 1 $master
                                 2
                                 3
@@ -105,7 +107,7 @@ class JgitDiffTest : StringSpec() {
                 git.apply {
                     checkout(testBranch)
                     testFile.writeText(
-                            """
+                        """
                                 1
                                 2 $testBranch
                                 3 $testBranch
@@ -127,6 +129,54 @@ class JgitDiffTest : StringSpec() {
                 +2 $testBranch
                 +3 $testBranch
                 
+            """.trimIndent()
+            actualDiff shouldEndWith expectedDiff
+        }
+
+        "jgit diff should return diff ignoring all whitespaces" {
+            // setup
+            val master = "master"
+            val testBranch = "current_branch"
+
+            val testFile: File = rootProjectDir.resolve("test-file.txt").apply {
+                writeText(
+                    """
+                    fun func1() {
+                        return 1;
+                    }""".trimIndent()
+                )
+            }
+            Git(initRepository(rootProjectDir)).use { git ->
+                with(git) {
+                    checkout(testBranch, true)
+                    writeToFileAndCommit(
+                        testFile,
+                        """
+                        fun func1() {
+                            return 1;
+                        }
+                    
+                        fun func2() {
+                            return 2;
+                        }
+                        
+                        """.trimIndent()
+                    )
+                }
+            }
+
+            // run
+            val actualDiff: String = JgitDiff(rootProjectDir).obtain(master)
+
+            // assert
+            val expectedDiff = """
+             }
+            \ No newline at end of file
+            +
+            +fun func2() {
+            +    return 2;
+            +}
+            
             """.trimIndent()
             actualDiff shouldEndWith expectedDiff
         }
