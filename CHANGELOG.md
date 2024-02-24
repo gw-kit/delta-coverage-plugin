@@ -1,5 +1,11 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## <NEXT-RELEASE>
+
+### Fixed
+- Fixed diff generation by JGit client. Now it ignores whitespaces. 
+
+
 ## 2.1.0
 
 ### Added

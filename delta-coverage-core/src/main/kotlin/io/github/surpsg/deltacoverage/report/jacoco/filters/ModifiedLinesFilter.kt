@@ -29,17 +29,26 @@ internal class ModifiedLinesFilter(private val codeUpdateInfo: CodeUpdateInfo) :
             classModifications.isLineModified(it.lineNode.line)
         }
 
-        groupedModifiedLines[false]?.forEach {
-            output.ignore(it.lineNode.previous, it.lineNodeLastInstruction)
-        }
+        val modifiedLines: List<LineNode> = groupedModifiedLines[true] ?: emptyList()
+        logModifiedLines(context.className, methodNode.name, modifiedLines)
 
+        if (modifiedLines.isEmpty()) {
+            output.ignore(methodNode.instructions.first, methodNode.instructions.last)
+        } else {
+            groupedModifiedLines[false]?.forEach {
+                output.ignore(it.lineNode.previous, it.lineNodeLastInstruction)
+            }
+        }
+    }
+
+    private fun logModifiedLines(
+        className: String,
+        methodName: String,
+        modifiedLines: List<LineNode>
+    ) {
         if (log.isDebugEnabled) {
-            groupedModifiedLines[true]
-                ?.map { it.lineNode.line }
-                ?.takeIf { it.isNotEmpty() }
-                ?.let { lines ->
-                    log.debug("Matched modified lines in {}#{}: {}", context.className, methodNode.name, lines)
-                }
+            val linesNumbers: List<Int> = modifiedLines.map { it.lineNode.line }
+            log.debug("Matched modified lines in {}#{}: {}", className, methodName, linesNumbers)
         }
     }
 
@@ -78,7 +87,7 @@ internal class ModifiedLinesFilter(private val codeUpdateInfo: CodeUpdateInfo) :
         var lineNodeLastInstruction: AbstractInsnNode = lineNode
     )
 
-    private companion object {
-        val log = LoggerFactory.getLogger(ModifiedLinesFilter::class.java)
+    internal companion object {
+        var log = LoggerFactory.getLogger(ModifiedLinesFilter::class.java)
     }
 }
