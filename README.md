@@ -1,5 +1,5 @@
 # Delta Coverage gradle plugin 
-[![](https://jitpack.io/v/SurpSG/delta-coverage-plugin.svg)](https://jitpack.io/#SurpSG/delta-coverage-plugin)
+![GitHub Release](https://img.shields.io/github/v/release/SurpSG/delta-coverage-plugin)
 [![Main branch checks](https://github.com/SurpSG/delta-coverage-plugin/actions/workflows/main-branch.yml/badge.svg?branch=main)](https://github.com/SurpSG/delta-coverage-plugin/actions/workflows/main-branch.yml)
 [![codecov](https://codecov.io/gh/SurpSG/delta-coverage-plugin/branch/main/graph/badge.svg?token=69BAXyEhse)](https://codecov.io/gh/SurpSG/delta-coverage-plugin)
 [![GitHub issues](https://img.shields.io/github/issues/SurpSG/delta-coverage-plugin)](https://github.com/SurpSG/delta-coverage-plugin/issues)
@@ -22,7 +22,7 @@ Delta Coverage plugin compatibility table:
 
 | Delta Coverage plugin | Gradle              |
 |-----------------------|---------------------|
-| **2.0.+**             | **5.6** - **8.6.+** |
+| **2.+**               | **5.6** - **8.6.+** |
 | **1.3.+**             | **5.1** - **8.4.+** |
 | **1.0.0** - **1.2.0** | **5.1** - **8.3.+** |
 
@@ -34,11 +34,13 @@ The plugin should be applied to the **root** project.
 
 <summary><b>Kotlin</b></summary>
 
-```groovy
+```kotlin
 plugins {
-  id("io.github.surpsg.delta-coverage") version "2.0.2"
+  id("io.github.surpsg.delta-coverage") version "<the-plugin-version>"
 }
 ```
+
+The latest release version is ![GitHub Release](https://img.shields.io/github/v/release/SurpSG/delta-coverage-plugin)
 
 </details>
 
@@ -48,7 +50,7 @@ plugins {
 
 ```groovy
 plugins {
-  id "io.github.surpsg.delta-coverage" version "2.0.2"
+  id "io.github.surpsg.delta-coverage" version "<the-plugin-version>"
 }
 ```
 </details>
@@ -109,7 +111,7 @@ deltaCoverageReport {
 
 ```kotlin
 plugins {
-    id("io.github.surpsg.delta-coverage") version "2.0.0"
+    id("io.github.surpsg.delta-coverage") version "2.1.0"
 }
 
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
@@ -180,6 +182,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     reports {
         html.set(true) // Optional. default `false`
         xml.set(true) // Optional. default `false`
+        console.set(true) // Optional. default `false`
         csv.set(true) // [Deprecated]. Optional. default `false`
         reportDir.set("dir/to/store/reports") // Optional. Default 'build/reports/coverage-reports'
     }
@@ -258,7 +261,9 @@ Failed:
 > Rule violated for bundle delta-coverage-gradle: lines covered ratio is 0.0, but expected minimum is 0.9
 
 
-## HTML report example
+## Delta Coverage report examples
+
+### HTML report
 
 `Delta Coverage` plugin generates standard JaCoCo HTML report, but highlights only modified code
 
@@ -269,3 +274,15 @@ Failed:
   <img src="https://user-images.githubusercontent.com/8483470/77781534-a61e0780-704d-11ea-871e-879fb45757cd.png" width=500 alt="JaCoCo HTML report"/>        
 </details>
 
+### Console report
+```
++----------------------------+----------------------+--------+----------+
+| Delta Coverage Stats                                                  |
++----------------------------+----------------------+--------+----------+
+| Source                     | Class                | Lines  | Branches |
++----------------------------+----------------------+--------+----------+
+| single-module-test-project | com.java.test.Class1 | 66.67% | 50%      |
++----------------------------+----------------------+--------+----------+
+| Total                      |                      | 66.67% | 50%      |
++----------------------------+----------------------+--------+----------+
+```

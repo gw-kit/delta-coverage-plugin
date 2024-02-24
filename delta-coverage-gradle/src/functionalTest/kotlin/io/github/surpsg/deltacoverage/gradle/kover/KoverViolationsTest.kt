@@ -91,6 +91,6 @@ class KoverViolationsTest {
         )
 
         // WHEN // THEN
-        gradleRunner.runDeltaCoverageTask().apply { println(output) }
+        gradleRunner.runDeltaCoverageTask()
     }
 }

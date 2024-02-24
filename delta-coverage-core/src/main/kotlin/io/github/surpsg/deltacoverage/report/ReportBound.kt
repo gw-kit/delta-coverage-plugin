@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.report.intellij.report
+package io.github.surpsg.deltacoverage.report
 
 enum class ReportBound {
     FULL_REPORT,

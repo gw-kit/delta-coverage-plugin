@@ -139,6 +139,9 @@ open class ReportsConfiguration(
     val csv: Property<Boolean> = objectFactory.booleanProperty(false)
 
     @Input
+    val console: Property<Boolean> = objectFactory.booleanProperty(false)
+
+    @Input
     val baseReportDir: Property<String> = objectFactory.stringProperty {
         Paths.get("build", "reports").toString()
     }
@@ -150,6 +153,7 @@ open class ReportsConfiguration(
             "html=${html.get()}, " +
             "xml=${xml.get()}, " +
             "csv=${csv.get()}, " +
+            "console=${console.get()}, " +
             "baseReportDir='${baseReportDir.get()}')"
 }
 

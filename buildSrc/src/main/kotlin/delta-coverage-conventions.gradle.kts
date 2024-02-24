@@ -6,23 +6,16 @@ plugins {
     id("io.github.surpsg.delta-coverage")
 }
 
-val isGithub = project.hasProperty("github")
-
 deltaCoverageReport {
-    coverage.engine = CoverageEngine.JACOCO
+    coverage.engine = CoverageEngine.INTELLIJ
 
     diffSource {
-        val targetBranch = project.properties["diffBase"]?.toString() ?: "refs/remotes/origin/main"
-        git.diffBase.set(targetBranch)
-    }
-
-    if (isGithub) {
-        coverageBinaryFiles = fileTree("tests-artifacts/") { include("**/*.exec") }
+        git.diffBase = project.properties["diffBase"]?.toString() ?: "refs/remotes/origin/main"
     }
 
     reports {
-        html.set(true)
-        xml.set(true)
+        html = true
+        xml = true
     }
 
     violationRules.failIfCoverageLessThan(0.9)

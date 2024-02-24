@@ -48,6 +48,7 @@ class DeltaCoverageReportsTest {
                     html.set(true)
                     xml.set(true)
                     csv.set(true)
+                    console.set(true)
                     fullCoverageReport.set(true)
                 }
             }
@@ -57,7 +58,13 @@ class DeltaCoverageReportsTest {
         // WHEN // THEN
         gradleRunner
             .runDeltaCoverageTask()
-            .apply { println(output) }
+            .assertOutputContainsStrings(
+                "| Delta Coverage Stats                                                  |",
+                "| Source                     | Class                | Lines  | Branches |",
+                "+----------------------------+----------------------+--------+----------+",
+                "| single-module-test-project | com.java.test.Class1 | 66.67% | 50%      |",
+                "| Total                      |                      | 66.67% | 50%      |",
+            )
             .assertOutputContainsStrings("Fail on violations: false. Found violations: 0")
 
         // AND THEN

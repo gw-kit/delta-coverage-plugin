@@ -9,7 +9,7 @@ internal class ModifiedLinesDiffParser {
     fun collectModifiedLines(lines: List<String>): Map<String, Set<Int>> {
         val iterator = lines.listIterator()
 
-        val fileNameToChangedLines = HashMap<String, Set<Int>>()
+        val fileNameToChangedLines = hashMapOf<String, Set<Int>>()
         while (iterator.hasNext()) {
             val patchedFileRow = moveToNextFile(iterator) ?: return fileNameToChangedLines
             val patchedFileRelativePath = parseFileRelativePath(patchedFileRow)
