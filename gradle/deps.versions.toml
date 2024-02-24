@@ -1,6 +1,6 @@
 [versions]
 intellijCoverageVer = "1.0.744"
-koverVer = "0.7.5"
+koverVer = "0.7.6"
 jacocoVer = "0.8.11"
 httpClientVer = "5.3"
 jgitVer = "5.13.2.202306221912-r"
