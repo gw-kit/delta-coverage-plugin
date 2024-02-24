@@ -33,7 +33,7 @@ jobs:
         run: ${gradle_cmd} check :koverXmlReport --rerun
 
       - name: Add test results to PR
-        uses: EnricoMi/publish-unit-test-result-action@v2.7.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.14.0
         if: ${{ github.event_name == 'pull_request' }}
         continue-on-error: true
         with:
