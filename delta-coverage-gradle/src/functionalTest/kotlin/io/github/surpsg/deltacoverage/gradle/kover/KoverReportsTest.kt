@@ -69,8 +69,8 @@ class KoverReportsTest {
                 "| Delta Coverage Stats                                   |",
                 "| Source      | Class                | Lines  | Branches |",
                 "+-------------+----------------------+--------+----------+",
-                "| Class1.java | com.java.test.Class1 | 66.67% | 50%      |",
-                "| Total       |                      | 66.67% | 50%      |",
+                "| Class1.java | com.java.test.Class1 | 66.67% | 75%      |",
+                "| Total       |                      | 66.67% | 75%      |",
             )
 
         // AND THEN
