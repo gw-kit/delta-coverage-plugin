@@ -8,12 +8,14 @@ import io.github.surpsg.deltacoverage.gradle.utils.new
 import io.github.surpsg.deltacoverage.gradle.utils.stringProperty
 import org.gradle.api.Action
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
 import java.nio.file.Paths
@@ -94,14 +96,30 @@ open class DiffSourceConfiguration(
     objectFactory: ObjectFactory,
 ) {
 
+    /**
+     * The file path to the diff file.
+     */
     @Input
     val file: Property<String> = objectFactory.stringProperty("")
 
+    /**
+     * The URL to the diff file.
+     */
     @Input
     val url: Property<String> = objectFactory.stringProperty("")
 
+    /**
+     * Git configuration for the diff source.
+     */
     @Nested
     val git: GitConfiguration = GitConfiguration(objectFactory)
+
+    /**
+     * Configures Git as a source of the diff.
+     */
+    fun byGit(action: Action<in GitConfiguration>) {
+        action.execute(git)
+    }
 
     override fun toString(): String {
         return "DiffSourceConfiguration(file='${file.get()}', url='${url.get()}', git=$git)"
@@ -112,15 +130,30 @@ open class GitConfiguration(
     objectFactory: ObjectFactory,
 ) {
 
+    /**
+     * The base branch to compare with.
+     */
     @Input
     val diffBase: Property<String> = objectFactory.stringProperty("")
 
+    /**
+     * Use native git to generate the diff file.
+     */
+    @Input
+    val useNativeGit: Property<Boolean> = objectFactory.booleanProperty(false)
+
+    @get:Internal
+    internal val nativeGitDiffFile: RegularFileProperty = objectFactory.fileProperty()
+
+    /**
+     * Sets the base branch to compare with.
+     */
     infix fun compareWith(diffBase: String) {
         this.diffBase.set(diffBase)
     }
 
     override fun toString(): String {
-        return "GitConfiguration(diffBase='${diffBase.get()}')"
+        return "GitConfiguration(diffBase='${diffBase.get()}', useNativeGit=${useNativeGit.get()})"
     }
 }
 

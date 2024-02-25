@@ -2,17 +2,17 @@ package io.github.surpsg.deltacoverage.gradle.sources.filter
 
 import io.github.surpsg.deltacoverage.gradle.sources.SourceType
 import io.github.surpsg.deltacoverage.gradle.sources.SourcesResolver
+import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSingleElement
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
-import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 
 internal class AntSourceExcludeFilterTest {
 
-    private val project: Project = ProjectBuilder.builder().build()
+    private val project: Project = testJavaProject()
 
     @Test
     fun `should return origin sources if filters collection is empty`() {

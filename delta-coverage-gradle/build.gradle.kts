@@ -46,6 +46,7 @@ dependencies {
     testFixturesImplementation(deps.assertj)
     testFixturesImplementation(deps.junitApi)
     testFixturesImplementation(deps.jgit)
+    testFixturesImplementation(deps.mockk)
 }
 
 kover {

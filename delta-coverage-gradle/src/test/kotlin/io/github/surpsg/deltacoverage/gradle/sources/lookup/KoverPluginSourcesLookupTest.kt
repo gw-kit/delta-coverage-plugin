@@ -4,11 +4,11 @@ import com.google.common.jimfs.Configuration
 import com.google.common.jimfs.Jimfs
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.sources.SourceType
+import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.matchers.collections.shouldHaveAtLeastSize
 import io.kotest.matchers.collections.shouldHaveSize
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
-import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -32,10 +32,11 @@ internal class KoverPluginSourcesLookupTest {
     @Test
     fun `should empty source if kover artifact file not found`() {
         // GIVEN
-        val project: Project = ProjectBuilder.builder().build()
-        project.pluginManager.apply {
-            apply("org.jetbrains.kotlin.jvm")
-            apply("org.jetbrains.kotlinx.kover")
+        val project: Project = testJavaProject {
+            with(pluginManager) {
+                apply("org.jetbrains.kotlin.jvm")
+                apply("org.jetbrains.kotlinx.kover")
+            }
         }
 
         val koverPluginSourcesLookup = KoverPluginSourcesLookup(
@@ -60,10 +61,11 @@ internal class KoverPluginSourcesLookupTest {
         sourceType: SourceType
     ) {
         // GIVEN
-        val project: Project = ProjectBuilder.builder().build()
-        project.pluginManager.apply {
-            apply("org.jetbrains.kotlin.jvm")
-            apply("org.jetbrains.kotlinx.kover")
+        val project: Project = testJavaProject {
+            with(pluginManager) {
+                apply("org.jetbrains.kotlin.jvm")
+                apply("org.jetbrains.kotlinx.kover")
+            }
         }
 
         createTestResources(project)

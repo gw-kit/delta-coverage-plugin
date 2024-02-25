@@ -49,6 +49,7 @@ open class DeltaCoverageTask @Inject constructor(
 
     private val projectDirProperty: File
         get() = project.projectDir
+
     private val rootProjectDirProperty: File
         get() = project.rootProject.projectDir
 
@@ -88,7 +89,7 @@ open class DeltaCoverageTask @Inject constructor(
                 deltaCoverageConfig
             )
             .saveDiffTo(reportDir) { diffFile ->
-                log.info("diff content saved to '${diffFile.absolutePath}'")
+                log.info("Diff content saved to file://${diffFile.absolutePath}")
             }
             .generateReport()
     }
@@ -108,11 +109,7 @@ open class DeltaCoverageTask @Inject constructor(
         return DeltaCoverageConfig {
             reportName = projectDirProperty.name
 
-            diffSourceConfig = DiffSourceConfig {
-                file = deltaCovConfig.diffSource.file.get()
-                url = deltaCovConfig.diffSource.url.get()
-                diffBase = deltaCovConfig.diffSource.git.diffBase.get()
-            }
+            diffSourceConfig = buildDiffSourceConfig(deltaCovConfig.diffSource)
 
             binaryCoverageFiles += coverageBinaryFiles.get().files
             sourceFiles += sourcesFiles.get().files
@@ -140,6 +137,18 @@ open class DeltaCoverageTask @Inject constructor(
             }
 
             coverageRulesConfig = buildCoverageRulesConfig(deltaCovConfig)
+        }
+    }
+
+    private fun buildDiffSourceConfig(
+        diffSource: DiffSourceConfiguration
+    ) = DiffSourceConfig {
+        if (diffSource.git.useNativeGit.get()) {
+            file = diffSource.git.nativeGitDiffFile.get().asFile.absolutePath
+        } else {
+            file = diffSource.file.get()
+            url = diffSource.url.get()
+            diffBase = diffSource.git.diffBase.get()
         }
     }
 
