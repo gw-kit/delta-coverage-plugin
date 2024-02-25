@@ -30,7 +30,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build & Test
-        run: ${gradle_cmd} check :koverXmlReport --rerun
+        run: ${gradle_cmd} check detektMain detektTest :koverXmlReport --rerun
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.14.0

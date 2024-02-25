@@ -10,6 +10,7 @@ import org.gradle.api.tasks.TaskAction
 import java.io.File
 import javax.inject.Inject
 
+@Suppress("UnnecessaryAbstractClass")
 abstract class NativeGitDiffTask @Inject constructor(
     objectFactory: ObjectFactory,
 ) : DefaultTask() {

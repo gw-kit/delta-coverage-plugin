@@ -237,7 +237,7 @@ open class ViolationRules @Inject constructor(
      * }
      */
     fun all(action: Action<in ViolationRule>) {
-        CoverageEntity.values().forEach { coverageEntity -> coverageEntity(action) }
+        CoverageEntity.entries.forEach { coverageEntity -> coverageEntity(action) }
     }
 
     /**
