@@ -4,17 +4,14 @@ import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply.Companion.JACOCO_PLUGIN_ID
 import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply.Companion.KOVER_PLUGIN_ID
+import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.matchers.comparables.shouldBeEqualComparingTo
-import io.mockk.mockk
-import org.gradle.api.Project
 import org.gradle.api.internal.project.ProjectInternal
-import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 internal class CoverageEngineAutoApplyTest {
 
-    private val project: ProjectInternal = buildTestProject()
 
     @ParameterizedTest
     @CsvSource(
@@ -30,9 +27,13 @@ internal class CoverageEngineAutoApplyTest {
         expectedIsApplied: Boolean,
     ) {
         // GIVEN
-        project.configureProjectWithDeltaCoverage {
-            coverage.engine.set(coverageEngine)
-            coverage.autoApplyPlugin.set(expectedIsApplied)
+        val project: ProjectInternal = testJavaProject(attachSettings = true) {
+            pluginManager.apply("io.github.surpsg.delta-coverage")
+
+            extensions.configure(DeltaCoverageConfiguration::class.java) {
+                it.coverage.engine.set(coverageEngine)
+                it.coverage.autoApplyPlugin.set(expectedIsApplied)
+            }
         }
 
         // WHEN
@@ -40,24 +41,5 @@ internal class CoverageEngineAutoApplyTest {
 
         // THEN
         project.plugins.hasPlugin(coveragePluginId) shouldBeEqualComparingTo expectedIsApplied
-    }
-
-    private fun buildTestProject(): ProjectInternal {
-        val project = ProjectBuilder.builder().build() as ProjectInternal
-        project.gradle.attachSettings(
-            mockk(relaxed = true)
-        )
-        return project
-    }
-
-    private fun Project.configureProjectWithDeltaCoverage(
-        applyConfiguration: DeltaCoverageConfiguration.() -> Unit,
-    ) = with(project) {
-        pluginManager.apply("java")
-        pluginManager.apply("io.github.surpsg.delta-coverage")
-
-        project.extensions.configure(DeltaCoverageConfiguration::class.java) {
-            it.applyConfiguration()
-        }
     }
 }

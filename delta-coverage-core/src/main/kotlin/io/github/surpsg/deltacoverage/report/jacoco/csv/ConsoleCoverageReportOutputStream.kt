@@ -8,7 +8,7 @@ internal class ConsoleCoverageReportOutputStream(
     private val outputStream: OutputStream
 ) : OutputStream() {
 
-    private var byteArrayOutputStream = ByteArrayOutputStream()
+    private val byteArrayOutputStream = ByteArrayOutputStream()
 
     override fun write(b: Int) = byteArrayOutputStream.write(b)
 

@@ -1,15 +1,15 @@
 package io.github.surpsg.deltacoverage.gradle
 
+import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.comparables.shouldBeEqualComparingTo
 import io.kotest.matchers.maps.shouldContainKey
 import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 
 class ViolationRulesTest {
 
-    private val project: Project = ProjectBuilder.builder().build()
+    private val project: Project = testJavaProject()
 
     @Test
     fun `failOnCoverageLessThan should set all coverage values to a single value and failOnViolation is set to true`() {

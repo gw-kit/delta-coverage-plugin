@@ -2,6 +2,9 @@
 
 ## <NEXT-RELEASE>
 
+### Added
+- Added native Git support #53.
+
 ### Fixed
 - Fixed diff generation by JGit client. Now it ignores whitespaces. 
 

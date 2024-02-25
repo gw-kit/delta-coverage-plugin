@@ -23,11 +23,25 @@ open class DeltaCoveragePlugin : Plugin<Project> {
 
         CoverageEngineAutoApply().apply(project, deltaCoverageConfig)
 
-        project.tasks.create(DELTA_COVERAGE_TASK, DeltaCoverageTask::class.java) { deltaCoverageTask ->
+        val deltaCoverageTask: DeltaCoverageTask = project.tasks.create(
+            DELTA_COVERAGE_TASK,
+            DeltaCoverageTask::class.java
+        ) { deltaCoverageTask ->
             with(deltaCoverageTask) {
                 configureDependencies()
                 deltaCoverageConfigProperty.set(deltaCoverageConfig)
                 applySourcesInputs(deltaCoverageConfig)
+            }
+        }
+
+        project.tasks.register(GIT_DIFF_TASK, NativeGitDiffTask::class.java) { gitDiffTask ->
+            val diffSource = deltaCoverageConfig.diffSource
+            if (diffSource.git.useNativeGit.get()) {
+                gitDiffTask.targetBranch.set(diffSource.git.diffBase)
+
+                diffSource.git.nativeGitDiffFile.set(gitDiffTask.diffFile)
+
+                deltaCoverageTask.dependsOn(gitDiffTask)
             }
         }
     }
@@ -74,6 +88,7 @@ open class DeltaCoveragePlugin : Plugin<Project> {
     companion object {
         const val DELTA_COVERAGE_REPORT_EXTENSION = "deltaCoverageReport"
         const val DELTA_COVERAGE_TASK = "deltaCoverage"
+        const val GIT_DIFF_TASK = "gitDiff"
 
         val DELTA_TASK_DEPENDENCIES = setOf(
             JavaPlugin.CLASSES_TASK_NAME,
