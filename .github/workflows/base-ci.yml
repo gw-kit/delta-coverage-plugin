@@ -33,7 +33,7 @@ jobs:
         run: ${gradle_cmd} check detektMain detektTest :koverXmlReport --rerun
 
       - name: Add test results to PR
-        uses: EnricoMi/publish-unit-test-result-action@v2.14.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.15.1
         if: ${{ github.event_name == 'pull_request' }}
         continue-on-error: true
         with:
