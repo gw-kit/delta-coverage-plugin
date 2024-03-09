@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.report.console
 
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
 
@@ -91,5 +92,30 @@ class ConsoleReportFacadeTest {
             
         """.trimIndent()
         String(outputStream.toByteArray()) shouldBe expectedReport
+    }
+
+    @Test
+    fun `generateReport should shrink class name to 100 symbols if exceeds 100 chars threshold`() {
+        val seed = "t"
+        val className = seed.repeat(123)
+        val expectedClass = "..." + seed.repeat(97)
+        val rawCoverageData = listOf(
+            RawCoverageData.newBlank {
+                group = "any"
+                aClass = className
+                linesCovered = 1
+                linesTotal = 2
+            },
+        )
+        val coverageDataProvider = object : RawCoverageDataProvider {
+            override fun obtainData() = rawCoverageData
+        }
+        val outputStream = ByteArrayOutputStream()
+
+        // WHEN
+        ConsoleReportFacade.generateReport(coverageDataProvider, outputStream)
+
+        // THEN
+        outputStream.toString() shouldContain "| $expectedClass | 50%   |"
     }
 }
