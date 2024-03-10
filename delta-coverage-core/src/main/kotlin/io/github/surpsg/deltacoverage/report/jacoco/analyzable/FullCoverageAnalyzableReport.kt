@@ -25,6 +25,7 @@ internal open class FullCoverageAnalyzableReport(
 
     override fun buildVisitor(): IReportVisitor {
         return report.jacocoReports
+            .sortedBy { it.reportType.priority }
             .mapNotNull { buildReportVisitor(it) }
             .let(::MultiReportVisitor)
     }
@@ -36,10 +37,7 @@ internal open class FullCoverageAnalyzableReport(
 
             ReportType.CSV -> reportFile.createFileOutputStream().let(CSVFormatter()::createVisitor)
 
-            ReportType.HTML -> {
-                ConsoleHtmlReportLinkRenderer.render(reportBound, reportFile)
-                FileMultiReportOutput(reportFile).let(HTMLFormatter()::createVisitor)
-            }
+            ReportType.HTML -> buildHtmReportVisitor(reportFile)
 
             ReportType.CONSOLE -> {
                 if (reportBound == ReportBound.FULL_REPORT) {
@@ -47,6 +45,16 @@ internal open class FullCoverageAnalyzableReport(
                 } else {
                     ConsoleCoverageReportOutputStream(System.out).let(CSVFormatter()::createVisitor)
                 }
+            }
+        }
+    }
+
+    private fun buildHtmReportVisitor(reportFile: File): IReportVisitor {
+        val htmlReporter: IReportVisitor = FileMultiReportOutput(reportFile).let(HTMLFormatter()::createVisitor)
+        return object : IReportVisitor by htmlReporter {
+            override fun visitEnd() {
+                htmlReporter.visitEnd()
+                ConsoleHtmlReportLinkRenderer.render(reportBound, reportFile)
             }
         }
     }

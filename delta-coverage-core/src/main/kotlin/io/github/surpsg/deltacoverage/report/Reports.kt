@@ -32,12 +32,13 @@ data class JacocoReport(
     val reportsConfig: ReportsConfig
 )
 
-enum class ReportType {
-    HTML,
-    XML,
+@Suppress("MagicNumber")
+enum class ReportType(val priority: Int) {
+    CONSOLE(1),
+    HTML(2),
+    XML(3),
     @Deprecated("CSV will be removed soon.")
-    CSV,
-    CONSOLE,
+    CSV(Int.MAX_VALUE),
 }
 
 data class Violations(
