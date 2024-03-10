@@ -23,9 +23,11 @@ internal object CoverageReportFactory {
         namedReportLoadStrategy: NamedReportLoadStrategy,
         enabledReports: List<ReportType>,
     ): Sequence<ReportBuilder> {
-        return enabledReports.asSequence().map { reportType ->
-            reportType.buildReportBuilder(namedReportLoadStrategy, reportsConfig)
-        }
+        return enabledReports.asSequence()
+            .sortedBy { it.priority }
+            .map { reportType ->
+                reportType.buildReportBuilder(namedReportLoadStrategy, reportsConfig)
+            }
     }
 
     private fun obtainEnabledReportTypes(reportsConfig: ReportsConfig): List<ReportType> =
