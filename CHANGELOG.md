@@ -1,12 +1,16 @@
 # Delta-Coverage Gradle plugin Changelog
 
-## <NEXT-RELEASE>
+## 2.2.0
 
 ### Added
 - Added native Git support #53.
 
 ### Fixed
-- Fixed diff generation by JGit client. Now it ignores whitespaces. 
+- Fixed diff generation by JGit client. Now it ignores whitespaces.
+- Fixed broken console report layout when class name is too long #92.
+
+### Changed
+- HTML report link is printed after console report.
 
 
 ## 2.1.0
