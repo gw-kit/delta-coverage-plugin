@@ -5,6 +5,9 @@ import java.io.OutputStream
 
 internal object ConsoleReportFacade {
 
+    private const val MAX_CLASS_COLUMN_LENGTH = 100
+    private const val SHRINK_PLACEHOLDER = "..."
+
     private const val PERCENT_MULTIPLIER = 100
     private const val DELTA_COVERAGE_TITLE = "Delta Coverage Stats"
 
@@ -42,7 +45,7 @@ internal object ConsoleReportFacade {
     private fun RawCoverageData.toValuesCollection(): List<String> = HEADERS.map { header ->
         when (header) {
             SOURCE_H -> source
-            CLASS_H -> aClass
+            CLASS_H -> aClass.shrinkClassName(MAX_CLASS_COLUMN_LENGTH)
             LINES_H -> linesRatio.formatToPercentage()
 
             BRANCHES_H -> {
@@ -70,5 +73,15 @@ internal object ConsoleReportFacade {
             "%.2f"
         }
         return pattern.format(percents) + '%'
+    }
+
+    private fun String.shrinkClassName(maxLength: Int): String {
+        return if (length > maxLength) {
+            val startIndex = length - maxLength + SHRINK_PLACEHOLDER.length
+            val keepRange = startIndex until length
+            SHRINK_PLACEHOLDER + substring(keepRange)
+        } else {
+            this
+        }
     }
 }

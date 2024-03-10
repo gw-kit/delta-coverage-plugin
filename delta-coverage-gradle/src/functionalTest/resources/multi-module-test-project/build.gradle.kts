@@ -4,7 +4,7 @@ import io.github.surpsg.deltacoverage.gradle.CoverageEntity.*
 
 plugins {
     java
-    kotlin("jvm") version "1.9.10"
+    kotlin("jvm") version "1.9.23"
     id("io.github.surpsg.delta-coverage")
 }
 
@@ -26,7 +26,7 @@ subprojects {
     }
 
     dependencies {
-        testImplementation(platform("org.junit:junit-bom:5.10.0"))
+        testImplementation(platform("org.junit:junit-bom:5.10.2"))
         testImplementation("org.junit.jupiter:junit-jupiter")
     }
 }

@@ -157,6 +157,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
         
         // Compares current HEAD and all uncommited with provided branch, revision or tag.
         git.compareWith.set("refs/remotes/origin/develop")
+        git.useNativeGit.set(true) // Optional. Default is 'false'. If 'true' then the plugin uses native git to get diff.
     }
 
     // Required. 

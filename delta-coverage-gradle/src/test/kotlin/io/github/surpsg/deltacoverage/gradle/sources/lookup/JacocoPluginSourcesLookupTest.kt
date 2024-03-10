@@ -2,17 +2,15 @@ package io.github.surpsg.deltacoverage.gradle.sources.lookup
 
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.sources.SourceType
+import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.matchers.collections.shouldHaveAtLeastSize
 import io.kotest.matchers.collections.shouldHaveSize
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
-import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 
 internal class JacocoPluginSourcesLookupTest {
-
-    private val project: Project = ProjectBuilder.builder().build()
 
     @ParameterizedTest
     @EnumSource(SourceType::class)
@@ -20,9 +18,8 @@ internal class JacocoPluginSourcesLookupTest {
         sourceType: SourceType
     ) {
         // GIVEN
-        project.pluginManager.apply {
-            apply("java")
-            apply("jacoco")
+        val project: Project = testJavaProject {
+            pluginManager.apply("jacoco")
         }
 
         val sourcesLookup = JacocoPluginSourcesLookup(
@@ -45,7 +42,7 @@ internal class JacocoPluginSourcesLookupTest {
         sourceType: SourceType
     ) {
         // GIVEN
-        project.pluginManager.apply("java")
+        val project: Project = testJavaProject()
 
         val sourcesLookup = JacocoPluginSourcesLookup(
             SourcesAutoLookup.Context(

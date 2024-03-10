@@ -9,7 +9,6 @@ import org.gradle.testkit.runner.TaskOutcome.SUCCESS
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import java.io.File
 
 @GradlePluginTest(TestProjects.SINGLE_MODULE)
 class DeltaCoverageGradleReleasesTest {
@@ -34,7 +33,8 @@ class DeltaCoverageGradleReleasesTest {
             "5.6",
             "6.7.1",
             "7.6.4",
-            "8.6", // the latest release candidate
+            "8.6",
+            "8.7-rc-2", // the latest release candidate
         ]
     )
     fun `deltaCoverage task should be completed successfully on Gradle release`(

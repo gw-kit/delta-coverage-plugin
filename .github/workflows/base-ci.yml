@@ -12,42 +12,42 @@ jobs:
       gradle_cmd: "./gradlew --parallel --console=plain --no-watch-fs -s "
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
           cache: gradle
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Build & Test
-        run: ${gradle_cmd} check :koverXmlReport --rerun
+        run: ${gradle_cmd} check detektMain detektTest :koverXmlReport --rerun
 
       - name: Add test results to PR
-        uses: EnricoMi/publish-unit-test-result-action@v2.7.0
-        if: ${{ github.event_name == 'pull_request' }}
+        uses: EnricoMi/publish-unit-test-result-action@v2.15.1
+        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
         continue-on-error: true
         with:
           files:
             '**/tests-artifacts/**/test-results/**/*.xml'
 
       - name: Run Delta Coverage check
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
         run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
 
       - name: Add Delta Coverage report to PR
         id: coverage-in-PR
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
         uses: madrapps/jacoco-report@v1.6.1
         continue-on-error: true
         with:
@@ -56,7 +56,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: build/reports/kover/report.xml

@@ -51,7 +51,7 @@ class KoverViolationsTest {
         gradleRunner
             .runDeltaCoverageTaskAndFail()
             .assertOutputContainsStrings(
-                "BRANCH: expectedMin=1.0, actual=0.5",
+                "BRANCH: expectedMin=1.0, actual=0.75",
                 "LINE: expectedMin=1.0, actual=0.6",
                 "INSTRUCTION: expectedMin=1.0, actual=0.6"
             )

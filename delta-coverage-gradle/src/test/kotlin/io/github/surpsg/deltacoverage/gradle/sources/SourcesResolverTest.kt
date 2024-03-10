@@ -3,6 +3,7 @@ package io.github.surpsg.deltacoverage.gradle.sources
 import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.sources.lookup.JacocoPluginSourcesLookup.Companion.JACOCO_REPORT_TASK
+import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldHaveSize
@@ -10,7 +11,7 @@ import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldEndWith
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
-import org.gradle.testfixtures.ProjectBuilder
+import org.gradle.api.internal.project.ProjectInternal
 import org.gradle.testing.jacoco.tasks.JacocoReportBase
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -20,8 +21,6 @@ import org.junit.jupiter.params.provider.MethodSource
 import kotlin.reflect.KMutableProperty1
 
 internal class SourcesResolverTest {
-
-    private val project: Project = ProjectBuilder.builder().build()
 
     private val sourcesResolver = SourcesResolver()
 
@@ -33,7 +32,8 @@ internal class SourcesResolverTest {
     ) {
         // GIVEN
         val expectedFile = "expected/path/$sourceType"
-        val context: SourcesResolver.Context = project.sourceContext(sourceType) {
+        val project = testJavaProject()
+        val context: SourcesResolver.Context = testJavaProject().sourceContext(sourceType) {
             coverage.engine.set(CoverageEngine.JACOCO)
             deltaConfigSetter.set(this, project.files(expectedFile))
         }
@@ -55,6 +55,7 @@ internal class SourcesResolverTest {
         deltaConfigSetter: KMutableProperty1<DeltaCoverageConfiguration, FileCollection>
     ) {
         // GIVEN
+        val project = testJavaProject()
         val emptyFiles = project.files()
         val context: SourcesResolver.Context = project.sourceContext(sourceType) {
             coverage.engine.set(CoverageEngine.JACOCO)
@@ -79,6 +80,7 @@ internal class SourcesResolverTest {
         sourceType: SourceType
     ) {
         // GIVEN
+        val project = testJavaProject()
         val context: SourcesResolver.Context = project.sourceContext(sourceType) {
             coverage.engine.set(CoverageEngine.JACOCO)
         }
@@ -101,7 +103,7 @@ internal class SourcesResolverTest {
         sourceType: SourceType
     ) {
         // GIVEN
-        project.applyJacocoPlugin {
+        val project = testGradleProjectWithJacoco {
             sourceDirectories.setFrom(project.files())
             classDirectories.setFrom(project.files())
             executionData.setFrom(project.files())
@@ -122,16 +124,16 @@ internal class SourcesResolverTest {
         }
     }
 
-    private fun Project.applyJacocoPlugin(
+    private fun testGradleProjectWithJacoco(
         customize: JacocoReportBase.() -> Unit
-    ) {
-        pluginManager.apply {
-            apply("java")
-            apply("jacoco")
+    ): ProjectInternal {
+        return testJavaProject {
+            pluginManager.apply("jacoco")
+
+            tasks.findByPath(JACOCO_REPORT_TASK)
+                .let { it as JacocoReportBase }
+                .apply(customize)
         }
-        tasks.findByPath(JACOCO_REPORT_TASK)
-            .let { it as JacocoReportBase }
-            .apply(customize)
     }
 
     private fun Project.sourceContext(

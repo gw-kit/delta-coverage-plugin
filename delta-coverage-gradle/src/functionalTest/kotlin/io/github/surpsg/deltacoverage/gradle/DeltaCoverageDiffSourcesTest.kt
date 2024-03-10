@@ -109,6 +109,35 @@ class DeltaCoverageDiffSourcesTest {
             )
     }
 
+    @Test
+    fun `delta-coverage should use native git to generate diff`() {
+        // setup
+        prepareTestProjectWithGit()
+
+        buildFile.file.appendText(
+            """
+            deltaCoverageReport {
+                diffSource {
+                    git.diffBase.set('HEAD')
+                    git.useNativeGit.set(true)
+                }    
+                
+                violationRules.failIfCoverageLessThan(0.8d)
+            }
+            
+            """.trimIndent()
+        )
+
+        // run // assert
+        gradleRunner
+            .runDeltaCoverageTaskAndFail()
+            .assertOutputContainsStrings(
+                "instructions covered ratio is 0.5, but expected minimum is 0.8",
+                "branches covered ratio is 0.5, but expected minimum is 0.8",
+                "lines covered ratio is 0.6, but expected minimum is 0.8"
+            )
+    }
+
     private fun prepareTestProjectWithGit() {
         rootProjectDir.resolve(".gitignore").apply {
             appendText("\n*")
