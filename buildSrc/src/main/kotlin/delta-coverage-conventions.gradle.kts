@@ -9,8 +9,9 @@ plugins {
 deltaCoverageReport {
     coverage.engine = CoverageEngine.INTELLIJ
 
-    diffSource {
-        git.diffBase = project.properties["diffBase"]?.toString() ?: "refs/remotes/origin/main"
+    diffSource.byGit {
+        diffBase = project.properties["diffBase"]?.toString() ?: "refs/remotes/origin/main"
+        useNativeGit = true
     }
 
     reports {
@@ -20,4 +21,8 @@ deltaCoverageReport {
     }
 
     violationRules.failIfCoverageLessThan(0.9)
+}
+
+tasks.named("gitDiff") {
+    outputs.upToDateWhen { false } // TODO: remove this after migration to the next release after 2.2.0
 }
