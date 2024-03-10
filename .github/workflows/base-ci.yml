@@ -34,20 +34,20 @@ jobs:
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.15.1
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
         continue-on-error: true
         with:
           files:
             '**/tests-artifacts/**/test-results/**/*.xml'
 
       - name: Run Delta Coverage check
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
         run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
 
       - name: Add Delta Coverage report to PR
         id: coverage-in-PR
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
         uses: madrapps/jacoco-report@v1.6.1
         continue-on-error: true
         with:
