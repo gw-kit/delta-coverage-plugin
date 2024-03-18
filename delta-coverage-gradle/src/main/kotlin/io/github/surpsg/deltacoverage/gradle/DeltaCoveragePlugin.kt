@@ -43,6 +43,7 @@ open class DeltaCoveragePlugin : Plugin<Project> {
 
                 deltaCoverageTask.dependsOn(gitDiffTask)
             }
+            gitDiffTask.dependsOn(JavaPlugin.CLASSES_TASK_NAME)
         }
     }
 

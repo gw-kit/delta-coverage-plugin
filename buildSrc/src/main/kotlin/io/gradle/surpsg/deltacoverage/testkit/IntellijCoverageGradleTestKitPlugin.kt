@@ -1,7 +1,7 @@
 package io.gradle.surpsg.deltacoverage.testkit
 
-import gradle.kotlin.dsl.accessors._3f43988357485d31034aa73ecb58fd1e.main
-import gradle.kotlin.dsl.accessors._3f43988357485d31034aa73ecb58fd1e.sourceSets
+import gradle.kotlin.dsl.accessors._2d431fe70f97db7ed774a1727194046a.main
+import gradle.kotlin.dsl.accessors._2d431fe70f97db7ed774a1727194046a.sourceSets
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
