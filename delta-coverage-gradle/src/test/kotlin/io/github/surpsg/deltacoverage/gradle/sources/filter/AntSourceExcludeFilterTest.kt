@@ -9,6 +9,8 @@ import io.kotest.matchers.collections.shouldHaveSingleElement
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
 internal class AntSourceExcludeFilterTest {
 
@@ -36,12 +38,27 @@ internal class AntSourceExcludeFilterTest {
         }
     }
 
-    @Test
-    fun `should filter exclude file if matched to filter`() {
+    @ParameterizedTest
+    @CsvSource(
+        "exclude-1.txt, **/exclude-1.txt",
+        "exclude-2.txt, **/exclude-*.txt",
+        "a/exclude-3.txt, **/exclude-*.txt",
+        "a/exclude-4.txt, **/a/*",
+        "a/b/exclude-5.txt, **/a/b/**",
+        "a/b/exclude-6.txt, **/b/**",
+        "a/b/c/d/exclude-7.txt, **/a/**/d/**",
+    )
+    fun `should filter exclude file if matched to filter`(
+        filePathToExclude: String,
+        excludePattern: String,
+    ) {
         // GIVEN
-        val expectedFile = "file-2.txt"
-        val excludeFilters = AntSourceExcludeFilter(listOf("file-1.txt"))
-        val originSources = project.files("file-1.txt", expectedFile).onEach {
+        val expectedFile = "file-to-keep.txt"
+        val excludeFilters = AntSourceExcludeFilter(listOf(excludePattern))
+        val originSources = project.files(
+            project.layout.buildDirectory.file(filePathToExclude).get().asFile,
+            expectedFile
+        ).onEach {
             it.parentFile.mkdirs()
             it.createNewFile()
         }

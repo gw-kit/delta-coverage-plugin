@@ -1,5 +1,13 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## 2.2.1
+
+### Fixed
+- Fixed exclude classes ant pattern matching.
+- Fixed up-to-date state for diff generation by native git. 
+  Now the task is considered not up-to-date if classes have been changed.
+
+
 ## 2.2.0
 
 ### Added
