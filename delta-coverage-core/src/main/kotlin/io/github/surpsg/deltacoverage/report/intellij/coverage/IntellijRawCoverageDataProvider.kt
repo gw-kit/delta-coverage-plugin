@@ -4,8 +4,8 @@ import com.intellij.rt.coverage.data.ClassData
 import com.intellij.rt.coverage.data.LineData
 import com.intellij.rt.coverage.data.ProjectData
 import com.intellij.rt.coverage.report.XMLCoverageReport
-import io.github.surpsg.deltacoverage.report.console.RawCoverageData
-import io.github.surpsg.deltacoverage.report.console.RawCoverageDataProvider
+import io.github.surpsg.deltacoverage.report.textual.RawCoverageData
+import io.github.surpsg.deltacoverage.report.textual.RawCoverageDataProvider
 
 internal class IntellijRawCoverageDataProvider(
     private val projectData: ProjectData,

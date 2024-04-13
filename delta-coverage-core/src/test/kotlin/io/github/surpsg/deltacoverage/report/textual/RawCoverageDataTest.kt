@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.report.console
+package io.github.surpsg.deltacoverage.report.textual
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields

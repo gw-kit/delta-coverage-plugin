@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.report.jacoco
 
 import io.github.surpsg.deltacoverage.config.ReportsConfig
+import io.github.surpsg.deltacoverage.report.EnabledReportTypeFactory
 import io.github.surpsg.deltacoverage.report.FullReport
 import io.github.surpsg.deltacoverage.report.JacocoDeltaReport
 import io.github.surpsg.deltacoverage.report.JacocoReport
@@ -13,7 +14,7 @@ internal fun reportFactory(
     reportContext: ReportContext
 ): Set<FullReport> {
     val reportsConfig: ReportsConfig = reportContext.deltaCoverageConfig.reportsConfig
-    val reportTypes: Set<ReportType> = obtainEnabledReportTypes(reportsConfig)
+    val reportTypes: Set<ReportType> = EnabledReportTypeFactory.obtain(reportsConfig)
 
     val allReports: MutableSet<FullReport> = mutableSetOf()
     allReports += JacocoDeltaReport(
@@ -45,13 +46,3 @@ private fun ReportBound.buildJacocoReports(
         )
     }
 }
-
-private fun obtainEnabledReportTypes(reportsConfig: ReportsConfig): Set<ReportType> = sequenceOf(
-    ReportType.HTML to reportsConfig.html.enabled,
-    ReportType.XML to reportsConfig.xml.enabled,
-    ReportType.CSV to reportsConfig.csv.enabled,
-    ReportType.CONSOLE to reportsConfig.console.enabled,
-)
-    .filter { (_, enabled) -> enabled }
-    .map { (reportType, _) -> reportType }
-    .toSet()

@@ -175,6 +175,9 @@ open class ReportsConfiguration(
     val console: Property<Boolean> = objectFactory.booleanProperty(false)
 
     @Input
+    val markdown: Property<Boolean> = objectFactory.booleanProperty(false)
+
+    @Input
     val baseReportDir: Property<String> = objectFactory.stringProperty {
         Paths.get("build", "reports").toString()
     }
@@ -187,6 +190,7 @@ open class ReportsConfiguration(
             "xml=${xml.get()}, " +
             "csv=${csv.get()}, " +
             "console=${console.get()}, " +
+            "console=${markdown.get()}, " +
             "baseReportDir='${baseReportDir.get()}')"
 }
 

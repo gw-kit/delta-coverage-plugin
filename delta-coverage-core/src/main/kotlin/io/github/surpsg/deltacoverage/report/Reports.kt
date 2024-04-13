@@ -15,7 +15,9 @@ open class FullReport(
             ReportType.XML -> ReportPathStrategy.Xml(jacocoReport.reportsConfig)
             ReportType.CSV -> ReportPathStrategy.Csv(jacocoReport.reportsConfig)
             ReportType.CONSOLE -> ReportPathStrategy.Console(jacocoReport.reportsConfig)
+            ReportType.MARKDOWN -> ReportPathStrategy.Markdown(jacocoReport.reportsConfig)
         }
+        println("${jacocoReport.reportType} ${reportPathStrategy}")
         return reportPathStrategy.buildReportPath(jacocoReport.reportBound)
     }
 }
@@ -36,7 +38,9 @@ data class JacocoReport(
 enum class ReportType(val priority: Int) {
     CONSOLE(1),
     HTML(2),
-    XML(3),
+    MARKDOWN(3),
+    XML(4),
+
     @Deprecated("CSV will be removed soon.")
     CSV(Int.MAX_VALUE),
 }

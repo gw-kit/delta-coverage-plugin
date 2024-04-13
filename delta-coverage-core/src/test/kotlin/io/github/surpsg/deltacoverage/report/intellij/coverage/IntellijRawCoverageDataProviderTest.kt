@@ -2,7 +2,7 @@ package io.github.surpsg.deltacoverage.report.intellij.coverage
 
 import com.intellij.rt.coverage.data.LineData
 import com.intellij.rt.coverage.data.ProjectData
-import io.github.surpsg.deltacoverage.report.console.RawCoverageData
+import io.github.surpsg.deltacoverage.report.textual.RawCoverageData
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields

@@ -53,8 +53,9 @@ class KoverReportsTest {
                 reports {
                     baseReportDir.set("$baseReportDir")
                     html.set(true)
-                    xml.set(true)
+                    xml = true
                     console = true
+                    markdown = true
                     fullCoverageReport.set(true)
                 }
             }
@@ -88,6 +89,12 @@ class KoverReportsTest {
         }
         val xmlReportFile = baseReportDir.resolve("report.xml")
         assertSoftly(xmlReportFile) {
+            shouldExist()
+            shouldBeAFile()
+        }
+
+        val markdownReportFile = baseReportDir.resolve("report.md")
+        assertSoftly(markdownReportFile) {
             shouldExist()
             shouldBeAFile()
         }
