@@ -21,10 +21,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          cache: gradle
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -32,18 +31,17 @@ jobs:
       - name: Build & Test
         run: ${gradle_cmd} check detektMain detektTest :koverXmlReport --rerun
 
-      - name: Add test results to PR
-        uses: EnricoMi/publish-unit-test-result-action@v2.16.1
-        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
-        continue-on-error: true
-        with:
-          files:
-            '**/tests-artifacts/**/test-results/**/*.xml'
-
       - name: Run Delta Coverage check
         if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
         run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
+
+      - name: Append Delta Coverage Summary
+        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
+        continue-on-error: true
+        run: |
+          cat build/reports/coverage-reports/delta-coverage/report.md >> $GITHUB_STEP_SUMMARY
+          echo '---' >> $GITHUB_STEP_SUMMARY
 
       - name: Add Delta Coverage report to PR
         id: coverage-in-PR
@@ -51,9 +49,17 @@ jobs:
         uses: madrapps/jacoco-report@v1.6.1
         continue-on-error: true
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           paths:
             'build/reports/coverage-reports/delta-coverage/report.xml'
-          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add test results to PR
+        uses: EnricoMi/publish-unit-test-result-action@v2.16.1
+        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
+        continue-on-error: true
+        with:
+          files:
+            '**/build/test-results/*/TEST-*.xml'
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
