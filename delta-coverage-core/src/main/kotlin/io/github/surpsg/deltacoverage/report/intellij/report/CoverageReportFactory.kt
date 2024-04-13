@@ -37,6 +37,7 @@ internal object CoverageReportFactory {
                     ReportType.HTML -> ReportType.HTML to reportsConfig.html.enabled
                     ReportType.XML -> ReportType.XML to reportsConfig.xml.enabled
                     ReportType.CONSOLE -> ReportType.CONSOLE to reportsConfig.console.enabled
+                    ReportType.MARKDOWN -> ReportType.MARKDOWN to reportsConfig.markdown.enabled
                     ReportType.CSV -> ReportType.CSV to reportsConfig.csv.enabled
                 }
             }
@@ -51,19 +52,28 @@ internal object CoverageReportFactory {
         val reporter = Reporter(reportLoadStrategy.reportLoadStrategy)
         return when (this) {
             ReportType.HTML -> HtmlReportBuilder(
-                reportLoadStrategy.reportName,
-                reportLoadStrategy.reportBound,
-                reportsConfig,
-                reporter,
+                reportName = reportLoadStrategy.reportName,
+                reportBound = reportLoadStrategy.reportBound,
+                reportsConfig = reportsConfig,
+                reporter = reporter,
             )
 
             ReportType.XML -> XmlReportBuilder(
-                reportLoadStrategy.reportBound,
-                reportsConfig,
-                reporter,
+                reportBound = reportLoadStrategy.reportBound,
+                reportsConfig = reportsConfig,
+                reporter = reporter,
             )
 
-            ReportType.CONSOLE -> ConsoleReportBuilder(reportLoadStrategy.reportBound, reporter)
+            ReportType.CONSOLE -> ConsoleReportBuilder(
+                reportBound = reportLoadStrategy.reportBound,
+                reporter = reporter,
+            )
+
+            ReportType.MARKDOWN -> MarkdownReportBuilder(
+                reportBound = reportLoadStrategy.reportBound,
+                reportsConfig = reportsConfig,
+                reporter = reporter,
+            )
 
             ReportType.CSV -> error("Unsupported report type: $this")
         }

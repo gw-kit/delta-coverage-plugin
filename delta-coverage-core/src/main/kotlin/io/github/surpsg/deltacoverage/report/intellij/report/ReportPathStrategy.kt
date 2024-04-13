@@ -2,6 +2,7 @@ package io.github.surpsg.deltacoverage.report.intellij.report
 
 import io.github.surpsg.deltacoverage.config.ReportsConfig
 import io.github.surpsg.deltacoverage.report.ReportBound
+import io.github.surpsg.deltacoverage.report.ReportType
 import java.io.File
 
 sealed class ReportPathStrategy(
@@ -48,6 +49,12 @@ sealed class ReportPathStrategy(
         reportsConfig: ReportsConfig
     ) : ReportPathStrategy(reportsConfig) {
         override val reportFileName: String = reportsConfig.console.outputFileName
+    }
+
+    class Markdown(
+        reportsConfig: ReportsConfig
+    ) : ReportPathStrategy(reportsConfig) {
+        override val reportFileName: String = reportsConfig.markdown.outputFileName
     }
 
     companion object {

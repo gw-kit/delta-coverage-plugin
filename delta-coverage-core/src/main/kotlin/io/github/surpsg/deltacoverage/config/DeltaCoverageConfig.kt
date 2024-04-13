@@ -140,6 +140,7 @@ class ReportsConfig private constructor(
     val xml: ReportConfig,
     val csv: ReportConfig,
     val console: ReportConfig,
+    val markdown: ReportConfig,
     val baseReportDir: String,
     val fullCoverageReport: Boolean,
 ) {
@@ -154,10 +155,13 @@ class ReportsConfig private constructor(
         @Deprecated(message = "This property will be removed in the next major release.")
         var csv: ReportConfig = ReportConfig {}
         var console: ReportConfig = ReportConfig {}
+        var markdown: ReportConfig = ReportConfig {}
         var baseReportDir: String = ""
         var fullCoverageReport: Boolean = false
 
-        fun build(): ReportsConfig = ReportsConfig(html, xml, csv, console, baseReportDir, fullCoverageReport)
+        fun build(): ReportsConfig = ReportsConfig(
+            html, xml, csv, console, markdown, baseReportDir, fullCoverageReport,
+        )
     }
 
     companion object {

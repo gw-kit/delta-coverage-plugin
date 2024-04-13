@@ -1,10 +1,15 @@
-package io.github.surpsg.deltacoverage.report.light
+package io.github.surpsg.deltacoverage.report.textual
 
 import java.io.OutputStream
 import java.io.PrintWriter
+import java.util.Collections
 import kotlin.math.max
 
-internal abstract class LightReportRenderer {
+internal abstract class TextualReportRenderer {
+
+    abstract val hDelim: String
+    abstract val vDelim: String
+    abstract val joinDelim: String
 
     fun render(context: Context) = with(context) {
         val printWriter = PrintWriter(outputStream, true)
@@ -35,6 +40,27 @@ internal abstract class LightReportRenderer {
             }
         }
         return widthMap
+    }
+
+    protected fun PrintWriter.printLine(widthMap: List<Int>) {
+        for (i in widthMap.indices) {
+            val line: String = Collections.nCopies(widthMap[i] + vDelim.length + 1, hDelim)
+                .joinToString("") { it }
+            print(joinDelim + line + (if (i == widthMap.size - 1) joinDelim else ""))
+        }
+        println()
+    }
+
+    @Suppress("ImplicitDefaultLocale")
+    protected fun PrintWriter.printRow(cells: List<String>, widthMap: List<Int>) {
+        for (i in cells.indices) {
+            val verStrTemp = if (i == cells.size - 1) vDelim else ""
+
+            print(
+                String.format("%s %-${widthMap[i]}s %s", vDelim, cells[i], verStrTemp)
+            )
+        }
+        println()
     }
 
     class Context private constructor(

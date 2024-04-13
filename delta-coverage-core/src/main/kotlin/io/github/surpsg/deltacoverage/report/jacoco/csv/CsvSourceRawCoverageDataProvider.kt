@@ -1,7 +1,7 @@
 package io.github.surpsg.deltacoverage.report.jacoco.csv
 
-import io.github.surpsg.deltacoverage.report.light.RawCoverageData
-import io.github.surpsg.deltacoverage.report.light.RawCoverageDataProvider
+import io.github.surpsg.deltacoverage.report.textual.RawCoverageData
+import io.github.surpsg.deltacoverage.report.textual.RawCoverageDataProvider
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
 

@@ -1,14 +1,13 @@
-package io.github.surpsg.deltacoverage.report.light.console.asciitable
+package io.github.surpsg.deltacoverage.report.textual.asciitable
 
-import io.github.surpsg.deltacoverage.report.light.LightReportRenderer
+import io.github.surpsg.deltacoverage.report.textual.TextualReportRenderer
 import java.io.PrintWriter
-import java.util.Collections
 
-internal object AsciiTableRenderer : LightReportRenderer() {
+internal object AsciiTableRenderer : TextualReportRenderer() {
 
-    private const val H_DELIM = "-"
-    private const val V_DELIM: String = "|"
-    private const val JOIN_DELIM: String = "+"
+    override val hDelim: String = "-"
+    override val vDelim: String = "|"
+    override val joinDelim: String = "+"
 
     override fun Context.renderTitle(printWriter: PrintWriter, widthMap: List<Int>) = with(printWriter) {
         printLine(widthMap)
@@ -43,29 +42,8 @@ internal object AsciiTableRenderer : LightReportRenderer() {
         val totalInterCellsDelim = widthMap.size - 1
         val normalizationLength = totalCellsLength + totalLeftRightPadding + totalInterCellsDelim
         print(
-            String.format("%s %-${normalizationLength}s %s", V_DELIM, title, V_DELIM)
+            String.format("%s %-${normalizationLength}s %s", vDelim, title, vDelim)
         )
-        println()
-    }
-
-    private fun PrintWriter.printLine(widthMap: List<Int>) {
-        for (i in widthMap.indices) {
-            val line: String = Collections.nCopies(widthMap[i] + V_DELIM.length + 1, H_DELIM)
-                .joinToString("") { it }
-            print(JOIN_DELIM + line + (if (i == widthMap.size - 1) JOIN_DELIM else ""))
-        }
-        println()
-    }
-
-    @Suppress("ImplicitDefaultLocale")
-    private fun PrintWriter.printRow(cells: List<String>, widthMap: List<Int>) {
-        for (i in cells.indices) {
-            val verStrTemp = if (i == cells.size - 1) V_DELIM else ""
-
-            print(
-                String.format("%s %-${widthMap[i]}s %s", V_DELIM, cells[i], verStrTemp)
-            )
-        }
         println()
     }
 }

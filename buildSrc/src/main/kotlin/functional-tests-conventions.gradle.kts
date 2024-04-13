@@ -33,6 +33,8 @@ testing.suites {
 
         targets.all {
             testTask.configure {
+                outputs.upToDateWhen { false }
+
                 description = "Runs the functional tests."
                 group = "verification"
 

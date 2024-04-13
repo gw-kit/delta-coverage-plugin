@@ -1,9 +1,10 @@
-package io.github.surpsg.deltacoverage.report.light
+package io.github.surpsg.deltacoverage.report.textual
 
-import io.github.surpsg.deltacoverage.report.light.console.asciitable.AsciiTableRenderer
+import io.github.surpsg.deltacoverage.report.ReportType
+import io.github.surpsg.deltacoverage.report.textual.TextualReportRenderer.Context
 import java.io.OutputStream
 
-internal object ConsoleReportFacade {
+internal object TextualReportFacade {
 
     private const val MAX_CLASS_COLUMN_LENGTH = 100
     private const val SHRINK_PLACEHOLDER = "..."
@@ -20,10 +21,9 @@ internal object ConsoleReportFacade {
     private val HEADERS = listOf(SOURCE_H, CLASS_H, LINES_H, BRANCHES_H)
 
     fun generateReport(
-        coverageDataProvider: RawCoverageDataProvider,
-        outputStream: OutputStream
+        buildContext: BuildContext,
     ) {
-        val rawCoverageData: List<RawCoverageData> = coverageDataProvider.obtainData()
+        val rawCoverageData: List<RawCoverageData> = buildContext.coverageDataProvider.obtainData()
         val coverageDataValues: List<List<String>> =
             rawCoverageData
                 .sortedByDescending { it.linesRatio }
@@ -31,9 +31,9 @@ internal object ConsoleReportFacade {
                 .map { it.toValuesCollection() }
                 .toList()
 
-        AsciiTableRenderer.render(
-            LightReportRenderer.Context {
-                output = outputStream
+        TextualReportRendererFactory.getBy(buildContext.reportType).render(
+            Context {
+                output = buildContext.outputStream
                 title = DELTA_COVERAGE_TITLE
                 headers = HEADERS
                 footer = rawCoverageData.computeTotal().toValuesCollection()
@@ -82,6 +82,22 @@ internal object ConsoleReportFacade {
             SHRINK_PLACEHOLDER + substring(keepRange)
         } else {
             this
+        }
+    }
+
+    internal class BuildContext(
+        val reportType: ReportType,
+        val coverageDataProvider: RawCoverageDataProvider,
+        val outputStream: OutputStream,
+    ) {
+
+        init {
+            val supportedTypes = setOf(ReportType.CONSOLE, ReportType.MARKDOWN)
+            require(
+                reportType in supportedTypes
+            ) {
+                "Supports only $supportedTypes types"
+            }
         }
     }
 }

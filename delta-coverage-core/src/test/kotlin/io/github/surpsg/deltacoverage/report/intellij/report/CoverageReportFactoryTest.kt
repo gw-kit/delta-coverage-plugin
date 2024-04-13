@@ -6,6 +6,7 @@ import com.intellij.rt.coverage.report.api.Filters
 import io.github.surpsg.deltacoverage.config.ReportConfig
 import io.github.surpsg.deltacoverage.config.ReportsConfig
 import io.github.surpsg.deltacoverage.report.ReportBound
+import io.github.surpsg.deltacoverage.report.ReportType
 import io.github.surpsg.deltacoverage.report.intellij.coverage.NamedReportLoadStrategy
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldThrow
@@ -29,6 +30,8 @@ class CoverageReportFactoryTest {
             html = ReportConfig { enabled = false }
             xml = ReportConfig { enabled = false }
             csv = ReportConfig { enabled = false }
+            console = ReportConfig { enabled = false }
+            markdown = ReportConfig { enabled = false }
         }
 
         // WHEN
@@ -49,6 +52,7 @@ class CoverageReportFactoryTest {
             xml = ReportConfig { enabled = true }
             csv = ReportConfig { enabled = true }
             console = ReportConfig { enabled = true }
+            markdown = ReportConfig { enabled = true }
         }
 
         // WHEN
@@ -82,6 +86,7 @@ class CoverageReportFactoryTest {
             html = ReportConfig { enabled = true }
             xml = ReportConfig { enabled = true }
             console = ReportConfig { enabled = true }
+            markdown = ReportConfig { enabled = true }
         }
         val reportLoadStrategy = anyReportLoadStrategy()
 
@@ -93,7 +98,7 @@ class CoverageReportFactoryTest {
 
         // THEN
         assertSoftly(actualBuilders.toList()) {
-            shouldHaveSize(3)
+            shouldHaveSize(4)
 
             shouldContain(
                 HtmlReportBuilder(
@@ -120,9 +125,18 @@ class CoverageReportFactoryTest {
             shouldContain(
                 ConsoleReportBuilder(
                     REPORT_BOUND,
-                    Reporter(reportLoadStrategy.reportLoadStrategy)
+                    Reporter(reportLoadStrategy.reportLoadStrategy),
                 ),
                 EqualByFields.fromFields(ConsoleReportBuilder::reportBound)
+            )
+
+            shouldContain(
+                MarkdownReportBuilder(
+                    REPORT_BOUND,
+                    config,
+                    Reporter(reportLoadStrategy.reportLoadStrategy),
+                ),
+                EqualByFields.fromFields(MarkdownReportBuilder::reportBound)
             )
         }
     }
