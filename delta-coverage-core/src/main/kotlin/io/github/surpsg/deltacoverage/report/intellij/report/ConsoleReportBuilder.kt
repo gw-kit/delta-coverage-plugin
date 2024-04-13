@@ -14,12 +14,14 @@ internal class ConsoleReportBuilder(
 
     override fun buildReport() {
         if (reportBound == ReportBound.DELTA_REPORT) {
-            val coverageDataProvider = IntellijRawCoverageDataProvider(reporter.projectData)
-            val buildContext = BuildContext(
-                reportType = ReportType.CONSOLE,
-                coverageDataProvider = coverageDataProvider,
-                outputStream = System.out,
-            )
+            val dataProvider = IntellijRawCoverageDataProvider(reporter.projectData)
+            val buildContext = BuildContext {
+                reportType = ReportType.CONSOLE
+                reportBound = this@ConsoleReportBuilder.reportBound
+                coverageDataProvider = dataProvider
+                outputStream = System.out
+                shrinkLongClassName = true
+            }
             TextualReportFacade.generateReport(buildContext)
         }
     }

@@ -38,16 +38,17 @@ internal open class FullCoverageAnalyzableReport(
 
             ReportType.HTML -> buildHtmReportVisitor(reportFile)
 
-            ReportType.MARKDOWN -> {
-                TextualReportOutputStream(jacocoReport.reportType, reportFile.createFileOutputStream())
-                    .let(CSVFormatter()::createVisitor)
-            }
+            ReportType.MARKDOWN -> TextualReportOutputStream(
+                jacocoReport.reportType,
+                jacocoReport.reportBound,
+                reportFile.createFileOutputStream()
+            ).let(CSVFormatter()::createVisitor)
 
             ReportType.CONSOLE -> {
                 if (reportBound == ReportBound.FULL_REPORT) {
                     null
                 } else {
-                    TextualReportOutputStream(jacocoReport.reportType, System.out)
+                    TextualReportOutputStream(jacocoReport.reportType, jacocoReport.reportBound, System.out)
                         .let(CSVFormatter()::createVisitor)
                 }
             }

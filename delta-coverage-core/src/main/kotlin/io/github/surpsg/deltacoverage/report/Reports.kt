@@ -17,6 +17,7 @@ open class FullReport(
             ReportType.CONSOLE -> ReportPathStrategy.Console(jacocoReport.reportsConfig)
             ReportType.MARKDOWN -> ReportPathStrategy.Markdown(jacocoReport.reportsConfig)
         }
+        println("${jacocoReport.reportType} ${reportPathStrategy}")
         return reportPathStrategy.buildReportPath(jacocoReport.reportBound)
     }
 }

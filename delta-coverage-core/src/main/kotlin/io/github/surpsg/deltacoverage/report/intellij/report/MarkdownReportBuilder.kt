@@ -17,12 +17,13 @@ internal class MarkdownReportBuilder(
 
     override fun buildReport() {
         val reportPath: File = ReportPathStrategy.Markdown(reportsConfig).buildReportPath(reportBound)
-        reportPath.outputStream().use { outputStream ->
-            val buildContext = BuildContext(
-                reportType = ReportType.MARKDOWN,
-                coverageDataProvider = IntellijRawCoverageDataProvider(reporter.projectData),
-                outputStream = outputStream,
-            )
+        reportPath.outputStream().use { os ->
+            val buildContext = BuildContext {
+                reportType = ReportType.MARKDOWN
+                reportBound = this@MarkdownReportBuilder.reportBound
+                coverageDataProvider = IntellijRawCoverageDataProvider(reporter.projectData)
+                outputStream = os
+            }
             TextualReportFacade.generateReport(buildContext)
         }
     }

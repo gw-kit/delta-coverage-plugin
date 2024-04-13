@@ -1,5 +1,10 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## <NEXT-RELEASE>
+
+### Added
+- Added markdown report.
+
 ## 2.2.1
 
 ### Fixed

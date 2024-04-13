@@ -1,6 +1,8 @@
 package io.github.surpsg.deltacoverage.report.textual
 
+import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportType
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Nested
@@ -8,6 +10,20 @@ import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
 
 class TextualReportFacadeTest {
+
+    @Test
+    fun `should throw if provided unsupported report type`() {
+        shouldThrow<IllegalArgumentException> {
+            TextualReportFacade.BuildContext {
+                reportType = ReportType.XML
+                reportBound = ReportBound.DELTA_REPORT
+                coverageDataProvider = object : RawCoverageDataProvider {
+                    override fun obtainData() = emptyList<RawCoverageData>()
+                }
+                outputStream = ByteArrayOutputStream()
+            }
+        }
+    }
 
     @Nested
     inner class ConsoleReportTest {
@@ -32,15 +48,15 @@ class TextualReportFacadeTest {
                     linesTotal = 8
                 }
             )
-            val coverageDataProvider = object : RawCoverageDataProvider {
-                override fun obtainData() = rawCoverageData
+            val stream = ByteArrayOutputStream()
+            val buildContext = TextualReportFacade.BuildContext {
+                reportType = ReportType.CONSOLE
+                reportBound = ReportBound.DELTA_REPORT
+                coverageDataProvider = object : RawCoverageDataProvider {
+                    override fun obtainData() = rawCoverageData
+                }
+                outputStream = stream
             }
-            val outputStream = ByteArrayOutputStream()
-            val buildContext = TextualReportFacade.BuildContext(
-                reportType = ReportType.CONSOLE,
-                coverageDataProvider = coverageDataProvider,
-                outputStream = outputStream,
-            )
 
             // WHEN
             TextualReportFacade.generateReport(buildContext)
@@ -59,7 +75,7 @@ class TextualReportFacadeTest {
                 +--------+--------+--------+----------+
                 
             """.trimIndent()
-            String(outputStream.toByteArray()) shouldBe expectedReport
+            stream.toString() shouldBe expectedReport
         }
 
         @Test
@@ -74,15 +90,15 @@ class TextualReportFacadeTest {
                     linesTotal = 0
                 },
             )
-            val coverageDataProvider = object : RawCoverageDataProvider {
-                override fun obtainData() = rawCoverageData
+            val stream = ByteArrayOutputStream()
+            val buildContext = TextualReportFacade.BuildContext {
+                reportType = ReportType.CONSOLE
+                reportBound = ReportBound.DELTA_REPORT
+                coverageDataProvider = object : RawCoverageDataProvider {
+                    override fun obtainData() = rawCoverageData
+                }
+                outputStream = stream
             }
-            val outputStream = ByteArrayOutputStream()
-            val buildContext = TextualReportFacade.BuildContext(
-                reportType = ReportType.CONSOLE,
-                coverageDataProvider = coverageDataProvider,
-                outputStream = outputStream,
-            )
 
             // WHEN
             TextualReportFacade.generateReport(buildContext)
@@ -100,11 +116,11 @@ class TextualReportFacadeTest {
                 +--------+--------+-------+----------+
                 
             """.trimIndent()
-            String(outputStream.toByteArray()) shouldBe expectedReport
+            stream.toString() shouldBe expectedReport
         }
 
         @Test
-        fun `generateReport should shrink class name to 100 symbols if exceeds 100 chars threshold`() {
+        fun `generateReport should shrink class name if shrinking enabled and exceeds 100 chars threshold`() {
             val seed = "t"
             val className = seed.repeat(123)
             val expectedClass = "..." + seed.repeat(97)
@@ -116,21 +132,22 @@ class TextualReportFacadeTest {
                     linesTotal = 2
                 },
             )
-            val coverageDataProvider = object : RawCoverageDataProvider {
-                override fun obtainData() = rawCoverageData
+            val stream = ByteArrayOutputStream()
+            val buildContext = TextualReportFacade.BuildContext {
+                reportType = ReportType.CONSOLE
+                reportBound = ReportBound.DELTA_REPORT
+                coverageDataProvider = object : RawCoverageDataProvider {
+                    override fun obtainData() = rawCoverageData
+                }
+                outputStream = stream
+                shrinkLongClassName = true
             }
-            val outputStream = ByteArrayOutputStream()
-            val buildContext = TextualReportFacade.BuildContext(
-                reportType = ReportType.CONSOLE,
-                coverageDataProvider = coverageDataProvider,
-                outputStream = outputStream,
-            )
 
             // WHEN
             TextualReportFacade.generateReport(buildContext)
 
             // THEN
-            outputStream.toString() shouldContain "| $expectedClass | 50%   |"
+            stream.toString() shouldContain "| $expectedClass | 50%   |"
         }
     }
 
@@ -157,15 +174,15 @@ class TextualReportFacadeTest {
                     linesTotal = 8
                 }
             )
-            val coverageDataProvider = object : RawCoverageDataProvider {
-                override fun obtainData() = rawCoverageData
+            val stream = ByteArrayOutputStream()
+            val buildContext = TextualReportFacade.BuildContext {
+                reportType = ReportType.MARKDOWN
+                reportBound = ReportBound.DELTA_REPORT
+                coverageDataProvider = object : RawCoverageDataProvider {
+                    override fun obtainData() = rawCoverageData
+                }
+                outputStream = stream
             }
-            val outputStream = ByteArrayOutputStream()
-            val buildContext = TextualReportFacade.BuildContext(
-                reportType = ReportType.MARKDOWN,
-                coverageDataProvider = coverageDataProvider,
-                outputStream = outputStream,
-            )
 
             // WHEN
             TextualReportFacade.generateReport(buildContext)
@@ -181,8 +198,7 @@ class TextualReportFacadeTest {
             | Total  |        | 83.33% | 75%      |
             
         """.trimIndent()
-            val actual = String(outputStream.toByteArray())
-            actual shouldBe expectedReport
+            stream.toString() shouldBe expectedReport
         }
 
         @Test
@@ -197,15 +213,15 @@ class TextualReportFacadeTest {
                     linesTotal = 0
                 },
             )
-            val coverageDataProvider = object : RawCoverageDataProvider {
-                override fun obtainData() = rawCoverageData
+            val stream = ByteArrayOutputStream()
+            val buildContext = TextualReportFacade.BuildContext {
+                reportType = ReportType.MARKDOWN
+                reportBound = ReportBound.DELTA_REPORT
+                coverageDataProvider = object : RawCoverageDataProvider {
+                    override fun obtainData() = rawCoverageData
+                }
+                outputStream = stream
             }
-            val outputStream = ByteArrayOutputStream()
-            val buildContext = TextualReportFacade.BuildContext(
-                reportType = ReportType.MARKDOWN,
-                coverageDataProvider = coverageDataProvider,
-                outputStream = outputStream,
-            )
 
             // WHEN
             TextualReportFacade.generateReport(buildContext)
@@ -220,15 +236,13 @@ class TextualReportFacadeTest {
             | Total  |        | NaN%  |          |
             
         """.trimIndent()
-            val actual = String(outputStream.toByteArray())
-            actual shouldBe expectedReport
+            stream.toString() shouldBe expectedReport
         }
 
         @Test
-        fun `generateReport should shrink class name to 100 symbols if exceeds 100 chars threshold`() {
+        fun `generateReport should not shrink class name if shrinking is disabled`() {
             val seed = "t"
             val className = seed.repeat(123)
-            val expectedClass = "..." + seed.repeat(97)
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
                     group = "any"
@@ -237,21 +251,22 @@ class TextualReportFacadeTest {
                     linesTotal = 2
                 },
             )
-            val coverageDataProvider = object : RawCoverageDataProvider {
-                override fun obtainData() = rawCoverageData
+            val stream = ByteArrayOutputStream()
+            val buildContext = TextualReportFacade.BuildContext {
+                reportType = ReportType.MARKDOWN
+                reportBound = ReportBound.DELTA_REPORT
+                coverageDataProvider = object : RawCoverageDataProvider {
+                    override fun obtainData() = rawCoverageData
+                }
+                outputStream = stream
+                shrinkLongClassName = false
             }
-            val outputStream = ByteArrayOutputStream()
-            val buildContext = TextualReportFacade.BuildContext(
-                reportType = ReportType.MARKDOWN,
-                coverageDataProvider = coverageDataProvider,
-                outputStream = outputStream,
-            )
 
             // WHEN
             TextualReportFacade.generateReport(buildContext)
 
             // THEN
-            outputStream.toString() shouldContain "| $expectedClass | 50%   |"
+            stream.toString() shouldContain "| $className | 50%   |"
         }
     }
 }

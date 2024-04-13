@@ -49,6 +49,7 @@ class DeltaCoverageReportsTest {
                     xml.set(true)
                     csv.set(true)
                     console.set(true)
+                    markdown.set(true)
                     fullCoverageReport.set(true)
                 }
             }
@@ -81,7 +82,7 @@ class DeltaCoverageReportsTest {
             shouldContainFile("index.html")
             shouldContainFile("com.java.test")
         }
-        sequenceOf("report.xml", "report.csv")
+        sequenceOf("report.xml", "report.csv", "report.md")
             .map { file -> baseReportDir.resolve(file) }
             .forEach { reportFile ->
                 assertSoftly(reportFile) {

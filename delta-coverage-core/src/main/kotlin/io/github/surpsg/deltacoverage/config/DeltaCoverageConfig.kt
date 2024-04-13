@@ -135,6 +135,7 @@ enum class CoverageEntity {
     INSTRUCTION, BRANCH, LINE
 }
 
+@Suppress("LongParameterList")
 class ReportsConfig private constructor(
     val html: ReportConfig,
     val xml: ReportConfig,

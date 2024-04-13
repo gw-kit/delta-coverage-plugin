@@ -184,6 +184,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
         html.set(true) // Optional. default `false`
         xml.set(true) // Optional. default `false`
         console.set(true) // Optional. default `false`
+        markdown.set(true) // Optional. default `false`
         csv.set(true) // [Deprecated]. Optional. default `false`
         reportDir.set("dir/to/store/reports") // Optional. Default 'build/reports/coverage-reports'
     }
@@ -276,6 +277,9 @@ Failed:
 </details>
 
 ### Console report
+
+The report is printed to the console.
+
 ```
 +----------------------------+----------------------+--------+----------+
 | Delta Coverage Stats                                                  |
@@ -288,8 +292,9 @@ Failed:
 +----------------------------+----------------------+--------+----------+
 ```
 
+### Markdown report
 
-# Delta Coverage Stats
+The report is saved to the file `build/reports/coverage-reports/delta-coverage/report.md`.
 
 | Source | Class  | Lines  | Branches |
 |--------|--------|--------|----------|

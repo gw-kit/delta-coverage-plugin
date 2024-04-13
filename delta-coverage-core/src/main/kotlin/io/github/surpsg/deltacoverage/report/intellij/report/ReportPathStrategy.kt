@@ -2,7 +2,6 @@ package io.github.surpsg.deltacoverage.report.intellij.report
 
 import io.github.surpsg.deltacoverage.config.ReportsConfig
 import io.github.surpsg.deltacoverage.report.ReportBound
-import io.github.surpsg.deltacoverage.report.ReportType
 import java.io.File
 
 sealed class ReportPathStrategy(

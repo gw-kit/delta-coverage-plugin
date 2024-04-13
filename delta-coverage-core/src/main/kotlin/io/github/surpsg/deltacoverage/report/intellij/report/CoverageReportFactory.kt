@@ -2,6 +2,7 @@ package io.github.surpsg.deltacoverage.report.intellij.report
 
 import com.intellij.rt.coverage.report.Reporter
 import io.github.surpsg.deltacoverage.config.ReportsConfig
+import io.github.surpsg.deltacoverage.report.EnabledReportTypeFactory
 import io.github.surpsg.deltacoverage.report.ReportType
 import io.github.surpsg.deltacoverage.report.intellij.coverage.NamedReportLoadStrategy
 
@@ -11,7 +12,7 @@ internal object CoverageReportFactory {
         reportsConfig: ReportsConfig,
         reportLoadStrategies: Iterable<NamedReportLoadStrategy>,
     ): Sequence<ReportBuilder> {
-        val enabledReports: List<ReportType> = obtainEnabledReportTypes(reportsConfig)
+        val enabledReports: Iterable<ReportType> = EnabledReportTypeFactory.obtain(reportsConfig)
         return reportLoadStrategies.asSequence()
             .flatMap { loadStrategy ->
                 buildReportBuilders(reportsConfig, loadStrategy, enabledReports)
@@ -21,7 +22,7 @@ internal object CoverageReportFactory {
     private fun buildReportBuilders(
         reportsConfig: ReportsConfig,
         namedReportLoadStrategy: NamedReportLoadStrategy,
-        enabledReports: List<ReportType>,
+        enabledReports: Iterable<ReportType>,
     ): Sequence<ReportBuilder> {
         return enabledReports.asSequence()
             .sortedBy { it.priority }
@@ -29,21 +30,6 @@ internal object CoverageReportFactory {
                 reportType.buildReportBuilder(namedReportLoadStrategy, reportsConfig)
             }
     }
-
-    private fun obtainEnabledReportTypes(reportsConfig: ReportsConfig): List<ReportType> =
-        ReportType.entries.asSequence()
-            .map { reportType ->
-                when (reportType) {
-                    ReportType.HTML -> ReportType.HTML to reportsConfig.html.enabled
-                    ReportType.XML -> ReportType.XML to reportsConfig.xml.enabled
-                    ReportType.CONSOLE -> ReportType.CONSOLE to reportsConfig.console.enabled
-                    ReportType.MARKDOWN -> ReportType.MARKDOWN to reportsConfig.markdown.enabled
-                    ReportType.CSV -> ReportType.CSV to reportsConfig.csv.enabled
-                }
-            }
-            .filter { (_, enabled) -> enabled }
-            .map { (reportType, _) -> reportType }
-            .toList()
 
     private fun ReportType.buildReportBuilder(
         reportLoadStrategy: NamedReportLoadStrategy,
