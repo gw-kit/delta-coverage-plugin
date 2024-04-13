@@ -18,11 +18,8 @@ deltaCoverageReport {
         html = true
         xml = true
         console = true
+        markdown = true
     }
 
     violationRules.failIfCoverageLessThan(0.9)
-}
-
-tasks.named("gitDiff") {
-    outputs.upToDateWhen { false } // TODO: remove this after migration to the next release after 2.2.0
 }
