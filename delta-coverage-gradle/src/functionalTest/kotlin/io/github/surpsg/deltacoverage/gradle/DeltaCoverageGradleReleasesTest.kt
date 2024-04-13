@@ -34,7 +34,7 @@ class DeltaCoverageGradleReleasesTest {
             "6.7.1",
             "7.6.4",
             "8.6",
-            "8.7-rc-2", // the latest release candidate
+            "8.7", // the latest release or release candidate
         ]
     )
     fun `deltaCoverage task should be completed successfully on Gradle release`(
