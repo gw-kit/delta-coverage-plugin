@@ -1,6 +1,6 @@
 package io.github.surpsg.deltacoverage.report.jacoco.csv
 
-import io.github.surpsg.deltacoverage.report.console.RawCoverageData
+import io.github.surpsg.deltacoverage.report.light.RawCoverageData
 
 internal fun CsvCoverageView.toCoverageData(): RawCoverageData = let { csvView ->
     RawCoverageData {

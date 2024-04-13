@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.report.console
+package io.github.surpsg.deltacoverage.report.light
 
 internal interface RawCoverageDataProvider {
 

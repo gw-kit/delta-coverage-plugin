@@ -1,6 +1,6 @@
 package io.github.surpsg.deltacoverage.report.jacoco.csv
 
-import io.github.surpsg.deltacoverage.report.console.ConsoleReportFacade
+import io.github.surpsg.deltacoverage.report.light.ConsoleReportFacade
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 

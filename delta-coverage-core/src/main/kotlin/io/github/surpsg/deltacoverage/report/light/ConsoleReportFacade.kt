@@ -1,6 +1,6 @@
-package io.github.surpsg.deltacoverage.report.console
+package io.github.surpsg.deltacoverage.report.light
 
-import io.github.surpsg.deltacoverage.report.console.asciitable.AsciiTableRenderer
+import io.github.surpsg.deltacoverage.report.light.console.asciitable.AsciiTableRenderer
 import java.io.OutputStream
 
 internal object ConsoleReportFacade {
@@ -32,7 +32,7 @@ internal object ConsoleReportFacade {
                 .toList()
 
         AsciiTableRenderer.render(
-            AsciiTableRenderer.Context {
+            LightReportRenderer.Context {
                 output = outputStream
                 title = DELTA_COVERAGE_TITLE
                 headers = HEADERS

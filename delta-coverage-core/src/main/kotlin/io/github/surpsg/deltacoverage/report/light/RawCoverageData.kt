@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.report.console
+package io.github.surpsg.deltacoverage.report.light
 
 internal class RawCoverageData private constructor(
     val source: String,
