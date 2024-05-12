@@ -7,6 +7,7 @@ import io.kotest.matchers.collections.shouldHaveAtLeastSize
 import io.kotest.matchers.collections.shouldHaveSize
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 
@@ -36,11 +37,8 @@ internal class JacocoPluginSourcesLookupTest {
         actualSources shouldHaveAtLeastSize 1
     }
 
-    @ParameterizedTest
-    @EnumSource(SourceType::class, mode = EnumSource.Mode.EXCLUDE, names = ["SOURCES"])
-    fun `should return empty source if jacoco not found in project`(
-        sourceType: SourceType
-    ) {
+    @Test
+    fun `should return empty source if jacoco not found in project`() {
         // GIVEN
         val project: Project = testJavaProject()
 
@@ -52,7 +50,7 @@ internal class JacocoPluginSourcesLookupTest {
             )
         )
         // WHEN
-        val actualSources: FileCollection = sourcesLookup.lookup(sourceType)
+        val actualSources: FileCollection = sourcesLookup.lookup(SourceType.COVERAGE_BINARIES)
 
         // THEN
         actualSources shouldHaveSize 0

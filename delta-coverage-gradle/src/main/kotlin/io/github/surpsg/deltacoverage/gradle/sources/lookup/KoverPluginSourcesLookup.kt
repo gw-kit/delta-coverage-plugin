@@ -1,8 +1,9 @@
 package io.github.surpsg.deltacoverage.gradle.sources.lookup
 
 import io.github.surpsg.deltacoverage.gradle.sources.lookup.SourcesAutoLookup.Companion.newAutoDetectedSources
+import io.github.surpsg.deltacoverage.gradle.sources.lookup.sourceset.AllSourceSets
+import io.github.surpsg.deltacoverage.gradle.sources.lookup.sourceset.SourceSetsLookup
 import org.gradle.api.Task
-import org.gradle.api.file.FileCollection
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.FileSystem
@@ -18,53 +19,48 @@ internal class KoverPluginSourcesLookup(
 ) : CacheableLookupSources(lookupContext) {
 
     override fun lookupSources(lookupContext: SourcesAutoLookup.Context): SourcesAutoLookup.AutoDetectedSources {
-        return lookupContext.project.allprojects.asSequence()
+        val koverBinaries: Set<String> = lookupContext.project.allprojects.asSequence()
             .map { it.tasks.findByName(KOVER_GENERATE_ARTIFACTS_TASK_NAME) }
             .filterNotNull()
-            .fold(lookupContext.objectFactory.newAutoDetectedSources()) { koverInputs, koverGenerateArtifactsTask ->
+            .fold(setOf()) { allBinaries, koverGenerateArtifactsTask ->
                 log.debug("Found Kover configuration in gradle project '{}'", koverGenerateArtifactsTask.project.name)
 
-                koverInputs.apply {
-                    applyKoverOutputs(koverGenerateArtifactsTask)
-                }
+                allBinaries + obtainKoverBinaries(koverGenerateArtifactsTask)
             }
-            .apply {
-                val sourceCodeSources: FileCollection = SourceCodeLookup().lookupSourceCode(lookupContext.project)
-                allSources.from(sourceCodeSources)
-            }
+        val sourceCodeSources: AllSourceSets = SourceSetsLookup().lookupSourceSets(lookupContext.project)
+        return lookupContext.objectFactory.newAutoDetectedSources().apply {
+            allSources.from(sourceCodeSources.allSources)
+            allClasses.from(sourceCodeSources.allClasses)
+            allBinaryCoverageFiles.from(koverBinaries)
+        }
     }
 
-    private fun SourcesAutoLookup.AutoDetectedSources.applyKoverOutputs(
+    private fun obtainKoverBinaries(
         koverGenerateArtifactsTask: Task
-    ) {
+    ): Set<String> {
         val rootProjectPath: Path = koverGenerateArtifactsTask.resolveRootProjectDirPath()
-        koverGenerateArtifactsTask.outputs
+        return koverGenerateArtifactsTask.outputs
             .files
             .asSequence()
             .map { fileSystem.getPath(it.absolutePath) }
             .filter { it.name.endsWith(KOVER_ARTIFACTS_FILE_NAME) }
             .take(1)
             .mapNotNull { it.parseArtifactFile(rootProjectPath) }
-            .forEach {
-                allBinaryCoverageFiles.from(it.coverageBinaries)
-                allClasses.from(it.classFiles)
-            }
+            .flatMap { it }
+            .toSet()
     }
 
     private fun Task.resolveRootProjectDirPath(): Path =
         fileSystem.getPath(project.rootProject.layout.projectDirectory.asFile.absolutePath)
 
-    private fun Path.parseArtifactFile(rootProjectPath: Path): KoverArtifacts? = if (exists()) {
+    private fun Path.parseArtifactFile(rootProjectPath: Path): Set<String>? = if (exists()) {
         val iterator: Iterator<String> = readLines().iterator()
 
         iterator.readArtifactsSection(rootProjectPath)
-        val outputs: Set<String> = iterator.readArtifactsSection(rootProjectPath)
-        val coverageBinaries: Set<String> = iterator.readArtifactsSection(rootProjectPath)
+        iterator.readArtifactsSection(rootProjectPath)
 
-        KoverArtifacts(
-            coverageBinaries = coverageBinaries,
-            classFiles = outputs,
-        )
+        val coverageBinaries: Set<String> = iterator.readArtifactsSection(rootProjectPath)
+        coverageBinaries
     } else {
         null
     }
@@ -76,11 +72,6 @@ internal class KoverPluginSourcesLookup(
             .map { it.absolutePathString() }
             .toSet()
     }
-
-    private data class KoverArtifacts(
-        val coverageBinaries: Set<String>,
-        val classFiles: Set<String>,
-    )
 
     private fun Iterator<String>.readUntil(
         interruptCondition: (String) -> Boolean
