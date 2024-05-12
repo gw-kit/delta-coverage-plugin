@@ -37,7 +37,7 @@ internal class JacocoPluginSourcesLookupTest {
     }
 
     @ParameterizedTest
-    @EnumSource(SourceType::class)
+    @EnumSource(SourceType::class, mode = EnumSource.Mode.EXCLUDE, names = ["SOURCES"])
     fun `should return empty source if jacoco not found in project`(
         sourceType: SourceType
     ) {

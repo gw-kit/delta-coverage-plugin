@@ -75,7 +75,7 @@ internal class SourcesResolverTest {
     }
 
     @ParameterizedTest
-    @EnumSource(SourceType::class)
+    @EnumSource(SourceType::class, mode = EnumSource.Mode.EXCLUDE, names = ["SOURCES"])
     fun `should throw if source is empty and delta-cov sources are not set and jacoco is not applied`(
         sourceType: SourceType
     ) {
@@ -98,7 +98,7 @@ internal class SourcesResolverTest {
     }
 
     @ParameterizedTest
-    @EnumSource(SourceType::class)
+    @EnumSource(SourceType::class, mode = EnumSource.Mode.EXCLUDE, names = ["SOURCES"])
     fun `should throw if source is empty and delta-cov sources are not set and jacoco files is empty`(
         sourceType: SourceType
     ) {

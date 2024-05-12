@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.gradle.sources.lookup
 
 import io.github.surpsg.deltacoverage.gradle.sources.lookup.SourcesAutoLookup.Companion.newAutoDetectedSources
+import org.gradle.api.file.FileCollection
 import org.gradle.testing.jacoco.tasks.JacocoReportBase
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -20,8 +21,10 @@ internal class JacocoPluginSourcesLookup(
                 jacocoInputs.apply {
                     allBinaryCoverageFiles.from(jacocoReport.executionData)
                     allClasses.from(jacocoReport.allClassDirs)
-                    allSources.from(jacocoReport.allSourceDirs)
                 }
+            }.apply {
+                val sourceCodeSources: FileCollection = SourceCodeLookup().lookupSourceCode(lookupContext.project)
+                allSources.from(sourceCodeSources)
             }
     }
 
