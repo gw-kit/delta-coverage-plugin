@@ -2,6 +2,7 @@ package io.github.surpsg.deltacoverage.gradle.sources.lookup
 
 import io.github.surpsg.deltacoverage.gradle.sources.lookup.SourcesAutoLookup.Companion.newAutoDetectedSources
 import org.gradle.api.Task
+import org.gradle.api.file.FileCollection
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.FileSystem
@@ -27,6 +28,10 @@ internal class KoverPluginSourcesLookup(
                     applyKoverOutputs(koverGenerateArtifactsTask)
                 }
             }
+            .apply {
+                val sourceCodeSources: FileCollection = SourceCodeLookup().lookupSourceCode(lookupContext.project)
+                allSources.from(sourceCodeSources)
+            }
     }
 
     private fun SourcesAutoLookup.AutoDetectedSources.applyKoverOutputs(
@@ -43,7 +48,6 @@ internal class KoverPluginSourcesLookup(
             .forEach {
                 allBinaryCoverageFiles.from(it.coverageBinaries)
                 allClasses.from(it.classFiles)
-                allSources.from(it.sources)
             }
     }
 
@@ -53,14 +57,13 @@ internal class KoverPluginSourcesLookup(
     private fun Path.parseArtifactFile(rootProjectPath: Path): KoverArtifacts? = if (exists()) {
         val iterator: Iterator<String> = readLines().iterator()
 
-        val sources: Set<String> = iterator.readArtifactsSection(rootProjectPath)
+        iterator.readArtifactsSection(rootProjectPath)
         val outputs: Set<String> = iterator.readArtifactsSection(rootProjectPath)
         val coverageBinaries: Set<String> = iterator.readArtifactsSection(rootProjectPath)
 
         KoverArtifacts(
             coverageBinaries = coverageBinaries,
             classFiles = outputs,
-            sources = sources,
         )
     } else {
         null
@@ -77,7 +80,6 @@ internal class KoverPluginSourcesLookup(
     private data class KoverArtifacts(
         val coverageBinaries: Set<String>,
         val classFiles: Set<String>,
-        val sources: Set<String>,
     )
 
     private fun Iterator<String>.readUntil(

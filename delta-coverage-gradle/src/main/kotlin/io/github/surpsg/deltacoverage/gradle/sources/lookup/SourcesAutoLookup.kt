@@ -44,8 +44,7 @@ internal interface SourcesAutoLookup {
         fun ObjectFactory.newAutoDetectedSources() = AutoDetectedSources(
             fileCollection(),
             fileCollection(),
-            fileCollection()
+            fileCollection(),
         )
     }
-
 }
