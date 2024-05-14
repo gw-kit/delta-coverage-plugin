@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.gradle.sources.lookup.sourceset
+package io.github.surpsg.deltacoverage.gradle.sources.lookup
 
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.assertions.assertSoftly
@@ -16,7 +16,7 @@ internal class SourceSetsLookupTest {
         val project: Project = testJavaProject()
 
         // WHEN
-        val actualSources: AllSourceSets = SourceSetsLookup().lookupSourceSets(project)
+        val actualSources: SourceSetsLookup.AutoDetectedSources = SourceSetsLookup().lookupSourceSets(project)
 
         // THEN
         assertSoftly(actualSources) {
@@ -31,7 +31,7 @@ internal class SourceSetsLookupTest {
         val project: Project = ProjectBuilder.builder().build()
 
         // WHEN
-        val actualSources: AllSourceSets = SourceSetsLookup().lookupSourceSets(project)
+        val actualSources: SourceSetsLookup.AutoDetectedSources = SourceSetsLookup().lookupSourceSets(project)
 
         // THEN
         assertSoftly(actualSources) {

@@ -1,9 +1,8 @@
 package io.github.surpsg.deltacoverage.gradle.sources.lookup
 
-import io.github.surpsg.deltacoverage.gradle.sources.lookup.SourcesAutoLookup.Companion.newAutoDetectedSources
-import io.github.surpsg.deltacoverage.gradle.sources.lookup.sourceset.AllSourceSets
-import io.github.surpsg.deltacoverage.gradle.sources.lookup.sourceset.SourceSetsLookup
+import io.github.surpsg.deltacoverage.gradle.utils.lazyFileCollection
 import org.gradle.api.Task
+import org.gradle.api.file.FileCollection
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.FileSystem
@@ -18,20 +17,20 @@ internal class KoverPluginSourcesLookup(
     lookupContext: SourcesAutoLookup.Context
 ) : CacheableLookupSources(lookupContext) {
 
-    override fun lookupSources(lookupContext: SourcesAutoLookup.Context): SourcesAutoLookup.AutoDetectedSources {
-        val koverBinaries: Set<String> = lookupContext.project.allprojects.asSequence()
-            .map { it.tasks.findByName(KOVER_GENERATE_ARTIFACTS_TASK_NAME) }
-            .filterNotNull()
-            .fold(setOf()) { allBinaries, koverGenerateArtifactsTask ->
-                log.debug("Found Kover configuration in gradle project '{}'", koverGenerateArtifactsTask.project.name)
+    override fun lookupCoverageBinaries(lookupContext: SourcesAutoLookup.Context): FileCollection {
+        return lookupContext.project.lazyFileCollection {
+            lookupContext.project.allprojects.asSequence()
+                .map { it.tasks.findByName(KOVER_GENERATE_ARTIFACTS_TASK_NAME) }
+                .filterNotNull()
+                .fold(setOf<String>()) { allBinaries, koverGenerateArtifactsTask ->
+                    log.debug(
+                        "Found Kover configuration in gradle project '{}'",
+                        koverGenerateArtifactsTask.project.name
+                    )
 
-                allBinaries + obtainKoverBinaries(koverGenerateArtifactsTask)
-            }
-        val sourceCodeSources: AllSourceSets = SourceSetsLookup().lookupSourceSets(lookupContext.project)
-        return lookupContext.objectFactory.newAutoDetectedSources().apply {
-            allSources.from(sourceCodeSources.allSources)
-            allClasses.from(sourceCodeSources.allClasses)
-            allBinaryCoverageFiles.from(koverBinaries)
+                    allBinaries + obtainKoverBinaries(koverGenerateArtifactsTask)
+                }
+                .let { lookupContext.project.files(it) }
         }
     }
 
