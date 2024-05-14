@@ -1,6 +1,8 @@
 package io.github.surpsg.deltacoverage.gradle.sources.lookup
 
 import io.github.surpsg.deltacoverage.gradle.sources.lookup.SourcesAutoLookup.Companion.newAutoDetectedSources
+import io.github.surpsg.deltacoverage.gradle.sources.lookup.sourceset.AllSourceSets
+import io.github.surpsg.deltacoverage.gradle.sources.lookup.sourceset.SourceSetsLookup
 import org.gradle.api.file.FileCollection
 import org.gradle.testing.jacoco.tasks.JacocoReportBase
 import org.slf4j.Logger
@@ -11,20 +13,23 @@ internal class JacocoPluginSourcesLookup(
 ) : CacheableLookupSources(lookupContext) {
 
     override fun lookupSources(lookupContext: SourcesAutoLookup.Context): SourcesAutoLookup.AutoDetectedSources {
+        val jacocoBinaries: FileCollection = obtainJacocoBinaries(lookupContext)
+        val sourceCodeSources: AllSourceSets = SourceSetsLookup().lookupSourceSets(lookupContext.project)
+        return lookupContext.objectFactory.newAutoDetectedSources().apply {
+            allSources.from(sourceCodeSources.allSources)
+            allClasses.from(sourceCodeSources.allClasses)
+            allBinaryCoverageFiles.from(jacocoBinaries)
+        }
+    }
+
+    private fun obtainJacocoBinaries(lookupContext: SourcesAutoLookup.Context): FileCollection {
         return lookupContext.project.allprojects.asSequence()
             .map { it.tasks.findByName(JACOCO_REPORT_TASK) }
             .filterNotNull()
             .map { it as JacocoReportBase }
-            .fold(lookupContext.objectFactory.newAutoDetectedSources()) { jacocoInputs, jacocoReport ->
+            .fold(lookupContext.project.objects.fileCollection() as FileCollection) { allBinaries, jacocoReport ->
                 log.debug("Found JaCoCo configuration in gradle project '{}'", jacocoReport.project.name)
-
-                jacocoInputs.apply {
-                    allBinaryCoverageFiles.from(jacocoReport.executionData)
-                    allClasses.from(jacocoReport.allClassDirs)
-                }
-            }.apply {
-                val sourceCodeSources: FileCollection = SourceCodeLookup().lookupSourceCode(lookupContext.project)
-                allSources.from(sourceCodeSources)
+                allBinaries + jacocoReport.executionData
             }
     }
 
