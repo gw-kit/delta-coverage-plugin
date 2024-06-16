@@ -5,6 +5,9 @@
 ### Changed
 - Source code paths are infered from sourceSets if no custom paths are specified.
 
+### Added
+- Added GitHub Action for posting delta coverage report to PR comment. See [docs](./actions/delta-coverage-report/README.md)
+
 
 ## 2.3.0
 

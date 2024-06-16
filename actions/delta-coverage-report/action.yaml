@@ -3,7 +3,7 @@ name: Render Delta Coverage Report
 inputs:
   title:
     description: 'Title of the report.'
-    default: ''
+    default: 'Delta Coverage Report'
     required: false
 
   message:
