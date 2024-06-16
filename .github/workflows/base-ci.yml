@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      gradle_cmd: "./gradlew --parallel --console=plain --no-watch-fs -s "
+      gradle_cmd: "./gradlew --parallel -Dorg.gradle.caching=true --console=plain --no-watch-fs -s "
 
     steps:
       - uses: actions/checkout@v4
@@ -21,12 +21,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+          cache: 'gradle'
 
       - name: Build & Test
         run: ${gradle_cmd} check detektMain detektTest :koverXmlReport --rerun
@@ -39,19 +34,10 @@ jobs:
       - name: Append Delta Coverage Summary
         if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
         continue-on-error: true
-        run: |
-          cat build/reports/coverage-reports/delta-coverage/report.md >> $GITHUB_STEP_SUMMARY
-          echo '---' >> $GITHUB_STEP_SUMMARY
-
-      - name: Add Delta Coverage report to PR
-        id: coverage-in-PR
-        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
-        uses: madrapps/jacoco-report@v1.6.1
-        continue-on-error: true
+        uses: ./actions/delta-coverage-report
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          paths:
-            'build/reports/coverage-reports/delta-coverage/report.xml'
+          title: 'Delta Coverage'
+          delta-coverage-report: build/reports/coverage-reports/delta-coverage/report.md
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.16.1
