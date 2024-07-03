@@ -7,7 +7,6 @@ import io.github.surpsg.deltacoverage.report.ReportBound
 import java.io.File
 
 internal class HtmlReportBuilder(
-    val reportName: String,
     val reportBound: ReportBound,
     private val reportsConfig: ReportsConfig,
     private val reporter: Reporter,
@@ -15,11 +14,11 @@ internal class HtmlReportBuilder(
 
     override fun buildReport() {
         val reportPath: File = ReportPathStrategy.Html(reportsConfig).buildReportPath(reportBound)
-        ConsoleHtmlReportLinkRenderer.render(reportBound, reportPath)
+        ConsoleHtmlReportLinkRenderer.render(reportsConfig.view, reportBound, reportPath)
 
         reporter.createHTMLReport(
             reportPath,
-            reportName,
+            reportsConfig.view,
             null
         )
     }

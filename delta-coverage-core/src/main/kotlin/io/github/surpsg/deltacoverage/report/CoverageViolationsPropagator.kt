@@ -8,10 +8,16 @@ import org.slf4j.LoggerFactory
 internal class CoverageViolationsPropagator {
 
     fun propagate(
+        view: String = "default",
         coverageRulesConfig: CoverageRulesConfig,
         violations: List<String>,
     ) {
-        log.info("Fail on violations: {}. Found violations: {}.", coverageRulesConfig.failOnViolation, violations.size)
+        log.info(
+            "[view:{}] Fail on violations: {}. Found violations: {}.",
+            view,
+            coverageRulesConfig.failOnViolation,
+            violations.size
+        )
         if (coverageRulesConfig.failOnViolation) {
             throwIfCoverageViolated(violations)
         } else {

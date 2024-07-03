@@ -25,7 +25,7 @@ class DeltaCoverageConfigTest {
 
         // THEN
         assertSoftly(actualConfig) {
-            reportName shouldBeEqualComparingTo "delta-coverage-report"
+            view shouldBeEqualComparingTo "delta-coverage-report"
             diffSourceConfig shouldBe expectedDiffSource
             reportsConfig shouldBeEqualToComparingFields ReportsConfig {}
             coverageRulesConfig shouldBeEqualToComparingFields CoverageRulesConfig {}
@@ -55,7 +55,7 @@ class DeltaCoverageConfigTest {
 
         // WHEN
         val actualConfig = DeltaCoverageConfig {
-            reportName = expectedReportName
+            viewName = expectedReportName
             diffSourceConfig = expectedDiffSource
             reportsConfig = expectedReportsConfig
             coverageRulesConfig = expectedCoverageRulesConfig
@@ -66,8 +66,8 @@ class DeltaCoverageConfigTest {
 
         // THEN
         assertSoftly(actualConfig) {
-            reportName shouldBeEqualComparingTo expectedReportName
             diffSourceConfig shouldBe expectedDiffSource
+            view shouldBeEqualComparingTo expectedReportName
             reportsConfig shouldBe expectedReportsConfig
             coverageRulesConfig shouldBe expectedCoverageRulesConfig
             binaryCoverageFiles shouldContainExactly expectedBinaries

@@ -114,6 +114,7 @@ class ReportsConfig private constructor(
     val baseReportDir: String,
     val fullCoverageReport: Boolean,
 ) {
+    internal lateinit var view: String
 
     override fun toString(): String = "ReportsConfig(html=$html, xml=$xml, csv=$csv, console=$console," +
             " baseReportDir='$baseReportDir', fullCoverageReport=$fullCoverageReport)"
@@ -170,7 +171,7 @@ class ReportConfig private constructor(
 @Suppress("LongParameterList")
 class DeltaCoverageConfig private constructor(
     val coverageEngine: CoverageEngine,
-    val reportName: String,
+    val view: String,
     val diffSource: DiffSource,
     val reportsConfig: ReportsConfig,
     val coverageRulesConfig: CoverageRulesConfig,
@@ -181,7 +182,7 @@ class DeltaCoverageConfig private constructor(
 
     override fun toString(): String {
         return "DeltaCoverageConfig(" +
-                "reportName='$reportName'" +
+                "view='$view'" +
                 ", diffSource=${diffSource.sourceDescription}" +
                 ", reportsConfig=$reportsConfig" +
                 ", coverageRulesConfig=$coverageRulesConfig" +
@@ -194,7 +195,7 @@ class DeltaCoverageConfig private constructor(
     @DeltaCoverageConfigMarker
     class Builder internal constructor() {
         var coverageEngine: CoverageEngine = CoverageEngine.JACOCO
-        var reportName: String = "delta-coverage-report"
+        var viewName: String = "delta-coverage-report"
         var diffSource: DiffSource? = null
         var reportsConfig: ReportsConfig = ReportsConfig {}
         var coverageRulesConfig: CoverageRulesConfig = CoverageRulesConfig {}
@@ -204,9 +205,9 @@ class DeltaCoverageConfig private constructor(
 
         fun build(): DeltaCoverageConfig = DeltaCoverageConfig(
             coverageEngine,
-            reportName,
+            viewName,
             requireNotNull(diffSource),
-            reportsConfig,
+            reportsConfig.apply { view = viewName },
             coverageRulesConfig,
             binaryCoverageFiles.toSet(),
             classFiles.toSet(),

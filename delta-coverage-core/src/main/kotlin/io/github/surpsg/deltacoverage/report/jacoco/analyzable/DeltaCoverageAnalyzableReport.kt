@@ -57,7 +57,10 @@ internal class DeltaCoverageAnalyzableReport(
 
             override fun visitEnd() {
                 val violations: List<String> = violationsOutputResolver.getViolations()
-                coverageViolationsPropagator.propagate(violationRuleConfig, violations)
+                coverageViolationsPropagator.propagate(
+                    coverageRulesConfig = violationRuleConfig,
+                    violations = violations
+                )
             }
         }
 

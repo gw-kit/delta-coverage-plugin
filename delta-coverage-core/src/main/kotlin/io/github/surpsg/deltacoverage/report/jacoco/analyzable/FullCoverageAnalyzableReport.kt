@@ -36,7 +36,7 @@ internal open class FullCoverageAnalyzableReport(
 
             ReportType.CSV -> reportFile.createFileOutputStream().let(CSVFormatter()::createVisitor)
 
-            ReportType.HTML -> buildHtmReportVisitor(reportFile)
+            ReportType.HTML -> buildHtmReportVisitor(jacocoReport.reportsConfig.view, reportFile)
 
             ReportType.MARKDOWN -> TextualReportOutputStream(
                 jacocoReport.reportType,
@@ -55,12 +55,12 @@ internal open class FullCoverageAnalyzableReport(
         }
     }
 
-    private fun buildHtmReportVisitor(reportFile: File): IReportVisitor {
+    private fun buildHtmReportVisitor(view: String, reportFile: File): IReportVisitor {
         val htmlReporter: IReportVisitor = FileMultiReportOutput(reportFile).let(HTMLFormatter()::createVisitor)
         return object : IReportVisitor by htmlReporter {
             override fun visitEnd() {
                 htmlReporter.visitEnd()
-                ConsoleHtmlReportLinkRenderer.render(reportBound, reportFile)
+                ConsoleHtmlReportLinkRenderer.render(view, reportBound, reportFile)
             }
         }
     }

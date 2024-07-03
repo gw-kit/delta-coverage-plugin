@@ -9,18 +9,19 @@ internal object CoverageAssertion {
     private val coverageViolationsPropagator = CoverageViolationsPropagator()
 
     fun verify(
+        view: String,
         projectData: ProjectData,
         coverageRulesConfig: CoverageRulesConfig
     ) {
         val violations: List<String> = IntellijVerifierFactory
             .buildVerifiers(projectData, coverageRulesConfig)
             .flatMap { coverageVerifier -> coverageVerifier.verify() }
-            .map { it.buildCoverageViolatedMessage() }
+            .map { it.buildCoverageViolatedMessage(view) }
 
-        coverageViolationsPropagator.propagate(coverageRulesConfig, violations)
+        coverageViolationsPropagator.propagate(view, coverageRulesConfig, violations)
     }
 
-    private fun CoverageVerifier.Violation.buildCoverageViolatedMessage(): String {
-        return "$coverageTrackType: expectedMin=$expectedMinValue, actual=$actualValue"
+    private fun CoverageVerifier.Violation.buildCoverageViolatedMessage(view: String): String {
+        return "[view:$view] $coverageTrackType: expectedMin=$expectedMinValue, actual=$actualValue"
     }
 }

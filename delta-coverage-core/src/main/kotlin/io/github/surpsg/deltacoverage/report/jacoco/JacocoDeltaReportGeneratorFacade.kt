@@ -73,7 +73,7 @@ internal class JacocoDeltaReportGeneratorFacade(
 
             reportContext.classFiles.forEach { analyzer.analyzeAll(it) }
 
-            return builder.getBundle(reportContext.deltaCoverageConfig.reportName)
+            return builder.getBundle(reportContext.deltaCoverageConfig.view)
         }
     }
 

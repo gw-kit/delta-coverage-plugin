@@ -44,7 +44,7 @@ internal object ConfigMapper {
         coverageBinaryFiles: Set<File>,
     ) = DeltaCoverageConfig {
         coverageEngine = deltaCoverageConfig.coverage.engine.get()
-        reportName = viewName
+        this.viewName = viewName
         this.diffSource = diffSource
 
         binaryCoverageFiles += coverageBinaryFiles

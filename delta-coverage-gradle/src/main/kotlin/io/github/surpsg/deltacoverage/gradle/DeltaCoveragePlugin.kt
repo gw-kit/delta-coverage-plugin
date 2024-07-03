@@ -74,8 +74,16 @@ open class DeltaCoveragePlugin : Plugin<Project> {
     private fun DeltaCoverageTask.applySourcesInputs(
         config: DeltaCoverageConfiguration
     ) = project.gradle.taskGraph.whenReady {
+        config.reportViews.forEach { view ->
+            applySourcesInputs(view.name, config)
+        }
+    }
+
+    private fun DeltaCoverageTask.applySourcesInputs(
+        viewName: String,
+        config: DeltaCoverageConfiguration
+    ) {
         val contextBuilder = SourcesResolver.Context.Builder.newBuilder(project, project.objects, config)
-        val defaultView: String = config.reportViews.first().name
 
         sequenceOf(
             classesFiles to SourceType.CLASSES,
@@ -83,17 +91,16 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         ).forEach { (taskSourceProperty, sourceType) ->
             taskSourceProperty.value(
                 project.provider {
-                    val resolveContext: SourcesResolver.Context = contextBuilder.build(defaultView, sourceType)
+                    val resolveContext: SourcesResolver.Context = contextBuilder.build(viewName, sourceType)
                     SourcesResolver().resolve(resolveContext)
                 }
             )
         }
 
         coverageBinaryFiles.put(
-            defaultView,
+            viewName,
             project.provider {
-                val resolveContext: SourcesResolver.Context =
-                    contextBuilder.build(defaultView, SourceType.COVERAGE_BINARIES)
+                val resolveContext: SourcesResolver.Context = contextBuilder.build(viewName, SourceType.COVERAGE_BINARIES)
                 SourcesResolver().resolve(resolveContext)
             }
         )

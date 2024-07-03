@@ -57,6 +57,12 @@ class KoverMultiModuleTest {
                             failOnViolation.set(false)
                         }
                     }
+                    create("intTests") {
+                        violationRules {
+                            failIfCoverageLessThan(0.7)
+                            failOnViolation.set(false)
+                        }
+                    }
                 }
             }
         """.trimIndent()
@@ -64,20 +70,25 @@ class KoverMultiModuleTest {
 
         // WHEN // THEN
         gradleRunner
-            .runDeltaCoverageTask()
+            .runDeltaCoverageTask(printLogs = true)
             .assertOutputContainsStrings(
-                "Fail on violations: false. Found violations: 2",
-                "BRANCH: expectedMin=0.9, actual=0.5",
-                "INSTRUCTION: expectedMin=0.9, actual=0.8",
+                "[view:default] Fail on violations: false. Found violations: 2",
+                "[view:default] BRANCH: expectedMin=0.9, actual=0.5",
+                "[view:default] INSTRUCTION: expectedMin=0.9, actual=0.8",
+
+                "[view:intTests] Fail on violations: false. Found violations: 1",
+                "[view:intTests] BRANCH: expectedMin=0.7, actual=0.5",
             )
 
         // AND THEN
-        val htmlReportDir = rootProjectDir.resolve(baseReportDir)
-            .resolve(File("coverage-reports/delta-coverage/html"))
-        assertSoftly(htmlReportDir) {
-            shouldExist()
-            shouldBeADirectory()
-            shouldContainFile("index.html")
+        assertSoftly {
+            listOf("default", "intTests").forEach { view ->
+                val htmlReportDir = rootProjectDir.resolve(baseReportDir)
+                    .resolve(File("coverage-reports/delta-coverage/$view/html/"))
+                htmlReportDir.shouldExist()
+                htmlReportDir.shouldBeADirectory()
+                htmlReportDir.shouldContainFile("index.html")
+            }
         }
     }
 }

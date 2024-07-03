@@ -38,6 +38,7 @@ internal class IntellijDeltaReportGeneratorFacade(
         val projectData: ProjectData = reportBoundToLoadStrategy.getValue(ReportBound.DELTA_REPORT)
             .reportLoadStrategy.projectData
         CoverageAssertion.verify(
+            reportContext.deltaCoverageConfig.view,
             projectData,
             reportContext.deltaCoverageConfig.coverageRulesConfig
         )
