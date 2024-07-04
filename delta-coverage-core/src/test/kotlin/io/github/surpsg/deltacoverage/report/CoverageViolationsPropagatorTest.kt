@@ -19,7 +19,7 @@ class CoverageViolationsPropagatorTest {
 
         // WHEN // THEN
         shouldThrow<CoverageViolatedException> {
-            propagator.propagate(config, violations)
+            propagator.propagate("any view", config, violations)
         }
     }
 
@@ -33,7 +33,7 @@ class CoverageViolationsPropagatorTest {
 
         // WHEN // THEN
         shouldNotThrow<CoverageViolatedException> {
-            propagator.propagate(config, violations)
+            propagator.propagate("any view", config, violations)
         }
     }
 
@@ -47,7 +47,7 @@ class CoverageViolationsPropagatorTest {
 
         // WHEN // THEN
         shouldNotThrow<CoverageViolatedException> {
-            propagator.propagate(config, violations)
+            propagator.propagate("any view", config, violations)
         }
     }
 }

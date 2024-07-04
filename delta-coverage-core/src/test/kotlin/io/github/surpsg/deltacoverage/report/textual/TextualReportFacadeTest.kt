@@ -15,6 +15,7 @@ class TextualReportFacadeTest {
     fun `should throw if provided unsupported report type`() {
         shouldThrow<IllegalArgumentException> {
             TextualReportFacade.BuildContext {
+                viewName = "any"
                 reportType = ReportType.XML
                 reportBound = ReportBound.DELTA_REPORT
                 coverageDataProvider = object : RawCoverageDataProvider {
@@ -48,6 +49,7 @@ class TextualReportFacadeTest {
             )
             val stream = ByteArrayOutputStream()
             val buildContext = TextualReportFacade.BuildContext {
+                viewName = "any"
                 reportType = ReportType.CONSOLE
                 reportBound = ReportBound.DELTA_REPORT
                 coverageDataProvider = object : RawCoverageDataProvider {
@@ -62,7 +64,7 @@ class TextualReportFacadeTest {
             // THEN
             val expectedReport = """
                 +--------+--------+----------+
-                | Delta Coverage Stats       |
+                | [any] Delta Coverage Stats |
                 +--------+--------+----------+
                 | Class  | Lines  | Branches |
                 +--------+--------+----------+
@@ -80,7 +82,7 @@ class TextualReportFacadeTest {
         fun `generateReport should render report with NA values`() {
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
-                    aClass = "class1"
+                    aClass = "class12"
                     branchesCovered = 0
                     branchesTotal = 0
                     linesCovered = 0
@@ -89,6 +91,7 @@ class TextualReportFacadeTest {
             )
             val stream = ByteArrayOutputStream()
             val buildContext = TextualReportFacade.BuildContext {
+                viewName = "any"
                 reportType = ReportType.CONSOLE
                 reportBound = ReportBound.DELTA_REPORT
                 coverageDataProvider = object : RawCoverageDataProvider {
@@ -102,15 +105,15 @@ class TextualReportFacadeTest {
 
             // THEN
             val expectedReport = """
-                +--------+-------+----------+
-                | Delta Coverage Stats      |
-                +--------+-------+----------+
-                | Class  | Lines | Branches |
-                +--------+-------+----------+
-                | class1 | NaN%  |          |
-                +--------+-------+----------+
-                | Total  | NaN%  |          |
-                +--------+-------+----------+
+                +---------+-------+----------+
+                | [any] Delta Coverage Stats |
+                +---------+-------+----------+
+                | Class   | Lines | Branches |
+                +---------+-------+----------+
+                | class12 | NaN%  |          |
+                +---------+-------+----------+
+                | Total   | NaN%  |          |
+                +---------+-------+----------+
                 
             """.trimIndent()
             stream.toString() shouldBe expectedReport
@@ -130,6 +133,7 @@ class TextualReportFacadeTest {
             )
             val stream = ByteArrayOutputStream()
             val buildContext = TextualReportFacade.BuildContext {
+                viewName = "any"
                 reportType = ReportType.CONSOLE
                 reportBound = ReportBound.DELTA_REPORT
                 coverageDataProvider = object : RawCoverageDataProvider {
@@ -170,6 +174,7 @@ class TextualReportFacadeTest {
             )
             val stream = ByteArrayOutputStream()
             val buildContext = TextualReportFacade.BuildContext {
+                viewName = "any"
                 reportType = ReportType.MARKDOWN
                 reportBound = ReportBound.DELTA_REPORT
                 coverageDataProvider = object : RawCoverageDataProvider {
@@ -183,7 +188,7 @@ class TextualReportFacadeTest {
 
             // THEN
             val expectedReport = """
-            # Delta Coverage Stats
+            # [any] Delta Coverage Stats
             
             | Class  | Lines  | Branches |
             |--------|--------|----------|
@@ -208,6 +213,7 @@ class TextualReportFacadeTest {
             )
             val stream = ByteArrayOutputStream()
             val buildContext = TextualReportFacade.BuildContext {
+                viewName = "any"
                 reportType = ReportType.MARKDOWN
                 reportBound = ReportBound.DELTA_REPORT
                 coverageDataProvider = object : RawCoverageDataProvider {
@@ -221,7 +227,7 @@ class TextualReportFacadeTest {
 
             // THEN
             val expectedReport = """
-            # Delta Coverage Stats
+            # [any] Delta Coverage Stats
             
             | Class  | Lines | Branches |
             |--------|-------|----------|
@@ -245,6 +251,7 @@ class TextualReportFacadeTest {
             )
             val stream = ByteArrayOutputStream()
             val buildContext = TextualReportFacade.BuildContext {
+                viewName = "any"
                 reportType = ReportType.MARKDOWN
                 reportBound = ReportBound.DELTA_REPORT
                 coverageDataProvider = object : RawCoverageDataProvider {

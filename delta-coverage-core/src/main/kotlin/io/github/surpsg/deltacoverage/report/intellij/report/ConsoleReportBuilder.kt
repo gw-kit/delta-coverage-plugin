@@ -8,9 +8,9 @@ import io.github.surpsg.deltacoverage.report.textual.TextualReportFacade
 import io.github.surpsg.deltacoverage.report.textual.TextualReportFacade.BuildContext
 
 internal class ConsoleReportBuilder(
-    private val view: String,
-    private val reportBound: ReportBound,
-    private val reporter: Reporter,
+    val view: String,
+    val reportBound: ReportBound,
+    val reporter: Reporter,
 ) : ReportBuilder {
 
     override fun buildReport() {

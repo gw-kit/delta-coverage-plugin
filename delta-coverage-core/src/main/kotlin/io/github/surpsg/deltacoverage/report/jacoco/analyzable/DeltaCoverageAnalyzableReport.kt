@@ -1,11 +1,11 @@
 package io.github.surpsg.deltacoverage.report.jacoco.analyzable
 
-import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.diff.CodeUpdateInfo
 import io.github.surpsg.deltacoverage.diff.parse.ClassFile
 import io.github.surpsg.deltacoverage.report.CoverageViolationsPropagator
 import io.github.surpsg.deltacoverage.report.JacocoDeltaReport
 import io.github.surpsg.deltacoverage.report.ReportBound
+import io.github.surpsg.deltacoverage.report.ReportContext
 import io.github.surpsg.deltacoverage.report.jacoco.ViolationsOutputResolver
 import io.github.surpsg.deltacoverage.report.jacoco.filters.ModifiedLinesFilter
 import org.jacoco.core.analysis.Analyzer
@@ -17,7 +17,7 @@ import org.jacoco.report.check.Rule
 import org.jacoco.report.check.RulesChecker
 
 internal class DeltaCoverageAnalyzableReport(
-    private val violationRuleConfig: CoverageRulesConfig,
+    private val reportContext: ReportContext,
     private val jacocoDeltaReport: JacocoDeltaReport
 ) : FullCoverageAnalyzableReport(jacocoDeltaReport) {
 
@@ -25,7 +25,8 @@ internal class DeltaCoverageAnalyzableReport(
         val visitors: MutableList<IReportVisitor> = mutableListOf(super.buildVisitor())
 
         visitors += createViolationCheckVisitor(
-            jacocoDeltaReport.violations.violationRules
+            reportContext.deltaCoverageConfig.view,
+            jacocoDeltaReport.violations.violationRules,
         )
 
         return MultiReportVisitor(visitors)
@@ -46,9 +47,11 @@ internal class DeltaCoverageAnalyzableReport(
     }
 
     private fun createViolationCheckVisitor(
+        view: String,
         rules: List<Rule>
     ): IReportVisitor {
-        val violationsOutputResolver = ViolationsOutputResolver(violationRuleConfig)
+        val coverageRulesConfig = reportContext.deltaCoverageConfig.coverageRulesConfig
+        val violationsOutputResolver = ViolationsOutputResolver(coverageRulesConfig)
         val coverageViolationsPropagator = CoverageViolationsPropagator()
 
         class CoverageRulesVisitor(
@@ -58,7 +61,8 @@ internal class DeltaCoverageAnalyzableReport(
             override fun visitEnd() {
                 val violations: List<String> = violationsOutputResolver.getViolations()
                 coverageViolationsPropagator.propagate(
-                    coverageRulesConfig = violationRuleConfig,
+                    view = view,
+                    coverageRulesConfig = coverageRulesConfig,
                     violations = violations
                 )
             }

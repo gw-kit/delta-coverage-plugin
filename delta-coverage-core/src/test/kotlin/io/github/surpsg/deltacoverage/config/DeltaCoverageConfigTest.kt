@@ -47,7 +47,8 @@ class DeltaCoverageConfigTest {
         // GIVEN
         val expectedReportName = "report-name"
         val expectedDiffSource = mockk<DiffSourceConfig>()
-        val expectedReportsConfig = mockk<ReportsConfig>()
+        val expectedReportsConfig = ReportsConfig { baseReportDir = "some/custom" }
+            .apply { view = expectedReportName }
         val expectedCoverageRulesConfig = mockk<CoverageRulesConfig>()
         val expectedBinaries = listOf(File("exec"))
         val expectedSources = listOf(File("sources"))

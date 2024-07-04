@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
 internal class CoverageViolationsPropagator {
 
     fun propagate(
-        view: String = "default",
+        view: String,
         coverageRulesConfig: CoverageRulesConfig,
         violations: List<String>,
     ) {

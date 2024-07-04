@@ -21,7 +21,7 @@ internal fun analyzableReportFactory(
         .map { reportMode ->
             when (reportMode) {
                 is JacocoDeltaReport -> DeltaCoverageAnalyzableReport(
-                    reportContext.deltaCoverageConfig.coverageRulesConfig,
+                    reportContext,
                     reportMode
                 )
 

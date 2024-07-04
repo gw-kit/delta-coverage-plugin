@@ -8,7 +8,7 @@ import java.io.File
 
 internal class HtmlReportBuilder(
     val reportBound: ReportBound,
-    private val reportsConfig: ReportsConfig,
+    val reportsConfig: ReportsConfig,
     private val reporter: Reporter,
 ) : ReportBuilder {
 
