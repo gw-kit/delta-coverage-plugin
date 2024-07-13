@@ -4,6 +4,7 @@ import com.intellij.rt.coverage.report.Reporter
 import io.github.surpsg.deltacoverage.config.ReportsConfig
 import io.github.surpsg.deltacoverage.report.ConsoleHtmlReportLinkRenderer
 import io.github.surpsg.deltacoverage.report.ReportBound
+import io.github.surpsg.deltacoverage.report.path.ReportPathStrategy
 import java.io.File
 
 internal class HtmlReportBuilder(

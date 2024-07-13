@@ -73,7 +73,10 @@ open class DeltaCoverageTask @Inject constructor(
             diffSource,
             gradleCoverageConfig,
         )
-        runDeltaCoverage(deltaCoverageConfigs)
+
+        DeltaReportFacadeFactory
+            .buildFacade(gradleCoverageConfig.coverage.engine.get())
+            .generateReports(deltaCoverageConfigs)
     }
 
     private fun obtainDiffSource(
@@ -85,20 +88,6 @@ open class DeltaCoverageTask @Inject constructor(
     ).apply {
         val savedFile = saveDiffTo(reportDir)
         log.info("Diff content saved to file://{}", savedFile.absolutePath)
-    }
-
-    private fun runDeltaCoverage(
-        deltaCoverageConfigs: List<DeltaCoverageConfig>
-    ) {
-        deltaCoverageConfigs.forEach { config ->
-            if (log.isDebugEnabled) {
-                log.debug("Run Delta-Coverage with config: {}", config)
-            }
-
-            DeltaReportFacadeFactory
-                .buildFacade(config)
-                .generateReport()
-        }
     }
 
     private fun buildDeltaCoverageConfigs(

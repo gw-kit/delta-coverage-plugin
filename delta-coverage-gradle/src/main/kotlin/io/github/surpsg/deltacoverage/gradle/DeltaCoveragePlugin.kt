@@ -100,7 +100,9 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         coverageBinaryFiles.put(
             viewName,
             project.provider {
-                val resolveContext: SourcesResolver.Context = contextBuilder.build(viewName, SourceType.COVERAGE_BINARIES)
+                val resolveContext: SourcesResolver.Context = contextBuilder.build(
+                    viewName, SourceType.COVERAGE_BINARIES
+                )
                 SourcesResolver().resolve(resolveContext)
             }
         )

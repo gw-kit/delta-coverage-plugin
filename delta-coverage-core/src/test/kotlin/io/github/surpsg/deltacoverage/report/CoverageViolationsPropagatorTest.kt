@@ -12,42 +12,57 @@ class CoverageViolationsPropagatorTest {
     @Test
     fun `propagate should throw CoverageViolatedException if failOnViolation is true and there are violations`() {
         // GIVEN
-        val config = CoverageRulesConfig {
-            failOnViolation = true
-        }
-        val violations = listOf("violation1", "violation2")
+        val verificationResults = listOf(
+            CoverageVerificationResult(
+                "any view",
+                CoverageRulesConfig {
+                    failOnViolation = true
+                },
+                listOf("violation1", "violation2")
+            )
+        )
 
         // WHEN // THEN
         shouldThrow<CoverageViolatedException> {
-            propagator.propagate("any view", config, violations)
+            propagator.propagateAll(verificationResults)
         }
     }
 
     @Test
     fun `propagate should not throw any exception if failOnViolation is true and there are no violations`() {
         // GIVEN
-        val config = CoverageRulesConfig {
-            failOnViolation = true
-        }
-        val violations = emptyList<String>()
+        val verificationResults = listOf(
+            CoverageVerificationResult(
+                "any view",
+                CoverageRulesConfig {
+                    failOnViolation = true
+                },
+                emptyList()
+            )
+        )
 
         // WHEN // THEN
         shouldNotThrow<CoverageViolatedException> {
-            propagator.propagate("any view", config, violations)
+            propagator.propagateAll(verificationResults)
         }
     }
 
     @Test
     fun `propagate should not throw any exception if failOnViolation is false`() {
         // GIVEN
-        val config = CoverageRulesConfig {
-            failOnViolation = false
-        }
-        val violations = listOf("violation1", "violation2")
+        val verificationResults = listOf(
+            CoverageVerificationResult(
+                "any view",
+                CoverageRulesConfig {
+                    failOnViolation = false
+                },
+                listOf("violation1", "violation2")
+            )
+        )
 
         // WHEN // THEN
         shouldNotThrow<CoverageViolatedException> {
-            propagator.propagate("any view", config, violations)
+            propagator.propagateAll(verificationResults)
         }
     }
 }

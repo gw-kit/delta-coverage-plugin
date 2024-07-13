@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.report.intellij.report
+package io.github.surpsg.deltacoverage.report.path
 
 import io.github.surpsg.deltacoverage.config.ReportsConfig
 import io.github.surpsg.deltacoverage.report.ReportBound
