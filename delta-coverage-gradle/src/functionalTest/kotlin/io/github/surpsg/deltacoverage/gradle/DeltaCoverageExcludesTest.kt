@@ -70,7 +70,7 @@ class DeltaCoverageExcludesTest {
 
         // and assert
         val htmlReportDir: Path = rootProjectDir.toPath()
-            .resolve("build/reports/coverage-reports/delta-coverage/html/")
+            .resolve("build/reports/coverage-reports/delta-coverage/default/html/")
         val classReportFiles: List<Path> = findAllFiles(htmlReportDir) { file ->
             file.name.endsWith("Class.html")
         }
@@ -111,5 +111,4 @@ class DeltaCoverageExcludesTest {
             { filePath: Path, _: BasicFileAttributes -> fileFilter(filePath) }
         ).toList()
     }
-
 }
