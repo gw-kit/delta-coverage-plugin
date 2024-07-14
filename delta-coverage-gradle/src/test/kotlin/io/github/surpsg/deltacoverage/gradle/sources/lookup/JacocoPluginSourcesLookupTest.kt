@@ -3,26 +3,33 @@ package io.github.surpsg.deltacoverage.gradle.sources.lookup
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.sources.SourceType
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
+import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldHaveAtLeastSize
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.string.shouldEndWith
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.Arguments.arguments
+import org.junit.jupiter.params.provider.MethodSource
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class JacocoPluginSourcesLookupTest {
 
+    private val project: Project = testJavaProject {
+        pluginManager.apply("jacoco")
+    }
+
     @ParameterizedTest
-    @EnumSource(SourceType::class)
+    @MethodSource("sourcesParameters")
     fun `should return source if source found in jacoco configuration`(
-        sourceType: SourceType
+        sourceType: SourceType,
+        expectedFile: String,
     ) {
         // GIVEN
-        val project: Project = testJavaProject {
-            pluginManager.apply("jacoco")
-        }
-
         val sourcesLookup = JacocoPluginSourcesLookup(
             SourcesAutoLookup.Context(
                 project,
@@ -34,7 +41,10 @@ internal class JacocoPluginSourcesLookupTest {
         val actualSources: FileCollection = sourcesLookup.lookup(sourceType)
 
         // THEN
-        actualSources shouldHaveAtLeastSize 1
+        assertSoftly {
+            actualSources shouldHaveAtLeastSize 1
+            actualSources.first().absolutePath shouldEndWith expectedFile
+        }
     }
 
     @Test
@@ -55,4 +65,11 @@ internal class JacocoPluginSourcesLookupTest {
         // THEN
         actualSources shouldHaveSize 0
     }
+
+    @Suppress("UnusedPrivateMember")
+    private fun sourcesParameters(): List<Arguments> = listOf(
+        arguments(SourceType.COVERAGE_BINARIES, "/test.exec"),
+        arguments(SourceType.CLASSES, "/build/classes/java/main"),
+        arguments(SourceType.SOURCES, "/src/main/java"),
+    )
 }

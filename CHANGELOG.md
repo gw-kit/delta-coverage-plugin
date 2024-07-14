@@ -5,9 +5,10 @@
 ### Changed
 - Source code paths are inferred from sourceSets if no custom paths are specified.
 - `Markdown` report and `Console` report now are printed without `source` column.
+- JaCoCo binaries are auto-resolved from test tasks. 
 
 ### Added
-- Added GitHub Action for posting delta coverage report to PR comment. See [docs](./actions/delta-coverage-report/README.md)
+- Added GitHub Action for posting delta coverage report to PR comment. See [docs](./actions/delta-coverage-report/README.md).
 
 
 ## 2.3.0
