@@ -56,7 +56,7 @@ class DeltaCoverageConfigurationKtsTest {
 
             // WHEN // THEN
             gradleRunner
-                .runDeltaCoverageTask(printLogs = true)
+                .runDeltaCoverageTask()
                 .assertOutputContainsStrings("violation", "ignored", "INSTRUCTION", "BRANCH", "LINE")
         }
 

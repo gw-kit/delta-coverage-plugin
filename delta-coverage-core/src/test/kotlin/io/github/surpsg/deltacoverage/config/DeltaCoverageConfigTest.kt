@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.config
 
+import io.github.surpsg.deltacoverage.diff.DiffSource
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -9,6 +10,8 @@ import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.shouldBe
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import java.io.File
 
 class DeltaCoverageConfigTest {
@@ -16,18 +19,20 @@ class DeltaCoverageConfigTest {
     @Test
     fun `should build delta coverage config with defaults`() {
         // GIVEN
-        val expectedDiffSource = mockk<DiffSourceConfig>()
+        val expectedDiffSource = mockk<DiffSource>()
+        val expectedViewName = "delta-coverage-report"
 
         // WHEN
         val actualConfig = DeltaCoverageConfig {
-            diffSourceConfig = expectedDiffSource
+            viewName = expectedViewName
+            diffSource = expectedDiffSource
         }
 
         // THEN
         assertSoftly(actualConfig) {
-            view shouldBeEqualComparingTo "delta-coverage-report"
-            diffSourceConfig shouldBe expectedDiffSource
-            reportsConfig shouldBeEqualToComparingFields ReportsConfig {}
+            view shouldBeEqualComparingTo expectedViewName
+            diffSource shouldBe expectedDiffSource
+            reportsConfig shouldBeEqualToComparingFields ReportsConfig {}.apply { view = expectedViewName }
             coverageRulesConfig shouldBeEqualToComparingFields CoverageRulesConfig {}
             binaryCoverageFiles.shouldBeEmpty()
             classFiles.shouldBeEmpty()
@@ -37,8 +42,23 @@ class DeltaCoverageConfigTest {
 
     @Test
     fun `should throw if diff source is not configured`() {
-        shouldThrow<IllegalStateException> {
+        shouldThrow<IllegalArgumentException> {
             DeltaCoverageConfig {}
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["", "  ", "\t\t\t", "\n\n"])
+    fun `should throw if view name is blank`(blankViewName: String) {
+        // GIVEN
+        val expectedDiffSource = mockk<DiffSource>()
+
+        // WHEN // THEN
+        shouldThrow<IllegalArgumentException> {
+            DeltaCoverageConfig {
+                viewName = blankViewName
+                diffSource = expectedDiffSource
+            }
         }
     }
 
@@ -46,7 +66,7 @@ class DeltaCoverageConfigTest {
     fun `should build delta coverage config with custom properties`() {
         // GIVEN
         val expectedReportName = "report-name"
-        val expectedDiffSource = mockk<DiffSourceConfig>()
+        val expectedDiffSource = mockk<DiffSource>()
         val expectedReportsConfig = ReportsConfig { baseReportDir = "some/custom" }
             .apply { view = expectedReportName }
         val expectedCoverageRulesConfig = mockk<CoverageRulesConfig>()
@@ -57,7 +77,7 @@ class DeltaCoverageConfigTest {
         // WHEN
         val actualConfig = DeltaCoverageConfig {
             viewName = expectedReportName
-            diffSourceConfig = expectedDiffSource
+            diffSource = expectedDiffSource
             reportsConfig = expectedReportsConfig
             coverageRulesConfig = expectedCoverageRulesConfig
             binaryCoverageFiles += expectedBinaries
@@ -67,7 +87,7 @@ class DeltaCoverageConfigTest {
 
         // THEN
         assertSoftly(actualConfig) {
-            diffSourceConfig shouldBe expectedDiffSource
+            diffSource shouldBe expectedDiffSource
             view shouldBeEqualComparingTo expectedReportName
             reportsConfig shouldBe expectedReportsConfig
             coverageRulesConfig shouldBe expectedCoverageRulesConfig

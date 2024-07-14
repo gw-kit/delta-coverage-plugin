@@ -12,6 +12,7 @@ import java.io.File
 
 internal class MarkdownReportBuilder(
     val reportBound: ReportBound,
+    private val reportView: String,
     private val reportsConfig: ReportsConfig,
     private val reporter: Reporter,
 ) : ReportBuilder {
@@ -20,6 +21,7 @@ internal class MarkdownReportBuilder(
         val reportPath: File = ReportPathStrategy.Markdown(reportsConfig).buildReportPath(reportBound)
         reportPath.outputStream().use { os ->
             val buildContext = BuildContext {
+                viewName = reportView
                 reportType = ReportType.MARKDOWN
                 reportBound = this@MarkdownReportBuilder.reportBound
                 coverageDataProvider = IntellijRawCoverageDataProvider(reporter.projectData)

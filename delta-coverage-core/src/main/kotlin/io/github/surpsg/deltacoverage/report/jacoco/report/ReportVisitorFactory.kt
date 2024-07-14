@@ -24,6 +24,7 @@ internal object ReportVisitorFactory {
             ReportType.HTML -> buildHtmReportVisitor(jacocoReport, reportFile)
 
             ReportType.MARKDOWN -> TextualReportOutputStream(
+                jacocoReport.reportsConfig.view,
                 jacocoReport.reportType,
                 jacocoReport.reportBound,
                 reportFile.createFileOutputStream()
@@ -39,8 +40,12 @@ internal object ReportVisitorFactory {
         return if (jacocoReport.reportBound == ReportBound.FULL_REPORT) {
             null
         } else {
-            TextualReportOutputStream(jacocoReport.reportType, jacocoReport.reportBound, System.out)
-                .let(CSVFormatter()::createVisitor)
+            TextualReportOutputStream(
+                jacocoReport.reportsConfig.view,
+                jacocoReport.reportType,
+                jacocoReport.reportBound,
+                System.out
+            ).let(CSVFormatter()::createVisitor)
         }
     }
 

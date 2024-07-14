@@ -67,7 +67,7 @@ class KoverReportsTest {
             .runDeltaCoverageTask()
             .assertOutputContainsStrings("Fail on violations: false. Found violations: 0")
             .assertOutputContainsStrings(
-                "| Delta Coverage Stats                     |",
+                "| [default] Delta Coverage Stats           |",
                 "| Class                | Lines  | Branches |",
                 "+----------------------+--------+----------+",
                 "| com.java.test.Class1 | 66.67% | 75%      |",
@@ -76,8 +76,8 @@ class KoverReportsTest {
 
         // AND THEN
         val baseReportDirFile = rootProjectDir.resolve(baseReportDir).resolve("coverage-reports")
-        assertAllReportsCreated(baseReportDirFile.resolve("delta-coverage"))
-        assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report"))
+        assertAllReportsCreated(baseReportDirFile.resolve("delta-coverage/default"))
+        assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report/default"))
     }
 
     private fun assertAllReportsCreated(baseReportDir: File) {

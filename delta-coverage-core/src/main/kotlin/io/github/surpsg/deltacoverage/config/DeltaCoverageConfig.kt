@@ -205,7 +205,9 @@ class DeltaCoverageConfig private constructor(
 
         fun build(): DeltaCoverageConfig = DeltaCoverageConfig(
             coverageEngine,
-            viewName,
+            viewName.apply {
+                require(isNotBlank()) { "View name must be not blank" }
+            },
             requireNotNull(diffSource),
             reportsConfig.apply { view = viewName },
             coverageRulesConfig,
@@ -227,4 +229,3 @@ class DeltaCoverageConfig private constructor(
         }
     }
 }
-
