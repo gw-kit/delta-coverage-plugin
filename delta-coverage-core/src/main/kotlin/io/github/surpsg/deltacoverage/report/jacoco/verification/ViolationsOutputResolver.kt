@@ -24,7 +24,7 @@ internal class ViolationsOutputResolver(
         log.debug("New violation: $message")
 
         val violationResolveContext: ViolationResolveContext = buildViolationResolveContext(limit.entity, node)
-        if (violationResolveContext.isIgnoredByThreshold()) {
+        if (violationResolveContext.isIgnoredByThreshold()) { // TODO duplicates intellij coverage
             log.info(
                 "Coverage violation of {} was ignored because threshold={} but total={}",
                 violationResolveContext.coverageEntity,
