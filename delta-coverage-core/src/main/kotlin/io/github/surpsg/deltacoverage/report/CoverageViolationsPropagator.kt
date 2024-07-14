@@ -12,7 +12,7 @@ internal class CoverageViolationsPropagator {
     ) {
         val exceptionMsg: String = verificationResults.asSequence()
             .mapNotNull { result -> filterOutSoftViolations(result) }
-            .flatMap { result -> result.contextualViolations() }
+            .flatMap { result -> result.contextualViolations().asSequence() }
             .joinToString(";\n")
 
         if (exceptionMsg.isNotBlank()) {

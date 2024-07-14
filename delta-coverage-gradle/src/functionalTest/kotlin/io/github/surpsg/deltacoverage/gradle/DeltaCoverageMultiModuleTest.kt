@@ -53,14 +53,14 @@ class DeltaCoverageMultiModuleTest {
                 defaultReportView {
                     violationRules {
                         failIfCoverageLessThan(0.9)
-                        failOnViolation = false
+                        failOnViolation = true
                     }
                 }
                 reportViews {
                     register('intTest') {
                         violationRules {
                             failIfCoverageLessThan(0.7)
-                            failOnViolation.set(false)
+                            failOnViolation.set(true)
                         }
                     }
                 }
@@ -70,13 +70,13 @@ class DeltaCoverageMultiModuleTest {
 
         // WHEN // THEN
         gradleRunner
-            .runDeltaCoverageTask()
+            .runDeltaCoverageTaskAndFail()
             .assertOutputContainsStrings(
-                "[view:default] Fail on violations: false. Found violations: 1.",
-                "Rule violated for bundle default: branches covered ratio is 0.5, but expected minimum is 0.9",
+                "[view:default] Fail on violations: true. Found violations: 1.",
+                "[view:default] Rule violated for bundle default: branches covered ratio is 0.5, but expected minimum is 0.9",
 
-                "[view:intTest] Fail on violations: false. Found violations: 1.",
-                "Rule violated for bundle intTest: branches covered ratio is 0.5, but expected minimum is 0.7",
+                "[view:intTest] Fail on violations: true. Found violations: 1.",
+                "[view:intTest] Rule violated for bundle intTest: branches covered ratio is 0.5, but expected minimum is 0.7",
             )
 
         // and assert

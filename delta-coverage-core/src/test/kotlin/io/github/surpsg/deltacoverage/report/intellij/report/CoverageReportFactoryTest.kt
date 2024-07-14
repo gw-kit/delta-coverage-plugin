@@ -81,12 +81,13 @@ class CoverageReportFactoryTest {
     @Test
     fun `reportBuildersBy should return report builders`() {
         // GIVEN
+        val viewName = "any-view"
         val config = ReportsConfig {
             html = ReportConfig { enabled = true }
             xml = ReportConfig { enabled = true }
             console = ReportConfig { enabled = true }
             markdown = ReportConfig { enabled = true }
-        }.apply { view = "any" }
+        }.apply { view = viewName }
         val reportLoadStrategy = anyReportLoadStrategy()
 
         // WHEN
@@ -131,9 +132,10 @@ class CoverageReportFactoryTest {
 
             shouldContain(
                 MarkdownReportBuilder(
-                    REPORT_BOUND,
-                    config,
-                    Reporter(reportLoadStrategy.reportLoadStrategy),
+                    reportBound = REPORT_BOUND,
+                    reportView = viewName,
+                    reportsConfig = config,
+                    reporter = Reporter(reportLoadStrategy.reportLoadStrategy),
                 ),
                 EqualByFields.fromFields(MarkdownReportBuilder::reportBound)
             )

@@ -56,6 +56,7 @@ internal object CoverageReportFactory {
             )
 
             ReportType.MARKDOWN -> MarkdownReportBuilder(
+                reportView = reportsConfig.view,
                 reportBound = reportLoadStrategy.reportBound,
                 reportsConfig = reportsConfig,
                 reporter = reporter,

@@ -109,7 +109,9 @@ class DeltaCoverageViolationsTest {
                     "lines covered ratio is 0.6, but expected minimum is 0.7"
                 )
 
-            val htmlReportDir = Paths.get(absolutePathBaseReportDir, "coverage-reports", "delta-coverage", "html")
+            val htmlReportDir = Paths.get(
+                absolutePathBaseReportDir, "coverage-reports", "delta-coverage", "default", "html"
+            )
             assertSoftly(htmlReportDir) {
                 shouldExist()
                 shouldBeADirectory()
