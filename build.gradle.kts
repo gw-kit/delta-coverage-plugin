@@ -23,7 +23,3 @@ tasks.named("check") {
         }
     )
 }
-
-tasks.named("processTestResources") {
-    println(this::class.java.simpleName)
-}
