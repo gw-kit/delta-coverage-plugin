@@ -19,7 +19,10 @@ testing {
             }
             targets.all {
                 testTask.configure {
-                    outputs.upToDateWhen { false }
+                    outputs.apply {
+                        upToDateWhen { false }
+                        cacheIf { false }
+                    }
 
                     val disableParallelTests: String? by project
                     val parallelTestsEnabled: Boolean = disableParallelTests == null

@@ -39,7 +39,9 @@ internal class UrlDiffSource(
 ) : DiffSource {
     override val sourceDescription = "URL: $url"
 
-    private val diffContent: String by lazy { executeGetRequest(url) }
+    private val diffContent: String by lazy {
+        println(url)
+        executeGetRequest(url) }
 
     override fun pullDiff(): List<String> = diffContent.lines()
 
