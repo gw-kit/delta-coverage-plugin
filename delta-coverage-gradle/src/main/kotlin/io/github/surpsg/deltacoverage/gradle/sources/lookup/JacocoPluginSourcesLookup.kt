@@ -2,9 +2,11 @@ package io.github.surpsg.deltacoverage.gradle.sources.lookup
 
 import io.github.surpsg.deltacoverage.gradle.utils.lazyFileCollection
 import org.gradle.api.file.FileCollection
-import org.gradle.testing.jacoco.tasks.JacocoReportBase
+import org.gradle.api.tasks.testing.Test
+import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.lang.invoke.MethodHandles
 
 internal class JacocoPluginSourcesLookup(
     lookupContext: SourcesAutoLookup.Context
@@ -12,24 +14,22 @@ internal class JacocoPluginSourcesLookup(
 
     override fun lookupCoverageBinaries(lookupContext: SourcesAutoLookup.Context): FileCollection {
         return lookupContext.project.lazyFileCollection {
-            jacocoBinaries(lookupContext)
+            collectBinaryFiles(lookupContext)
         }
     }
 
-    private fun jacocoBinaries(lookupContext: SourcesAutoLookup.Context): FileCollection {
+    private fun collectBinaryFiles(lookupContext: SourcesAutoLookup.Context): FileCollection {
         return lookupContext.project.allprojects.asSequence()
-            .map { it.tasks.findByName(JACOCO_REPORT_TASK) }
-            .filterNotNull()
-            .map { it as JacocoReportBase }
-            .fold(lookupContext.project.objects.fileCollection() as FileCollection) { allBinaries, jacocoReport ->
-                log.debug("Found JaCoCo configuration in gradle project '{}'", jacocoReport.project.name)
-                allBinaries + jacocoReport.executionData
+            .flatMap { project -> project.tasks.withType(Test::class.java).asSequence() }
+            .mapNotNull { task -> task.extensions.findByType(JacocoTaskExtension::class.java) }
+            .mapNotNull { jacocoExtension -> jacocoExtension.destinationFile }
+            .onEach { log.debug("Found coverage binary: project={}, file={}", lookupContext.project.name, it) }
+            .fold(lookupContext.project.objects.fileCollection()) { allBinaries, execFile ->
+                allBinaries.from(execFile)
             }
     }
 
     companion object {
-        const val JACOCO_REPORT_TASK = "jacocoTestReport"
-
-        val log: Logger = LoggerFactory.getLogger(JacocoPluginSourcesLookup::class.java)
+        private val log: Logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
     }
 }

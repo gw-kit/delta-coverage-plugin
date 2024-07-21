@@ -2,7 +2,6 @@ package io.github.surpsg.deltacoverage.gradle.sources
 
 import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
-import io.github.surpsg.deltacoverage.gradle.sources.lookup.JacocoPluginSourcesLookup.Companion.JACOCO_REPORT_TASK
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldThrow
@@ -11,8 +10,6 @@ import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldEndWith
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
-import org.gradle.api.internal.project.ProjectInternal
-import org.gradle.testing.jacoco.tasks.JacocoReportBase
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -97,11 +94,7 @@ internal class SourcesResolverTest {
     @Test
     fun `should throw if coverage binaries are empty and delta-cov sources are not set and jacoco files is empty`() {
         // GIVEN
-        val project = testGradleProjectWithJacoco {
-            sourceDirectories.setFrom(project.files())
-            classDirectories.setFrom(project.files())
-            executionData.setFrom(project.files())
-        }
+        val project = testJavaProject()
         val context: SourcesResolver.Context = project.sourceContext(SourceType.COVERAGE_BINARIES) {
             coverage.engine.set(CoverageEngine.JACOCO)
         }
@@ -115,18 +108,6 @@ internal class SourcesResolverTest {
         assertSoftly(actualException.message) {
             shouldContain(SourceType.COVERAGE_BINARIES.sourceConfigurationPath)
             shouldContain("is not configured.")
-        }
-    }
-
-    private fun testGradleProjectWithJacoco(
-        customize: JacocoReportBase.() -> Unit
-    ): ProjectInternal {
-        return testJavaProject {
-            pluginManager.apply("jacoco")
-
-            tasks.findByPath(JACOCO_REPORT_TASK)
-                .let { it as JacocoReportBase }
-                .apply(customize)
         }
     }
 
