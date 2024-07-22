@@ -1,8 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle.sources
 
 import io.github.surpsg.deltacoverage.CoverageEngine
-import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
-import io.github.surpsg.deltacoverage.gradle.sources.lookup.JacocoPluginSourcesLookup.Companion.JACOCO_REPORT_TASK
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldThrow
@@ -11,7 +9,6 @@ import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldEndWith
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
-import org.gradle.testing.jacoco.tasks.JacocoReportBase
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
