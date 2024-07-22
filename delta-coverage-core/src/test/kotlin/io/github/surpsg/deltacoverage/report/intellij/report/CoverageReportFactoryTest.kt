@@ -31,7 +31,7 @@ class CoverageReportFactoryTest {
             csv = ReportConfig { enabled = false }
             console = ReportConfig { enabled = false }
             markdown = ReportConfig { enabled = false }
-        }
+        }.apply { view = "any" }
 
         // WHEN
         val actualBuilders: Sequence<ReportBuilder> = CoverageReportFactory.reportBuildersBy(
@@ -81,12 +81,13 @@ class CoverageReportFactoryTest {
     @Test
     fun `reportBuildersBy should return report builders`() {
         // GIVEN
+        val viewName = "any-view"
         val config = ReportsConfig {
             html = ReportConfig { enabled = true }
             xml = ReportConfig { enabled = true }
             console = ReportConfig { enabled = true }
             markdown = ReportConfig { enabled = true }
-        }
+        }.apply { view = viewName }
         val reportLoadStrategy = anyReportLoadStrategy()
 
         // WHEN
@@ -101,13 +102,12 @@ class CoverageReportFactoryTest {
 
             shouldContain(
                 HtmlReportBuilder(
-                    REPORT_NAME,
                     REPORT_BOUND,
                     config,
                     Reporter(reportLoadStrategy.reportLoadStrategy)
                 ),
                 EqualByFields.fromFields(
-                    HtmlReportBuilder::reportName,
+                    HtmlReportBuilder::reportsConfig,
                     HtmlReportBuilder::reportBound,
                 )
             )
@@ -123,6 +123,7 @@ class CoverageReportFactoryTest {
 
             shouldContain(
                 ConsoleReportBuilder(
+                    REPORT_VIEW,
                     REPORT_BOUND,
                     Reporter(reportLoadStrategy.reportLoadStrategy),
                 ),
@@ -131,9 +132,10 @@ class CoverageReportFactoryTest {
 
             shouldContain(
                 MarkdownReportBuilder(
-                    REPORT_BOUND,
-                    config,
-                    Reporter(reportLoadStrategy.reportLoadStrategy),
+                    reportBound = REPORT_BOUND,
+                    reportView = viewName,
+                    reportsConfig = config,
+                    reporter = Reporter(reportLoadStrategy.reportLoadStrategy),
                 ),
                 EqualByFields.fromFields(MarkdownReportBuilder::reportBound)
             )
@@ -141,7 +143,7 @@ class CoverageReportFactoryTest {
     }
 
     private fun anyReportLoadStrategy() = NamedReportLoadStrategy(
-        reportName = REPORT_NAME,
+        reportName = REPORT_VIEW,
         reportBound = REPORT_BOUND,
         reportLoadStrategy = ReportLoadStrategy.RawReportLoadStrategy(
             emptyList(),
@@ -176,7 +178,7 @@ class CoverageReportFactoryTest {
     }
 
     private companion object {
-        const val REPORT_NAME = "any-report-name"
+        const val REPORT_VIEW = "any-report-name"
         val REPORT_BOUND = ReportBound.DELTA_REPORT
     }
 }

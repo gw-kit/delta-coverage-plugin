@@ -5,6 +5,10 @@ import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
 import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
 import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
 import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
+import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.file.shouldBeADirectory
+import io.kotest.matchers.file.shouldContainFile
+import io.kotest.matchers.file.shouldExist
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
@@ -46,7 +50,20 @@ class DeltaCoverageMultiModuleTest {
                     html.set(true)
                     baseReportDir.set('$baseReportDir')
                 }
-                violationRules.failIfCoverageLessThan 0.9
+                defaultReportView {
+                    violationRules {
+                        failIfCoverageLessThan(0.9)
+                        failOnViolation = true
+                    }
+                }
+                reportViews {
+                    register('intTest') {
+                        violationRules {
+                            failIfCoverageLessThan(0.7)
+                            failOnViolation.set(true)
+                        }
+                    }
+                }
             }
         """.trimIndent()
         )
@@ -55,16 +72,26 @@ class DeltaCoverageMultiModuleTest {
         gradleRunner
             .runDeltaCoverageTaskAndFail()
             .assertOutputContainsStrings(
-                "Fail on violations: true. Found violations: 1.",
-                "Rule violated for bundle ${TestProjects.MULTI_MODULE}: " +
-                        "branches covered ratio is 0.5, but expected minimum is 0.9"
+                "[view:default] Fail on violations: true. Found violations: 1.",
+                "[view:default] Rule violated for bundle default: branches covered ratio is 0.5, but expected minimum is 0.9",
+
+                "[view:intTest] Fail on violations: true. Found violations: 1.",
+                "[view:intTest] Rule violated for bundle intTest: branches covered ratio is 0.5, but expected minimum is 0.7",
             )
 
         // and assert
-        val htmlReportDir = rootProjectDir.resolve(baseReportDir).resolve("coverage-reports/delta-coverage/html")
-        assertThat(htmlReportDir.list()).containsExactlyInAnyOrder(
-            *expectedHtmlReportFiles("com.module1", "com.module2")
-        )
+        assertSoftly {
+            listOf("default", "intTest").forEach { view ->
+                val htmlReportDir =
+                    rootProjectDir.resolve(baseReportDir).resolve("coverage-reports/delta-coverage/$view/html")
+                htmlReportDir.shouldExist()
+                htmlReportDir.shouldBeADirectory()
+                htmlReportDir.shouldContainFile("index.html")
+                assertThat(htmlReportDir.list()).containsExactlyInAnyOrder(
+                    *expectedHtmlReportFiles("com.module1", "com.module2")
+                )
+            }
+        }
     }
 
     @Test
@@ -99,7 +126,9 @@ class DeltaCoverageMultiModuleTest {
                         autoApplyPlugin.set(false)
                     }
                     diffSource.file.set('$diffFilePath')
-                    violationRules.failIfCoverageLessThan 0.7
+                    defaultReportView {
+                        violationRules.failIfCoverageLessThan 0.7
+                    }
                 }
             """.trimIndent()
         )

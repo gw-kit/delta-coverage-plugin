@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.report.jacoco
+package io.github.surpsg.deltacoverage.report.jacoco.verification
 
 import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.github.surpsg.deltacoverage.config.CoverageRulesConfig

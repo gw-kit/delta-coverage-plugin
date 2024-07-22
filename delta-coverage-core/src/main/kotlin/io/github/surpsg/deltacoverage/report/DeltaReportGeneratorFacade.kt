@@ -1,18 +1,23 @@
 package io.github.surpsg.deltacoverage.report
 
-import java.io.File
+import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import java.lang.invoke.MethodHandles
 
-abstract class DeltaReportGeneratorFacade(
-    protected val reportContext: ReportContext
-) {
+abstract class DeltaReportGeneratorFacade {
 
-    abstract fun generateReport(): DeltaReportGeneratorFacade
+    private val log: Logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
 
-    fun saveDiffTo(file: File, onSuccess: (File) -> Unit = {}): DeltaReportGeneratorFacade {
-        val saveDiffTo: File = reportContext.diffSource.saveDiffTo(file)
-        onSuccess(saveDiffTo)
+    fun generateReports(configs: Iterable<DeltaCoverageConfig>) {
+        val verificationResults: List<CoverageVerificationResult> = configs.flatMap {
+            log.debug("Run Delta-Coverage with config: {}", it)
+            val context = ReportContext(it)
+            generate(context)
+        }
 
-        return this
+        CoverageViolationsPropagator().propagateAll(verificationResults)
     }
 
+    internal abstract fun generate(reportContext: ReportContext): List<CoverageVerificationResult>
 }

@@ -3,6 +3,7 @@ package io.github.surpsg.deltacoverage.report.jacoco
 import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.config.ViolationRule
+import io.github.surpsg.deltacoverage.report.jacoco.verification.ViolationsOutputResolver
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly

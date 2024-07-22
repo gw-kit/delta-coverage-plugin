@@ -60,7 +60,7 @@ class DeltaCoverageReportsTest {
         gradleRunner
             .runDeltaCoverageTask()
             .assertOutputContainsStrings(
-                "| Delta Coverage Stats                     |",
+                "| [default] Delta Coverage Stats           |",
                 "| Class                | Lines  | Branches |",
                 "+----------------------+--------+----------+",
                 "| com.java.test.Class1 | 66.67% | 50%      |",
@@ -70,8 +70,8 @@ class DeltaCoverageReportsTest {
 
         // AND THEN
         val baseReportDirFile = rootProjectDir.resolve(baseReportDir).resolve("coverage-reports")
-        assertAllReportsCreated(baseReportDirFile.resolve("delta-coverage"))
-        assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report"))
+        assertAllReportsCreated(baseReportDirFile.resolve("delta-coverage/default/"))
+        assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report/default/"))
     }
 
     private fun assertAllReportsCreated(baseReportDir: File) {

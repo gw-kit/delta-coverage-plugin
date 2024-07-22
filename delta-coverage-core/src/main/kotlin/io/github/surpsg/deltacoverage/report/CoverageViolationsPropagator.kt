@@ -1,34 +1,45 @@
 package io.github.surpsg.deltacoverage.report
 
-import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.exception.CoverageViolatedException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.lang.invoke.MethodHandles
 
 internal class CoverageViolationsPropagator {
 
-    fun propagate(
-        coverageRulesConfig: CoverageRulesConfig,
-        violations: List<String>,
+    fun propagateAll(
+        verificationResults: Iterable<CoverageVerificationResult>,
     ) {
-        log.info("Fail on violations: {}. Found violations: {}.", coverageRulesConfig.failOnViolation, violations.size)
-        if (coverageRulesConfig.failOnViolation) {
-            throwIfCoverageViolated(violations)
-        } else {
-            violations.forEach { violation ->
-                log.warn(violation)
-            }
+        val exceptionMsg: String = verificationResults.asSequence()
+            .mapNotNull { result -> filterOutSoftViolations(result) }
+            .flatMap { result -> result.contextualViolations().asSequence() }
+            .joinToString(";\n")
+
+        if (exceptionMsg.isNotBlank()) {
+            throw CoverageViolatedException(exceptionMsg)
         }
     }
 
-    private fun throwIfCoverageViolated(violations: List<String>) {
-        if (violations.isNotEmpty()) {
-            val errorDetails: String = violations.joinToString(";\n")
-            throw CoverageViolatedException(errorDetails)
+    private fun filterOutSoftViolations(
+        verificationResult: CoverageVerificationResult,
+    ): CoverageVerificationResult? {
+        log.info(
+            "[view:{}] Fail on violations: {}. Found violations: {}.",
+            verificationResult.view,
+            verificationResult.coverageRulesConfig.failOnViolation,
+            verificationResult.violations.size,
+        )
+        return if (verificationResult.coverageRulesConfig.failOnViolation) {
+            verificationResult
+        } else {
+            verificationResult.violations.forEach { violation ->
+                log.warn(violation)
+            }
+            null
         }
     }
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(CoverageViolationsPropagator::class.java)
+        private val log: Logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
     }
 }
