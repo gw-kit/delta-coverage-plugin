@@ -17,18 +17,19 @@ class RawCoverageDataMapperTest {
             branchesMissed = "2"
             lineCovered = "3"
             lineMissed = "4"
+            instrCovered = "5"
+            instrMissed = "6"
         }
 
         // WHEN
         val rawCoverageData = csvCoverageView.toCoverageData()
 
         // THEN
-        rawCoverageData shouldBeEqualToComparingFields  RawCoverageData {
+        rawCoverageData shouldBeEqualToComparingFields RawCoverageData {
             aClass = "aPackage.aClass"
-            branchesCovered = 1
-            branchesTotal = 3
-            linesCovered = 3
-            linesTotal = 7
+            branches(1, 3)
+            lines(3, 7)
+            instr(5, 11)
         }
     }
 }

@@ -23,6 +23,10 @@ internal class MarkdownReportBuilder(
                 reportBound = this@MarkdownReportBuilder.reportBound
                 coverageDataProvider = IntellijRawCoverageDataProvider(reporter.projectData)
                 outputStream = os
+
+                targetInstr(0)
+                targetLines(0)
+                targetBranches(0)
             }
             TextualReportFacade.generateReport(buildContext)
         }

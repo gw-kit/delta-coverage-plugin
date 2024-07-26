@@ -21,6 +21,10 @@ internal class ConsoleReportBuilder(
                 coverageDataProvider = dataProvider
                 outputStream = System.out
                 shrinkLongClassName = true
+
+                targetInstr(0)
+                targetLines(0)
+                targetBranches(0)
             }
             TextualReportFacade.generateReport(buildContext)
         }

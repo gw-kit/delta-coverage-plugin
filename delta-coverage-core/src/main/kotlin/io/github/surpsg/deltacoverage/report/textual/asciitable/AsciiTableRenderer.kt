@@ -30,7 +30,9 @@ internal object AsciiTableRenderer : TextualReportRenderer() {
     }
 
     override fun Context.renderFooter(printWriter: PrintWriter, widthMap: List<Int>) = with(printWriter) {
-        printRow(footer, widthMap)
+        multiLineFooter.forEach { footer ->
+            printRow(footer, widthMap)
+        }
         printLine(widthMap)
     }
 

@@ -33,17 +33,15 @@ class TextualReportFacadeTest {
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
                     aClass = "class1"
-                    branchesCovered = 1
-                    branchesTotal = 2
-                    linesCovered = 3
-                    linesTotal = 4
+                    instr(2, 3)
+                    branches(1, 2)
+                    lines(3, 4)
                 },
                 RawCoverageData.newBlank {
                     aClass = "class2"
-                    branchesCovered = 5
-                    branchesTotal = 6
-                    linesCovered = 7
-                    linesTotal = 8
+                    instr(1, 3)
+                    branches(5, 6)
+                    lines(7, 8)
                 }
             )
             val stream = ByteArrayOutputStream()
@@ -54,6 +52,10 @@ class TextualReportFacadeTest {
                     override fun obtainData() = rawCoverageData
                 }
                 outputStream = stream
+
+                targetInstr(80)
+                targetBranches(70)
+                targetLines(90)
             }
 
             // WHEN
@@ -61,16 +63,17 @@ class TextualReportFacadeTest {
 
             // THEN
             val expectedReport = """
-                +--------+--------+----------+
-                | Delta Coverage Stats       |
-                +--------+--------+----------+
-                | Class  | Lines  | Branches |
-                +--------+--------+----------+
-                | class2 | 87.50% | 83.33%   |
-                | class1 | 75%    | 50%      |
-                +--------+--------+----------+
-                | Total  | 83.33% | 75%      |
-                +--------+--------+----------+
+                +--------+----------+----------+--------+
+                | Delta Coverage Stats                  |
+                +--------+----------+----------+--------+
+                | Class  | Lines    | Branches | Instr. |
+                +--------+----------+----------+--------+
+                | class2 | 87.50%   | 83.33%   | 33.33% |
+                | class1 | 75%      | 50%      | 66.67% |
+                +--------+----------+----------+--------+
+                | Total  | ✖ 83.33% | ✔ 75%    | ✖ 50%  |
+                |        | (90%)    | (70%)    | (80%)  |
+                +--------+----------+----------+--------+
                 
             """.trimIndent()
             stream.toString() shouldBe expectedReport
@@ -81,10 +84,9 @@ class TextualReportFacadeTest {
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
                     aClass = "class1"
-                    branchesCovered = 0
-                    branchesTotal = 0
-                    linesCovered = 0
-                    linesTotal = 0
+                    instr(0, 0)
+                    branches(0, 0)
+                    lines(0, 0)
                 },
             )
             val stream = ByteArrayOutputStream()
@@ -95,6 +97,9 @@ class TextualReportFacadeTest {
                     override fun obtainData() = rawCoverageData
                 }
                 outputStream = stream
+                targetInstr(0)
+                targetLines(0)
+                targetBranches(0)
             }
 
             // WHEN
@@ -102,15 +107,16 @@ class TextualReportFacadeTest {
 
             // THEN
             val expectedReport = """
-                +--------+-------+----------+
-                | Delta Coverage Stats      |
-                +--------+-------+----------+
-                | Class  | Lines | Branches |
-                +--------+-------+----------+
-                | class1 | NaN%  |          |
-                +--------+-------+----------+
-                | Total  | NaN%  |          |
-                +--------+-------+----------+
+                +--------+-------+----------+--------+
+                | Delta Coverage Stats               |
+                +--------+-------+----------+--------+
+                | Class  | Lines | Branches | Instr. |
+                +--------+-------+----------+--------+
+                | class1 | NaN%  |          | NaN%   |
+                +--------+-------+----------+--------+
+                | Total  | NaN%  |          | NaN%   |
+                |        |       |          |        |
+                +--------+-------+----------+--------+
                 
             """.trimIndent()
             stream.toString() shouldBe expectedReport
@@ -124,8 +130,7 @@ class TextualReportFacadeTest {
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
                     aClass = className
-                    linesCovered = 1
-                    linesTotal = 2
+                    lines(1, 2)
                 },
             )
             val stream = ByteArrayOutputStream()
@@ -137,6 +142,10 @@ class TextualReportFacadeTest {
                 }
                 outputStream = stream
                 shrinkLongClassName = true
+
+                targetBranches(0)
+                targetLines(0)
+                targetInstr(0)
             }
 
             // WHEN
@@ -155,17 +164,15 @@ class TextualReportFacadeTest {
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
                     aClass = "class1"
-                    branchesCovered = 1
-                    branchesTotal = 2
-                    linesCovered = 3
-                    linesTotal = 4
+                    branches(1, 2)
+                    lines(3, 4)
+                    instr(5, 6)
                 },
                 RawCoverageData.newBlank {
                     aClass = "class2"
-                    branchesCovered = 5
-                    branchesTotal = 6
-                    linesCovered = 7
-                    linesTotal = 8
+                    branches(5, 6)
+                    lines(7, 8)
+                    instr(9, 10)
                 }
             )
             val stream = ByteArrayOutputStream()
@@ -176,6 +183,9 @@ class TextualReportFacadeTest {
                     override fun obtainData() = rawCoverageData
                 }
                 outputStream = stream
+                targetBranches(75)
+                targetLines(90)
+                targetInstr(95)
             }
 
             // WHEN
@@ -185,11 +195,12 @@ class TextualReportFacadeTest {
             val expectedReport = """
             # Delta Coverage Stats
             
-            | Class  | Lines  | Branches |
-            |--------|--------|----------|
-            | class2 | 87.50% | 83.33%   |
-            | class1 | 75%    | 50%      |
-            | Total  | 83.33% | 75%      |
+            | Class  | Lines    | Branches | Instr.   |
+            |--------|----------|----------|----------|
+            | class2 | 87.50%   | 83.33%   | 90%      |
+            | class1 | 75%      | 50%      | 83.33%   |
+            | Total  | 🔴 83.33% | 🟢 75%   | 🔴 87.50% |
+            |        | (90%)    | (75%)    | (95%)    |
             
         """.trimIndent()
             stream.toString() shouldBe expectedReport
@@ -200,10 +211,6 @@ class TextualReportFacadeTest {
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
                     aClass = "class1"
-                    branchesCovered = 0
-                    branchesTotal = 0
-                    linesCovered = 0
-                    linesTotal = 0
                 },
             )
             val stream = ByteArrayOutputStream()
@@ -214,6 +221,9 @@ class TextualReportFacadeTest {
                     override fun obtainData() = rawCoverageData
                 }
                 outputStream = stream
+                targetBranches(0)
+                targetLines(0)
+                targetInstr(0)
             }
 
             // WHEN
@@ -223,10 +233,11 @@ class TextualReportFacadeTest {
             val expectedReport = """
             # Delta Coverage Stats
             
-            | Class  | Lines | Branches |
-            |--------|-------|----------|
-            | class1 | NaN%  |          |
-            | Total  | NaN%  |          |
+            | Class  | Lines | Branches | Instr. |
+            |--------|-------|----------|--------|
+            | class1 | NaN%  |          | NaN%   |
+            | Total  | NaN%  |          | NaN%   |
+            |        |       |          |        |
             
         """.trimIndent()
             stream.toString() shouldBe expectedReport
@@ -239,8 +250,7 @@ class TextualReportFacadeTest {
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
                     aClass = className
-                    linesCovered = 1
-                    linesTotal = 2
+                    lines(1, 2)
                 },
             )
             val stream = ByteArrayOutputStream()
@@ -252,6 +262,9 @@ class TextualReportFacadeTest {
                 }
                 outputStream = stream
                 shrinkLongClassName = false
+                targetBranches(0)
+                targetLines(0)
+                targetInstr(0)
             }
 
             // WHEN

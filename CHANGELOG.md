@@ -4,7 +4,12 @@
 
 ### Changed
 - Source code paths are inferred from sourceSets if no custom paths are specified.
-- `Markdown` report and `Console` report now are printed without `source` column.
+- `Markdown` and `Console` reports:
+  - now don't have `source` column.
+  - now contain min coverage data.
+  - (console) contain `✔`/`✖` regards to coverage check success or failure.
+  - (markdown) contain 🟢/🔴 regards to coverage check success or failure.
+- Console report now enabled by the default.
 
 ### Added
 - Added GitHub Action for posting delta coverage report to PR comment. See [docs](./actions/delta-coverage-report/README.md)
