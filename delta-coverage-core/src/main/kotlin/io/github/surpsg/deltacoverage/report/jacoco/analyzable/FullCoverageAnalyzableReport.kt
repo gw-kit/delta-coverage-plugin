@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.report.jacoco.analyzable
 
+import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.report.ConsoleHtmlReportLinkRenderer
 import io.github.surpsg.deltacoverage.report.FullReport
 import io.github.surpsg.deltacoverage.report.JacocoReport
@@ -19,7 +20,8 @@ import java.io.File
 import java.io.FileOutputStream
 
 internal open class FullCoverageAnalyzableReport(
-    private val report: FullReport
+    private val report: FullReport,
+    private val coverageRulesConfig: CoverageRulesConfig,
 ) : AnalyzableReport {
 
     override fun buildVisitor(): IReportVisitor {
@@ -41,6 +43,7 @@ internal open class FullCoverageAnalyzableReport(
             ReportType.MARKDOWN -> TextualReportOutputStream(
                 jacocoReport.reportType,
                 jacocoReport.reportBound,
+                coverageRulesConfig,
                 reportFile.createFileOutputStream()
             ).let(CSVFormatter()::createVisitor)
 
@@ -48,8 +51,12 @@ internal open class FullCoverageAnalyzableReport(
                 if (reportBound == ReportBound.FULL_REPORT) {
                     null
                 } else {
-                    TextualReportOutputStream(jacocoReport.reportType, jacocoReport.reportBound, System.out)
-                        .let(CSVFormatter()::createVisitor)
+                    TextualReportOutputStream(
+                        jacocoReport.reportType,
+                        jacocoReport.reportBound,
+                        coverageRulesConfig,
+                        System.out,
+                    ).let(CSVFormatter()::createVisitor)
                 }
             }
         }

@@ -7,7 +7,7 @@ internal object ReportsConstants {
     const val PERCENT_MULTIPLIER = 100
 
     const val NA_VALUE = ""
-    const val TARGET_COV_PATTERN = "(%s%%)"
+    const val TARGET_COV_PATTERN = "(%s)"
     const val SUCCESS_COV_CHAR = "✔"
     const val FAILURE_COV_CHAR = "✖"
     const val SUCCESS_COV_ICON = "\uD83D\uDFE2" // 🟢

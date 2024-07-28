@@ -37,7 +37,7 @@ class DeltaCoverageConfigTest {
 
     @Test
     fun `should throw if diff source is not configured`() {
-        shouldThrow<IllegalStateException> {
+        shouldThrow<IllegalArgumentException> {
             DeltaCoverageConfig {}
         }
     }

@@ -17,9 +17,9 @@ import org.jacoco.report.check.Rule
 import org.jacoco.report.check.RulesChecker
 
 internal class DeltaCoverageAnalyzableReport(
-    private val violationRuleConfig: CoverageRulesConfig,
+    private val coverageRulesConfig: CoverageRulesConfig,
     private val jacocoDeltaReport: JacocoDeltaReport
-) : FullCoverageAnalyzableReport(jacocoDeltaReport) {
+) : FullCoverageAnalyzableReport(jacocoDeltaReport, coverageRulesConfig) {
 
     override fun buildVisitor(): IReportVisitor {
         val visitors: MutableList<IReportVisitor> = mutableListOf(super.buildVisitor())
@@ -48,7 +48,7 @@ internal class DeltaCoverageAnalyzableReport(
     private fun createViolationCheckVisitor(
         rules: List<Rule>
     ): IReportVisitor {
-        val violationsOutputResolver = ViolationsOutputResolver(violationRuleConfig)
+        val violationsOutputResolver = ViolationsOutputResolver(coverageRulesConfig)
         val coverageViolationsPropagator = CoverageViolationsPropagator()
 
         class CoverageRulesVisitor(
@@ -57,7 +57,7 @@ internal class DeltaCoverageAnalyzableReport(
 
             override fun visitEnd() {
                 val violations: List<String> = violationsOutputResolver.getViolations()
-                coverageViolationsPropagator.propagate(violationRuleConfig, violations)
+                coverageViolationsPropagator.propagate(coverageRulesConfig, violations)
             }
         }
 

@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.report.textual
 
+import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportType
 import io.kotest.assertions.throwables.shouldThrow
@@ -53,9 +54,9 @@ class TextualReportFacadeTest {
                 }
                 outputStream = stream
 
-                targetInstr(80)
-                targetBranches(70)
-                targetLines(90)
+                targetCoverage(CoverageEntity.INSTRUCTION, 0.8)
+                targetCoverage(CoverageEntity.BRANCH, 0.7)
+                targetCoverage(CoverageEntity.LINE, 0.9)
             }
 
             // WHEN
@@ -97,9 +98,6 @@ class TextualReportFacadeTest {
                     override fun obtainData() = rawCoverageData
                 }
                 outputStream = stream
-                targetInstr(0)
-                targetLines(0)
-                targetBranches(0)
             }
 
             // WHEN
@@ -142,10 +140,6 @@ class TextualReportFacadeTest {
                 }
                 outputStream = stream
                 shrinkLongClassName = true
-
-                targetBranches(0)
-                targetLines(0)
-                targetInstr(0)
             }
 
             // WHEN
@@ -183,9 +177,10 @@ class TextualReportFacadeTest {
                     override fun obtainData() = rawCoverageData
                 }
                 outputStream = stream
-                targetBranches(75)
-                targetLines(90)
-                targetInstr(95)
+
+                targetCoverage(CoverageEntity.INSTRUCTION, 0.95)
+                targetCoverage(CoverageEntity.BRANCH, 0.75)
+                targetCoverage(CoverageEntity.LINE, 0.9)
             }
 
             // WHEN
@@ -221,9 +216,6 @@ class TextualReportFacadeTest {
                     override fun obtainData() = rawCoverageData
                 }
                 outputStream = stream
-                targetBranches(0)
-                targetLines(0)
-                targetInstr(0)
             }
 
             // WHEN
@@ -262,9 +254,6 @@ class TextualReportFacadeTest {
                 }
                 outputStream = stream
                 shrinkLongClassName = false
-                targetBranches(0)
-                targetLines(0)
-                targetInstr(0)
             }
 
             // WHEN

@@ -22,10 +22,13 @@ internal fun analyzableReportFactory(
             when (reportMode) {
                 is JacocoDeltaReport -> DeltaCoverageAnalyzableReport(
                     reportContext.deltaCoverageConfig.coverageRulesConfig,
-                    reportMode
+                    reportMode,
                 )
 
-                else -> FullCoverageAnalyzableReport(reportMode)
+                else -> FullCoverageAnalyzableReport(
+                    reportMode,
+                    reportContext.deltaCoverageConfig.coverageRulesConfig,
+                )
             }
         }.toSet()
 }

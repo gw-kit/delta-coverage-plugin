@@ -4,7 +4,6 @@ import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.github.surpsg.deltacoverage.lib.kotlin.applyIf
 import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportType
-import io.github.surpsg.deltacoverage.report.textual.Coverage.Companion.toPercents
 import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.BRANCHES_H
 import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.CLASS_H
 import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.FAILURE_COV_PATTERN
@@ -55,19 +54,20 @@ internal object TextualReportFacade {
             LINES_H to CoverageEntity.LINE,
             INSTR_H to CoverageEntity.INSTRUCTION,
         )
-            .filter { (_, entity) -> buildContext.targetCoverage.getValue(entity) > 0 }
+            .filter { (_, entity) -> !buildContext.targetCoverage.getOrDefault(entity, Double.NaN).isNaN() }
+            .filter { (_, entity) -> buildContext.targetCoverage.getValue(entity) > 0.0 }
             .forEach { (headerName, entity) ->
-                val expectedCoveragePercents: Int = buildContext.targetCoverage.getValue(entity)
+                val expectedCoverageRatio: Double = buildContext.targetCoverage.getValue(entity)
                 val headerIndex = INDEXED_HEADERS.getValue(headerName)
-                expectedValuesLine[headerIndex] = TARGET_COV_PATTERN.format(expectedCoveragePercents)
+                expectedValuesLine[headerIndex] = TARGET_COV_PATTERN.format(expectedCoverageRatio.formatToPercentage())
             }
 
         return listOf(
             rawCoverageData.computeTotal().toValuesCollection(buildContext) { coverage, formatted ->
-                val expectedCoveragePercents: Int = buildContext.targetCoverage.getValue(coverage.entity)
+                val expectedRatio: Double = buildContext.targetCoverage.getOrDefault(coverage.entity, Double.NaN)
                 when {
-                    expectedCoveragePercents < 1 -> formatted
-                    (coverage.ratio.toPercents() < expectedCoveragePercents) -> FAILURE_COV_PATTERN.format(formatted)
+                    expectedRatio.isNaN() -> formatted
+                    coverage.ratio < expectedRatio -> FAILURE_COV_PATTERN.format(formatted)
                     else -> SUCCESS_COV_PATTERN.format(formatted)
                 }
             },
@@ -137,7 +137,7 @@ internal object TextualReportFacade {
         val coverageDataProvider: RawCoverageDataProvider,
         val outputStream: OutputStream,
         val shrinkLongClassName: Boolean,
-        val targetCoverage: Map<CoverageEntity, Int>,
+        val targetCoverage: Map<CoverageEntity, Double>,
     ) {
 
         init {
@@ -156,20 +156,10 @@ internal object TextualReportFacade {
             lateinit var outputStream: OutputStream
             var shrinkLongClassName: Boolean = false
 
-            private var targetInstr: TargetCoverage? = null
-            private var targetLines: TargetCoverage? = null
-            private var targetBranches: TargetCoverage? = null
+            private val targetCoverages: MutableMap<CoverageEntity, Double> = mutableMapOf()
 
-            fun targetInstr(percents: Int) {
-                targetInstr = TargetCoverage(CoverageEntity.INSTRUCTION, percents)
-            }
-
-            fun targetLines(percents: Int) {
-                targetLines = TargetCoverage(CoverageEntity.LINE, percents)
-            }
-
-            fun targetBranches(percents: Int) {
-                targetBranches = TargetCoverage(CoverageEntity.BRANCH, percents)
+            fun targetCoverage(coverageEntity: CoverageEntity, ratio: Double) {
+                targetCoverages[coverageEntity] = ratio
             }
 
             fun build(): BuildContext {
@@ -179,15 +169,7 @@ internal object TextualReportFacade {
                     coverageDataProvider,
                     outputStream,
                     shrinkLongClassName,
-                    sequenceOf(
-                        CoverageEntity.INSTRUCTION to targetInstr,
-                        CoverageEntity.LINE to targetLines,
-                        CoverageEntity.BRANCH to targetBranches
-                    ).map { (entity, targetCov) ->
-                        requireNotNull(targetCov) {
-                            "Required $entity was null."
-                        }
-                    }.associate { it.coverageEntity to it.percents }
+                    targetCoverages,
                 )
             }
         }
@@ -196,9 +178,4 @@ internal object TextualReportFacade {
             operator fun invoke(block: Builder.() -> Unit): BuildContext = Builder().apply(block).build()
         }
     }
-
-    private data class TargetCoverage(
-        val coverageEntity: CoverageEntity,
-        val percents: Int,
-    )
 }
