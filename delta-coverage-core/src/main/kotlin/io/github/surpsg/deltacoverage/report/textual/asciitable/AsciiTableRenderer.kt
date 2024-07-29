@@ -32,8 +32,8 @@ internal object AsciiTableRenderer : TextualReportRenderer() {
     override fun Context.renderFooter(printWriter: PrintWriter, widthMap: List<Int>) = with(printWriter) {
         multiLineFooter.forEach { footer ->
             printRow(footer, widthMap)
+            printLine(widthMap)
         }
-        printLine(widthMap)
     }
 
     @Suppress("ImplicitDefaultLocale")

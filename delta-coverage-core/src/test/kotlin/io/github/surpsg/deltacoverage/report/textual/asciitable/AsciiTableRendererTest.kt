@@ -42,7 +42,9 @@ class AsciiTableRendererTest {
             | Row2Col1 | Row2Col2 |
             +----------+----------+
             | Footer1  | 1        |
+            +----------+----------+
             | Footer2  | 2        |
+            +----------+----------+
             | Footer3  | 3        |
             +----------+----------+
             
@@ -76,6 +78,7 @@ class AsciiTableRendererTest {
             | Header-1 | Header2 |
             +----------+---------+
             | Footer1  |         |
+            +----------+---------+
             |          | empty   |
             +----------+---------+
             

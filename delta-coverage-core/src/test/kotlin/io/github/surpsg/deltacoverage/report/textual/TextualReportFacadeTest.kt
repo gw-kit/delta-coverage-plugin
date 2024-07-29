@@ -64,17 +64,18 @@ class TextualReportFacadeTest {
 
             // THEN
             val expectedReport = """
-                +--------+----------+----------+--------+
-                | Delta Coverage Stats                  |
-                +--------+----------+----------+--------+
-                | Class  | Lines    | Branches | Instr. |
-                +--------+----------+----------+--------+
-                | class2 | 87.50%   | 83.33%   | 33.33% |
-                | class1 | 75%      | 50%      | 66.67% |
-                +--------+----------+----------+--------+
-                | Total  | ✖ 83.33% | ✔ 75%    | ✖ 50%  |
-                |        | (90%)    | (70%)    | (80%)  |
-                +--------+----------+----------+--------+
+                +--------------+----------+----------+--------+
+                | Delta Coverage Stats                        |
+                +--------------+----------+----------+--------+
+                | Class        | Lines    | Branches | Instr. |
+                +--------------+----------+----------+--------+
+                | class2       | 87.50%   | 83.33%   | 33.33% |
+                | class1       | 75%      | 50%      | 66.67% |
+                +--------------+----------+----------+--------+
+                | Total        | ✖ 83.33% | ✔ 75%    | ✖ 50%  |
+                +--------------+----------+----------+--------+
+                | Min expected | 90%      | 70%      | 80%    |
+                +--------------+----------+----------+--------+
                 
             """.trimIndent()
             stream.toString() shouldBe expectedReport
@@ -105,16 +106,17 @@ class TextualReportFacadeTest {
 
             // THEN
             val expectedReport = """
-                +--------+-------+----------+--------+
-                | Delta Coverage Stats               |
-                +--------+-------+----------+--------+
-                | Class  | Lines | Branches | Instr. |
-                +--------+-------+----------+--------+
-                | class1 | NaN%  |          | NaN%   |
-                +--------+-------+----------+--------+
-                | Total  | NaN%  |          | NaN%   |
-                |        |       |          |        |
-                +--------+-------+----------+--------+
+                +--------------+-------+----------+--------+
+                | Delta Coverage Stats                     |
+                +--------------+-------+----------+--------+
+                | Class        | Lines | Branches | Instr. |
+                +--------------+-------+----------+--------+
+                | class1       | NaN%  |          | NaN%   |
+                +--------------+-------+----------+--------+
+                | Total        | NaN%  |          | NaN%   |
+                +--------------+-------+----------+--------+
+                | Min expected |       |          |        |
+                +--------------+-------+----------+--------+
                 
             """.trimIndent()
             stream.toString() shouldBe expectedReport
@@ -190,12 +192,12 @@ class TextualReportFacadeTest {
             val expectedReport = """
             # Delta Coverage Stats
             
-            | Class  | Lines    | Branches | Instr.   |
-            |--------|----------|----------|----------|
-            | class2 | 87.50%   | 83.33%   | 90%      |
-            | class1 | 75%      | 50%      | 83.33%   |
-            | Total  | 🔴 83.33% | 🟢 75%   | 🔴 87.50% |
-            |        | (90%)    | (75%)    | (95%)    |
+            | Class        | Lines    | Branches | Instr.   |
+            |--------------|----------|----------|----------|
+            | class2       | 87.50%   | 83.33%   | 90%      |
+            | class1       | 75%      | 50%      | 83.33%   |
+            | Total        | 🔴 83.33% | 🟢 75%   | 🔴 87.50% |
+            | Min expected | 90%      | 75%      | 95%      |
             
         """.trimIndent()
             stream.toString() shouldBe expectedReport
@@ -225,11 +227,11 @@ class TextualReportFacadeTest {
             val expectedReport = """
             # Delta Coverage Stats
             
-            | Class  | Lines | Branches | Instr. |
-            |--------|-------|----------|--------|
-            | class1 | NaN%  |          | NaN%   |
-            | Total  | NaN%  |          | NaN%   |
-            |        |       |          |        |
+            | Class        | Lines | Branches | Instr. |
+            |--------------|-------|----------|--------|
+            | class1       | NaN%  |          | NaN%   |
+            | Total        | NaN%  |          | NaN%   |
+            | Min expected |       |          |        |
             
         """.trimIndent()
             stream.toString() shouldBe expectedReport

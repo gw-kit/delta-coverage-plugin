@@ -16,7 +16,6 @@ import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.NA_VALUE
 import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.PERCENT_MULTIPLIER
 import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.SHRINK_PLACEHOLDER
 import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.SUCCESS_COV_PATTERN
-import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.TARGET_COV_PATTERN
 import io.github.surpsg.deltacoverage.report.textual.TextualReportRenderer.Context
 import java.io.OutputStream
 
@@ -48,7 +47,10 @@ internal object TextualReportFacade {
         rawCoverageData: List<RawCoverageData>,
         buildContext: BuildContext,
     ): List<List<String>> {
-        val expectedValuesLine = Array(INDEXED_HEADERS.size) { "" }
+        val expectedValuesLine = Array(INDEXED_HEADERS.size) { "" }.apply {
+            val classHeaderIndex = INDEXED_HEADERS.getValue(CLASS_H)
+            this[classHeaderIndex] = "Min expected"
+        }
         sequenceOf(
             BRANCHES_H to CoverageEntity.BRANCH,
             LINES_H to CoverageEntity.LINE,
@@ -59,14 +61,14 @@ internal object TextualReportFacade {
             .forEach { (headerName, entity) ->
                 val expectedCoverageRatio: Double = buildContext.targetCoverage.getValue(entity)
                 val headerIndex = INDEXED_HEADERS.getValue(headerName)
-                expectedValuesLine[headerIndex] = TARGET_COV_PATTERN.format(expectedCoverageRatio.formatToPercentage())
+                expectedValuesLine[headerIndex] = expectedCoverageRatio.formatToPercentage()
             }
 
         return listOf(
             rawCoverageData.computeTotal().toValuesCollection(buildContext) { coverage, formatted ->
-                val expectedRatio: Double = buildContext.targetCoverage.getOrDefault(coverage.entity, Double.NaN)
+                val expectedRatio: Double? = buildContext.targetCoverage[coverage.entity]
                 when {
-                    expectedRatio.isNaN() -> formatted
+                    expectedRatio == null -> formatted
                     coverage.ratio < expectedRatio -> FAILURE_COV_PATTERN.format(formatted)
                     else -> SUCCESS_COV_PATTERN.format(formatted)
                 }
@@ -107,13 +109,14 @@ internal object TextualReportFacade {
     )
 
     private fun Double.formatToPercentage(): String {
-        val percents = this.toFloat() * PERCENT_MULTIPLIER
-        val pattern = if (percents % 1 == 0.0f) {
-            "%.0f"
+        val percents: Double = this * PERCENT_MULTIPLIER
+        val percentsInt = percents.toInt()
+        val pattern = if (percents > percentsInt) {
+            "%.2f%%"
         } else {
-            "%.2f"
+            "%.0f%%"
         }
-        return pattern.format(percents) + '%'
+        return pattern.format(percents)
     }
 
     private fun String.shrinkClassName(maxLength: Int): String {
