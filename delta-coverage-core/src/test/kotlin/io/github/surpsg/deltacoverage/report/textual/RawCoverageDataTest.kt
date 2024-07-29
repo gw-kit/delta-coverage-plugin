@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.report.textual
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -95,6 +96,59 @@ class RawCoverageDataTest {
             instr(6, 10)
             branches(10, 20)
             lines(10, 20)
+        }
+    }
+
+    @Test
+    fun `should throw if instructions is not set`() {
+        shouldThrow<IllegalArgumentException> {
+            RawCoverageData {
+                aClass = "class"
+                branches(0, 0)
+                lines(0, 0)
+            }
+        }
+    }
+
+    @Test
+    fun `should throw if branches is not set`() {
+        shouldThrow<IllegalArgumentException> {
+            RawCoverageData {
+                aClass = "class"
+                instr(0, 0)
+                lines(0, 0)
+            }
+        }
+    }
+
+    @Test
+    fun `should throw if lines is not set`() {
+        shouldThrow<IllegalArgumentException> {
+            RawCoverageData {
+                aClass = "class"
+                instr(0, 0)
+                branches(0, 0)
+            }
+        }
+    }
+
+    // cover the selected code
+    @Test
+    fun `should create new blank RawCoverageData`() {
+        // GIVEN
+        val data = RawCoverageData.newBlank {
+            aClass = "class"
+            instr(0, 0)
+            branches(0, 0)
+            lines(0, 0)
+        }
+
+        // THEN
+        data shouldBeEqualToComparingFields RawCoverageData {
+            aClass = "class"
+            instr(0, 0)
+            branches(0, 0)
+            lines(0, 0)
         }
     }
 }

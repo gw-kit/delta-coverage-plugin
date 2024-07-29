@@ -5,18 +5,10 @@ import io.github.surpsg.deltacoverage.report.textual.Coverage.Companion.has
 
 internal class RawCoverageData private constructor(
     val aClass: String,
-
     val instr: Coverage,
     val lines: Coverage,
     val branches: Coverage,
 ) {
-
-    init {
-        require(instr.entity == CoverageEntity.INSTRUCTION)
-        require(lines.entity == CoverageEntity.LINE)
-        require(branches.entity == CoverageEntity.BRANCH)
-    }
-
     fun merge(other: RawCoverageData) = this.let { thisData ->
         RawCoverageData {
             aClass = thisData.aClass
@@ -69,7 +61,7 @@ internal class RawCoverageData private constructor(
             Builder().apply(initialize).build()
 
         fun newBlank(
-            customize: Builder.() -> Unit = {}
+            customize: Builder.() -> Unit
         ) = RawCoverageData {
             aClass = ""
 

@@ -22,10 +22,6 @@ internal data class Coverage private constructor(
     }
 
     companion object {
-        private const val PERCENTS = 100.0
-
-        fun Double.toPercents(): Double = this * PERCENTS
-
         fun CoverageEntity.has(covered: Int, total: Int): Coverage =
             Coverage(this, covered = covered, total = total)
     }
