@@ -126,7 +126,7 @@ class ViolationRule private constructor(
 
     companion object {
 
-        operator fun invoke(customize: Builder.() -> Unit = {}): ViolationRule =
+        operator fun invoke(customize: Builder.() -> Unit): ViolationRule =
             Builder().apply(customize).build()
     }
 }
