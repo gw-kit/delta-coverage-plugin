@@ -17,7 +17,6 @@ deltaCoverageReport {
     reports {
         html = true
         xml = true
-        console = true
         markdown = true
     }
 
