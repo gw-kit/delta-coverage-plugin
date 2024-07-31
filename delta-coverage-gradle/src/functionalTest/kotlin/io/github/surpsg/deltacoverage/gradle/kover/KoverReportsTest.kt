@@ -57,6 +57,9 @@ class KoverReportsTest {
                     console = true
                     markdown = true
                     fullCoverageReport.set(true)
+                    
+                    violationRules.failIfCoverageLessThan(0.7)
+                    violationRules.failOnViolation = false
                 }
             }
         """.trimIndent()
@@ -65,13 +68,14 @@ class KoverReportsTest {
         // WHEN // THEN
         gradleRunner
             .runDeltaCoverageTask()
-            .assertOutputContainsStrings("Fail on violations: false. Found violations: 0")
+            .assertOutputContainsStrings("Fail on violations: false. Found violations: 2")
             .assertOutputContainsStrings(
-                "| Delta Coverage Stats                                   |",
-                "| Source      | Class                | Lines  | Branches |",
-                "+-------------+----------------------+--------+----------+",
-                "| Class1.java | com.java.test.Class1 | 66.67% | 75%      |",
-                "| Total       |                      | 66.67% | 75%      |",
+                "| Delta Coverage Stats                                  |",
+                "| Class                | Lines    | Branches | Instr.   |",
+                "+----------------------+----------+----------+----------+",
+                "| com.java.test.Class1 | 66.67%   | 75%      | 66.67%   |",
+                "| Total                | ✖ 66.67% | ✔ 75%    | ✖ 66.67% |",
+                "| Min expected         | 70%      | 70%      | 70%      |",
             )
 
         // AND THEN

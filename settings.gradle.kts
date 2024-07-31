@@ -14,3 +14,6 @@ dependencyResolutionManagement {
     }
 }
 
+buildCache {
+    local.isEnabled = true
+}

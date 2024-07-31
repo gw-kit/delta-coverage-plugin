@@ -99,7 +99,7 @@ class DeltaCoverageMultiModuleTest {
                         autoApplyPlugin.set(false)
                     }
                     diffSource.file.set('$diffFilePath')
-                    violationRules.failIfCoverageLessThan 1.0
+                    violationRules.failIfCoverageLessThan 0.7
                 }
             """.trimIndent()
         )
@@ -113,6 +113,13 @@ class DeltaCoverageMultiModuleTest {
         )
 
         // WHEN // THEN
-        gradleRunner.runDeltaCoverageTask()
+        gradleRunner
+            .runDeltaCoverageTaskAndFail()
+            .assertOutputContainsStrings(
+                "Fail on violations: true. Found violations: 3.",
+                "lines covered ratio is 0.5, but expected minimum is 0.7;",
+                "branches covered ratio is 0.2, but expected minimum is 0.7;",
+                "instructions covered ratio is 0.6, but expected minimum is 0.7",
+            )
     }
 }

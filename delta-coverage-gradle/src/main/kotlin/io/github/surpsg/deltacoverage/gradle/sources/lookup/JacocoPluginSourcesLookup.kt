@@ -1,33 +1,35 @@
 package io.github.surpsg.deltacoverage.gradle.sources.lookup
 
-import io.github.surpsg.deltacoverage.gradle.sources.lookup.SourcesAutoLookup.Companion.newAutoDetectedSources
-import org.gradle.testing.jacoco.tasks.JacocoReportBase
+import io.github.surpsg.deltacoverage.gradle.utils.lazyFileCollection
+import org.gradle.api.file.FileCollection
+import org.gradle.api.tasks.testing.Test
+import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.lang.invoke.MethodHandles
 
 internal class JacocoPluginSourcesLookup(
     lookupContext: SourcesAutoLookup.Context
 ) : CacheableLookupSources(lookupContext) {
 
-    override fun lookupSources(lookupContext: SourcesAutoLookup.Context): SourcesAutoLookup.AutoDetectedSources {
-        return lookupContext.project.allprojects.asSequence()
-            .map { it.tasks.findByName(JACOCO_REPORT_TASK) }
-            .filterNotNull()
-            .map { it as JacocoReportBase }
-            .fold(lookupContext.objectFactory.newAutoDetectedSources()) { jacocoInputs, jacocoReport ->
-                log.debug("Found JaCoCo configuration in gradle project '{}'", jacocoReport.project.name)
+    override fun lookupCoverageBinaries(lookupContext: SourcesAutoLookup.Context): FileCollection {
+        return lookupContext.project.lazyFileCollection {
+            collectBinaryFiles(lookupContext)
+        }
+    }
 
-                jacocoInputs.apply {
-                    allBinaryCoverageFiles.from(jacocoReport.executionData)
-                    allClasses.from(jacocoReport.allClassDirs)
-                    allSources.from(jacocoReport.allSourceDirs)
-                }
+    private fun collectBinaryFiles(lookupContext: SourcesAutoLookup.Context): FileCollection {
+        return lookupContext.project.allprojects.asSequence()
+            .flatMap { project -> project.tasks.withType(Test::class.java).asSequence() }
+            .mapNotNull { task -> task.extensions.findByType(JacocoTaskExtension::class.java) }
+            .mapNotNull { jacocoExtension -> jacocoExtension.destinationFile }
+            .onEach { log.debug("Found coverage binary: project={}, file={}", lookupContext.project.name, it) }
+            .fold(lookupContext.project.objects.fileCollection()) { allBinaries, execFile ->
+                allBinaries.from(execFile)
             }
     }
 
     companion object {
-        const val JACOCO_REPORT_TASK = "jacocoTestReport"
-
-        val log: Logger = LoggerFactory.getLogger(JacocoPluginSourcesLookup::class.java)
+        private val log: Logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
     }
 }

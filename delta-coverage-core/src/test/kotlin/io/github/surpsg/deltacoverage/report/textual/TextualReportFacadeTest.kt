@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.report.textual
 
+import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportType
 import io.kotest.assertions.throwables.shouldThrow
@@ -32,20 +33,16 @@ class TextualReportFacadeTest {
         fun `generateReport should render report`() {
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
-                    group = "group1"
                     aClass = "class1"
-                    branchesCovered = 1
-                    branchesTotal = 2
-                    linesCovered = 3
-                    linesTotal = 4
+                    instr(2, 3)
+                    branches(1, 2)
+                    lines(3, 4)
                 },
                 RawCoverageData.newBlank {
-                    group = "group2"
                     aClass = "class2"
-                    branchesCovered = 5
-                    branchesTotal = 6
-                    linesCovered = 7
-                    linesTotal = 8
+                    instr(1, 3)
+                    branches(5, 6)
+                    lines(7, 8)
                 }
             )
             val stream = ByteArrayOutputStream()
@@ -56,6 +53,10 @@ class TextualReportFacadeTest {
                     override fun obtainData() = rawCoverageData
                 }
                 outputStream = stream
+
+                targetCoverage(CoverageEntity.INSTRUCTION, 0.8)
+                targetCoverage(CoverageEntity.BRANCH, 0.7)
+                targetCoverage(CoverageEntity.LINE, 0.9)
             }
 
             // WHEN
@@ -63,16 +64,18 @@ class TextualReportFacadeTest {
 
             // THEN
             val expectedReport = """
-                +--------+--------+--------+----------+
-                | Delta Coverage Stats                |
-                +--------+--------+--------+----------+
-                | Source | Class  | Lines  | Branches |
-                +--------+--------+--------+----------+
-                | group2 | class2 | 87.50% | 83.33%   |
-                | group1 | class1 | 75%    | 50%      |
-                +--------+--------+--------+----------+
-                | Total  |        | 83.33% | 75%      |
-                +--------+--------+--------+----------+
+                +--------------+----------+----------+--------+
+                | Delta Coverage Stats                        |
+                +--------------+----------+----------+--------+
+                | Class        | Lines    | Branches | Instr. |
+                +--------------+----------+----------+--------+
+                | class2       | 87.50%   | 83.33%   | 33.33% |
+                | class1       | 75%      | 50%      | 66.67% |
+                +--------------+----------+----------+--------+
+                | Total        | ✖ 83.33% | ✔ 75%    | ✖ 50%  |
+                +--------------+----------+----------+--------+
+                | Min expected | 90%      | 70%      | 80%    |
+                +--------------+----------+----------+--------+
                 
             """.trimIndent()
             stream.toString() shouldBe expectedReport
@@ -82,12 +85,10 @@ class TextualReportFacadeTest {
         fun `generateReport should render report with NA values`() {
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
-                    group = "group1"
                     aClass = "class1"
-                    branchesCovered = 0
-                    branchesTotal = 0
-                    linesCovered = 0
-                    linesTotal = 0
+                    instr(0, 0)
+                    branches(0, 0)
+                    lines(0, 0)
                 },
             )
             val stream = ByteArrayOutputStream()
@@ -105,15 +106,17 @@ class TextualReportFacadeTest {
 
             // THEN
             val expectedReport = """
-                +--------+--------+-------+----------+
-                | Delta Coverage Stats               |
-                +--------+--------+-------+----------+
-                | Source | Class  | Lines | Branches |
-                +--------+--------+-------+----------+
-                | group1 | class1 | NaN%  |          |
-                +--------+--------+-------+----------+
-                | Total  |        | NaN%  |          |
-                +--------+--------+-------+----------+
+                +--------------+-------+----------+--------+
+                | Delta Coverage Stats                     |
+                +--------------+-------+----------+--------+
+                | Class        | Lines | Branches | Instr. |
+                +--------------+-------+----------+--------+
+                | class1       | NaN%  |          | NaN%   |
+                +--------------+-------+----------+--------+
+                | Total        | NaN%  |          | NaN%   |
+                +--------------+-------+----------+--------+
+                | Min expected |       |          |        |
+                +--------------+-------+----------+--------+
                 
             """.trimIndent()
             stream.toString() shouldBe expectedReport
@@ -126,10 +129,8 @@ class TextualReportFacadeTest {
             val expectedClass = "..." + seed.repeat(97)
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
-                    group = "any"
                     aClass = className
-                    linesCovered = 1
-                    linesTotal = 2
+                    lines(1, 2)
                 },
             )
             val stream = ByteArrayOutputStream()
@@ -158,20 +159,16 @@ class TextualReportFacadeTest {
         fun `generateReport should render report`() {
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
-                    group = "group1"
                     aClass = "class1"
-                    branchesCovered = 1
-                    branchesTotal = 2
-                    linesCovered = 3
-                    linesTotal = 4
+                    branches(1, 2)
+                    lines(3, 4)
+                    instr(5, 6)
                 },
                 RawCoverageData.newBlank {
-                    group = "group2"
                     aClass = "class2"
-                    branchesCovered = 5
-                    branchesTotal = 6
-                    linesCovered = 7
-                    linesTotal = 8
+                    branches(5, 6)
+                    lines(7, 8)
+                    instr(9, 10)
                 }
             )
             val stream = ByteArrayOutputStream()
@@ -182,6 +179,10 @@ class TextualReportFacadeTest {
                     override fun obtainData() = rawCoverageData
                 }
                 outputStream = stream
+
+                targetCoverage(CoverageEntity.INSTRUCTION, 0.95)
+                targetCoverage(CoverageEntity.BRANCH, 0.75)
+                targetCoverage(CoverageEntity.LINE, 0.9)
             }
 
             // WHEN
@@ -191,11 +192,12 @@ class TextualReportFacadeTest {
             val expectedReport = """
             # Delta Coverage Stats
             
-            | Source | Class  | Lines  | Branches |
-            |--------|--------|--------|----------|
-            | group2 | class2 | 87.50% | 83.33%   |
-            | group1 | class1 | 75%    | 50%      |
-            | Total  |        | 83.33% | 75%      |
+            | Class        | Lines    | Branches | Instr.   |
+            |--------------|----------|----------|----------|
+            | class2       | 87.50%   | 83.33%   | 90%      |
+            | class1       | 75%      | 50%      | 83.33%   |
+            | Total        | 🔴 83.33% | 🟢 75%   | 🔴 87.50% |
+            | Min expected | 90%      | 75%      | 95%      |
             
         """.trimIndent()
             stream.toString() shouldBe expectedReport
@@ -205,12 +207,7 @@ class TextualReportFacadeTest {
         fun `generateReport should render report with NA values`() {
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
-                    group = "group1"
                     aClass = "class1"
-                    branchesCovered = 0
-                    branchesTotal = 0
-                    linesCovered = 0
-                    linesTotal = 0
                 },
             )
             val stream = ByteArrayOutputStream()
@@ -230,10 +227,11 @@ class TextualReportFacadeTest {
             val expectedReport = """
             # Delta Coverage Stats
             
-            | Source | Class  | Lines | Branches |
-            |--------|--------|-------|----------|
-            | group1 | class1 | NaN%  |          |
-            | Total  |        | NaN%  |          |
+            | Class        | Lines | Branches | Instr. |
+            |--------------|-------|----------|--------|
+            | class1       | NaN%  |          | NaN%   |
+            | Total        | NaN%  |          | NaN%   |
+            | Min expected |       |          |        |
             
         """.trimIndent()
             stream.toString() shouldBe expectedReport
@@ -245,10 +243,8 @@ class TextualReportFacadeTest {
             val className = seed.repeat(123)
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
-                    group = "any"
                     aClass = className
-                    linesCovered = 1
-                    linesTotal = 2
+                    lines(1, 2)
                 },
             )
             val stream = ByteArrayOutputStream()

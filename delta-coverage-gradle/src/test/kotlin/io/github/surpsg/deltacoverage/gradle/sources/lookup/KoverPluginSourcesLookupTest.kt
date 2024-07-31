@@ -30,7 +30,7 @@ internal class KoverPluginSourcesLookupTest {
     }
 
     @Test
-    fun `should empty source if kover artifact file not found`() {
+    fun `should return empty source if kover artifact file not found`() {
         // GIVEN
         val project: Project = testJavaProject {
             with(pluginManager) {
@@ -49,7 +49,7 @@ internal class KoverPluginSourcesLookupTest {
         )
 
         // WHEN
-        val actualSources: FileCollection = koverPluginSourcesLookup.lookup(SourceType.SOURCES)
+        val actualSources: FileCollection = koverPluginSourcesLookup.lookup(SourceType.COVERAGE_BINARIES)
 
         // THEN
         actualSources shouldHaveSize 0

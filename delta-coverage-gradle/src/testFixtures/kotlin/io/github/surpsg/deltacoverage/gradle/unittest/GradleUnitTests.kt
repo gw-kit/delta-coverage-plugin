@@ -11,6 +11,8 @@ fun testJavaProject(
     (ProjectBuilder.builder().build() as ProjectInternal).also {
         it.plugins.apply("java")
 
+        it.repositories.mavenCentral()
+
         if (attachSettings) {
             it.gradle.attachSettings(
                 mockk(relaxed = true)

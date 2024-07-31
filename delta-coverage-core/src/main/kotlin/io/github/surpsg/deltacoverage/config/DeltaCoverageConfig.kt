@@ -126,7 +126,7 @@ class ViolationRule private constructor(
 
     companion object {
 
-        operator fun invoke(customize: Builder.() -> Unit = {}): ViolationRule =
+        operator fun invoke(customize: Builder.() -> Unit): ViolationRule =
             Builder().apply(customize).build()
     }
 }
@@ -153,6 +153,7 @@ class ReportsConfig private constructor(
     class Builder internal constructor() {
         var html: ReportConfig = ReportConfig {}
         var xml: ReportConfig = ReportConfig {}
+
         @Deprecated(message = "This property will be removed in the next major release.")
         var csv: ReportConfig = ReportConfig {}
         var console: ReportConfig = ReportConfig {}
@@ -232,7 +233,9 @@ class DeltaCoverageConfig private constructor(
 
         fun build(): DeltaCoverageConfig = DeltaCoverageConfig(
             reportName,
-            diffSourceConfig ?: error("'${::diffSourceConfig.name}' is not configured"),
+            requireNotNull(diffSourceConfig) {
+                "'${::diffSourceConfig.name}' is not configured"
+            },
             reportsConfig,
             coverageRulesConfig,
             binaryCoverageFiles.toSet(),

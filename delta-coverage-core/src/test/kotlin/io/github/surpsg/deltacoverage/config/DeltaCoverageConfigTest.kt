@@ -16,17 +16,17 @@ class DeltaCoverageConfigTest {
     @Test
     fun `should build delta coverage config with defaults`() {
         // GIVEN
-        val testDiffSourceConfig = mockk<DiffSourceConfig>()
+        val expectedDiffSource = mockk<DiffSourceConfig>()
 
         // WHEN
         val actualConfig = DeltaCoverageConfig {
-            diffSourceConfig = testDiffSourceConfig
+            diffSourceConfig = expectedDiffSource
         }
 
         // THEN
         assertSoftly(actualConfig) {
             reportName shouldBeEqualComparingTo "delta-coverage-report"
-            diffSourceConfig shouldBe testDiffSourceConfig
+            diffSourceConfig shouldBe expectedDiffSource
             reportsConfig shouldBeEqualToComparingFields ReportsConfig {}
             coverageRulesConfig shouldBeEqualToComparingFields CoverageRulesConfig {}
             binaryCoverageFiles.shouldBeEmpty()
@@ -36,8 +36,8 @@ class DeltaCoverageConfigTest {
     }
 
     @Test
-    fun `should throw if diff source config is not configured`() {
-        shouldThrow<IllegalStateException> {
+    fun `should throw if diff source is not configured`() {
+        shouldThrow<IllegalArgumentException> {
             DeltaCoverageConfig {}
         }
     }
@@ -46,7 +46,7 @@ class DeltaCoverageConfigTest {
     fun `should build delta coverage config with custom properties`() {
         // GIVEN
         val expectedReportName = "report-name"
-        val expectedDiffSourceConfig = mockk<DiffSourceConfig>()
+        val expectedDiffSource = mockk<DiffSourceConfig>()
         val expectedReportsConfig = mockk<ReportsConfig>()
         val expectedCoverageRulesConfig = mockk<CoverageRulesConfig>()
         val expectedBinaries = listOf(File("exec"))
@@ -56,7 +56,7 @@ class DeltaCoverageConfigTest {
         // WHEN
         val actualConfig = DeltaCoverageConfig {
             reportName = expectedReportName
-            diffSourceConfig = expectedDiffSourceConfig
+            diffSourceConfig = expectedDiffSource
             reportsConfig = expectedReportsConfig
             coverageRulesConfig = expectedCoverageRulesConfig
             binaryCoverageFiles += expectedBinaries
@@ -67,7 +67,7 @@ class DeltaCoverageConfigTest {
         // THEN
         assertSoftly(actualConfig) {
             reportName shouldBeEqualComparingTo expectedReportName
-            diffSourceConfig shouldBe expectedDiffSourceConfig
+            diffSourceConfig shouldBe expectedDiffSource
             reportsConfig shouldBe expectedReportsConfig
             coverageRulesConfig shouldBe expectedCoverageRulesConfig
             binaryCoverageFiles shouldContainExactly expectedBinaries

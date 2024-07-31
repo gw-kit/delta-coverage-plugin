@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      gradle_cmd: "./gradlew --parallel --console=plain --no-watch-fs -s "
+      gradle_cmd: "./gradlew --parallel -Dorg.gradle.caching=true --console=plain --no-watch-fs -s "
 
     steps:
       - uses: actions/checkout@v4
@@ -21,16 +21,23 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          cache: gradle
-
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+          cache: 'gradle'
 
       - name: Build & Test
         run: ${gradle_cmd} check detektMain detektTest :koverXmlReport --rerun
+
+      - name: Run Delta Coverage check
+        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
+        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
+        run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
+
+      - name: Append Delta Coverage Summary
+        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
+        continue-on-error: true
+        uses: ./actions/delta-coverage-report
+        with:
+          title: 'Delta Coverage'
+          delta-coverage-report: build/reports/coverage-reports/delta-coverage/report.md
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.16.1
@@ -38,22 +45,7 @@ jobs:
         continue-on-error: true
         with:
           files:
-            '**/tests-artifacts/**/test-results/**/*.xml'
-
-      - name: Run Delta Coverage check
-        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
-        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
-        run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
-
-      - name: Add Delta Coverage report to PR
-        id: coverage-in-PR
-        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
-        uses: madrapps/jacoco-report@v1.6.1
-        continue-on-error: true
-        with:
-          paths:
-            'build/reports/coverage-reports/delta-coverage/report.xml'
-          token: ${{ secrets.GITHUB_TOKEN }}
+            '**/build/test-results/*/TEST-*.xml'
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4

@@ -7,17 +7,21 @@ internal abstract class CacheableLookupSources(
     private val lookupContext: SourcesAutoLookup.Context
 ) : SourcesAutoLookup {
 
-    private val cachedSources: SourcesAutoLookup.AutoDetectedSources by lazy {
-        lookupSources(lookupContext)
+    private val cachedCoverageBinaries: FileCollection by lazy {
+        lookupCoverageBinaries(lookupContext)
+    }
+
+    private val cachedSourceSets: SourceSetsLookup.AutoDetectedSources by lazy {
+        SourceSetsLookup().lookupSourceSets(lookupContext.project)
     }
 
     final override fun lookup(sourceType: SourceType): FileCollection {
         return when (sourceType) {
-            SourceType.CLASSES -> cachedSources.allClasses
-            SourceType.SOURCES -> cachedSources.allSources
-            SourceType.COVERAGE_BINARIES -> cachedSources.allBinaryCoverageFiles
+            SourceType.CLASSES -> cachedSourceSets.allClasses
+            SourceType.SOURCES -> cachedSourceSets.allSources
+            SourceType.COVERAGE_BINARIES -> cachedCoverageBinaries
         }
     }
 
-    abstract fun lookupSources(lookupContext: SourcesAutoLookup.Context): SourcesAutoLookup.AutoDetectedSources
+    abstract fun lookupCoverageBinaries(lookupContext: SourcesAutoLookup.Context): FileCollection
 }

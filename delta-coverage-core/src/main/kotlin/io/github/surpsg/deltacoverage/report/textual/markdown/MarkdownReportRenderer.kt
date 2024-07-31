@@ -1,5 +1,9 @@
 package io.github.surpsg.deltacoverage.report.textual.markdown
 
+import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.FAILURE_COV_CHAR
+import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.FAILURE_COV_ICON
+import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.SUCCESS_COV_CHAR
+import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.SUCCESS_COV_ICON
 import io.github.surpsg.deltacoverage.report.textual.TextualReportRenderer
 import java.io.PrintWriter
 
@@ -26,5 +30,10 @@ internal object MarkdownReportRenderer : TextualReportRenderer() {
     }
 
     override fun Context.renderFooter(printWriter: PrintWriter, widthMap: List<Int>) =
-        printWriter.printRow(footer, widthMap)
+        multiLineFooter.forEach { footer ->
+            val decoratedFooter = footer.map {
+                it.replace(SUCCESS_COV_CHAR, SUCCESS_COV_ICON).replace(FAILURE_COV_CHAR, FAILURE_COV_ICON)
+            }
+            printWriter.printRow(decoratedFooter, widthMap)
+        }
 }

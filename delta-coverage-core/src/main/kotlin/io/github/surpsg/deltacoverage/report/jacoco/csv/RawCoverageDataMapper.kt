@@ -8,13 +8,24 @@ internal fun CsvCoverageView.toCoverageData(): RawCoverageData = let { csvView -
         aClass = "${aPackage}.${csvView.aClass}"
 
         csvView.branchCovered.toInt().let { covered ->
-            branchesCovered = covered
-            branchesTotal = covered + csvView.branchesMissed.toInt()
+            branches(
+                covered = covered,
+                total = covered + csvView.branchesMissed.toInt(),
+            )
         }
 
         csvView.lineCovered.toInt().let { covered ->
-            linesCovered = covered
-            linesTotal = covered + csvView.lineMissed.toInt()
+            lines(
+                covered = covered,
+                total = covered + csvView.lineMissed.toInt(),
+            )
+        }
+
+        csvView.instrCovered.toInt().let { covered ->
+            instr(
+                covered = covered,
+                total = covered + csvView.instrMissed.toInt(),
+            )
         }
     }
 }

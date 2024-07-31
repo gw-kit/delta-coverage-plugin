@@ -2,7 +2,6 @@ package io.github.surpsg.deltacoverage.gradle.sources
 
 import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
-import io.github.surpsg.deltacoverage.gradle.sources.lookup.JacocoPluginSourcesLookup.Companion.JACOCO_REPORT_TASK
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldThrow
@@ -11,12 +10,10 @@ import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldEndWith
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
-import org.gradle.api.internal.project.ProjectInternal
-import org.gradle.testing.jacoco.tasks.JacocoReportBase
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
-import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.MethodSource
 import kotlin.reflect.KMutableProperty1
 
@@ -74,14 +71,11 @@ internal class SourcesResolverTest {
         }
     }
 
-    @ParameterizedTest
-    @EnumSource(SourceType::class)
-    fun `should throw if source is empty and delta-cov sources are not set and jacoco is not applied`(
-        sourceType: SourceType
-    ) {
+    @Test
+    fun `should throw if coverage binaries are empty and delta-cov sources are not set and jacoco is not applied`() {
         // GIVEN
         val project = testJavaProject()
-        val context: SourcesResolver.Context = project.sourceContext(sourceType) {
+        val context: SourcesResolver.Context = project.sourceContext(SourceType.COVERAGE_BINARIES) {
             coverage.engine.set(CoverageEngine.JACOCO)
         }
 
@@ -92,23 +86,16 @@ internal class SourcesResolverTest {
 
         // AND THEN
         assertSoftly(actualException.message) {
-            shouldContain(sourceType.sourceConfigurationPath)
+            shouldContain(SourceType.COVERAGE_BINARIES.sourceConfigurationPath)
             shouldContain("is not configured")
         }
     }
 
-    @ParameterizedTest
-    @EnumSource(SourceType::class)
-    fun `should throw if source is empty and delta-cov sources are not set and jacoco files is empty`(
-        sourceType: SourceType
-    ) {
+    @Test
+    fun `should throw if coverage binaries are empty and delta-cov sources are not set and jacoco files is empty`() {
         // GIVEN
-        val project = testGradleProjectWithJacoco {
-            sourceDirectories.setFrom(project.files())
-            classDirectories.setFrom(project.files())
-            executionData.setFrom(project.files())
-        }
-        val context: SourcesResolver.Context = project.sourceContext(sourceType) {
+        val project = testJavaProject()
+        val context: SourcesResolver.Context = project.sourceContext(SourceType.COVERAGE_BINARIES) {
             coverage.engine.set(CoverageEngine.JACOCO)
         }
 
@@ -119,20 +106,8 @@ internal class SourcesResolverTest {
 
         // AND THEN
         assertSoftly(actualException.message) {
-            shouldContain(sourceType.sourceConfigurationPath)
+            shouldContain(SourceType.COVERAGE_BINARIES.sourceConfigurationPath)
             shouldContain("is not configured.")
-        }
-    }
-
-    private fun testGradleProjectWithJacoco(
-        customize: JacocoReportBase.() -> Unit
-    ): ProjectInternal {
-        return testJavaProject {
-            pluginManager.apply("jacoco")
-
-            tasks.findByPath(JACOCO_REPORT_TASK)
-                .let { it as JacocoReportBase }
-                .apply(customize)
         }
     }
 

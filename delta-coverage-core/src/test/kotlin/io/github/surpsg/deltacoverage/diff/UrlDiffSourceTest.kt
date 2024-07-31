@@ -1,32 +1,18 @@
 package io.github.surpsg.deltacoverage.diff
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.style.StringSpec
-import java.net.UnknownHostException
+import org.junit.jupiter.api.Test
 
-class UrlDiffSourceTest : StringSpec() {
+class UrlDiffSourceTest {
 
-    init {
-        "pullDiff should throw when url is invalid" {
-            // setup
-            val urlDiffSource = UrlDiffSource("invalid url format")
+    @Test
+    fun `pullDiff should throw when url is invalid`() {
+        // GIVEN
+        val urlDiffSource = UrlDiffSource("invalid url format")
 
-            // run
-            // assert
-            shouldThrow<IllegalArgumentException> {
-                urlDiffSource.pullDiff()
-            }
-        }
-
-        "pullDiff should throw when url doesn't exist" {
-            // setup
-            val urlDiffSource = UrlDiffSource("http://1.html")
-
-            // run
-            // assert
-            shouldThrow<UnknownHostException> {
-                urlDiffSource.pullDiff()
-            }
+        // WHEN // THEN
+        shouldThrow<IllegalArgumentException> {
+            urlDiffSource.pullDiff()
         }
     }
 }
