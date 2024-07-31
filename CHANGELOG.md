@@ -1,6 +1,6 @@
 # Delta-Coverage Gradle plugin Changelog
 
-## <NEXT-RELEASE>
+## 2.4.0
 
 ### Changed
 - Source code paths are inferred from sourceSets if no custom paths are specified.
