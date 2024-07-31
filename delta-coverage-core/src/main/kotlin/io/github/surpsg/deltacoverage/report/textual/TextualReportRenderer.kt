@@ -32,7 +32,10 @@ internal abstract class TextualReportRenderer {
     private fun Context.computeWidthMap(): List<Int> {
         val widthMap: MutableList<Int> = MutableList(headers.size) { 0 }
 
-        val allRows: List<List<String>> = mutableListOf(headers, footer).apply { addAll(rows) }
+        val allRows: List<List<String>> = mutableListOf(headers).apply {
+            addAll(rows)
+            addAll(multiLineFooter)
+        }
         for (row in allRows) {
             for (i in row.indices) {
                 val cellSize = row[i].length
@@ -68,7 +71,7 @@ internal abstract class TextualReportRenderer {
         val title: String,
         val headers: List<String>,
         val rows: List<List<String>>,
-        val footer: List<String>,
+        val multiLineFooter: List<List<String>>,
     ) {
 
         class Builder {
@@ -77,7 +80,7 @@ internal abstract class TextualReportRenderer {
             lateinit var output: OutputStream
             lateinit var headers: List<String>
             lateinit var rows: List<List<String>>
-            lateinit var footer: List<String>
+            lateinit var footer: List<List<String>>
 
             fun build() = Context(output, title, headers, rows, footer)
         }

@@ -23,12 +23,11 @@ class RawCoverageDataTest {
     ) {
         // GIVEN
         val data = RawCoverageData.newBlank {
-            branchesCovered = covered
-            branchesTotal = total
+            branches(covered = covered, total = total)
         }
 
         // WHEN // THEN
-        data.branchesRatio shouldBe expected
+        data.branches.ratio shouldBe expected
     }
 
     @ParameterizedTest
@@ -44,12 +43,31 @@ class RawCoverageDataTest {
     ) {
         // GIVEN
         val data = RawCoverageData.newBlank {
-            branchesCovered = covered
-            branchesTotal = total
+            lines(covered = covered, total = total)
         }
 
         // WHEN // THEN
-        data.branchesRatio shouldBe expected
+        data.lines.ratio shouldBe expected
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "20, 100, 0.2",
+        "4, 16, 0.25",
+        "10, 10, 1.0",
+    )
+    fun `should return correct ration for instructions`(
+        covered: Int,
+        total: Int,
+        expected: Double,
+    ) {
+        // GIVEN
+        val data = RawCoverageData.newBlank {
+            instr(covered = covered, total = total)
+        }
+
+        // WHEN // THEN
+        data.instr.ratio shouldBe expected
     }
 
     @Test
@@ -57,18 +75,16 @@ class RawCoverageDataTest {
         // GIVEN
         val data1 = RawCoverageData {
             aClass = "class1"
-            branchesCovered = 5
-            branchesTotal = 10
-            linesCovered = 5
-            linesTotal = 10
+            instr(4, 4)
+            branches(5, 10)
+            lines(5, 10)
         }
 
         val data2 = RawCoverageData {
             aClass = "class2"
-            branchesCovered = 5
-            branchesTotal = 10
-            linesCovered = 5
-            linesTotal = 10
+            instr(2, 6)
+            branches(5, 10)
+            lines(5, 10)
         }
 
         // WHEN
@@ -77,38 +93,62 @@ class RawCoverageDataTest {
         // THEN
         mergedData shouldBeEqualToComparingFields RawCoverageData {
             aClass = "class1"
-            branchesCovered = 10
-            branchesTotal = 20
-            linesCovered = 10
-            linesTotal = 20
+            instr(6, 10)
+            branches(10, 20)
+            lines(10, 20)
         }
     }
 
-    @ParameterizedTest
-    @CsvSource(
-        nullValues = ["null"],
-        value = [
-            "null, 1, 1, 1",
-            "1, null, 1, 1",
-            "1, 1, null, 1",
-            "1, 1, 1, null",
-        ]
-    )
-    fun `should throw if fields not set`(
-        branchesCovered: Int?,
-        branchesTotal: Int?,
-        linesCovered: Int?,
-        linesTotal: Int?,
-    ) {
-
+    @Test
+    fun `should throw if instructions is not set`() {
         shouldThrow<IllegalArgumentException> {
             RawCoverageData {
                 aClass = "class"
-                this.branchesCovered = branchesCovered
-                this.branchesTotal = branchesTotal
-                this.linesCovered = linesCovered
-                this.linesTotal = linesTotal
+                branches(0, 0)
+                lines(0, 0)
             }
+        }
+    }
+
+    @Test
+    fun `should throw if branches is not set`() {
+        shouldThrow<IllegalArgumentException> {
+            RawCoverageData {
+                aClass = "class"
+                instr(0, 0)
+                lines(0, 0)
+            }
+        }
+    }
+
+    @Test
+    fun `should throw if lines is not set`() {
+        shouldThrow<IllegalArgumentException> {
+            RawCoverageData {
+                aClass = "class"
+                instr(0, 0)
+                branches(0, 0)
+            }
+        }
+    }
+
+    // cover the selected code
+    @Test
+    fun `should create new blank RawCoverageData`() {
+        // GIVEN
+        val data = RawCoverageData.newBlank {
+            aClass = "class"
+            instr(0, 0)
+            branches(0, 0)
+            lines(0, 0)
+        }
+
+        // THEN
+        data shouldBeEqualToComparingFields RawCoverageData {
+            aClass = "class"
+            instr(0, 0)
+            branches(0, 0)
+            lines(0, 0)
         }
     }
 }

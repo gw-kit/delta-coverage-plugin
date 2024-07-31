@@ -21,7 +21,11 @@ class AsciiTableRendererTest {
                 listOf("Row1Col1", "Row1Col2"),
                 listOf("Row2Col1", "Row2Col2")
             )
-            footer = listOf("Footer1", "")
+            footer = listOf(
+                listOf("Footer1", "1"),
+                listOf("Footer2", "2"),
+                listOf("Footer3", "3"),
+            )
         }
 
         // WHEN
@@ -37,7 +41,11 @@ class AsciiTableRendererTest {
             | Row1Col1 | Row1Col2 |
             | Row2Col1 | Row2Col2 |
             +----------+----------+
-            | Footer1  |          |
+            | Footer1  | 1        |
+            +----------+----------+
+            | Footer2  | 2        |
+            +----------+----------+
+            | Footer3  | 3        |
             +----------+----------+
             
             """.trimIndent()
@@ -52,7 +60,10 @@ class AsciiTableRendererTest {
             output = outStream
             headers = listOf("Header-1", "Header2")
             rows = listOf()
-            footer = listOf("Footer1", "")
+            footer = listOf(
+                listOf("Footer1", ""),
+                listOf("", "empty"),
+            )
         }
 
         // WHEN
@@ -67,6 +78,8 @@ class AsciiTableRendererTest {
             | Header-1 | Header2 |
             +----------+---------+
             | Footer1  |         |
+            +----------+---------+
+            |          | empty   |
             +----------+---------+
             
             """.trimIndent()
