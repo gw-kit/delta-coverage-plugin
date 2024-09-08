@@ -32,7 +32,7 @@ jobs:
           
     steps:
       - name: Post comment
-        uses: gw-git/delta-coverage-plugin/actions/delta-coverage-report@main
+        uses: gw-kit/delta-coverage-plugin/actions/delta-coverage-report@main
         with:
           title: 'Delta Coverage Report'
           delta-coverage-report: 'build/reports/coverage-reports/delta-coverage/report.md'
