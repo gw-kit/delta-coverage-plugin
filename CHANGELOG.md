@@ -1,5 +1,14 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## 2.5.0
+
+### Fixed
+- #133 Fixed configuration cache compatibility issue.
+
+### Changed
+- Min supported Gradle version is **7.0**.
+
+
 ## 2.4.0
 
 ### Changed

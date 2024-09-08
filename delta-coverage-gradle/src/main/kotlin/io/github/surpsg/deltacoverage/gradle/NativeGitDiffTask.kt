@@ -7,12 +7,16 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import org.gradle.process.internal.DefaultExecSpec
+import org.gradle.process.internal.ExecAction
+import org.gradle.process.internal.ExecActionFactory
 import java.io.File
 import javax.inject.Inject
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class NativeGitDiffTask @Inject constructor(
     objectFactory: ObjectFactory,
+    private val execActionFactory: ExecActionFactory,
 ) : DefaultTask() {
 
     @get:Input
@@ -22,6 +26,8 @@ abstract class NativeGitDiffTask @Inject constructor(
     val diffFile: RegularFileProperty = objectFactory.fileProperty()
         .convention(project.layout.buildDirectory.file("code-diff.diff"))
 
+    private val execSpec: DefaultExecSpec = objectFactory.newInstance(DefaultExecSpec::class.java)
+
     init {
         description = "Generate a diff file using native git."
     }
@@ -29,10 +35,14 @@ abstract class NativeGitDiffTask @Inject constructor(
     @TaskAction
     fun obtainDiff() {
         val file: File = diffFile.get().asFile
+
+        val execAction: ExecAction = execActionFactory.newExecAction()
         file.outputStream().use { fileOutputStream ->
-            project.exec {
-                it.setCommandLine("git", "diff", "--no-color", "--minimal", targetBranch.get())
-                it.standardOutput = fileOutputStream
+            execSpec.run {
+                commandLine = listOf("git", "diff", "--no-color", "--minimal", targetBranch.get())
+                standardOutput = fileOutputStream
+                copyTo(execAction)
+                execAction.execute()
             }
 
             println("Diff file generated: file://${file.absolutePath}")
