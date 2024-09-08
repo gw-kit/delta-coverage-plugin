@@ -1,6 +1,6 @@
 # Delta-Coverage Gradle plugin Changelog
 
-## <NEXT-RELEASE>
+## 2.5.0
 
 ### Fixed
 - #133 Fixed configuration cache compatibility issue.
