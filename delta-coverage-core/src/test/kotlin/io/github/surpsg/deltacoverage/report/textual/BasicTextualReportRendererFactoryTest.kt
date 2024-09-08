@@ -12,14 +12,14 @@ import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.MethodSource
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class TextualReportRendererFactoryTest {
+internal class BasicTextualReportRendererFactoryTest {
 
 
     @ParameterizedTest
     @MethodSource("rendererFactoryTestParams")
     fun `should return correct renderer`(
         reportType: ReportType,
-        expectedRenderer: TextualReportRenderer,
+        expectedRenderer: BasicTextualReportRenderer,
     ) {
         // WHEN
         val renderer = TextualReportRendererFactory.getBy(reportType)

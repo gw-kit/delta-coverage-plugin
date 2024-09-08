@@ -1,9 +1,9 @@
 package io.github.surpsg.deltacoverage.report.textual.asciitable
 
-import io.github.surpsg.deltacoverage.report.textual.TextualReportRenderer
+import io.github.surpsg.deltacoverage.report.textual.BasicTextualReportRenderer
 import java.io.PrintWriter
 
-internal object AsciiTableRenderer : TextualReportRenderer() {
+internal object AsciiTableRenderer : BasicTextualReportRenderer() {
 
     override val hDelim: String = "-"
     override val vDelim: String = "|"

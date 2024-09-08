@@ -4,10 +4,10 @@ import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.FAILURE_CO
 import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.FAILURE_COV_ICON
 import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.SUCCESS_COV_CHAR
 import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.SUCCESS_COV_ICON
-import io.github.surpsg.deltacoverage.report.textual.TextualReportRenderer
+import io.github.surpsg.deltacoverage.report.textual.BasicTextualReportRenderer
 import java.io.PrintWriter
 
-internal object MarkdownReportRenderer : TextualReportRenderer() {
+internal object MarkdownReportRenderer : BasicTextualReportRenderer() {
 
     override val hDelim: String = "-"
     override val vDelim: String = "|"

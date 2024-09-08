@@ -16,7 +16,7 @@ import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.NA_VALUE
 import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.PERCENT_MULTIPLIER
 import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.SHRINK_PLACEHOLDER
 import io.github.surpsg.deltacoverage.report.textual.ReportsConstants.SUCCESS_COV_PATTERN
-import io.github.surpsg.deltacoverage.report.textual.TextualReportRenderer.Context
+import io.github.surpsg.deltacoverage.report.textual.BasicTextualReportRenderer.Context
 import java.io.OutputStream
 
 internal object TextualReportFacade {
@@ -25,6 +25,18 @@ internal object TextualReportFacade {
         buildContext: BuildContext,
     ) {
         val rawCoverageData: List<RawCoverageData> = buildContext.coverageDataProvider.obtainData()
+        if (isNoCoverage(rawCoverageData)) {
+            NoCoverageTextualReportRenderer.render(
+                Context {
+                    output = buildContext.outputStream
+                    title = buildTitle(buildContext)
+                    headers = emptyList()
+                    footer = emptyList()
+                    rows = emptyList()
+                }
+            )
+            return
+        }
         val coverageDataValues: List<List<String>> =
             rawCoverageData
                 .sortedByDescending { it.lines.ratio }
@@ -41,6 +53,10 @@ internal object TextualReportFacade {
                 rows = coverageDataValues
             }
         )
+    }
+
+    private fun isNoCoverage(rawCoverageData: List<RawCoverageData>): Boolean {
+        return rawCoverageData.all { it.lines.total == 0 }
     }
 
     private fun buildFooter(
@@ -80,26 +96,27 @@ internal object TextualReportFacade {
     private fun RawCoverageData.toValuesCollection(
         buildContext: BuildContext,
         decorateCoverageValue: (Coverage, String) -> String = { _, formatted -> formatted },
-    ): List<String> = INDEXED_HEADERS.keys.map { header ->
-        when (header) {
-            CLASS_H -> aClass.applyIf(buildContext.shrinkLongClassName) {
-                shrinkClassName(MAX_CLASS_COLUMN_LENGTH)
+    ): List<String> {
+        val stringify: Coverage.() -> String = {
+            if (total == 0) {
+                NA_VALUE
+            } else {
+                decorateCoverageValue(this, ratio.formatToPercentage())
             }
+        }
 
-            LINES_H -> decorateCoverageValue(lines, lines.ratio.formatToPercentage())
-
-            BRANCHES_H -> {
-                if (branches.total == 0) {
-                    NA_VALUE
-                } else {
-                    decorateCoverageValue(branches, branches.ratio.formatToPercentage())
+        return INDEXED_HEADERS.keys.map { header ->
+            when (header) {
+                CLASS_H -> aClass.applyIf(buildContext.shrinkLongClassName) {
+                    shrinkClassName(MAX_CLASS_COLUMN_LENGTH)
                 }
+
+                LINES_H -> lines.stringify()
+                BRANCHES_H -> branches.stringify()
+                INSTR_H -> instr.stringify()
+
+                else -> error("Unknown header: $header")
             }
-
-            INSTR_H -> decorateCoverageValue(instr, instr.ratio.formatToPercentage())
-
-
-            else -> error("Unknown header: $header")
         }
     }
 

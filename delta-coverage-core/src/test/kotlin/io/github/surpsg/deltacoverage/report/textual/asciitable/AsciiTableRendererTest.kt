@@ -1,6 +1,6 @@
 package io.github.surpsg.deltacoverage.report.textual.asciitable
 
-import io.github.surpsg.deltacoverage.report.textual.TextualReportRenderer
+import io.github.surpsg.deltacoverage.report.textual.BasicTextualReportRenderer
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -13,7 +13,7 @@ class AsciiTableRendererTest {
     fun `should generate table`() {
         // GIVEN
         val outStream = ByteArrayOutputStream()
-        val context = TextualReportRenderer.Context {
+        val context = BasicTextualReportRenderer.Context {
             title = "Title-123"
             output = outStream
             headers = listOf("Header-1", "Header2")
@@ -55,7 +55,7 @@ class AsciiTableRendererTest {
     fun `should generate empty data table`() {
         // GIVEN
         val outStream = ByteArrayOutputStream()
-        val context = TextualReportRenderer.Context {
+        val context = BasicTextualReportRenderer.Context {
             title = "Title-123"
             output = outStream
             headers = listOf("Header-1", "Header2")
