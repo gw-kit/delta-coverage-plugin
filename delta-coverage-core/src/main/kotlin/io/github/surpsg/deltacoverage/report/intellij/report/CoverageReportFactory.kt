@@ -1,40 +1,43 @@
 package io.github.surpsg.deltacoverage.report.intellij.report
 
 import com.intellij.rt.coverage.report.Reporter
-import io.github.surpsg.deltacoverage.config.ReportsConfig
 import io.github.surpsg.deltacoverage.report.EnabledReportTypeFactory
+import io.github.surpsg.deltacoverage.report.ReportContext
 import io.github.surpsg.deltacoverage.report.ReportType
 import io.github.surpsg.deltacoverage.report.intellij.coverage.NamedReportLoadStrategy
 
 internal object CoverageReportFactory {
 
     fun reportBuildersBy(
-        reportsConfig: ReportsConfig,
+        reportsContext: ReportContext,
         reportLoadStrategies: Iterable<NamedReportLoadStrategy>,
     ): Sequence<ReportBuilder> {
-        val enabledReports: Iterable<ReportType> = EnabledReportTypeFactory.obtain(reportsConfig)
+        val enabledReports: Iterable<ReportType> = EnabledReportTypeFactory.obtain(
+            reportsContext.deltaCoverageConfig.reportsConfig
+        )
         return reportLoadStrategies.asSequence()
             .flatMap { loadStrategy ->
-                buildReportBuilders(reportsConfig, loadStrategy, enabledReports)
+                buildReportBuilders(reportsContext, loadStrategy, enabledReports)
             }
     }
 
     private fun buildReportBuilders(
-        reportsConfig: ReportsConfig,
+        reportsContext: ReportContext,
         namedReportLoadStrategy: NamedReportLoadStrategy,
         enabledReports: Iterable<ReportType>,
     ): Sequence<ReportBuilder> {
         return enabledReports.asSequence()
             .sortedBy { it.priority }
             .map { reportType ->
-                reportType.buildReportBuilder(namedReportLoadStrategy, reportsConfig)
+                reportType.buildReportBuilder(namedReportLoadStrategy, reportsContext)
             }
     }
 
     private fun ReportType.buildReportBuilder(
         reportLoadStrategy: NamedReportLoadStrategy,
-        reportsConfig: ReportsConfig,
+        reportsContext: ReportContext,
     ): ReportBuilder {
+        val reportsConfig = reportsContext.deltaCoverageConfig.reportsConfig
         val reporter = Reporter(reportLoadStrategy.reportLoadStrategy)
         return when (this) {
             ReportType.HTML -> HtmlReportBuilder(
@@ -53,12 +56,13 @@ internal object CoverageReportFactory {
                 view = reportsConfig.view,
                 reportBound = reportLoadStrategy.reportBound,
                 reporter = reporter,
+                coverageRulesConfig = reportsContext.deltaCoverageConfig.coverageRulesConfig,
             )
 
             ReportType.MARKDOWN -> MarkdownReportBuilder(
                 reportView = reportsConfig.view,
                 reportBound = reportLoadStrategy.reportBound,
-                reportsConfig = reportsConfig,
+                reportContext = reportsContext,
                 reporter = reporter,
             )
 

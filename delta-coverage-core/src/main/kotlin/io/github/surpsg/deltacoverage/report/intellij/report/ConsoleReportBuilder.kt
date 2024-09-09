@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.report.intellij.report
 
 import com.intellij.rt.coverage.report.Reporter
+import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportType
 import io.github.surpsg.deltacoverage.report.intellij.coverage.IntellijRawCoverageDataProvider
@@ -9,6 +10,7 @@ import io.github.surpsg.deltacoverage.report.textual.TextualReportFacade.BuildCo
 
 internal class ConsoleReportBuilder(
     val view: String,
+    val coverageRulesConfig: CoverageRulesConfig,
     val reportBound: ReportBound,
     val reporter: Reporter,
 ) : ReportBuilder {
@@ -23,6 +25,10 @@ internal class ConsoleReportBuilder(
                 coverageDataProvider = dataProvider
                 outputStream = System.out
                 shrinkLongClassName = true
+
+                coverageRulesConfig.entitiesRules.forEach { (entity, coverage) ->
+                    targetCoverage(entity, coverage.minCoverageRatio)
+                }
             }
             TextualReportFacade.generateReport(buildContext)
         }

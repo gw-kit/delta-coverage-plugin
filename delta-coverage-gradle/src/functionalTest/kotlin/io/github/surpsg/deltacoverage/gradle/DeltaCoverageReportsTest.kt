@@ -51,6 +51,9 @@ class DeltaCoverageReportsTest {
                     console.set(true)
                     markdown.set(true)
                     fullCoverageReport.set(true)
+                    
+                    violationRules.failIfCoverageLessThan(0.6d)
+                    violationRules.failOnViolation.set(false)
                 }
             }
         """.trimIndent()
@@ -59,14 +62,15 @@ class DeltaCoverageReportsTest {
         // WHEN // THEN
         gradleRunner
             .runDeltaCoverageTask()
+            .assertOutputContainsStrings("Fail on violations: false. Found violations: 2")
             .assertOutputContainsStrings(
-                "| [default] Delta Coverage Stats           |",
-                "| Class                | Lines  | Branches |",
-                "+----------------------+--------+----------+",
-                "| com.java.test.Class1 | 66.67% | 50%      |",
-                "| Total                | 66.67% | 50%      |",
+                "| [default] Delta Coverage Stats                        |",
+                "| Class                | Lines    | Branches | Instr.   |",
+                "+----------------------+----------+----------+----------+",
+                "| com.java.test.Class1 | 66.67%   | 50%      | 52.94%   |",
+                "| Total                | ✔ 66.67% | ✖ 50%    | ✖ 52.94% |",
+                "| Min expected         | 60%      | 60%      | 60%      |",
             )
-            .assertOutputContainsStrings("Fail on violations: false. Found violations: 0")
 
         // AND THEN
         val baseReportDirFile = rootProjectDir.resolve(baseReportDir).resolve("coverage-reports")

@@ -24,4 +24,10 @@ internal class CsvCoverageView {
 
     @CsvBindByName(column = "LINE_COVERED")
     lateinit var lineCovered: String
+
+    @CsvBindByName(column = "INSTRUCTION_COVERED")
+    lateinit var instrCovered: String
+
+    @CsvBindByName(column = "INSTRUCTION_MISSED")
+    lateinit var instrMissed: String
 }

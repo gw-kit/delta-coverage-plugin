@@ -95,7 +95,7 @@ class ViolationRule private constructor(
 
     companion object {
 
-        operator fun invoke(customize: Builder.() -> Unit = {}): ViolationRule =
+        operator fun invoke(customize: Builder.() -> Unit): ViolationRule =
             Builder().apply(customize).build()
     }
 }
@@ -208,7 +208,9 @@ class DeltaCoverageConfig private constructor(
             viewName.apply {
                 require(isNotBlank()) { "View name must be not blank" }
             },
-            requireNotNull(diffSource),
+            requireNotNull(diffSource) {
+                "'${::diffSource.name}' is not configured"
+            },
             reportsConfig.apply { view = viewName },
             coverageRulesConfig,
             binaryCoverageFiles.toSet(),

@@ -30,11 +30,9 @@ class CsvSourceRawCoverageDataProviderTest {
             first() shouldBeEqualToComparingFields RawCoverageData {
                 aClass = "package.class"
 
-                branchesTotal = 7
-                branchesCovered = 4
-
-                linesTotal = 11
-                linesCovered = 6
+                instr(2, 3)
+                branches(4, 7)
+                lines(6, 11)
             }
         }
     }

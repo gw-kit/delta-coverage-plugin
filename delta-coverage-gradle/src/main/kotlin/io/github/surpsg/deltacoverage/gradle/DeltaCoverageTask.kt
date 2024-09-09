@@ -46,11 +46,9 @@ open class DeltaCoverageTask @Inject constructor(
         GradleDeltaCoverageConfig::class.java
     )
 
-    private val projectDirProperty: File
-        get() = project.projectDir
+    private val projectDirProperty: File = project.projectDir
 
-    private val rootProjectDirProperty: File
-        get() = project.rootProject.projectDir
+    private val rootProjectDirProperty: File = project.rootProject.projectDir
 
     @OutputDirectory
     fun getOutputDir(): File {

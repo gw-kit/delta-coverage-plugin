@@ -2,6 +2,7 @@ package io.github.surpsg.deltacoverage.report.intellij.report
 
 import com.intellij.rt.coverage.data.ProjectData
 import com.intellij.rt.coverage.report.Reporter
+import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.report.ReportBound
 import io.mockk.Called
 import io.mockk.every
@@ -18,7 +19,8 @@ class ConsoleReportBuilderTest {
         val builder = ConsoleReportBuilder(
             "any",
             reportBound = ReportBound.FULL_REPORT,
-            reporter = reporter
+            reporter = reporter,
+            coverageRulesConfig = CoverageRulesConfig {}
         )
 
         // WHEN
@@ -37,7 +39,8 @@ class ConsoleReportBuilderTest {
         val builder = ConsoleReportBuilder(
             "any",
             reportBound = ReportBound.DELTA_REPORT,
-            reporter = reporter
+            reporter = reporter,
+            coverageRulesConfig = CoverageRulesConfig {}
         )
 
         // WHEN

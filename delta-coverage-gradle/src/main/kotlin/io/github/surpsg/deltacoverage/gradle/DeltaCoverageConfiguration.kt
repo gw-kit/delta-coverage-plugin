@@ -199,7 +199,7 @@ open class ReportsConfiguration(
     val csv: Property<Boolean> = objectFactory.booleanProperty(false)
 
     @Input
-    val console: Property<Boolean> = objectFactory.booleanProperty(false)
+    val console: Property<Boolean> = objectFactory.booleanProperty(true)
 
     @Input
     val markdown: Property<Boolean> = objectFactory.booleanProperty(false)
@@ -217,7 +217,7 @@ open class ReportsConfiguration(
             "xml=${xml.get()}, " +
             "csv=${csv.get()}, " +
             "console=${console.get()}, " +
-            "console=${markdown.get()}, " +
+            "markdown=${markdown.get()}, " +
             "baseReportDir='${baseReportDir.get()}')"
 }
 

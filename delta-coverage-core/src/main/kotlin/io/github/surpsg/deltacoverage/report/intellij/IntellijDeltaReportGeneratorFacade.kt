@@ -20,8 +20,8 @@ internal class IntellijDeltaReportGeneratorFacade : DeltaReportGeneratorFacade()
 
         CoverageReportFactory
             .reportBuildersBy(
-                reportContext.deltaCoverageConfig.reportsConfig,
-                reportBoundToLoadStrategy.values
+                reportContext,
+                reportBoundToLoadStrategy.values,
             )
             .forEach(ReportBuilder::buildReport)
 

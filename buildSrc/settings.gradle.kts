@@ -3,7 +3,7 @@ rootProject.name = "delta-coverage-conventions"
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
-        maven("https://plugins.gradle.org/m2/")
+        gradlePluginPortal()
     }
     versionCatalogs {
         create("deps") {

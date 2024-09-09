@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.report.jacoco.csv
 
+import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportType
 import io.github.surpsg.deltacoverage.report.textual.TextualReportFacade
@@ -10,6 +11,7 @@ internal class TextualReportOutputStream(
     private val reportView: String,
     private val reportType: ReportType,
     private val reportBound: ReportBound,
+    private val coverageRulesConfig: CoverageRulesConfig,
     private val outputStream: OutputStream,
 ) : OutputStream() {
 
@@ -28,6 +30,10 @@ internal class TextualReportOutputStream(
                 reportBound = this@TextualReportOutputStream.reportBound
                 outputStream = os
                 shrinkLongClassName = (reportType == ReportType.CONSOLE)
+
+                coverageRulesConfig.entitiesRules.forEach { (entity, coverage) ->
+                    targetCoverage(entity, coverage.minCoverageRatio)
+                }
             }
             TextualReportFacade.generateReport(buildContext)
         }

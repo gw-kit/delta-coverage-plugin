@@ -3,9 +3,13 @@ package io.github.surpsg.deltacoverage.report.intellij.report
 import com.intellij.rt.coverage.report.ReportLoadStrategy
 import com.intellij.rt.coverage.report.Reporter
 import com.intellij.rt.coverage.report.api.Filters
+import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
+import io.github.surpsg.deltacoverage.config.DiffSourceConfig
 import io.github.surpsg.deltacoverage.config.ReportConfig
 import io.github.surpsg.deltacoverage.config.ReportsConfig
+import io.github.surpsg.deltacoverage.diff.DiffSource
 import io.github.surpsg.deltacoverage.report.ReportBound
+import io.github.surpsg.deltacoverage.report.ReportContext
 import io.github.surpsg.deltacoverage.report.intellij.coverage.NamedReportLoadStrategy
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldThrow
@@ -17,6 +21,7 @@ import io.kotest.equals.SimpleEqualityResultDetail
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.sequences.shouldBeEmpty
+import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import kotlin.reflect.KProperty
 
@@ -25,17 +30,23 @@ class CoverageReportFactoryTest {
     @Test
     fun `reportBuildersBy should return empty iterable if no enabled reports`() {
         // GIVEN
-        val config = ReportsConfig {
-            html = ReportConfig { enabled = false }
-            xml = ReportConfig { enabled = false }
-            csv = ReportConfig { enabled = false }
-            console = ReportConfig { enabled = false }
-            markdown = ReportConfig { enabled = false }
-        }.apply { view = "any" }
+        val context = ReportContext(
+            mockk<DiffSource>(),
+            DeltaCoverageConfig {
+                diffSourceConfig = DiffSourceConfig { diffBase = "any" }
+                reportsConfig = ReportsConfig {
+                    html = ReportConfig { enabled = false }
+                    xml = ReportConfig { enabled = false }
+                    csv = ReportConfig { enabled = false }
+                    console = ReportConfig { enabled = false }
+                    markdown = ReportConfig { enabled = false }
+                }.apply { view = "any" }
+            }
+        )
 
         // WHEN
         val actualBuilders: Sequence<ReportBuilder> = CoverageReportFactory.reportBuildersBy(
-            config,
+            context,
             listOf(anyReportLoadStrategy())
         )
 
@@ -46,17 +57,23 @@ class CoverageReportFactoryTest {
     @Test
     fun `reportBuildersBy should return empty iterable if no report loaders`() {
         // GIVEN
-        val config = ReportsConfig {
-            html = ReportConfig { enabled = true }
-            xml = ReportConfig { enabled = true }
-            csv = ReportConfig { enabled = true }
-            console = ReportConfig { enabled = true }
-            markdown = ReportConfig { enabled = true }
-        }
+        val context = ReportContext(
+            mockk<DiffSource>(),
+            DeltaCoverageConfig {
+                diffSourceConfig = DiffSourceConfig { diffBase = "any" }
+                reportsConfig = ReportsConfig {
+                    html = ReportConfig { enabled = true }
+                    xml = ReportConfig { enabled = true }
+                    csv = ReportConfig { enabled = true }
+                    console = ReportConfig { enabled = true }
+                    markdown = ReportConfig { enabled = true }
+                }
+            }
+        )
 
         // WHEN
         val actualBuilders: Sequence<ReportBuilder> = CoverageReportFactory.reportBuildersBy(
-            config,
+            context,
             emptyList()
         )
 
@@ -67,33 +84,45 @@ class CoverageReportFactoryTest {
     @Test
     fun `reportBuildersBy should throw if unsupported csv report is enabled`() {
         // GIVEN
-        val config = ReportsConfig {
-            csv = ReportConfig { enabled = true }
-        }
+        val context = ReportContext(
+            mockk<DiffSource>(),
+            DeltaCoverageConfig {
+                diffSourceConfig = DiffSourceConfig { diffBase = "any" }
+                reportsConfig = ReportsConfig {
+                    csv = ReportConfig { enabled = true }
+                }
+            }
+        )
+
         val reportLoadStrategies = listOf(anyReportLoadStrategy())
 
         // WHEN // THEN
         shouldThrow<IllegalStateException> {
-            CoverageReportFactory.reportBuildersBy(config, reportLoadStrategies).toList()
+            CoverageReportFactory.reportBuildersBy(context, reportLoadStrategies).toList()
         }
     }
 
     @Test
     fun `reportBuildersBy should return report builders`() {
         // GIVEN
-        val viewName = "any-view"
-        val config = ReportsConfig {
-            html = ReportConfig { enabled = true }
-            xml = ReportConfig { enabled = true }
-            console = ReportConfig { enabled = true }
-            markdown = ReportConfig { enabled = true }
-        }.apply { view = viewName }
+        val context = ReportContext(
+            mockk<DiffSource>(),
+            DeltaCoverageConfig {
+                diffSourceConfig = DiffSourceConfig { diffBase = "any" }
+                reportsConfig = ReportsConfig {
+                    html = ReportConfig { enabled = true }
+                    xml = ReportConfig { enabled = true }
+                    console = ReportConfig { enabled = true }
+                    markdown = ReportConfig { enabled = true }
+                }.apply { view = viewName }
+            }
+        )
         val reportLoadStrategy = anyReportLoadStrategy()
 
         // WHEN
         val actualBuilders: Sequence<ReportBuilder> = CoverageReportFactory.reportBuildersBy(
-            config,
-            listOf(reportLoadStrategy)
+            context,
+            listOf(reportLoadStrategy),
         )
 
         // THEN
@@ -103,7 +132,7 @@ class CoverageReportFactoryTest {
             shouldContain(
                 HtmlReportBuilder(
                     REPORT_BOUND,
-                    config,
+                    context.deltaCoverageConfig.reportsConfig,
                     Reporter(reportLoadStrategy.reportLoadStrategy)
                 ),
                 EqualByFields.fromFields(
@@ -115,7 +144,7 @@ class CoverageReportFactoryTest {
             shouldContain(
                 XmlReportBuilder(
                     REPORT_BOUND,
-                    config,
+                    context.deltaCoverageConfig.reportsConfig,
                     Reporter(reportLoadStrategy.reportLoadStrategy)
                 ),
                 EqualByFields.fromFields(XmlReportBuilder::reportBound)
@@ -124,6 +153,7 @@ class CoverageReportFactoryTest {
             shouldContain(
                 ConsoleReportBuilder(
                     REPORT_VIEW,
+                    context.deltaCoverageConfig.coverageRulesConfig,
                     REPORT_BOUND,
                     Reporter(reportLoadStrategy.reportLoadStrategy),
                 ),
@@ -133,6 +163,7 @@ class CoverageReportFactoryTest {
             shouldContain(
                 MarkdownReportBuilder(
                     reportBound = REPORT_BOUND,
+                    context = context,
                     reportView = viewName,
                     reportsConfig = config,
                     reporter = Reporter(reportLoadStrategy.reportLoadStrategy),
