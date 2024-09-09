@@ -6,7 +6,7 @@ import org.gradle.api.plugins.jvm.JvmTestSuite
 
 plugins {
     java
-    kotlin("jvm") version "1.9.24"
+    kotlin("jvm") version "1.9.25"
     id("io.github.surpsg.delta-coverage")
     `java-test-fixtures`
 }
