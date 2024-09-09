@@ -4,7 +4,6 @@ import com.intellij.rt.coverage.report.ReportLoadStrategy
 import com.intellij.rt.coverage.report.Reporter
 import com.intellij.rt.coverage.report.api.Filters
 import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
-import io.github.surpsg.deltacoverage.config.DiffSourceConfig
 import io.github.surpsg.deltacoverage.config.ReportConfig
 import io.github.surpsg.deltacoverage.config.ReportsConfig
 import io.github.surpsg.deltacoverage.diff.DiffSource
@@ -31,9 +30,8 @@ class CoverageReportFactoryTest {
     fun `reportBuildersBy should return empty iterable if no enabled reports`() {
         // GIVEN
         val context = ReportContext(
-            mockk<DiffSource>(),
             DeltaCoverageConfig {
-                diffSourceConfig = DiffSourceConfig { diffBase = "any" }
+                diffSource = mockk<DiffSource>()
                 reportsConfig = ReportsConfig {
                     html = ReportConfig { enabled = false }
                     xml = ReportConfig { enabled = false }
@@ -58,9 +56,8 @@ class CoverageReportFactoryTest {
     fun `reportBuildersBy should return empty iterable if no report loaders`() {
         // GIVEN
         val context = ReportContext(
-            mockk<DiffSource>(),
             DeltaCoverageConfig {
-                diffSourceConfig = DiffSourceConfig { diffBase = "any" }
+                diffSource = mockk<DiffSource>()
                 reportsConfig = ReportsConfig {
                     html = ReportConfig { enabled = true }
                     xml = ReportConfig { enabled = true }
@@ -85,9 +82,8 @@ class CoverageReportFactoryTest {
     fun `reportBuildersBy should throw if unsupported csv report is enabled`() {
         // GIVEN
         val context = ReportContext(
-            mockk<DiffSource>(),
             DeltaCoverageConfig {
-                diffSourceConfig = DiffSourceConfig { diffBase = "any" }
+                diffSource = mockk<DiffSource>()
                 reportsConfig = ReportsConfig {
                     csv = ReportConfig { enabled = true }
                 }
@@ -105,16 +101,16 @@ class CoverageReportFactoryTest {
     @Test
     fun `reportBuildersBy should return report builders`() {
         // GIVEN
+        val anyViewName = "any-view-name"
         val context = ReportContext(
-            mockk<DiffSource>(),
             DeltaCoverageConfig {
-                diffSourceConfig = DiffSourceConfig { diffBase = "any" }
+                diffSource = mockk<DiffSource>()
                 reportsConfig = ReportsConfig {
                     html = ReportConfig { enabled = true }
                     xml = ReportConfig { enabled = true }
                     console = ReportConfig { enabled = true }
                     markdown = ReportConfig { enabled = true }
-                }.apply { view = viewName }
+                }.apply { view = anyViewName }
             }
         )
         val reportLoadStrategy = anyReportLoadStrategy()
@@ -163,9 +159,8 @@ class CoverageReportFactoryTest {
             shouldContain(
                 MarkdownReportBuilder(
                     reportBound = REPORT_BOUND,
-                    context = context,
-                    reportView = viewName,
-                    reportsConfig = config,
+                    reportView = anyViewName,
+                    reportContext = context,
                     reporter = Reporter(reportLoadStrategy.reportLoadStrategy),
                 ),
                 EqualByFields.fromFields(MarkdownReportBuilder::reportBound)

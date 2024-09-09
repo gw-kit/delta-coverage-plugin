@@ -51,9 +51,12 @@ class DeltaCoverageReportsTest {
                     console.set(true)
                     markdown.set(true)
                     fullCoverageReport.set(true)
-                    
-                    violationRules.failIfCoverageLessThan(0.6d)
-                    violationRules.failOnViolation.set(false)
+                }
+                reportViews.default {
+                    violationRules {
+                        failIfCoverageLessThan(0.6d)
+                        failOnViolation.set(false)
+                    }
                 }
             }
         """.trimIndent()

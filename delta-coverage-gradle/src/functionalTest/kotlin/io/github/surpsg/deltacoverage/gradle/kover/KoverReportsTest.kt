@@ -57,9 +57,12 @@ class KoverReportsTest {
                     console = true
                     markdown = true
                     fullCoverageReport.set(true)
-                    
-                    violationRules.failIfCoverageLessThan(0.7)
-                    violationRules.failOnViolation = false
+                }
+                reportViews.named("default") {
+                    violationRules {
+                        failIfCoverageLessThan(0.7)
+                        failOnViolation = false
+                    }
                 }
             }
         """.trimIndent()

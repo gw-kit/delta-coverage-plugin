@@ -13,7 +13,6 @@ import java.io.File
 internal class MarkdownReportBuilder(
     val reportBound: ReportBound,
     private val reportView: String,
-    private val reportsConfig: ReportsConfig,
     private val reportContext: ReportContext,
     private val reporter: Reporter,
 ) : ReportBuilder {

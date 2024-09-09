@@ -134,6 +134,7 @@ internal object TextualReportFacade {
         ReportBound.FULL_REPORT -> "[${buildContext.viewName}] Total Coverage Stats"
     }
 
+    @Suppress("LongParameterList")
     internal class BuildContext private constructor(
         val viewName: String,
         val reportType: ReportType,

@@ -14,7 +14,9 @@ import java.io.FileOutputStream
 
 internal object ReportVisitorFactory {
 
-    fun buildVisitor(jacocoReport: JacocoReport): IReportVisitor? {
+    fun buildVisitor(
+        jacocoReport: JacocoReport,
+    ): IReportVisitor? {
         val reportFile: File = ReportPathFactory.resolveReportAbsolutePath(jacocoReport)
         return when (jacocoReport.reportType) {
             ReportType.XML -> reportFile.createFileOutputStream().let(XMLFormatter()::createVisitor)
@@ -27,7 +29,8 @@ internal object ReportVisitorFactory {
                 jacocoReport.reportsConfig.view,
                 jacocoReport.reportType,
                 jacocoReport.reportBound,
-                reportFile.createFileOutputStream()
+                jacocoReport.coverageRulesConfig,
+                reportFile.createFileOutputStream(),
             ).let(CSVFormatter()::createVisitor)
 
             ReportType.CONSOLE -> {
@@ -36,7 +39,9 @@ internal object ReportVisitorFactory {
         }
     }
 
-    private fun buildConsoleReportVisitor(jacocoReport: JacocoReport): IReportVisitor? {
+    private fun buildConsoleReportVisitor(
+        jacocoReport: JacocoReport,
+    ): IReportVisitor? {
         return if (jacocoReport.reportBound == ReportBound.FULL_REPORT) {
             null
         } else {
@@ -44,6 +49,7 @@ internal object ReportVisitorFactory {
                 jacocoReport.reportsConfig.view,
                 jacocoReport.reportType,
                 jacocoReport.reportBound,
+                jacocoReport.coverageRulesConfig,
                 System.out
             ).let(CSVFormatter()::createVisitor)
         }
