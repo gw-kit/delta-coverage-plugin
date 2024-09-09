@@ -1,7 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle.sources
 
 import io.github.surpsg.deltacoverage.CoverageEngine
-import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldThrow
@@ -15,7 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.MethodSource
-import kotlin.reflect.KMutableProperty1
+import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration as DeltaConfig
 
 internal class SourcesResolverTest {
 
@@ -25,14 +24,14 @@ internal class SourcesResolverTest {
     @MethodSource("delta coverage source test parameters")
     fun `should return delta coverage configured files`(
         sourceType: SourceType,
-        deltaConfigSetter: KMutableProperty1<DeltaCoverageConfiguration, FileCollection>
+        deltaConfigSetter: (DeltaConfig, FileCollection) -> Unit,
     ) {
         // GIVEN
         val expectedFile = "expected/path/$sourceType"
         val project = testJavaProject()
         val context: SourcesResolver.Context = testJavaProject().sourceContext(sourceType) {
             coverage.engine.set(CoverageEngine.JACOCO)
-            deltaConfigSetter.set(this, project.files(expectedFile))
+            deltaConfigSetter(this, project.files(expectedFile))
         }
 
         // WHEN
@@ -45,18 +44,35 @@ internal class SourcesResolverTest {
         }
     }
 
+    @Test
+    fun `should return delta coverage source code files`() {
+        // GIVEN
+        val context: SourcesResolver.Context = testJavaProject().sourceContext(SourceType.SOURCES) {
+            coverage.engine.set(CoverageEngine.JACOCO)
+        }
+
+        // WHEN
+        val resolvedFiles: FileCollection = sourcesResolver.resolve(context)
+
+        // THEN
+        assertSoftly(resolvedFiles) {
+            shouldHaveSize(1)
+            first().path shouldEndWith "src/main/java"
+        }
+    }
+
     @ParameterizedTest
     @MethodSource("delta coverage source test parameters")
     fun `should throw if source is empty and delta-cov sources are empty`(
         sourceType: SourceType,
-        deltaConfigSetter: KMutableProperty1<DeltaCoverageConfiguration, FileCollection>
+        deltaConfigSetter: (DeltaConfig, FileCollection) -> Unit,
     ) {
         // GIVEN
         val project = testJavaProject()
         val emptyFiles = project.files()
         val context: SourcesResolver.Context = project.sourceContext(sourceType) {
             coverage.engine.set(CoverageEngine.JACOCO)
-            deltaConfigSetter.set(this, emptyFiles)
+            deltaConfigSetter(this, emptyFiles)
         }
 
         // WHEN // THEN
@@ -77,6 +93,7 @@ internal class SourcesResolverTest {
         val project = testJavaProject()
         val context: SourcesResolver.Context = project.sourceContext(SourceType.COVERAGE_BINARIES) {
             coverage.engine.set(CoverageEngine.JACOCO)
+            reportViews.register(VIEW_NAME)
         }
 
         // WHEN // THEN
@@ -97,6 +114,7 @@ internal class SourcesResolverTest {
         val project = testJavaProject()
         val context: SourcesResolver.Context = project.sourceContext(SourceType.COVERAGE_BINARIES) {
             coverage.engine.set(CoverageEngine.JACOCO)
+            reportViews.register(VIEW_NAME)
         }
 
         // WHEN // THEN
@@ -113,24 +131,36 @@ internal class SourcesResolverTest {
 
     private fun Project.sourceContext(
         sourceType: SourceType,
-        customize: DeltaCoverageConfiguration.() -> Unit
+        customize: DeltaConfig.() -> Unit
     ): SourcesResolver.Context {
         return SourcesResolver.Context.Builder
             .newBuilder(
                 project,
                 project.objects,
-                project.objects.newInstance(DeltaCoverageConfiguration::class.java).apply(customize)
+                project.objects.newInstance(DeltaConfig::class.java).apply(customize)
             )
-            .build(sourceType)
+            .build(VIEW_NAME, sourceType)
     }
 
     companion object {
+        const val VIEW_NAME = "viewName"
+
         @JvmStatic
         fun `delta coverage source test parameters`(): List<Arguments> {
             return listOf<Arguments>(
-                arguments(SourceType.SOURCES, DeltaCoverageConfiguration::srcDirs),
-                arguments(SourceType.CLASSES, DeltaCoverageConfiguration::classesDirs),
-                arguments(SourceType.COVERAGE_BINARIES, DeltaCoverageConfiguration::coverageBinaryFiles),
+                arguments(
+                    SourceType.CLASSES,
+                    { config: DeltaConfig, files: FileCollection -> config.classesDirs = files },
+                ),
+
+                arguments(
+                    SourceType.COVERAGE_BINARIES,
+                    { config: DeltaConfig, files: FileCollection ->
+                        config.reportViews.register(VIEW_NAME) { view ->
+                            view.coverageBinaryFiles = files
+                        }
+                    },
+                ),
             )
         }
     }

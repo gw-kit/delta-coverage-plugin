@@ -17,6 +17,7 @@ class ConsoleReportBuilderTest {
         // GIVEN
         val reporter = mockk<Reporter>()
         val builder = ConsoleReportBuilder(
+            "any",
             reportBound = ReportBound.FULL_REPORT,
             reporter = reporter,
             coverageRulesConfig = CoverageRulesConfig {}
@@ -36,6 +37,7 @@ class ConsoleReportBuilderTest {
             every { projectData } returns ProjectData()
         }
         val builder = ConsoleReportBuilder(
+            "any",
             reportBound = ReportBound.DELTA_REPORT,
             reporter = reporter,
             coverageRulesConfig = CoverageRulesConfig {}

@@ -51,9 +51,12 @@ class DeltaCoverageReportsTest {
                     console.set(true)
                     markdown.set(true)
                     fullCoverageReport.set(true)
-                    
-                    violationRules.failIfCoverageLessThan(0.6d)
-                    violationRules.failOnViolation.set(false)
+                }
+                reportViews.default {
+                    violationRules {
+                        failIfCoverageLessThan(0.6d)
+                        failOnViolation.set(false)
+                    }
                 }
             }
         """.trimIndent()
@@ -64,7 +67,7 @@ class DeltaCoverageReportsTest {
             .runDeltaCoverageTask()
             .assertOutputContainsStrings("Fail on violations: false. Found violations: 2")
             .assertOutputContainsStrings(
-                "| Delta Coverage Stats                                  |",
+                "| [default] Delta Coverage Stats                        |",
                 "| Class                | Lines    | Branches | Instr.   |",
                 "+----------------------+----------+----------+----------+",
                 "| com.java.test.Class1 | 66.67%   | 50%      | 52.94%   |",
@@ -74,8 +77,8 @@ class DeltaCoverageReportsTest {
 
         // AND THEN
         val baseReportDirFile = rootProjectDir.resolve(baseReportDir).resolve("coverage-reports")
-        assertAllReportsCreated(baseReportDirFile.resolve("delta-coverage"))
-        assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report"))
+        assertAllReportsCreated(baseReportDirFile.resolve("delta-coverage/default/"))
+        assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report/default/"))
     }
 
     private fun assertAllReportsCreated(baseReportDir: File) {

@@ -9,15 +9,17 @@ import io.github.surpsg.deltacoverage.report.textual.TextualReportFacade
 import io.github.surpsg.deltacoverage.report.textual.TextualReportFacade.BuildContext
 
 internal class ConsoleReportBuilder(
+    val view: String,
     val coverageRulesConfig: CoverageRulesConfig,
     val reportBound: ReportBound,
-    private val reporter: Reporter,
+    val reporter: Reporter,
 ) : ReportBuilder {
 
     override fun buildReport() {
         if (reportBound == ReportBound.DELTA_REPORT) {
             val dataProvider = IntellijRawCoverageDataProvider(reporter.projectData)
             val buildContext = BuildContext {
+                this.viewName = view
                 reportType = ReportType.CONSOLE
                 reportBound = this@ConsoleReportBuilder.reportBound
                 coverageDataProvider = dataProvider

@@ -46,9 +46,9 @@ class DeltaCoverageExcludesTest {
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
                
-                violationRules {
-                    failIfCoverageLessThan 1.0
-                }
+               defaultReportView {
+                    violationRules.failIfCoverageLessThan 1.0
+               }
                 
                 excludeClasses.value([
                     '**/CoveredClass${dollarSign}UncoveredNestedClass.*',
@@ -70,7 +70,7 @@ class DeltaCoverageExcludesTest {
 
         // and assert
         val htmlReportDir: Path = rootProjectDir.toPath()
-            .resolve("build/reports/coverage-reports/delta-coverage/html/")
+            .resolve("build/reports/coverage-reports/delta-coverage/default/html/")
         val classReportFiles: List<Path> = findAllFiles(htmlReportDir) { file ->
             file.name.endsWith("Class.html")
         }
@@ -89,9 +89,9 @@ class DeltaCoverageExcludesTest {
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
                
-                violationRules {
-                    failIfCoverageLessThan 1.0
-                }
+                defaultReportView {
+                    violationRules.failIfCoverageLessThan 1.0
+               }
                 
                 excludeClasses.value([])
             }
@@ -111,5 +111,4 @@ class DeltaCoverageExcludesTest {
             { filePath: Path, _: BasicFileAttributes -> fileFilter(filePath) }
         ).toList()
     }
-
 }

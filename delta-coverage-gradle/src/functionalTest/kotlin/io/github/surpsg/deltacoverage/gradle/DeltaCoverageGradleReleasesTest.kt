@@ -53,5 +53,4 @@ class DeltaCoverageGradleReleasesTest {
             .runDeltaCoverageTask()
             .assertDeltaCoverageStatusEqualsTo(SUCCESS)
     }
-
 }

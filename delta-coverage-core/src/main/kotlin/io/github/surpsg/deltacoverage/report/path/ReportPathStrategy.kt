@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.report.intellij.report
+package io.github.surpsg.deltacoverage.report.path
 
 import io.github.surpsg.deltacoverage.config.ReportsConfig
 import io.github.surpsg.deltacoverage.report.ReportBound
@@ -10,16 +10,17 @@ sealed class ReportPathStrategy(
 
     abstract val reportFileName: String
 
-    fun buildReportPath(reportBound: ReportBound): File {
-        return when (reportBound) {
-            ReportBound.DELTA_REPORT -> File(reportsConfig.baseReportDir)
-                .resolve(DELTA_COVERAGE_REPORT_DIR)
-                .resolve(reportFileName)
-
-            ReportBound.FULL_REPORT -> File(reportsConfig.baseReportDir)
-                .resolve(FULL_COVERAGE_REPORT_DIR)
-                .resolve(reportFileName)
+    fun buildReportPath(
+        reportBound: ReportBound
+    ): File {
+        val reportDirNameByReportBound: String = when (reportBound) {
+            ReportBound.FULL_REPORT -> FULL_COVERAGE_REPORT_DIR
+            ReportBound.DELTA_REPORT -> DELTA_COVERAGE_REPORT_DIR
         }
+        return File(reportsConfig.baseReportDir)
+            .resolve(reportDirNameByReportBound)
+            .resolve(reportsConfig.view)
+            .resolve(reportFileName)
     }
 
     internal class Xml(

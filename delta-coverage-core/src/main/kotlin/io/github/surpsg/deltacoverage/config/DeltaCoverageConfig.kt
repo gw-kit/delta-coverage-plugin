@@ -1,42 +1,11 @@
 package io.github.surpsg.deltacoverage.config
 
+import io.github.surpsg.deltacoverage.CoverageEngine
+import io.github.surpsg.deltacoverage.diff.DiffSource
 import java.io.File
 
 @DslMarker
 internal annotation class DeltaCoverageConfigMarker
-
-class DiffSourceConfig private constructor(
-    val file: String = "",
-    val url: String = "",
-    val diffBase: String = ""
-) {
-
-    init {
-        val initializedCount = sequenceOf(file, url, diffBase).filter { it.isNotBlank() }.count()
-        require(initializedCount == 1) {
-            "Required single diff source initialized but was: $this"
-        }
-    }
-
-    override fun toString(): String {
-        return "DiffSourceConfig(file='$file', url='$url', diffBase='$diffBase')"
-    }
-
-    @DeltaCoverageConfigMarker
-    class Builder internal constructor() {
-        var file: String = ""
-        var url: String = ""
-        var diffBase: String = ""
-
-        internal fun build(): DiffSourceConfig = DiffSourceConfig(file, url, diffBase)
-    }
-
-    companion object {
-
-        operator fun invoke(customize: Builder.() -> Unit): DiffSourceConfig =
-            Builder().apply(customize).build()
-    }
-}
 
 class CoverageRulesConfig private constructor(
     private val violationRules: List<ViolationRule>,
@@ -145,6 +114,7 @@ class ReportsConfig private constructor(
     val baseReportDir: String,
     val fullCoverageReport: Boolean,
 ) {
+    internal lateinit var view: String
 
     override fun toString(): String = "ReportsConfig(html=$html, xml=$xml, csv=$csv, console=$console," +
             " baseReportDir='$baseReportDir', fullCoverageReport=$fullCoverageReport)"
@@ -200,8 +170,9 @@ class ReportConfig private constructor(
 
 @Suppress("LongParameterList")
 class DeltaCoverageConfig private constructor(
-    val reportName: String,
-    val diffSourceConfig: DiffSourceConfig,
+    val coverageEngine: CoverageEngine,
+    val view: String,
+    val diffSource: DiffSource,
     val reportsConfig: ReportsConfig,
     val coverageRulesConfig: CoverageRulesConfig,
     val binaryCoverageFiles: Set<File>,
@@ -211,8 +182,8 @@ class DeltaCoverageConfig private constructor(
 
     override fun toString(): String {
         return "DeltaCoverageConfig(" +
-                "reportName='$reportName'" +
-                ", diffSourceConfig=$diffSourceConfig" +
+                "view='$view'" +
+                ", diffSource=${diffSource.sourceDescription}" +
                 ", reportsConfig=$reportsConfig" +
                 ", coverageRulesConfig=$coverageRulesConfig" +
                 ", binaryCoverageFiles=${binaryCoverageFiles.stringifyLongCollection()}" +
@@ -223,8 +194,9 @@ class DeltaCoverageConfig private constructor(
 
     @DeltaCoverageConfigMarker
     class Builder internal constructor() {
-        var reportName: String = "delta-coverage-report"
-        var diffSourceConfig: DiffSourceConfig? = null
+        var coverageEngine: CoverageEngine = CoverageEngine.JACOCO
+        var viewName: String = "delta-coverage-report"
+        var diffSource: DiffSource? = null
         var reportsConfig: ReportsConfig = ReportsConfig {}
         var coverageRulesConfig: CoverageRulesConfig = CoverageRulesConfig {}
         val binaryCoverageFiles: MutableSet<File> = mutableSetOf()
@@ -232,11 +204,14 @@ class DeltaCoverageConfig private constructor(
         val sourceFiles: MutableSet<File> = mutableSetOf()
 
         fun build(): DeltaCoverageConfig = DeltaCoverageConfig(
-            reportName,
-            requireNotNull(diffSourceConfig) {
-                "'${::diffSourceConfig.name}' is not configured"
+            coverageEngine,
+            viewName.apply {
+                require(isNotBlank()) { "View name must be not blank" }
             },
-            reportsConfig,
+            requireNotNull(diffSource) {
+                "'${::diffSource.name}' is not configured"
+            },
+            reportsConfig.apply { view = viewName },
             coverageRulesConfig,
             binaryCoverageFiles.toSet(),
             classFiles.toSet(),
@@ -256,4 +231,3 @@ class DeltaCoverageConfig private constructor(
         }
     }
 }
-
