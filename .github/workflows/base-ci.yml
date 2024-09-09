@@ -40,7 +40,7 @@ jobs:
           delta-coverage-report: build/reports/coverage-reports/delta-coverage/report.md
 
       - name: Add test results to PR
-        uses: EnricoMi/publish-unit-test-result-action@v2.16.1
+        uses: EnricoMi/publish-unit-test-result-action@v2.17.1
         if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
         continue-on-error: true
         with:
