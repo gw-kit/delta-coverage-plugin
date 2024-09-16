@@ -11,7 +11,7 @@ mockkVer = "1.13.12"
 kotestVer = "5.5.5"
 jimfsVer = "1.3.0"
 
-deltaCoverageVer = "2.5.0"
+deltaCoverageVer = "3.0.0-RC1"
 
 [libraries]
 # Kotlin
@@ -19,7 +19,7 @@ kotlinJvm = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version = "1
 
 # Plugins
 pluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "1.3.0" }
-deltaCoverage = { module = "io.github.surpsg:delta-coverage-gradle", version.ref = "deltaCoverageVer" }
+deltaCoverage = { module = "io.github.gw-kit:delta-coverage-gradle", version.ref = "deltaCoverageVer" }
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.23.7" }
 
 # Project deps
