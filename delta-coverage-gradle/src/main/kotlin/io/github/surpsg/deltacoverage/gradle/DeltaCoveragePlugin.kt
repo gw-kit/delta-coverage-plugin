@@ -11,6 +11,7 @@ import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.testing.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.concurrent.ConcurrentHashMap
 
 open class DeltaCoveragePlugin : Plugin<Project> {
 
@@ -18,11 +19,10 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         val deltaCoverageConfig: DeltaCoverageConfiguration = project.extensions.create(
             DELTA_COVERAGE_REPORT_EXTENSION,
             DeltaCoverageConfiguration::class.java,
-            project.objects
+            project,
+            project.objects,
         )
-        project.extensions.configure(DeltaCoverageConfiguration::class.java) {
-            it.reportViews.maybeCreate(DEFAULT_VIEW_NAME)
-        }
+        project.configureReportViews()
 
         CoverageEngineAutoApply().apply(project, deltaCoverageConfig)
 
@@ -47,6 +47,20 @@ open class DeltaCoveragePlugin : Plugin<Project> {
                 deltaCoverageTask.dependsOn(gitDiffTask)
             }
             gitDiffTask.dependsOn(JavaPlugin.CLASSES_TASK_NAME)
+        }
+    }
+
+    private fun Project.configureReportViews() {
+        val evaluatedTestTasks: MutableSet<String> = ConcurrentHashMap.newKeySet()
+        project.extensions.configure(DeltaCoverageConfiguration::class.java) { config ->
+            project.allprojects { proj ->
+                proj.tasks.withType(Test::class.java).configureEach { testTask ->
+                    val newItemAdded: Boolean = evaluatedTestTasks.add(testTask.name)
+                    if (newItemAdded) {
+                        config.reportViews.maybeCreate(testTask.name)
+                    }
+                }
+            }
         }
     }
 
@@ -85,6 +99,7 @@ open class DeltaCoveragePlugin : Plugin<Project> {
     ) {
         val contextBuilder = SourcesResolver.Context.Builder.newBuilder(project, project.objects, config)
 
+        val sourcesResolver = SourcesResolver()
         sequenceOf(
             classesFiles to SourceType.CLASSES,
             sourcesFiles to SourceType.SOURCES,
@@ -92,7 +107,7 @@ open class DeltaCoveragePlugin : Plugin<Project> {
             taskSourceProperty.value(
                 project.provider {
                     val resolveContext: SourcesResolver.Context = contextBuilder.build(viewName, sourceType)
-                    SourcesResolver().resolve(resolveContext)
+                    sourcesResolver.resolve(resolveContext)
                 }
             )
         }
@@ -101,9 +116,10 @@ open class DeltaCoveragePlugin : Plugin<Project> {
             viewName,
             project.provider {
                 val resolveContext: SourcesResolver.Context = contextBuilder.build(
-                    viewName, SourceType.COVERAGE_BINARIES
+                    viewName,
+                    SourceType.COVERAGE_BINARIES,
                 )
-                SourcesResolver().resolve(resolveContext)
+                sourcesResolver.resolve(resolveContext)
             }
         )
     }
@@ -112,8 +128,6 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         const val DELTA_COVERAGE_REPORT_EXTENSION = "deltaCoverageReport"
         const val DELTA_COVERAGE_TASK = "deltaCoverage"
         const val GIT_DIFF_TASK = "gitDiff"
-
-        const val DEFAULT_VIEW_NAME = "default"
 
         val DELTA_TASK_DEPENDENCIES = setOf(
             JavaPlugin.CLASSES_TASK_NAME,

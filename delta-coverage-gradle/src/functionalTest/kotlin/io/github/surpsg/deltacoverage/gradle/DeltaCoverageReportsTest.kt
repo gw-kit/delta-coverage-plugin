@@ -38,6 +38,7 @@ class DeltaCoverageReportsTest {
     @Test
     fun `delta-coverage should create all jacoco reports`() {
         // GIVEN
+        val view = "test"
         val baseReportDir = "build/custom/reports/dir/jacoco/"
         buildFile.file.appendText(
             """
@@ -52,7 +53,7 @@ class DeltaCoverageReportsTest {
                     markdown.set(true)
                     fullCoverageReport.set(true)
                 }
-                reportViews.default {
+                reportViews.$view {
                     violationRules {
                         failIfCoverageLessThan(0.6d)
                         failOnViolation.set(false)
@@ -67,7 +68,7 @@ class DeltaCoverageReportsTest {
             .runDeltaCoverageTask()
             .assertOutputContainsStrings("Fail on violations: false. Found violations: 2")
             .assertOutputContainsStrings(
-                "| [default] Delta Coverage Stats                        |",
+                "| [$view] Delta Coverage Stats                           |",
                 "| Class                | Lines    | Branches | Instr.   |",
                 "+----------------------+----------+----------+----------+",
                 "| com.java.test.Class1 | 66.67%   | 50%      | 52.94%   |",
@@ -77,8 +78,8 @@ class DeltaCoverageReportsTest {
 
         // AND THEN
         val baseReportDirFile = rootProjectDir.resolve(baseReportDir).resolve("coverage-reports")
-        assertAllReportsCreated(baseReportDirFile.resolve("delta-coverage/default/"))
-        assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report/default/"))
+        assertAllReportsCreated(baseReportDirFile.resolve("delta-coverage/$view/"))
+        assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report/$view/"))
     }
 
     private fun assertAllReportsCreated(baseReportDir: File) {

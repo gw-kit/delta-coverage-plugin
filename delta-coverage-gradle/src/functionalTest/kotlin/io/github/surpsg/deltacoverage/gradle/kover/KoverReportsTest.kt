@@ -42,6 +42,7 @@ class KoverReportsTest {
     fun `delta-coverage should create all reports`() {
         // GIVEN
         val baseReportDir = "build/custom/reports/dir/kover/"
+        val view = "test"
         buildFile.file.appendText(
             """
             configure<DeltaCoverageConfiguration> {
@@ -52,16 +53,18 @@ class KoverReportsTest {
                 diffSource.file = "$diffFilePath"
                 reports {
                     baseReportDir.set("$baseReportDir")
-                    html.set(true)
+                    html = true
                     xml = true
                     console = true
                     markdown = true
                     fullCoverageReport.set(true)
                 }
-                reportViews.named("default") {
-                    violationRules {
-                        failIfCoverageLessThan(0.7)
-                        failOnViolation = false
+                reportViews {
+                    val $view by getting {
+                        violationRules {
+                            failIfCoverageLessThan(0.7)
+                            failOnViolation = false
+                        }
                     }
                 }
             }
@@ -73,7 +76,7 @@ class KoverReportsTest {
             .runDeltaCoverageTask()
             .assertOutputContainsStrings("Fail on violations: false. Found violations: 2")
             .assertOutputContainsStrings(
-                "| [default] Delta Coverage Stats                        |",
+                "| [$view] Delta Coverage Stats                           |",
                 "| Class                | Lines    | Branches | Instr.   |",
                 "+----------------------+----------+----------+----------+",
                 "| com.java.test.Class1 | 66.67%   | 75%      | 66.67%   |",
@@ -83,8 +86,8 @@ class KoverReportsTest {
 
         // AND THEN
         val baseReportDirFile = rootProjectDir.resolve(baseReportDir).resolve("coverage-reports")
-        assertAllReportsCreated(baseReportDirFile.resolve("delta-coverage/default"))
-        assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report/default"))
+        assertAllReportsCreated(baseReportDirFile.resolve("delta-coverage/$view"))
+        assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report/$view"))
     }
 
     private fun assertAllReportsCreated(baseReportDir: File) {

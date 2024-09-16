@@ -4,6 +4,7 @@ import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply.Companion.JACOCO_PLUGIN_ID
 import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply.Companion.KOVER_PLUGIN_ID
+import io.github.surpsg.deltacoverage.gradle.unittest.applyDeltaCoveragePlugin
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.matchers.comparables.shouldBeEqualComparingTo
 import org.gradle.api.internal.project.ProjectInternal
@@ -11,7 +12,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 internal class CoverageEngineAutoApplyTest {
-
 
     @ParameterizedTest
     @CsvSource(
@@ -28,7 +28,7 @@ internal class CoverageEngineAutoApplyTest {
     ) {
         // GIVEN
         val project: ProjectInternal = testJavaProject(attachSettings = true) {
-            pluginManager.apply("io.github.surpsg.delta-coverage")
+            applyDeltaCoveragePlugin()
 
             extensions.configure(DeltaCoverageConfiguration::class.java) {
                 it.coverage.engine.set(coverageEngine)

@@ -96,8 +96,13 @@ internal class SourcesResolver {
                 sourceType: SourceType
             ): Context {
                 val sourceAutoLookup = SourcesAutoLookup.build(
-                    config.coverage.engine.get(),
-                    SourcesAutoLookup.Context(project, config, objectFactory)
+                    coverageEngine = config.coverage.engine.get(),
+                    context = SourcesAutoLookup.Context(
+                        project = project,
+                        viewName = viewName,
+                        deltaCoverageConfiguration = config,
+                        objectFactory = objectFactory,
+                    )
                 )
                 return Context(viewName, sourceAutoLookup, sourceType, this)
             }

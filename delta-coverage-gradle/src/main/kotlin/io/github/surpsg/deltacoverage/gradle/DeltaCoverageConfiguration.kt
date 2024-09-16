@@ -1,7 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle
 
 import io.github.surpsg.deltacoverage.CoverageEngine
-import io.github.surpsg.deltacoverage.gradle.ReportView.Companion.DEFAULT_VIEW_NAME
 import io.github.surpsg.deltacoverage.gradle.utils.booleanProperty
 import io.github.surpsg.deltacoverage.gradle.utils.doubleProperty
 import io.github.surpsg.deltacoverage.gradle.utils.map
@@ -11,6 +10,7 @@ import org.gradle.api.Action
 import org.gradle.api.Incubating
 import org.gradle.api.Named
 import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
@@ -26,6 +26,7 @@ import java.nio.file.Paths
 import javax.inject.Inject
 
 open class DeltaCoverageConfiguration @Inject constructor(
+    private val project: Project,
     objectFactory: ObjectFactory,
 ) {
 
@@ -64,8 +65,16 @@ open class DeltaCoverageConfiguration @Inject constructor(
         action.execute(diffSource)
     }
 
-    fun defaultReportView(action: Action<in ReportView>) {
-        reportViews.named(DEFAULT_VIEW_NAME, action)
+    /**
+     * Configures a [ReportView] for the report.
+     * If the view is not found, it will be created.
+     *
+     * @param name The name of the view.
+     * @param action The configuration action.
+     */
+    fun view(name: String, action: Action<in ReportView>) {
+        reportViews.maybeCreate(name)
+        reportViews.named(name, action)
     }
 
     override fun toString(): String {
@@ -102,10 +111,6 @@ open class ReportView @Inject constructor(
     }
 
     override fun getName(): String = name
-
-    companion object {
-        internal const val DEFAULT_VIEW_NAME = "default"
-    }
 }
 
 open class Coverage @Inject constructor(

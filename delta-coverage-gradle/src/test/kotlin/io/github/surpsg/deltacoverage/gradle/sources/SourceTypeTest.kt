@@ -35,7 +35,7 @@ internal class SourceTypeTest {
     @CsvSource(
         "KOVER, '.ic' files",
         "JACOCO, '.exec' files",
-        "DELTA_COVERAGE, deltaCoverageReport.binaryCoverageFiles",
+        "DELTA_COVERAGE, deltaCoverageReport.reportViews.<view>.binaryCoverageFiles",
     )
     fun `should return resource name for binary coverage`(
         sourceProvider: SourcesResolver.Provider,

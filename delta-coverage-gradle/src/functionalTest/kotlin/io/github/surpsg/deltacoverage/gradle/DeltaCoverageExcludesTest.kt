@@ -46,7 +46,7 @@ class DeltaCoverageExcludesTest {
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
                
-               defaultReportView {
+               view('test') {
                     violationRules.failIfCoverageLessThan 1.0
                }
                 
@@ -66,11 +66,11 @@ class DeltaCoverageExcludesTest {
         // run // assert
         gradleRunner
             .runDeltaCoverageTask()
-            .assertOutputContainsStrings("Fail on violations: true. Found violations: 0")
+            .assertOutputContainsStrings("[view:test] Fail on violations: true. Found violations: 0")
 
         // and assert
         val htmlReportDir: Path = rootProjectDir.toPath()
-            .resolve("build/reports/coverage-reports/delta-coverage/default/html/")
+            .resolve("build/reports/coverage-reports/delta-coverage/test/html/")
         val classReportFiles: List<Path> = findAllFiles(htmlReportDir) { file ->
             file.name.endsWith("Class.html")
         }
@@ -89,8 +89,8 @@ class DeltaCoverageExcludesTest {
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
                
-                defaultReportView {
-                    violationRules.failIfCoverageLessThan 1.0
+               view('test') {
+                   violationRules.failIfCoverageLessThan 1.0
                }
                 
                 excludeClasses.value([])
@@ -101,7 +101,7 @@ class DeltaCoverageExcludesTest {
         // run // assert
         gradleRunner
             .runDeltaCoverageTaskAndFail()
-            .assertOutputContainsStrings("Fail on violations: true. Found violations: 2")
+            .assertOutputContainsStrings("[view:test] Fail on violations: true. Found violations: 2")
     }
 
     private fun findAllFiles(rootDir: Path, fileFilter: (Path) -> Boolean): List<Path> {

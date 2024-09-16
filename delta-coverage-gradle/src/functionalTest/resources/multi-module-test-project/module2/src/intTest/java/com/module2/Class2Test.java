@@ -6,6 +6,8 @@ public class Class2Test {
     @Test
     public void printMin() {
         new Class2().min(1, 2);
+        new Class2().min(2, 1);
+
         new Class2().max(1, 2);
     }
 }
