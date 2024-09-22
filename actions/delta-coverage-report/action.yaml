@@ -70,12 +70,10 @@ runs:
           const fs = require('fs');
           const reportContent = fs.readFileSync('${{ inputs.delta-coverage-report }}');
           const summaryBuffer = core.summary
-            .addHeading('${{ inputs.title }}')
-            .addRaw('${{ steps.comment-marker.outputs.result }}')
-            .addBreak()
-            .addRaw('${{ inputs.message }}')
-            .addBreak()
-            .addRaw(reportContent)
+            .addHeading('${{ inputs.title }}', 2)
+            .addRaw('${{ steps.comment-marker.outputs.result }}', true)
+            .addRaw('${{ inputs.message }}', true)
+            .addRaw(reportContent, true)
           summaryBuffer.write() // write to summary
           return summaryBuffer.stringify() // generate text
 
