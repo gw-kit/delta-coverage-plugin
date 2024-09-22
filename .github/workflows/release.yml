@@ -12,7 +12,11 @@ jobs:
     uses: ./.github/workflows/base-ci.yml
     secrets: inherit
     permissions:
+      contents: read
       checks: write
+      issues: read
+      pull-requests: write
+      packages: write
 
   create-release:
     runs-on: ubuntu-latest
