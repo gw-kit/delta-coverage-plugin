@@ -61,7 +61,7 @@ jobs:
         uses: ./actions/delta-coverage-report
         with:
           title: 'Delta Coverage'
-          delta-coverage-report: build/reports/coverage-reports/delta-coverage/report.md
+          delta-coverage-report: build/reports/coverage-reports/delta-coverage/test/report.md
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.17.1
