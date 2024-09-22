@@ -1,4 +1,4 @@
-name: basic-steps
+name: Build
 
 on:
   workflow_call:
