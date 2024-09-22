@@ -56,12 +56,6 @@ jobs:
           git push origin ${RELEASE_BRANCH}
           echo "Created release branch: ${RELEASE_BRANCH}"
 
-      - name: Publish plugin
-        run: ./gradlew publishPlugins --parallel --console=plain
-          -Pgradle.publish.key=${{ secrets.GRADLE_PUBLISH_KEY }}
-          -Pgradle.publish.secret=${{ secrets.GRADLE_PUBLISH_SECRET }}
-          -m
-
       - name: Create Release
         uses: actions/github-script@v7
         with:
@@ -70,8 +64,8 @@ jobs:
             const { data: release } = await github.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: ${{ steps.release-version.outputs.version }},
-              name: ${{ steps.release-version.outputs.version }},
+              tag_name: '${{ steps.release-version.outputs.version }}',
+              name: '${{ steps.release-version.outputs.version }}',
               body: 'Release ${{ steps.release-version.outputs.version }}',
               draft: true,
               prerelease: true
@@ -92,3 +86,10 @@ jobs:
               body: 'Merge main to develop'
             });
             console.log(`Created PR: ${pr.data.html_url}`);
+
+      - name: Publish plugin
+        run: ./gradlew publishPlugins --parallel --console=plain
+          -Pgradle.publish.key=${{ secrets.GRADLE_PUBLISH_KEY }}
+          -Pgradle.publish.secret=${{ secrets.GRADLE_PUBLISH_SECRET }}
+          -m
+
