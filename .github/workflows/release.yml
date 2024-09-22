@@ -51,12 +51,28 @@ jobs:
           echo "version=$(grep 'version=' gradle.properties | cut -d '=' -f 2)" >> $GITHUB_OUTPUT
 
       - name: Create Release Branch
-        if: false
+        id: release-branch
         run: |
           RELEASE_BRANCH=release/${{ steps.release-version.outputs.version }}
           git checkout -b ${RELEASE_BRANCH}
           git push origin ${RELEASE_BRANCH}
           echo "Created release branch: ${RELEASE_BRANCH}"
+          echo "name=${RELEASE_BRANCH}" >> $GITHUB_OUTPUT
+
+      - name: Create PR release to main
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const result = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Release ${{ steps.release-version.outputs.version }}',
+              head: '${{ steps.release-branch.outputs.name }}',
+              base: 'main',
+              body: 'Release ${{ steps.release-version.outputs.version }}'
+            });
+            console.log(`Created release PR: ${result.data.html_url}`);
 
       - name: Create Release
         uses: actions/github-script@v7
@@ -72,11 +88,11 @@ jobs:
               draft: true,
               prerelease: true
             });
-            console.log(`Created release: ${{ steps.release-version.outputs.version }}`);
-            console.log(`URL: ${result.html_url}`);
+            console.log(`Created release: ${{ steps.release-version.outputs.version }}, URL: ${result.data.html_url}`);
 
       - name: Create PR main to develop
         uses: actions/github-script@v7
+        if: false
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -88,7 +104,7 @@ jobs:
               base: 'develop',
               body: 'Merge main to develop'
             });
-            console.log(`Created PR: ${result.html_url}`);
+            console.log(`Created PR: ${result.data.html_url}`);
 
       - name: Publish plugin
         run: ./gradlew publishPlugins --parallel --console=plain
