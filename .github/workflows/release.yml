@@ -9,7 +9,7 @@ on:
 jobs:
 
   build:
-    uses: .github/workflows/base-ci.yml
+    uses: ./.github/workflows/base-ci.yml
     secrets: inherit
     permissions:
       checks: write
