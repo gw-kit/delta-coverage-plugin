@@ -25,6 +25,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      issues: write
     env:
       GH_USER: ${{ github.actor }}
       GH_TOKEN: ${{ github.token }}
@@ -50,6 +51,7 @@ jobs:
           echo "version=$(grep 'version=' gradle.properties | cut -d '=' -f 2)" >> $GITHUB_OUTPUT
 
       - name: Create Release Branch
+        if: false
         run: |
           RELEASE_BRANCH=release/${{ steps.release-version.outputs.version }}
           git checkout -b ${RELEASE_BRANCH}
