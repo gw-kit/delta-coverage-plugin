@@ -11,7 +11,7 @@ abstract class DeltaReportGeneratorFacade {
 
     fun generateReports(configs: Iterable<DeltaCoverageConfig>) {
         val verificationResults: List<CoverageVerificationResult> = configs.flatMap {
-            log.debug("Run Delta-Coverage with config: {}", it)
+            log.debug("[view:{}] Run Delta-Coverage with config: {}", it.view, it)
             val context = ReportContext(it)
             generate(context)
         }

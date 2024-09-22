@@ -40,13 +40,15 @@ class DeltaCoverageConfigurationKtsTest {
             buildFile.file.appendText(
                 """
             configure<DeltaCoverageConfiguration> {
-                diffSource.file.set("$diffFilePath")
-                defaultReportView {
-                    violationRules {
-                        failOnViolation.set(true)
-                        all {
-                            entityCountThreshold.set(100)
-                            minCoverageRatio.set(1.0)
+                diffSource.file = "$diffFilePath"
+                reportViews {
+                    val test by getting {
+                        violationRules {
+                            failOnViolation = true
+                            all {
+                                entityCountThreshold = 100
+                                minCoverageRatio = 1.0
+                            }
                         }
                     }
                 }
@@ -67,12 +69,12 @@ class DeltaCoverageConfigurationKtsTest {
                 """
             configure<DeltaCoverageConfiguration> {
                 diffSource.file.set("$diffFilePath")
-                defaultReportView {
+                view("test") {
                     violationRules {
                         failIfCoverageLessThan(1.0)
-                        INSTRUCTION.invoke { entityCountThreshold.set(1000) }
-                        BRANCH { entityCountThreshold.set(1000) }
-                        LINE { entityCountThreshold.set(1000) }
+                        INSTRUCTION.invoke { entityCountThreshold = 1000 }
+                        BRANCH { entityCountThreshold = 1000 }
+                        LINE { entityCountThreshold = 1000 }
                     }
                 }
             }

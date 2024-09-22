@@ -20,5 +20,10 @@ deltaCoverageReport {
         markdown = true
     }
 
-    violationRules.failIfCoverageLessThan(0.9)
+    view(JavaPlugin.TEST_TASK_NAME) {
+        violationRules.failIfCoverageLessThan(0.9)
+    }
+    view("functionalTest") {
+        violationRules.failIfCoverageLessThan(0.6)
+    }
 }

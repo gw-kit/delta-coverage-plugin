@@ -1,6 +1,6 @@
 plugins {
     base
-    id("delta-coverage-conventions")
+    `delta-coverage-conventions`
     `test-report-aggregation`
     `coverage-aggregate-conventions`
     alias(deps.plugins.depUpdatesPlugin)

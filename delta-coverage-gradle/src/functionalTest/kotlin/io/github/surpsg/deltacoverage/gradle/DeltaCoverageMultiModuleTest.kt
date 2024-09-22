@@ -10,6 +10,7 @@ import io.kotest.matchers.file.shouldBeADirectory
 import io.kotest.matchers.file.shouldContainFile
 import io.kotest.matchers.file.shouldExist
 import org.assertj.core.api.Assertions.assertThat
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -50,18 +51,12 @@ class DeltaCoverageMultiModuleTest {
                     html.set(true)
                     baseReportDir.set('$baseReportDir')
                 }
-                defaultReportView {
-                    violationRules {
-                        failIfCoverageLessThan(0.9)
-                        failOnViolation = true
-                    }
-                }
                 reportViews {
-                    register('intTest') {
-                        violationRules {
-                            failIfCoverageLessThan(0.7)
-                            failOnViolation.set(true)
-                        }
+                    view('${JavaPlugin.TEST_TASK_NAME}') {
+                        violationRules.failIfCoverageLessThan 0.9
+                    }
+                    $INT_TEST_TASK {
+                        violationRules.failIfCoverageLessThan 0.6
                     }
                 }
             }
@@ -70,18 +65,18 @@ class DeltaCoverageMultiModuleTest {
 
         // WHEN // THEN
         gradleRunner
-            .runDeltaCoverageTaskAndFail()
+            .runDeltaCoverageTaskAndFail(gradleArgs = arrayOf(INT_TEST_TASK))
             .assertOutputContainsStrings(
-                "[view:default] Fail on violations: true. Found violations: 1.",
-                "[view:default] Rule violated for bundle default: branches covered ratio is 0.5, but expected minimum is 0.9",
+                "[view:$TEST_TASK] Fail on violations: true. Found violations: 1.",
+                "[view:$TEST_TASK] Rule violated for bundle $TEST_TASK: branches covered ratio is 0.5, but expected minimum is 0.9",
 
-                "[view:intTest] Fail on violations: true. Found violations: 1.",
-                "[view:intTest] Rule violated for bundle intTest: branches covered ratio is 0.5, but expected minimum is 0.7",
+                "[view:$INT_TEST_TASK] Fail on violations: true. Found violations: 1.",
+                "[view:$INT_TEST_TASK] Rule violated for bundle $INT_TEST_TASK: instructions covered ratio is 0.5, but expected minimum is 0.6",
             )
 
         // and assert
         assertSoftly {
-            listOf("default", "intTest").forEach { view ->
+            listOf(TEST_TASK, INT_TEST_TASK).forEach { view ->
                 val htmlReportDir =
                     rootProjectDir.resolve(baseReportDir).resolve("coverage-reports/delta-coverage/$view/html")
                 htmlReportDir.shouldExist()
@@ -126,7 +121,7 @@ class DeltaCoverageMultiModuleTest {
                         autoApplyPlugin.set(false)
                     }
                     diffSource.file.set('$diffFilePath')
-                    defaultReportView {
+                    reportViews.$TEST_TASK {
                         violationRules.failIfCoverageLessThan 0.7
                     }
                 }
@@ -145,10 +140,15 @@ class DeltaCoverageMultiModuleTest {
         gradleRunner
             .runDeltaCoverageTaskAndFail()
             .assertOutputContainsStrings(
-                "Fail on violations: true. Found violations: 3.",
-                "lines covered ratio is 0.5, but expected minimum is 0.7;",
-                "branches covered ratio is 0.2, but expected minimum is 0.7;",
-                "instructions covered ratio is 0.6, but expected minimum is 0.7",
+                "[view:$TEST_TASK] Fail on violations: true. Found violations: 3.",
+                "[view:$TEST_TASK] Rule violated for bundle $TEST_TASK: lines covered ratio is 0.5, but expected minimum is 0.7;",
+                "[view:$TEST_TASK] Rule violated for bundle $TEST_TASK: branches covered ratio is 0.2, but expected minimum is 0.7;",
+                "[view:$TEST_TASK] Rule violated for bundle $TEST_TASK: instructions covered ratio is 0.6, but expected minimum is 0.7",
             )
+    }
+
+    companion object {
+        const val TEST_TASK = JavaPlugin.TEST_TASK_NAME
+        const val INT_TEST_TASK = "intTest"
     }
 }

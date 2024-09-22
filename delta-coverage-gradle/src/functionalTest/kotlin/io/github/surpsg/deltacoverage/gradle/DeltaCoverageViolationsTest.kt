@@ -51,7 +51,7 @@ class DeltaCoverageViolationsTest {
                 deltaCoverageReport {
                     diffSource.file.set('$diffFilePath')
                     reportConfiguration.baseReportDir.set('$baseReportDir')
-                    defaultReportView {
+                    reportViews.test {
                         violationRules {
                             failIfCoverageLessThan 1.0
                             failOnViolation.set(true)
@@ -82,7 +82,7 @@ class DeltaCoverageViolationsTest {
                         html.set(true)
                         baseReportDir.set('$absolutePathBaseReportDir')
                     }
-                    defaultReportView {
+                    reportViews.test {
                         violationRules {
                             failOnViolation.set(true)
                             rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.LINE) {
@@ -110,7 +110,7 @@ class DeltaCoverageViolationsTest {
                 )
 
             val htmlReportDir = Paths.get(
-                absolutePathBaseReportDir, "coverage-reports", "delta-coverage", "default", "html"
+                absolutePathBaseReportDir, "coverage-reports", "delta-coverage", "test", "html"
             )
             assertSoftly(htmlReportDir) {
                 shouldExist()
@@ -128,7 +128,7 @@ class DeltaCoverageViolationsTest {
 
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
-                defaultReportView {
+                reportViews.test {
                     violationRules {
                         failIfCoverageLessThan 1.0d
                         failOnViolation.set(false)
@@ -166,7 +166,7 @@ class DeltaCoverageViolationsTest {
 
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
-                defaultReportView {
+                reportViews.test {
                     violationRules {
                         failOnViolation.set(true)
                         
@@ -204,7 +204,7 @@ class DeltaCoverageViolationsTest {
                 deltaCoverageReport {
                     diffSource.file.set('$diffFilePath')
                     
-                    defaultReportView {
+                    reportViews.test {
                         violationRules {
                             failOnViolation.set(true)
                             

@@ -42,8 +42,10 @@ class KoverViolationsTest {
             configure<DeltaCoverageConfiguration> {
                 coverage.engine = CoverageEngine.INTELLIJ
                 diffSource.file = "$diffFilePath"
-                defaultReportView {
-                    violationRules failIfCoverageLessThan 1.0
+                reportViews {
+                    val test by getting {
+                        violationRules failIfCoverageLessThan 1.0
+                    }
                 }
             }
         """.trimIndent()
@@ -82,11 +84,13 @@ class KoverViolationsTest {
             configure<DeltaCoverageConfiguration> {
                 coverage.engine = CoverageEngine.INTELLIJ
                 diffSource.file = "${diffFile.absolutePath}"
-                defaultReportView {
-                    violationRules {
-                        failOnViolation = true
-                        rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.BRANCH) {
-                            minCoverageRatio = 1.0
+                reportViews {
+                    val test by getting {
+                        violationRules {
+                            failOnViolation = true
+                            rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.BRANCH) {
+                                minCoverageRatio = 1.0
+                            }
                         }
                     }
                 }

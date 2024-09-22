@@ -195,7 +195,7 @@ class TextualReportFacadeTest {
 
             // THEN
             val expectedReport = """
-            # [any] Delta Coverage Stats
+            ### [any] Delta Coverage Stats
             
             | Class        | Lines    | Branches | Instr.   |
             |--------------|----------|----------|----------|
@@ -231,7 +231,7 @@ class TextualReportFacadeTest {
 
             // THEN
             val expectedReport = """
-            # [any] Delta Coverage Stats
+            ### [any] Delta Coverage Stats
             
             | Class        | Lines | Branches | Instr. |
             |--------------|-------|----------|--------|

@@ -1,15 +1,31 @@
-name: basic-steps
+name: Build
 
 on:
   workflow_call:
+  push:
+    branches:
+      - 'develop'
+      - 'main'
+      - 'release/**'
+  pull_request:
+    branches:
+      - '**'
 
 jobs:
 
   build-and-check:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+      packages: write
 
     env:
-      gradle_cmd: "./gradlew --parallel -Dorg.gradle.caching=true --console=plain --no-watch-fs -s "
+      GH_USER: ${{ github.actor }}
+      GH_TOKEN: ${{ github.token }}
+      gradle_cmd: "./gradlew --parallel --build-cache --console=plain --no-watch-fs -s "
 
     steps:
       - uses: actions/checkout@v4
@@ -28,24 +44,36 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
 
       - name: Build & Test
-        run: ${gradle_cmd} check detektMain detektTest :koverXmlReport --rerun
+        run: ${gradle_cmd} build detektMain detektTest :koverXmlReport
+
+      - name: Publish Snapshot Artifacts
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+        run: ${gradle_cmd} delta-coverage-gradle:publishPluginMavenPublicationToGitHubPackagesRepository
 
       - name: Run Delta Coverage check
-        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
+        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
         run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
 
-      - name: Append Delta Coverage Summary
-        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
+      - name: Append Test Coverage Summary
+        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: true
         uses: ./actions/delta-coverage-report
         with:
-          title: 'Delta Coverage'
-          delta-coverage-report: build/reports/coverage-reports/delta-coverage/report.md
+          title: 'Unit Tests Coverage'
+          delta-coverage-report: build/reports/coverage-reports/delta-coverage/test/report.md
+
+      - name: Append Functional Tests Coverage Summary
+        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
+        continue-on-error: true
+        uses: ./actions/delta-coverage-report
+        with:
+          title: 'Functional Tests Coverage'
+          delta-coverage-report: build/reports/coverage-reports/delta-coverage/functionalTest/report.md
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.17.1
-        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
+        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: true
         with:
           files:
