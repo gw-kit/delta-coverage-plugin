@@ -46,9 +46,16 @@ jobs:
       - name: Build & Test
         run: ${gradle_cmd} build detektMain detektTest :koverXmlReport
 
+      - name: Commits Number
+        id: git-commits
+        run: |
+          echo "number=$(git rev-list HEAD --count)" >> $GITHUB_OUTPUT
+
       - name: Publish Snapshot Artifacts
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
-        run: ${gradle_cmd} delta-coverage-gradle:publishPluginMavenPublicationToGitHubPackagesRepository
+        run: ${gradle_cmd}
+          delta-coverage-gradle:publishPluginMavenPublicationToGitHubPackagesRepository
+          -PsnapshotPrefix=${{ steps.git-commits.outputs.number }}
 
       - name: Run Delta Coverage check
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}

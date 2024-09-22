@@ -25,6 +25,11 @@ repositories {
     mavenCentral()
 }
 
+if (project.hasProperty("snapshotPrefix")) {
+    val snapshotPrefix: String by project
+    version = "$version.${snapshotPrefix}.SNAPSHOT"
+}
+
 publishing {
     repositories {
         maven {
