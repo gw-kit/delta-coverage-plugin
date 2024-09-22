@@ -61,7 +61,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            await github.repos.createRelease({
+            const result = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag_name: '${{ steps.release-version.outputs.version }}',
@@ -71,13 +71,14 @@ jobs:
               prerelease: true
             });
             console.log(`Created release: ${{ steps.release-version.outputs.version }}`);
+            console.log(`URL: ${result.html_url}`);
 
       - name: Create PR main to develop
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            await github.pulls.create({
+            const result = await github.rest.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: 'Merge main to develop',
@@ -85,7 +86,7 @@ jobs:
               base: 'develop',
               body: 'Merge main to develop'
             });
-            //console.log(`Created PR: ${pr.data.html_url}`);
+            console.log(`Created PR: ${result.html_url}`);
 
       - name: Publish plugin
         run: ./gradlew publishPlugins --parallel --console=plain
