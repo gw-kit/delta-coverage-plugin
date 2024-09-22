@@ -25,7 +25,9 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-
+    env:
+      GH_USER: ${{ github.actor }}
+      GH_TOKEN: ${{ github.token }}
     steps:
 
       - name: Clone project
@@ -50,8 +52,8 @@ jobs:
       - name: Create Release Branch
         run: |
           RELEASE_BRANCH=release/${{ steps.release-version.outputs.version }}
-          git checkout -b release/${RELEASE_BRANCH}
-          git push origin release/${RELEASE_BRANCH}
+          git checkout -b ${RELEASE_BRANCH}
+          git push origin ${RELEASE_BRANCH}
           echo "Created release branch: ${RELEASE_BRANCH}"
 
       - name: Publish plugin
