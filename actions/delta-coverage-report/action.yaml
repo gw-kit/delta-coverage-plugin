@@ -72,7 +72,9 @@ runs:
           const summaryBuffer = core.summary
             .addHeading('${{ inputs.title }}')
             .addRaw('${{ steps.comment-marker.outputs.result }}')
+            .addBreak()
             .addRaw('${{ inputs.message }}')
+            .addBreak()
             .addRaw(reportContent)
           summaryBuffer.write() // write to summary
           return summaryBuffer.stringify() // generate text
