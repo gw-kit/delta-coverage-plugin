@@ -12,7 +12,7 @@ internal object ViewLookup {
     ) {
         val evaluatedTestTasks: MutableSet<String> = ConcurrentHashMap.newKeySet()
         project.allprojects { proj ->
-            proj.tasks.withType(Test::class.java).configureEach { testTask ->
+            proj.tasks.withType(Test::class.java) { testTask ->
                 val viewName: String = testTask.name
                 val isNewItem = evaluatedTestTasks.add(viewName)
                 if (isNewItem) {
