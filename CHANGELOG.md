@@ -1,5 +1,11 @@
 # Delta-Coverage Gradle plugin Changelog
 
+<!-- # NEXT-RELEASE: 3.0.0 -->
+
+### Breaking changes
+- `DeltaCoverageTask` moved to package `io.github.surpsg.deltacoverage.gradle.task`
+- `NativeGitDiffTask` moved to package `io.github.surpsg.deltacoverage.gradle.task`
+
 ## 2.5.0
 
 ### Fixed

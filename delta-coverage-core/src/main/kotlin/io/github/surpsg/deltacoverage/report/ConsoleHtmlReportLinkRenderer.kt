@@ -9,6 +9,6 @@ object ConsoleHtmlReportLinkRenderer {
         reportBound: ReportBound,
         reportPath: File,
     ) {
-        println("[view:$viewName][$reportBound]: file://${reportPath.absolutePath}/index.html")
+        println("[$viewName][$reportBound]: file://${reportPath.absolutePath}/index.html\n")
     }
 }

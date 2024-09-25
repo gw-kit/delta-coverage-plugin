@@ -20,8 +20,7 @@ internal class KoverPluginSourcesLookup(
     override fun lookupCoverageBinaries(lookupContext: SourcesAutoLookup.Context): FileCollection {
         return lookupContext.project.lazyFileCollection {
             lookupContext.project.allprojects.asSequence()
-                .map { it.tasks.findByName(KOVER_GENERATE_ARTIFACTS_TASK_NAME) }
-                .filterNotNull()
+                .mapNotNull { it.tasks.findByName(KOVER_GENERATE_ARTIFACTS_TASK_NAME) }
                 .fold(setOf<String>()) { allBinaries, koverGenerateArtifactsTask ->
                     log.debug(
                         "Found Kover configuration in gradle project '{}'",

@@ -12,6 +12,7 @@ import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.file.shouldBeADirectory
 import io.kotest.matchers.file.shouldContainFile
 import io.kotest.matchers.file.shouldExist
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -41,8 +42,6 @@ class KoverMultiModuleTest {
     fun `should build delta coverage report from multi module project `() {
         // GIVEN
         val baseReportDir = "build/custom/kover/"
-        val testViewName = "test"
-        val intTestViewName = "intTest"
         buildFile.file.appendText(
             """
             configure<DeltaCoverageConfiguration> {
@@ -53,17 +52,17 @@ class KoverMultiModuleTest {
                     baseReportDir = "$baseReportDir"
                 }
                 reportViews {
-                    val $testViewName by getting {
-                        violationRules {
-                            failIfCoverageLessThan(0.9)
-                            failOnViolation = false
-                        }
+                    val $TEST_TASK by getting {
+                        violationRules.failIfCoverageLessThan(0.9)
+                        violationRules.failOnViolation = false
                     }
-                    val $intTestViewName by getting {
-                        violationRules {
-                            failIfCoverageLessThan(0.6)
-                            failOnViolation = false
-                        }
+                    val $INT_TEST_TASK by getting {
+                        violationRules.failIfCoverageLessThan(0.6)
+                        violationRules.failOnViolation = false
+                    }
+                    val $AGG_VIEW by getting {
+                        violationRules.failIfCoverageLessThan(1.0)
+                        violationRules.failOnViolation = false
                     }
                 }
             }
@@ -72,19 +71,29 @@ class KoverMultiModuleTest {
 
         // WHEN // THEN
         gradleRunner
-            .runDeltaCoverageTask(gradleArgs = arrayOf("intTest"))
+            .runDeltaCoverageTask(gradleArgs = arrayOf(INT_TEST_TASK))
             .assertOutputContainsStrings(
-                "[view:$testViewName] Fail on violations: false. Found violations: 2",
-                "[view:$testViewName] BRANCH: expectedMin=0.9, actual=0.5",
-                "[view:$testViewName] INSTRUCTION: expectedMin=0.9, actual=0.8",
+                "[$TEST_TASK] Fail on violations: false. Found violations: 2.",
+                "[$TEST_TASK] BRANCH: expectedMin=0.9, actual=0.5",
+                "[$TEST_TASK] INSTRUCTION: expectedMin=0.9, actual=0.88",
 
-                "[view:$intTestViewName] Fail on violations: false. Found violations: 1",
-                "[view:$intTestViewName] INSTRUCTION: expectedMin=0.6, actual=0.4",
+                "[$INT_TEST_TASK] Fail on violations: false. Found violations: 3.",
+                "[$INT_TEST_TASK] INSTRUCTION: expectedMin=0.6, actual=0.15",
+                "[$INT_TEST_TASK] BRANCH: expectedMin=0.6, actual=0.25",
+                "[$INT_TEST_TASK] LINE: expectedMin=0.6, actual=0.2",
+
+                "[$AGG_VIEW] Fail on violations: false. Found violations: 2.",
+                "[$AGG_VIEW] INSTRUCTION: expectedMin=1.0, actual=0.8",
+                "[$AGG_VIEW] BRANCH: expectedMin=1.0, actual=0.75",
             )
 
         // AND THEN
         assertSoftly {
-            listOf(testViewName, intTestViewName).forEach { view ->
+            listOf(
+                TEST_TASK,
+                INT_TEST_TASK,
+                AGG_VIEW,
+            ).forEach { view ->
                 val htmlReportDir = rootProjectDir.resolve(baseReportDir)
                     .resolve(File("coverage-reports/delta-coverage/$view/html/"))
                 htmlReportDir.shouldExist()
@@ -92,5 +101,11 @@ class KoverMultiModuleTest {
                 htmlReportDir.shouldContainFile("index.html")
             }
         }
+    }
+
+    private companion object {
+        const val TEST_TASK = JavaPlugin.TEST_TASK_NAME
+        const val INT_TEST_TASK = "intTest"
+        const val AGG_VIEW = "aggregated"
     }
 }
