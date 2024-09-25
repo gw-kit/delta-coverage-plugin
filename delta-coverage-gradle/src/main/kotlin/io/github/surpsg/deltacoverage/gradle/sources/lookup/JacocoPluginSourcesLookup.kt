@@ -24,7 +24,7 @@ internal class JacocoPluginSourcesLookup(
             .mapNotNull { task -> task.extensions.findByType(JacocoTaskExtension::class.java) }
             .mapNotNull { jacocoExtension -> jacocoExtension.destinationFile }
             .onEach {
-                log.info(
+                log.debug(
                     "[{}] Found coverage binary: project={}, file={}",
                     lookupContext.viewName,
                     lookupContext.project.name,
