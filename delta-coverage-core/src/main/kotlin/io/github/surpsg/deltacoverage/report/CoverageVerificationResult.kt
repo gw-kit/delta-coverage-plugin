@@ -9,5 +9,5 @@ internal data class CoverageVerificationResult(
 ) {
 
     fun contextualViolations(): List<String> =
-        violations.map { violation -> "[view:$view] $violation" }
+        violations.map { violation -> "[$view] $violation" }
 }

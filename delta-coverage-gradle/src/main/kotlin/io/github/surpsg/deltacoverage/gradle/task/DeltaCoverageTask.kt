@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.gradle
+package io.github.surpsg.deltacoverage.gradle.task
 
 import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
 import io.github.surpsg.deltacoverage.diff.DiffSource

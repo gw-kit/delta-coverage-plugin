@@ -1,7 +1,9 @@
 package io.github.surpsg.deltacoverage.gradle
 
 import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.DELTA_COVERAGE_TASK
-import org.assertj.core.api.Assertions
+import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.comparables.shouldBeEqualComparingTo
+import io.kotest.matchers.nulls.shouldNotBeNull
 import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
@@ -36,10 +38,11 @@ private fun BuildResult.printLogs(enabled: Boolean) {
 }
 
 fun BuildResult.assertDeltaCoverageStatusEqualsTo(status: TaskOutcome): BuildResult {
-    Assertions.assertThat(task(":$DELTA_COVERAGE_TASK"))
-        .isNotNull
-        .extracting { it?.outcome }
-        .isEqualTo(status)
+    assertSoftly(output) {
+        task(":$DELTA_COVERAGE_TASK")
+            .shouldNotBeNull()
+            .outcome shouldBeEqualComparingTo status
+    }
     return this
 }
 

@@ -10,7 +10,9 @@ import org.gradle.api.model.ObjectFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-internal class SourcesResolver {
+internal object SourcesResolver {
+
+    private val log: Logger = LoggerFactory.getLogger(SourcesResolver::class.java)
 
     fun resolve(context: Context): FileCollection {
         val sourceType: SourceType = context.sourceType
@@ -28,10 +30,11 @@ internal class SourcesResolver {
         }
 
         return if (resolvedSources.isEmpty) {
-            throwMissedConfigurationException(provider, sourceType)
+            throwMissedConfigurationException(context, provider, sourceType)
         } else {
             log.debug(
-                "{}({}) files were configured from {}",
+                "[{}] {}({}) files were configured from {}",
+                context.viewName,
                 sourceType.sourceConfigurationPath,
                 sourceType.resourceName(provider),
                 provider.pluginName
@@ -51,13 +54,14 @@ internal class SourcesResolver {
     }
 
     private fun throwMissedConfigurationException(
+        context: Context,
         provider: Provider,
-        sourceType: SourceType
+        sourceType: SourceType,
     ): Nothing {
         val errorMessage = if (provider == Provider.DELTA_COVERAGE) {
-            "'${sourceType.sourceConfigurationPath}' file collection is empty."
+            "[${context.viewName}] '${sourceType.sourceConfigurationPath}' file collection is empty."
         } else {
-            "'${sourceType.sourceConfigurationPath}' is not configured."
+            "[${context.viewName}] '${sourceType.sourceConfigurationPath}' is not configured."
         }
         error(errorMessage)
     }
@@ -135,9 +139,5 @@ internal class SourcesResolver {
                 CoverageEngine.INTELLIJ -> KOVER
             }
         }
-    }
-
-    companion object {
-        val log: Logger = LoggerFactory.getLogger(SourcesResolver::class.java)
     }
 }

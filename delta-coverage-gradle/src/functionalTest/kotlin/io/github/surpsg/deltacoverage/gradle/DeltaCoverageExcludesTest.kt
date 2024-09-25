@@ -66,7 +66,7 @@ class DeltaCoverageExcludesTest {
         // run // assert
         gradleRunner
             .runDeltaCoverageTask()
-            .assertOutputContainsStrings("[view:test] Fail on violations: true. Found violations: 0")
+            .assertOutputContainsStrings("[test] Fail on violations: true. Found violations: 0")
 
         // and assert
         val htmlReportDir: Path = rootProjectDir.toPath()
@@ -101,7 +101,7 @@ class DeltaCoverageExcludesTest {
         // run // assert
         gradleRunner
             .runDeltaCoverageTaskAndFail()
-            .assertOutputContainsStrings("[view:test] Fail on violations: true. Found violations: 2")
+            .assertOutputContainsStrings("[test] Fail on violations: true. Found violations: 2")
     }
 
     private fun findAllFiles(rootDir: Path, fileFilter: (Path) -> Boolean): List<Path> {
