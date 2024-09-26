@@ -25,7 +25,7 @@ jobs:
     env:
       GH_USER: ${{ github.actor }}
       GH_TOKEN: ${{ github.token }}
-      gradle_cmd: "./gradlew --parallel --build-cache --console=rich --no-watch-fs -s "
+      gradle_cmd: "./gradlew --parallel --build-cache --console=plain --no-watch-fs -s "
 
     steps:
       - uses: actions/checkout@v4
