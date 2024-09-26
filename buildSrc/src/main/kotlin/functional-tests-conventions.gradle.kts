@@ -41,10 +41,14 @@ testing.suites {
                 description = "Runs the functional tests."
                 group = "verification"
 
-                testLogging.showStandardStreams = true
                 maxParallelForks = 4
 
                 systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
+
+                testLogging {
+                    events("skipped", "failed")
+                    showStandardStreams = true
+                }
             }
         }
     }

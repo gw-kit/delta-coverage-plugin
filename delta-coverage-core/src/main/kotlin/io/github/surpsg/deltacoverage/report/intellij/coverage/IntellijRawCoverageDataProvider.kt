@@ -22,7 +22,7 @@ internal class IntellijRawCoverageDataProvider(
             .map { classData ->
                 collectClassCoverageData(
                     classData,
-                    projectData.instructions.getValue(classData.name)
+                    projectData.instructions[classData.name]
                 )
             }
             .toList()

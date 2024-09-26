@@ -78,7 +78,7 @@ class KoverMultiModuleTest {
                 "[$TEST_TASK] INSTRUCTION: expectedMin=0.9, actual=0.88",
 
                 "[$INT_TEST_TASK] Fail on violations: false. Found violations: 3.",
-                "[$INT_TEST_TASK] INSTRUCTION: expectedMin=0.6, actual=0.15",
+                "[$INT_TEST_TASK] INSTRUCTION: expectedMin=0.6, actual=0.16",
                 "[$INT_TEST_TASK] BRANCH: expectedMin=0.6, actual=0.25",
                 "[$INT_TEST_TASK] LINE: expectedMin=0.6, actual=0.2",
 
