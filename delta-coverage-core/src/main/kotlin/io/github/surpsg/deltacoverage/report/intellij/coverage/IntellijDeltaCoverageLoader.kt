@@ -84,7 +84,7 @@ internal object IntellijDeltaCoverageLoader {
         }
     }
 
-    private fun ClassData.filterLines(classModifications: ClassModifications) {
+    private fun ClassData.filterLines(classModifications: ClassModifications): ClassData {
         val lines: Array<LineData?> = classLines()
         for (i in lines.indices) {
             val actualLine: LineData = lines[i] ?: continue
@@ -92,6 +92,7 @@ internal object IntellijDeltaCoverageLoader {
                 lines[i] = null
             }
         }
+        return this
     }
 
     private fun ClassData.classLines(): Array<LineData?> {
@@ -120,9 +121,14 @@ internal object IntellijDeltaCoverageLoader {
     ) {
         val sourceProjectData: ProjectData = this
         sourceProjectData.classesCollection.asSequence()
-            .filter { sourceClassData ->
+            .mapNotNull { sourceClassData ->
                 val classFile: ClassFile = classFileFrom(sourceClassData)
-                codeUpdateInfo.isInfoExists(classFile)
+                if (codeUpdateInfo.isInfoExists(classFile)) {
+                    val classModifications = codeUpdateInfo.getClassModifications(classFile)
+                    sourceClassData.filterLines(classModifications)
+                } else {
+                    null
+                }
             }
             .map { sourceClassData ->
                 ClassDataCopingContext(sourceClassData.name, sourceProjectData, copyToProjectData)
