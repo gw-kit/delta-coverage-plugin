@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.report.intellij.verifier
+package io.github.surpsg.deltacoverage.report.violation
 
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
