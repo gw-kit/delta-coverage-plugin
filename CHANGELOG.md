@@ -2,9 +2,15 @@
 
 <!-- # NEXT-RELEASE: 3.0.0 -->
 
+### New features
+- Implemented report views. See [Report views](./README.md#report-views) for details.
+
 ### Breaking changes
-- `DeltaCoverageTask` moved to package `io.github.surpsg.deltacoverage.gradle.task`
-- `NativeGitDiffTask` moved to package `io.github.surpsg.deltacoverage.gradle.task`
+- `DeltaCoverageTask` moved to package `io.github.surpsg.deltacoverage.gradle.task`.
+- `NativeGitDiffTask` moved to package `io.github.surpsg.deltacoverage.gradle.task`.
+- Violation rules are now configured via `DeltaCoverageConfiguration.reportViews.<view-name>.violationRules` extension.
+  See [Migration guide](./docs/migration-guilde-v3.md) for details.
+
 
 ## 2.5.0
 
