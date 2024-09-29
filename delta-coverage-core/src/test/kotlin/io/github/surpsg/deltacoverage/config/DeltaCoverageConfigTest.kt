@@ -19,7 +19,7 @@ class DeltaCoverageConfigTest {
     @Test
     fun `should build delta coverage config with defaults`() {
         // GIVEN
-        val expectedDiffSource = mockk<DiffSource>()
+        val expectedDiffSource = mockk<DiffSource>(relaxed = true)
         val expectedViewName = "delta-coverage-report"
 
         // WHEN
@@ -66,7 +66,7 @@ class DeltaCoverageConfigTest {
     fun `should build delta coverage config with custom properties`() {
         // GIVEN
         val expectedReportName = "report-name"
-        val expectedDiffSource = mockk<DiffSource>()
+        val expectedDiffSource = mockk<DiffSource>(relaxed = true)
         val expectedReportsConfig = ReportsConfig { baseReportDir = "some/custom" }
             .apply { view = expectedReportName }
         val expectedCoverageRulesConfig = mockk<CoverageRulesConfig>()
