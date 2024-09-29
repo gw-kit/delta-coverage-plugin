@@ -7,8 +7,8 @@ dependencyResolutionManagement {
         maven {
             url = uri("https://maven.pkg.github.com/gw-kit/delta-coverage-plugin")
             credentials {
-                username = System.getenv("GH_USER") ?: extra["GH_USER"].toString()
-                password = System.getenv("GH_TOKEN") ?: extra["GH_TOKEN"].toString()
+                username = extra.properties["GH_USER"]?.toString() ?: System.getenv("GH_USER")
+                password = extra.properties["GH_TOKEN"]?.toString() ?: System.getenv("GH_TOKEN")
             }
         }
     }

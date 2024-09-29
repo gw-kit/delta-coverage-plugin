@@ -1,7 +1,7 @@
 package io.gradle.surpsg.deltacoverage.testkit
 
-import gradle.kotlin.dsl.accessors._2d431fe70f97db7ed774a1727194046a.main
-import gradle.kotlin.dsl.accessors._2d431fe70f97db7ed774a1727194046a.sourceSets
+import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
@@ -9,6 +9,8 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.WriteProperties
 import org.gradle.kotlin.dsl.register
 import org.gradle.language.jvm.tasks.ProcessResources
@@ -119,7 +121,7 @@ internal abstract class IntellijCoverageGradleTestKitPlugin : Plugin<Project> {
                 dependsOn(generateTestKitProperties)
             }
 
-            sourceSets.named(testTaskName) {
+            getSourceSet(testTaskName) {
                 tasks.named(processResourcesTaskName, ProcessResources::class.java) {
                     from(generateTestKitProperties)
                 }
@@ -133,7 +135,7 @@ internal abstract class IntellijCoverageGradleTestKitPlugin : Plugin<Project> {
 
     private fun Project.buildIncludeSourcesPatterns(): Provider<Set<String>> {
         return project.rootProject.allprojects.map { proj ->
-            proj.sourceSets.main.map { it.allJava.srcDirs }
+            proj.getSourceSet("main").map { it.allJava.srcDirs }
         }.fold(
             project.provider<Set<File>> { emptySet() },
             ::merge
@@ -144,6 +146,14 @@ internal abstract class IntellijCoverageGradleTestKitPlugin : Plugin<Project> {
                 .map { it.toIncludePackageRegex() }
                 .toSet()
         }
+    }
+
+    private fun Project.getSourceSet(
+        name: String,
+        configure: Action<SourceSet> = Action {},
+    ): NamedDomainObjectProvider<SourceSet> {
+        return (extensions.getByName("sourceSets") as SourceSetContainer)
+            .named(name, configure)
     }
 
     private fun <T : Any, C : Iterable<T>> merge(

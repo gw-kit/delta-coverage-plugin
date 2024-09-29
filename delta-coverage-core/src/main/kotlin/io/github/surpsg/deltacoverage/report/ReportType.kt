@@ -6,7 +6,4 @@ enum class ReportType(val priority: Int) {
     HTML(2),
     MARKDOWN(3),
     XML(4),
-
-    @Deprecated("CSV will be removed soon.")
-    CSV(Int.MAX_VALUE),
 }

@@ -42,7 +42,7 @@ internal class TextualReportRendererFactoryTest {
                 ReportType.MARKDOWN -> it to MarkdownReportRenderer
                 ReportType.CONSOLE -> it to AsciiTableRenderer
 
-                ReportType.HTML, ReportType.XML, ReportType.CSV -> null
+                ReportType.HTML, ReportType.XML -> null
             }
         }
         .map { arguments(it.first, it.second) }

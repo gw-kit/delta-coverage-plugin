@@ -2,7 +2,7 @@
 
 ![GitHub Release](https://img.shields.io/github/v/release/SurpSG/delta-coverage-plugin)
 [![Main branch checks](https://github.com/SurpSG/delta-coverage-plugin/actions/workflows/main-branch.yml/badge.svg?branch=main)](https://github.com/SurpSG/delta-coverage-plugin/actions/workflows/main-branch.yml)
-[![codecov](https://codecov.io/gh/SurpSG/delta-coverage-plugin/branch/main/graph/badge.svg?token=69BAXyEhse)](https://codecov.io/gh/SurpSG/delta-coverage-plugin)
+[![codecov](https://codecov.io/gh/gw-kit/delta-coverage-plugin/graph/badge.svg?token=69BAXyEhse)](https://codecov.io/gh/gw-kit/delta-coverage-plugin)
 [![GitHub issues](https://img.shields.io/github/issues/SurpSG/delta-coverage-plugin)](https://github.com/SurpSG/delta-coverage-plugin/issues)
 [![GitHub stars](https://img.shields.io/github/stars/SurpSG/delta-coverage-plugin?style=flat-square)](https://github.com/SurpSG/delta-coverage-plugin/stargazers)
 
@@ -121,10 +121,12 @@ deltaCoverageReport {
 
 </details>
 
+
 ### Report Views
 
 The concept of views is used to configure different coverage reports for different test tasks. 
 So, you can check coverage for different test tasks separately.
+
 
 #### Auto-configuration
 
@@ -136,11 +138,13 @@ The plugin will automatically register and configures the next views:
 - `integrationTest` - for task `integrationTest`.
 - `aggregated` - merged coverage data from all test tasks.
 
+
 ## Execute
 
 ```shell
 ./gradlew test deltaCoverage
 ```
+
 
 ## Parameters description
 
@@ -166,10 +170,10 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
         // Optional. Default is 'false'. If 'true' then the plugin uses native git to get diff.
     }
 
-    // Required. By default sources are taken from jacoco plugin(or intellij) if the plugin is applied to a project.
+    // Required. By default, sources are taken from jacoco plugin(or intellij) if the plugin is applied to a project.
     srcDirs = files("/path/to/sources")
 
-    // Required. By default classes are taken from jacoco plugin(or intellij) if the plugin is applied to a project.
+    // Required. By default, classes are taken from jacoco plugin(or intellij) if the plugin is applied to a project.
     classesDirs = files("/path/to/compiled/classes")
 
     // Optional. Excludes classes from coverage report by set of patterns .
@@ -188,7 +192,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
         markdown.set(true) // Optional. default `false`
         reportDir.set("dir/to/store/reports") // Optional. Default 'build/reports/coverage-reports'
     }
-  
+    
     reportViews {
         val test by getting { // Configuring existing report view 'test'.  
           failIfCoverageLessThan(0.9)

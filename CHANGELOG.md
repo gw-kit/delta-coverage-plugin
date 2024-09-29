@@ -10,6 +10,7 @@
 - `NativeGitDiffTask` moved to package `io.github.surpsg.deltacoverage.gradle.task`.
 - Violation rules are now configured via `DeltaCoverageConfiguration.reportViews.<view-name>.violationRules` extension.
   See [Migration guide](./docs/migration-guilde-v3.md) for details.
+- Deleted deprecated CSV report generation.
 
 
 ## 2.5.0

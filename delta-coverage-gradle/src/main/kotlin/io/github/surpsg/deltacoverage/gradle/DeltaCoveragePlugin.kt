@@ -18,7 +18,6 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         val deltaCoverageConfig: DeltaCoverageConfiguration = project.extensions.create(
             DELTA_COVERAGE_REPORT_EXTENSION,
             DeltaCoverageConfiguration::class.java,
-            project,
             project.objects,
         )
         project.autoRegisterReportViews()

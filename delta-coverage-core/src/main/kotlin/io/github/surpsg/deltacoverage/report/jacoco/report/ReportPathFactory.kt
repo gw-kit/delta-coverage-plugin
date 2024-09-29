@@ -12,7 +12,6 @@ internal object ReportPathFactory {
         val reportPathStrategy = when (jacocoReport.reportType) {
             ReportType.HTML -> ReportPathStrategy.Html(jacocoReport.reportsConfig)
             ReportType.XML -> ReportPathStrategy.Xml(jacocoReport.reportsConfig)
-            ReportType.CSV -> ReportPathStrategy.Csv(jacocoReport.reportsConfig)
             ReportType.CONSOLE -> ReportPathStrategy.Console(jacocoReport.reportsConfig)
             ReportType.MARKDOWN -> ReportPathStrategy.Markdown(jacocoReport.reportsConfig)
         }
