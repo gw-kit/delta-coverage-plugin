@@ -23,13 +23,13 @@ Why should I use it?
 
 Delta Coverage plugin compatibility table:
 
-| Delta Coverage plugin | Gradle                 |
-|-----------------------|------------------------|
-| **3.+**               | **6.7.1** - **8.10.+** |
-| **2.5.+**             | **6.7.1** - **8.10.2** |
-| **2.0.+** - **2.4.0** | **5.6** - **8.9.+**    |
-| **1.3.+**             | **5.1** - **8.4.+**    |
-| **1.0.0** - **1.2.0** | **5.1** - **8.3.+**    |
+| Delta Coverage plugin | Gradle                 | min JVM |
+|-----------------------|------------------------|---------|
+| **3.+**               | **7.6.4** - **8.10.+** | 17      |    
+| **2.5.+**             | **6.7.1** - **8.10.2** | 11      |
+| **2.0.+** - **2.4.0** | **5.6** - **8.9.+**    | 11      |
+| **1.3.+**             | **5.1** - **8.4.+**    | 11      |
+| **1.0.0** - **1.2.0** | **5.1** - **8.3.+**    | 11      |
 
 ### Apply `Delta Coverage` plugin
 
@@ -121,30 +121,27 @@ deltaCoverageReport {
 
 </details>
 
-
 ### Report Views
 
-The concept of views is used to configure different coverage reports for different test tasks. 
+The concept of views is used to configure different coverage reports for different test tasks.
 So, you can check coverage for different test tasks separately.
-
 
 #### Auto-configuration
 
 Each view could have its own coverage binary files and violation rules.
 
-Suppose you have a test task `test` and test task `integrationTest` in your project. 
+Suppose you have a test task `test` and test task `integrationTest` in your project.
 The plugin will automatically register and configures the next views:
+
 - `test` - for task `test`.
 - `integrationTest` - for task `integrationTest`.
 - `aggregated` - merged coverage data from all test tasks.
-
 
 ## Execute
 
 ```shell
 ./gradlew test deltaCoverage
 ```
-
 
 ## Parameters description
 
@@ -153,7 +150,8 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     // Configures coverage engine. Default is 'JACOCO'.
     coverage {
         engine = CoverageEngine.JACOCO // Required. Default is 'JACOCO'. Could be set to INTELLIJ engine.
-        autoApplyPlugin = true // Required. Default is 'true'. If 'true' then the corresponding coverage engine plugin is applied to a project and all it's subprojects.
+        autoApplyPlugin =
+            true // Required. Default is 'true'. If 'true' then the corresponding coverage engine plugin is applied to a project and all it's subprojects.
     }
 
     // Required. Only one of `file`, `url` or git must be specified.
@@ -177,13 +175,15 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     classesDirs = files("/path/to/compiled/classes")
 
     // Optional. Excludes classes from coverage report by set of patterns .
-    excludeClasses.value(listOf(
+    excludeClasses.value(
+        listOf(
             "*/com/package/ExcludeClass.class", // Excludes class "com.package.ExcludeClass"
             "**/com/package/**/ExcludeClass.class", // Excludes classes like "com.package.ExcludeClass", "com.package.sub1.sub2.ExcludeClass", etc.
             "**/ExcludeClass\$NestedClass.class", // Excludes nested class(es) "<any-package>.ExcludeClass.NestedClass"
             "**/com/package/exclude/**/*.*" // Excludes all in package "com.package.exclude"
             // See more info about pattern rules: https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/util/PatternFilterable.html
-    ))
+        )
+    )
 
     reports {
         html.set(true) // Optional. default `false`
@@ -192,53 +192,53 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
         markdown.set(true) // Optional. default `false`
         reportDir.set("dir/to/store/reports") // Optional. Default 'build/reports/coverage-reports'
     }
-    
+
     reportViews {
         val test by getting { // Configuring existing report view 'test'.  
-          failIfCoverageLessThan(0.9)
+            failIfCoverageLessThan(0.9)
         }
-      
+
         view("customView") { // Registering a custom report view.
             // Required. 
             // For JaCoCo engine: by default '.exec' coverage binary files are configured from jacoco plugin.
             // For Intellij engine: by default '.ic' coverage binary files are configured from kover plugin.
             coverageBinaryFiles = files("/path/to/jacoco/exec/file.exec")
-            
+
             // If violation rules are not configured, then no violations will be checked.
             violationRules {
                 failOnViolation.set(true) // Optional. Default `false`. If `true` then task will fail if any violation is found.
-    
+
                 // [Option 1]---------------------------------------------------------------------------------------------------
                 // Optional. The function sets min coverage ration for instructions, branches and lines to '0.9'. 
                 // Sets failOnViolation to 'true'.
                 failIfCoverageLessThan(0.9)
-    
+
                 // [Option 2]---------------------------------------------------------------------------------------------------
                 rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.INSTRUCTION) {
-                  // Optional. If coverage ration is set then the plugin will check coverage ratio for this entity.
-                  minCoverageRatio.set(0.9)
-                  // Optional. Disabled by default. The plugin ignores violation if the entity count is less than the threshold.
-                  entityCountThreshold.set(1234)
+                    // Optional. If coverage ration is set then the plugin will check coverage ratio for this entity.
+                    minCoverageRatio.set(0.9)
+                    // Optional. Disabled by default. The plugin ignores violation if the entity count is less than the threshold.
+                    entityCountThreshold.set(1234)
                 }
                 rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.LINE) {
-                  // ...
+                    // ...
                 }
                 rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.BRANCH) {
-                  // ...
+                    // ...
                 }
-    
+
                 // [Option 3]---------------------------------------------------------------------------------------------------
                 // [.kts only] Alternative way to set violation rule.
                 io.github.surpsg.deltacoverage.gradle.CoverageEntity.BRANCH {
-                  minCoverageRatio.set(0.7)
-                  entityCountThreshold.set(890)
+                    minCoverageRatio.set(0.7)
+                    entityCountThreshold.set(890)
                 }
-    
+
                 // [Option 4]---------------------------------------------------------------------------------------------------
                 // Sets violation rule for all entities: LINE, BRANCH, INSTRUCTION
                 all {
-                  minCoverageRatio.set(0.7)
-                  entityCountThreshold.set(890)
+                    minCoverageRatio.set(0.7)
+                    entityCountThreshold.set(890)
                 }
             }
         }
@@ -251,6 +251,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
 The plugin adds a task `deltaCoverage` that depends on compile tasks.
 
 The task does the following:
+
 * loads code coverage data specified by `deltaCoverageReport.<report-view>.coverageBinaryFiles` for all views.
 * analyzes the coverage data and filters according to `diffSource.url`/`diffSource.file`.
 * generates html report(if enabled: `reports.html = true`) to directory `reports.baseReportsDir`.
