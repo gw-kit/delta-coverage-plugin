@@ -3,6 +3,8 @@ package io.github.surpsg.deltacoverage.report.jacoco.verification
 import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.config.ViolationRule
+import io.github.surpsg.deltacoverage.report.violation.ViolationResolveContext
+import io.github.surpsg.deltacoverage.report.violation.ViolationResolveContext.Companion.NO_IGNORE_VIOLATION_CONTEXT
 import org.jacoco.core.analysis.ICoverageNode
 import org.jacoco.report.check.IViolationsOutput
 import org.jacoco.report.check.Limit
@@ -10,6 +12,7 @@ import org.jacoco.report.check.Rule
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+// TODO duplicates intellij coverage io.github.surpsg.deltacoverage.report.intellij.verifier.CoverageViolationsCollector
 internal class ViolationsOutputResolver(
     violationRuleConfig: CoverageRulesConfig
 ) : IViolationsOutput {
@@ -24,7 +27,7 @@ internal class ViolationsOutputResolver(
         log.debug("New violation: $message")
 
         val violationResolveContext: ViolationResolveContext = buildViolationResolveContext(limit.entity, node)
-        if (violationResolveContext.isIgnoredByThreshold()) { // TODO duplicates intellij coverage
+        if (violationResolveContext.isIgnoredByThreshold()) {
             log.info(
                 "Coverage violation of {} was ignored because threshold={} but total={}",
                 violationResolveContext.coverageEntity,
@@ -45,7 +48,7 @@ internal class ViolationsOutputResolver(
 
         return violationRules[coverageEntity]
             ?.entityCountThreshold
-            ?.let { threshold -> ViolationResolveContext(coverageEntity, threshold, totalEntityCount) }
+            ?.let { threshold -> ViolationResolveContext(coverageEntity, threshold, totalEntityCount.toLong()) }
             ?: NO_IGNORE_VIOLATION_CONTEXT
     }
 
@@ -56,21 +59,7 @@ internal class ViolationsOutputResolver(
         else -> null
     }
 
-    private open class ViolationResolveContext(
-        val coverageEntity: CoverageEntity?,
-        val thresholdCount: Int,
-        val totalCount: Int
-    ) {
-        open fun isIgnoredByThreshold(): Boolean {
-            return totalCount < thresholdCount
-        }
-    }
-
     private companion object {
         val log: Logger = LoggerFactory.getLogger(ViolationsOutputResolver::class.java)
-
-        val NO_IGNORE_VIOLATION_CONTEXT = object : ViolationResolveContext(null, -1, -1) {
-            override fun isIgnoredByThreshold() = false
-        }
     }
 }

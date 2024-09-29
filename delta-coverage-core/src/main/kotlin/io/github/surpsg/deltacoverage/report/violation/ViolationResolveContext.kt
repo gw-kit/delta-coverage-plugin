@@ -1,8 +1,7 @@
-package io.github.surpsg.deltacoverage.report.intellij.verifier
+package io.github.surpsg.deltacoverage.report.violation
 
 import io.github.surpsg.deltacoverage.config.CoverageEntity
 
-// TODO duplicates jacoco implementation
 internal open class ViolationResolveContext(
     val coverageEntity: CoverageEntity?,
     val thresholdCount: Int,

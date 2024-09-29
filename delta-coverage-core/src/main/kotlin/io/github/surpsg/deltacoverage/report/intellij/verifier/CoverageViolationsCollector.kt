@@ -4,6 +4,7 @@ import com.intellij.rt.coverage.verify.TargetProcessor
 import com.intellij.rt.coverage.verify.Verifier
 import com.intellij.rt.coverage.verify.api.Counter
 import io.github.surpsg.deltacoverage.config.CoverageEntity
+import io.github.surpsg.deltacoverage.report.violation.ViolationResolveContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.math.BigDecimal
