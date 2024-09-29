@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle
 
+import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.DELTA_COVERAGE_TASK
 import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
 import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
 import io.github.surpsg.deltacoverage.gradle.test.ProjectFile

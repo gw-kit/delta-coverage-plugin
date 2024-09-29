@@ -24,6 +24,6 @@ internal object CoverageAssertion {
     }
 
     private fun CoverageVerifier.Violation.buildCoverageViolatedMessage(view: String): String {
-        return "[view:$view] $coverageTrackType: expectedMin=$expectedMinValue, actual=$actualValue"
+        return "[$view] $coverageTrackType: expectedMin=$expectedMinValue, actual=$actualValue"
     }
 }

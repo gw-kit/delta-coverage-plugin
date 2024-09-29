@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.gradle
 
 import io.github.surpsg.deltacoverage.CoverageEngine
+import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTaskConfigurer
 import io.github.surpsg.deltacoverage.gradle.utils.booleanProperty
 import io.github.surpsg.deltacoverage.gradle.utils.doubleProperty
 import io.github.surpsg.deltacoverage.gradle.utils.map
@@ -53,7 +54,7 @@ open class DeltaCoverageConfiguration @Inject constructor(
     val reportViews: NamedDomainObjectContainer<ReportView> =
         objectFactory.domainObjectContainer(ReportView::class.java) { name ->
             objectFactory.newInstance(ReportView::class.java, name, objectFactory)
-        }
+        }.apply { maybeCreate(DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME) }
 
     fun coverage(action: Action<in Coverage>): Unit = action.execute(coverage)
 

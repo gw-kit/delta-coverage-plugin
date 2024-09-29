@@ -43,7 +43,7 @@ dependencies {
     functionalTestImplementation(deps.jgit)
 
     testFixturesImplementation(project(":delta-coverage-core"))
-    testFixturesImplementation(deps.assertj)
+    testFixturesImplementation(deps.kotestAssertions)
     testFixturesImplementation(deps.junitApi)
     testFixturesImplementation(deps.jgit)
     testFixturesImplementation(deps.mockk)

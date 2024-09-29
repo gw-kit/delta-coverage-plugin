@@ -24,7 +24,7 @@ internal class CoverageViolationsPropagator {
         verificationResult: CoverageVerificationResult,
     ): CoverageVerificationResult? {
         log.info(
-            "[view:{}] Fail on violations: {}. Found violations: {}.",
+            "[{}] Fail on violations: {}. Found violations: {}.",
             verificationResult.view,
             verificationResult.coverageRulesConfig.failOnViolation,
             verificationResult.violations.size,

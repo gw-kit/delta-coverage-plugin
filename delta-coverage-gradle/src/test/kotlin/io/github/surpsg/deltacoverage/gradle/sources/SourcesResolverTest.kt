@@ -18,8 +18,6 @@ import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration as Delta
 
 internal class SourcesResolverTest {
 
-    private val sourcesResolver = SourcesResolver()
-
     @ParameterizedTest
     @MethodSource("delta coverage source test parameters")
     fun `should return delta coverage configured files`(
@@ -35,7 +33,7 @@ internal class SourcesResolverTest {
         }
 
         // WHEN
-        val resolvedFiles: FileCollection = sourcesResolver.resolve(context)
+        val resolvedFiles: FileCollection = SourcesResolver.resolve(context)
 
         // THEN
         assertSoftly(resolvedFiles) {
@@ -52,7 +50,7 @@ internal class SourcesResolverTest {
         }
 
         // WHEN
-        val resolvedFiles: FileCollection = sourcesResolver.resolve(context)
+        val resolvedFiles: FileCollection = SourcesResolver.resolve(context)
 
         // THEN
         assertSoftly(resolvedFiles) {
@@ -77,7 +75,7 @@ internal class SourcesResolverTest {
 
         // WHEN // THEN
         val actualException = shouldThrow<IllegalStateException> {
-            sourcesResolver.resolve(context)
+            SourcesResolver.resolve(context)
         }
 
         // AND THEN
@@ -98,7 +96,7 @@ internal class SourcesResolverTest {
 
         // WHEN // THEN
         val actualException = shouldThrow<IllegalStateException> {
-            sourcesResolver.resolve(context)
+            SourcesResolver.resolve(context)
         }
 
         // AND THEN
@@ -119,7 +117,7 @@ internal class SourcesResolverTest {
 
         // WHEN // THEN
         val actualException = shouldThrow<IllegalStateException> {
-            sourcesResolver.resolve(context)
+            SourcesResolver.resolve(context)
         }
 
         // AND THEN
