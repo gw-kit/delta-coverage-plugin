@@ -1,6 +1,6 @@
 # Delta-Coverage Gradle plugin Changelog
 
-<!-- # NEXT-RELEASE: 3.0.0 -->
+## 3.0.0
 
 ### New features
 - Implemented report views. See [Report views](./README.md#report-views) for details.
@@ -13,6 +13,7 @@
 - Deleted deprecated CSV report generation.
 - Min supported JVM is **17**.
 - Min supported Gradle version is **7.6.4**.
+
 
 ## 2.5.0
 
