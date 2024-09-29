@@ -145,6 +145,10 @@ The plugin will automatically register and configures the next views:
 
 ## Parameters description
 
+See [Parameters description v2](https://github.com/gw-kit/delta-coverage-plugin/blob/2.5.0/README.md#parameters-description) if using the plugin version v2. 
+
+---
+
 ```kotlin
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     // Configures coverage engine. Default is 'JACOCO'.
