@@ -11,7 +11,6 @@ import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportContext
 import io.github.surpsg.deltacoverage.report.intellij.coverage.NamedReportLoadStrategy
 import io.kotest.assertions.assertSoftly
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.equals.Equality
 import io.kotest.equals.EqualityResult
 import io.kotest.equals.ReflectionUsingFieldsEquality
@@ -35,7 +34,6 @@ class CoverageReportFactoryTest {
                 reportsConfig = ReportsConfig {
                     html = ReportConfig { enabled = false }
                     xml = ReportConfig { enabled = false }
-                    csv = ReportConfig { enabled = false }
                     console = ReportConfig { enabled = false }
                     markdown = ReportConfig { enabled = false }
                 }.apply { view = "any" }
@@ -61,7 +59,6 @@ class CoverageReportFactoryTest {
                 reportsConfig = ReportsConfig {
                     html = ReportConfig { enabled = true }
                     xml = ReportConfig { enabled = true }
-                    csv = ReportConfig { enabled = true }
                     console = ReportConfig { enabled = true }
                     markdown = ReportConfig { enabled = true }
                 }
@@ -76,26 +73,6 @@ class CoverageReportFactoryTest {
 
         // THEN
         actualBuilders.shouldBeEmpty()
-    }
-
-    @Test
-    fun `reportBuildersBy should throw if unsupported csv report is enabled`() {
-        // GIVEN
-        val context = ReportContext(
-            DeltaCoverageConfig {
-                diffSource = mockk<DiffSource>()
-                reportsConfig = ReportsConfig {
-                    csv = ReportConfig { enabled = true }
-                }
-            }
-        )
-
-        val reportLoadStrategies = listOf(anyReportLoadStrategy())
-
-        // WHEN // THEN
-        shouldThrow<IllegalStateException> {
-            CoverageReportFactory.reportBuildersBy(context, reportLoadStrategies).toList()
-        }
     }
 
     @Test

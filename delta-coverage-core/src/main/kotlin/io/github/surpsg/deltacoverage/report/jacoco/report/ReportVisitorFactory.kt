@@ -21,8 +21,6 @@ internal object ReportVisitorFactory {
         return when (jacocoReport.reportType) {
             ReportType.XML -> reportFile.createFileOutputStream().let(XMLFormatter()::createVisitor)
 
-            ReportType.CSV -> reportFile.createFileOutputStream().let(CSVFormatter()::createVisitor)
-
             ReportType.HTML -> buildHtmReportVisitor(jacocoReport, reportFile)
 
             ReportType.MARKDOWN -> TextualReportOutputStream(

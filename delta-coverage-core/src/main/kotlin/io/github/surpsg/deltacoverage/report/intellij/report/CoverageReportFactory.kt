@@ -65,8 +65,6 @@ internal object CoverageReportFactory {
                 reportContext = reportsContext,
                 reporter = reporter,
             )
-
-            ReportType.CSV -> error("Unsupported report type: $this")
         }
     }
 }

@@ -27,7 +27,6 @@ import java.nio.file.Paths
 import javax.inject.Inject
 
 open class DeltaCoverageConfiguration @Inject constructor(
-    private val project: Project,
     objectFactory: ObjectFactory,
 ) {
 
@@ -200,10 +199,6 @@ open class ReportsConfiguration(
     @Input
     val xml: Property<Boolean> = objectFactory.booleanProperty(false)
 
-    @Deprecated(message = "This property will be removed in the next major release.")
-    @Input
-    val csv: Property<Boolean> = objectFactory.booleanProperty(false)
-
     @Input
     val console: Property<Boolean> = objectFactory.booleanProperty(true)
 
@@ -221,7 +216,6 @@ open class ReportsConfiguration(
     override fun toString() = "ReportsConfiguration(" +
             "html=${html.get()}, " +
             "xml=${xml.get()}, " +
-            "csv=${csv.get()}, " +
             "console=${console.get()}, " +
             "markdown=${markdown.get()}, " +
             "baseReportDir='${baseReportDir.get()}')"

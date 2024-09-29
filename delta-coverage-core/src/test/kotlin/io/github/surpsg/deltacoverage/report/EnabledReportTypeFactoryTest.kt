@@ -25,7 +25,6 @@ class EnabledReportTypeFactoryTest {
             xml = ReportConfig { enabled = true }
             console = ReportConfig { enabled = true }
             markdown = ReportConfig { enabled = true }
-            csv = ReportConfig { enabled = true }
         }
 
         // WHEN
@@ -43,7 +42,6 @@ class EnabledReportTypeFactoryTest {
             xml = ReportConfig { enabled = false }
             console = ReportConfig { enabled = false }
             markdown = ReportConfig { enabled = false }
-            csv = ReportConfig { enabled = false }
         }
 
         // WHEN
@@ -84,7 +82,6 @@ class EnabledReportTypeFactoryTest {
                 ReportType.HTML -> it to ReportsConfig.Builder::html
                 ReportType.MARKDOWN -> it to ReportsConfig.Builder::markdown
                 ReportType.XML -> it to ReportsConfig.Builder::xml
-                ReportType.CSV -> it to ReportsConfig.Builder::csv
             }
         }
         .map { arguments(it.first, it.second) }

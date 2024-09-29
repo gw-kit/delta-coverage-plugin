@@ -166,10 +166,10 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
         // Optional. Default is 'false'. If 'true' then the plugin uses native git to get diff.
     }
 
-    // Required. By default sources are taken from jacoco plugin(or intellij) if the plugin is applied to a project.
+    // Required. By default, sources are taken from jacoco plugin(or intellij) if the plugin is applied to a project.
     srcDirs = files("/path/to/sources")
 
-    // Required. By default classes are taken from jacoco plugin(or intellij) if the plugin is applied to a project.
+    // Required. By default, classes are taken from jacoco plugin(or intellij) if the plugin is applied to a project.
     classesDirs = files("/path/to/compiled/classes")
 
     // Optional. Excludes classes from coverage report by set of patterns .

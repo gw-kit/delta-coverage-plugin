@@ -46,7 +46,7 @@ internal class KoverPluginSourcesLookupTest {
             SourcesAutoLookup.Context(
                 project = project,
                 viewName = JavaPlugin.TEST_TASK_NAME,
-                deltaCoverageConfiguration = DeltaCoverageConfiguration(project, project.objects),
+                deltaCoverageConfiguration = DeltaCoverageConfiguration(project.objects),
                 objectFactory = project.objects,
             )
         )
@@ -76,7 +76,7 @@ internal class KoverPluginSourcesLookupTest {
             SourcesAutoLookup.Context(
                 project = project,
                 viewName = JavaPlugin.TEST_TASK_NAME,
-                deltaCoverageConfiguration = DeltaCoverageConfiguration(project, project.objects),
+                deltaCoverageConfiguration = DeltaCoverageConfiguration(project.objects),
                 objectFactory = project.objects,
             )
         )

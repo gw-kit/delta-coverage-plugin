@@ -57,10 +57,6 @@ internal object ConfigMapper {
                 outputFileName = "html"
                 enabled = deltaCoverageConfig.reportConfiguration.html.get()
             }
-            csv = ReportConfig {
-                outputFileName = "report.csv"
-                enabled = deltaCoverageConfig.reportConfiguration.csv.get()
-            }
             xml = ReportConfig {
                 outputFileName = "report.xml"
                 enabled = deltaCoverageConfig.reportConfiguration.xml.get()

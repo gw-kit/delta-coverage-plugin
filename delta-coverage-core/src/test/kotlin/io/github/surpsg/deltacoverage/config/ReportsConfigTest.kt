@@ -17,7 +17,6 @@ class ReportsConfigTest {
         assertSoftly(actualConfig) {
             html shouldBeEqualToComparingFields ReportConfig {}
             xml shouldBeEqualToComparingFields ReportConfig {}
-            csv shouldBeEqualToComparingFields ReportConfig {}
             markdown shouldBeEqualToComparingFields ReportConfig {}
             console shouldBeEqualToComparingFields ReportConfig {}
             baseReportDir.shouldBeEmpty()
@@ -31,14 +30,12 @@ class ReportsConfigTest {
         val expectedBaseReportDir = "test base report"
         val expectedHtmlReportName = "test html"
         val expectedXmlReportName = "test xml"
-        val expectedCsvReportName = "test csv"
         val expectedMarkdownReportName = "test markdown"
 
         // WHEN
         val actualConfig = ReportsConfig {
             html = ReportConfig { enabled = true; outputFileName = expectedHtmlReportName }
             xml = ReportConfig { enabled = true; outputFileName = expectedXmlReportName }
-            csv = ReportConfig { enabled = true; outputFileName = expectedCsvReportName }
             markdown = ReportConfig { enabled = true; outputFileName = expectedMarkdownReportName }
             console = ReportConfig { enabled = true }
             baseReportDir = expectedBaseReportDir
@@ -54,10 +51,6 @@ class ReportsConfigTest {
             assertSoftly(xml) {
                 enabled.shouldBeTrue()
                 outputFileName shouldBeEqualComparingTo expectedXmlReportName
-            }
-            assertSoftly(csv) {
-                enabled.shouldBeTrue()
-                outputFileName shouldBeEqualComparingTo expectedCsvReportName
             }
             assertSoftly(markdown) {
                 enabled.shouldBeTrue()

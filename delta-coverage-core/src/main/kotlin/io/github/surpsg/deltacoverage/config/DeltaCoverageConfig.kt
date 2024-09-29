@@ -108,7 +108,6 @@ enum class CoverageEntity {
 class ReportsConfig private constructor(
     val html: ReportConfig,
     val xml: ReportConfig,
-    val csv: ReportConfig,
     val console: ReportConfig,
     val markdown: ReportConfig,
     val baseReportDir: String,
@@ -116,7 +115,7 @@ class ReportsConfig private constructor(
 ) {
     internal lateinit var view: String
 
-    override fun toString(): String = "ReportsConfig(html=$html, xml=$xml, csv=$csv, console=$console," +
+    override fun toString(): String = "ReportsConfig(html=$html, xml=$xml, console=$console," +
             " baseReportDir='$baseReportDir', fullCoverageReport=$fullCoverageReport)"
 
     @DeltaCoverageConfigMarker
@@ -124,15 +123,13 @@ class ReportsConfig private constructor(
         var html: ReportConfig = ReportConfig {}
         var xml: ReportConfig = ReportConfig {}
 
-        @Deprecated(message = "This property will be removed in the next major release.")
-        var csv: ReportConfig = ReportConfig {}
         var console: ReportConfig = ReportConfig {}
         var markdown: ReportConfig = ReportConfig {}
         var baseReportDir: String = ""
         var fullCoverageReport: Boolean = false
 
         fun build(): ReportsConfig = ReportsConfig(
-            html, xml, csv, console, markdown, baseReportDir, fullCoverageReport,
+            html, xml, console, markdown, baseReportDir, fullCoverageReport,
         )
     }
 

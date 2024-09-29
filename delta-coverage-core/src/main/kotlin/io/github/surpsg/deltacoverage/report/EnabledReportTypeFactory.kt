@@ -12,7 +12,6 @@ object EnabledReportTypeFactory {
                     ReportType.XML -> ReportType.XML to reportsConfig.xml.enabled
                     ReportType.CONSOLE -> ReportType.CONSOLE to reportsConfig.console.enabled
                     ReportType.MARKDOWN -> ReportType.MARKDOWN to reportsConfig.markdown.enabled
-                    ReportType.CSV -> ReportType.CSV to reportsConfig.csv.enabled
                 }
             }
             .filter { (_, enabled) -> enabled }
