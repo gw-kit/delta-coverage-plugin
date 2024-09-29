@@ -121,10 +121,12 @@ deltaCoverageReport {
 
 </details>
 
+
 ### Report Views
 
 The concept of views is used to configure different coverage reports for different test tasks. 
 So, you can check coverage for different test tasks separately.
+
 
 #### Auto-configuration
 
@@ -136,11 +138,13 @@ The plugin will automatically register and configures the next views:
 - `integrationTest` - for task `integrationTest`.
 - `aggregated` - merged coverage data from all test tasks.
 
+
 ## Execute
 
 ```shell
 ./gradlew test deltaCoverage
 ```
+
 
 ## Parameters description
 
@@ -181,6 +185,14 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
             // See more info about pattern rules: https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/util/PatternFilterable.html
     ))
 
+    reports {
+        html.set(true) // Optional. default `false`
+        xml.set(true) // Optional. default `false`
+        console.set(false) // Optional. default `true`
+        markdown.set(true) // Optional. default `false`
+        reportDir.set("dir/to/store/reports") // Optional. Default 'build/reports/coverage-reports'
+    }
+    
     reportViews {
         val test by getting { // Configuring existing report view 'test'.  
           failIfCoverageLessThan(0.9)

@@ -12,6 +12,7 @@
   See [Migration guide](./docs/migration-guilde-v3.md) for details.
 - Deleted deprecated CSV report generation.
 
+
 ## 2.5.0
 
 ### Fixed
