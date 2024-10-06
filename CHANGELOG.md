@@ -6,6 +6,7 @@
 - Implemented report views. See [Report views](./README.md#report-views) for details.
 
 ### Breaking changes
+- Id of the plugin was changed to `io.github.gw-kit.delta-coverage`.
 - `DeltaCoverageTask` moved to package `io.github.surpsg.deltacoverage.gradle.task`.
 - `NativeGitDiffTask` moved to package `io.github.surpsg.deltacoverage.gradle.task`.
 - Violation rules are now configured via `DeltaCoverageConfiguration.reportViews.<view-name>.violationRules` extension.

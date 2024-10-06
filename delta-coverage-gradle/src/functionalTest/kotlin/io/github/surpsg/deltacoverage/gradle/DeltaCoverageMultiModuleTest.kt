@@ -109,7 +109,7 @@ class DeltaCoverageMultiModuleTest {
             """
                 plugins {
                     id 'java'
-                    id 'io.github.surpsg.delta-coverage'
+                    id 'io.github.gw-kit.delta-coverage'
                 }
                 repositories {
                     mavenCentral()

@@ -41,7 +41,7 @@ The plugin should be applied to the **root** project.
 
 ```kotlin
 plugins {
-    id("io.github.surpsg.delta-coverage") version "<the-plugin-version>"
+    id("io.github.gw-kit.delta-coverage") version "<the-plugin-version>"
 }
 ```
 
@@ -55,7 +55,7 @@ The latest release version is ![GitHub Release](https://img.shields.io/github/v/
 
 ```groovy
 plugins {
-    id "io.github.surpsg.delta-coverage" version "<the-plugin-version>"
+    id "io.github.gw-kit.delta-coverage" version "<the-plugin-version>"
 }
 ```
 
