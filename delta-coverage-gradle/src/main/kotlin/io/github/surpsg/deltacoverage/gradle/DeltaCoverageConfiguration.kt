@@ -1,12 +1,16 @@
 package io.github.surpsg.deltacoverage.gradle
 
 import io.github.surpsg.deltacoverage.CoverageEngine
+import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTaskConfigurer
 import io.github.surpsg.deltacoverage.gradle.utils.booleanProperty
 import io.github.surpsg.deltacoverage.gradle.utils.doubleProperty
 import io.github.surpsg.deltacoverage.gradle.utils.map
 import io.github.surpsg.deltacoverage.gradle.utils.new
 import io.github.surpsg.deltacoverage.gradle.utils.stringProperty
 import org.gradle.api.Action
+import org.gradle.api.Incubating
+import org.gradle.api.Named
+import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
@@ -30,15 +34,7 @@ open class DeltaCoverageConfiguration @Inject constructor(
 
     @Optional
     @InputFiles
-    var coverageBinaryFiles: FileCollection? = null
-
-    @Optional
-    @InputFiles
     var classesDirs: FileCollection? = null
-
-    @Optional
-    @InputFiles
-    var srcDirs: FileCollection? = null
 
     @Input
     val excludeClasses: ListProperty<String> = objectFactory
@@ -51,8 +47,12 @@ open class DeltaCoverageConfiguration @Inject constructor(
     @Nested
     val reportConfiguration: ReportsConfiguration = ReportsConfiguration(objectFactory)
 
-    @Nested
-    val violationRules: ViolationRules = objectFactory.new<ViolationRules>()
+    @Incubating
+    @Internal
+    val reportViews: NamedDomainObjectContainer<ReportView> =
+        objectFactory.domainObjectContainer(ReportView::class.java) { name ->
+            objectFactory.newInstance(ReportView::class.java, name, objectFactory)
+        }.apply { maybeCreate(DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME) }
 
     fun coverage(action: Action<in Coverage>): Unit = action.execute(coverage)
 
@@ -60,25 +60,56 @@ open class DeltaCoverageConfiguration @Inject constructor(
         action.execute(reportConfiguration)
     }
 
-    fun violationRules(action: Action<in ViolationRules>) {
-        action.execute(violationRules)
-    }
-
     fun diffSource(action: Action<in DiffSourceConfiguration>) {
         action.execute(diffSource)
+    }
+
+    /**
+     * Configures a [ReportView] for the report.
+     * If the view is not found, it will be created.
+     *
+     * @param name The name of the view.
+     * @param action The configuration action.
+     */
+    fun view(name: String, action: Action<in ReportView>) {
+        reportViews.maybeCreate(name)
+        reportViews.named(name, action)
     }
 
     override fun toString(): String {
         return "DeltaCoverageConfiguration(" +
                 "coverageEngine=${coverage.engine.get()}, " +
-                "coverageBinaryFiles=$coverageBinaryFiles, " +
                 "classesDirs=$classesDirs, " +
-                "srcDirs=$srcDirs, " +
                 "excludeClasses=${excludeClasses.get()}, " +
                 "diffSource=$diffSource, " +
-                "reportConfiguration=$reportConfiguration, " +
+                "reportConfiguration=$reportConfiguration)"
+    }
+}
+
+@Incubating
+open class ReportView @Inject constructor(
+    private val name: String,
+    objectFactory: ObjectFactory,
+) : Named {
+
+    @Optional
+    @InputFiles
+    var coverageBinaryFiles: FileCollection? = null
+
+    @Nested
+    val violationRules: ViolationRules = objectFactory.new<ViolationRules>()
+
+    fun violationRules(action: Action<in ViolationRules>) {
+        action.execute(violationRules)
+    }
+
+    override fun toString(): String {
+        return "View(" +
+                "coverageBinaryFiles=$coverageBinaryFiles, " +
                 "violationRules=$violationRules)"
     }
+
+    override fun getName(): String = name
 }
 
 open class Coverage @Inject constructor(
@@ -167,10 +198,6 @@ open class ReportsConfiguration(
     @Input
     val xml: Property<Boolean> = objectFactory.booleanProperty(false)
 
-    @Deprecated(message = "This property will be removed in the next major release.")
-    @Input
-    val csv: Property<Boolean> = objectFactory.booleanProperty(false)
-
     @Input
     val console: Property<Boolean> = objectFactory.booleanProperty(true)
 
@@ -188,7 +215,6 @@ open class ReportsConfiguration(
     override fun toString() = "ReportsConfiguration(" +
             "html=${html.get()}, " +
             "xml=${xml.get()}, " +
-            "csv=${csv.get()}, " +
             "console=${console.get()}, " +
             "markdown=${markdown.get()}, " +
             "baseReportDir='${baseReportDir.get()}')"

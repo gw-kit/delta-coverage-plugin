@@ -4,7 +4,6 @@ import com.intellij.rt.coverage.report.ReportLoadStrategy
 import com.intellij.rt.coverage.report.Reporter
 import com.intellij.rt.coverage.report.api.Filters
 import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
-import io.github.surpsg.deltacoverage.config.DiffSourceConfig
 import io.github.surpsg.deltacoverage.config.ReportConfig
 import io.github.surpsg.deltacoverage.config.ReportsConfig
 import io.github.surpsg.deltacoverage.diff.DiffSource
@@ -12,7 +11,6 @@ import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportContext
 import io.github.surpsg.deltacoverage.report.intellij.coverage.NamedReportLoadStrategy
 import io.kotest.assertions.assertSoftly
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.equals.Equality
 import io.kotest.equals.EqualityResult
 import io.kotest.equals.ReflectionUsingFieldsEquality
@@ -31,16 +29,14 @@ class CoverageReportFactoryTest {
     fun `reportBuildersBy should return empty iterable if no enabled reports`() {
         // GIVEN
         val context = ReportContext(
-            mockk<DiffSource>(),
             DeltaCoverageConfig {
-                diffSourceConfig = DiffSourceConfig { diffBase = "any" }
+                diffSource = mockk<DiffSource>()
                 reportsConfig = ReportsConfig {
                     html = ReportConfig { enabled = false }
                     xml = ReportConfig { enabled = false }
-                    csv = ReportConfig { enabled = false }
                     console = ReportConfig { enabled = false }
                     markdown = ReportConfig { enabled = false }
-                }
+                }.apply { view = "any" }
             }
         )
 
@@ -58,13 +54,11 @@ class CoverageReportFactoryTest {
     fun `reportBuildersBy should return empty iterable if no report loaders`() {
         // GIVEN
         val context = ReportContext(
-            mockk<DiffSource>(),
             DeltaCoverageConfig {
-                diffSourceConfig = DiffSourceConfig { diffBase = "any" }
+                diffSource = mockk<DiffSource>()
                 reportsConfig = ReportsConfig {
                     html = ReportConfig { enabled = true }
                     xml = ReportConfig { enabled = true }
-                    csv = ReportConfig { enabled = true }
                     console = ReportConfig { enabled = true }
                     markdown = ReportConfig { enabled = true }
                 }
@@ -82,39 +76,18 @@ class CoverageReportFactoryTest {
     }
 
     @Test
-    fun `reportBuildersBy should throw if unsupported csv report is enabled`() {
-        // GIVEN
-        val context = ReportContext(
-            mockk<DiffSource>(),
-            DeltaCoverageConfig {
-                diffSourceConfig = DiffSourceConfig { diffBase = "any" }
-                reportsConfig = ReportsConfig {
-                    csv = ReportConfig { enabled = true }
-                }
-            }
-        )
-
-        val reportLoadStrategies = listOf(anyReportLoadStrategy())
-
-        // WHEN // THEN
-        shouldThrow<IllegalStateException> {
-            CoverageReportFactory.reportBuildersBy(context, reportLoadStrategies).toList()
-        }
-    }
-
-    @Test
     fun `reportBuildersBy should return report builders`() {
         // GIVEN
+        val anyViewName = "any-view-name"
         val context = ReportContext(
-            mockk<DiffSource>(),
             DeltaCoverageConfig {
-                diffSourceConfig = DiffSourceConfig { diffBase = "any" }
+                diffSource = mockk<DiffSource>()
                 reportsConfig = ReportsConfig {
                     html = ReportConfig { enabled = true }
                     xml = ReportConfig { enabled = true }
                     console = ReportConfig { enabled = true }
                     markdown = ReportConfig { enabled = true }
-                }
+                }.apply { view = anyViewName }
             }
         )
         val reportLoadStrategy = anyReportLoadStrategy()
@@ -131,13 +104,12 @@ class CoverageReportFactoryTest {
 
             shouldContain(
                 HtmlReportBuilder(
-                    REPORT_NAME,
                     REPORT_BOUND,
                     context.deltaCoverageConfig.reportsConfig,
                     Reporter(reportLoadStrategy.reportLoadStrategy)
                 ),
                 EqualByFields.fromFields(
-                    HtmlReportBuilder::reportName,
+                    HtmlReportBuilder::reportsConfig,
                     HtmlReportBuilder::reportBound,
                 )
             )
@@ -153,6 +125,7 @@ class CoverageReportFactoryTest {
 
             shouldContain(
                 ConsoleReportBuilder(
+                    REPORT_VIEW,
                     context.deltaCoverageConfig.coverageRulesConfig,
                     REPORT_BOUND,
                     Reporter(reportLoadStrategy.reportLoadStrategy),
@@ -162,9 +135,10 @@ class CoverageReportFactoryTest {
 
             shouldContain(
                 MarkdownReportBuilder(
-                    REPORT_BOUND,
-                    context,
-                    Reporter(reportLoadStrategy.reportLoadStrategy),
+                    reportBound = REPORT_BOUND,
+                    reportView = anyViewName,
+                    reportContext = context,
+                    reporter = Reporter(reportLoadStrategy.reportLoadStrategy),
                 ),
                 EqualByFields.fromFields(MarkdownReportBuilder::reportBound)
             )
@@ -172,7 +146,7 @@ class CoverageReportFactoryTest {
     }
 
     private fun anyReportLoadStrategy() = NamedReportLoadStrategy(
-        reportName = REPORT_NAME,
+        reportName = REPORT_VIEW,
         reportBound = REPORT_BOUND,
         reportLoadStrategy = ReportLoadStrategy.RawReportLoadStrategy(
             emptyList(),
@@ -207,7 +181,7 @@ class CoverageReportFactoryTest {
     }
 
     private companion object {
-        const val REPORT_NAME = "any-report-name"
+        const val REPORT_VIEW = "any-report-name"
         val REPORT_BOUND = ReportBound.DELTA_REPORT
     }
 }

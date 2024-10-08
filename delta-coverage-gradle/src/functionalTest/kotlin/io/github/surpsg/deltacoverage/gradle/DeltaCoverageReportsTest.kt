@@ -38,6 +38,7 @@ class DeltaCoverageReportsTest {
     @Test
     fun `delta-coverage should create all jacoco reports`() {
         // GIVEN
+        val view = "test"
         val baseReportDir = "build/custom/reports/dir/jacoco/"
         buildFile.file.appendText(
             """
@@ -47,13 +48,15 @@ class DeltaCoverageReportsTest {
                     baseReportDir.set("$baseReportDir")
                     html.set(true)
                     xml.set(true)
-                    csv.set(true)
                     console.set(true)
                     markdown.set(true)
                     fullCoverageReport.set(true)
-                    
-                    violationRules.failIfCoverageLessThan(0.6d)
-                    violationRules.failOnViolation.set(false)
+                }
+                reportViews.$view {
+                    violationRules {
+                        failIfCoverageLessThan(0.6d)
+                        failOnViolation.set(false)
+                    }
                 }
             }
         """.trimIndent()
@@ -64,7 +67,7 @@ class DeltaCoverageReportsTest {
             .runDeltaCoverageTask()
             .assertOutputContainsStrings("Fail on violations: false. Found violations: 2")
             .assertOutputContainsStrings(
-                "| Delta Coverage Stats                                  |",
+                "| [$view] Delta Coverage Stats                           |",
                 "| Class                | Lines    | Branches | Instr.   |",
                 "+----------------------+----------+----------+----------+",
                 "| com.java.test.Class1 | 66.67%   | 50%      | 52.94%   |",
@@ -74,8 +77,8 @@ class DeltaCoverageReportsTest {
 
         // AND THEN
         val baseReportDirFile = rootProjectDir.resolve(baseReportDir).resolve("coverage-reports")
-        assertAllReportsCreated(baseReportDirFile.resolve("delta-coverage"))
-        assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report"))
+        assertAllReportsCreated(baseReportDirFile.resolve("delta-coverage/$view/"))
+        assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report/$view/"))
     }
 
     private fun assertAllReportsCreated(baseReportDir: File) {
@@ -86,7 +89,7 @@ class DeltaCoverageReportsTest {
             shouldContainFile("index.html")
             shouldContainFile("com.java.test")
         }
-        sequenceOf("report.xml", "report.csv", "report.md")
+        sequenceOf("report.xml", "report.md")
             .map { file -> baseReportDir.resolve(file) }
             .forEach { reportFile ->
                 assertSoftly(reportFile) {

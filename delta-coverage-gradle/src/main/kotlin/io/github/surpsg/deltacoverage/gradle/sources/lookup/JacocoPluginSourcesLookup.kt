@@ -2,7 +2,7 @@ package io.github.surpsg.deltacoverage.gradle.sources.lookup
 
 import io.github.surpsg.deltacoverage.gradle.utils.lazyFileCollection
 import org.gradle.api.file.FileCollection
-import org.gradle.api.tasks.testing.Test
+
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -20,10 +20,17 @@ internal class JacocoPluginSourcesLookup(
 
     private fun collectBinaryFiles(lookupContext: SourcesAutoLookup.Context): FileCollection {
         return lookupContext.project.allprojects.asSequence()
-            .flatMap { project -> project.tasks.withType(Test::class.java).asSequence() }
+            .mapNotNull { project -> project.tasks.findByName(lookupContext.viewName) }
             .mapNotNull { task -> task.extensions.findByType(JacocoTaskExtension::class.java) }
             .mapNotNull { jacocoExtension -> jacocoExtension.destinationFile }
-            .onEach { log.debug("Found coverage binary: project={}, file={}", lookupContext.project.name, it) }
+            .onEach {
+                log.debug(
+                    "[{}] Found coverage binary: project={}, file={}",
+                    lookupContext.viewName,
+                    lookupContext.project.name,
+                    it,
+                )
+            }
             .fold(lookupContext.project.objects.fileCollection()) { allBinaries, execFile ->
                 allBinaries.from(execFile)
             }

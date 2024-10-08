@@ -10,14 +10,13 @@ import org.gradle.api.model.ObjectFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-internal class SourcesResolver {
+internal object SourcesResolver {
+
+    private val log: Logger = LoggerFactory.getLogger(SourcesResolver::class.java)
 
     fun resolve(context: Context): FileCollection {
         val sourceType: SourceType = context.sourceType
-        val deltaPluginConfiguredSource: FileCollection? = getDeltaPluginConfiguredSource(
-            context.sourceType,
-            context.config
-        )
+        val deltaPluginConfiguredSource: FileCollection? = getDeltaPluginConfiguredSource(context)
 
         val (provider, resolvedSources) = if (deltaPluginConfiguredSource == null) {
             log.debug(
@@ -31,10 +30,11 @@ internal class SourcesResolver {
         }
 
         return if (resolvedSources.isEmpty) {
-            throwMissedConfigurationException(provider, sourceType)
+            throwMissedConfigurationException(context, provider, sourceType)
         } else {
             log.debug(
-                "{}({}) files were configured from {}",
+                "[{}] {}({}) files were configured from {}",
+                context.viewName,
                 sourceType.sourceConfigurationPath,
                 sourceType.resourceName(provider),
                 provider.pluginName
@@ -54,29 +54,30 @@ internal class SourcesResolver {
     }
 
     private fun throwMissedConfigurationException(
+        context: Context,
         provider: Provider,
-        sourceType: SourceType
+        sourceType: SourceType,
     ): Nothing {
         val errorMessage = if (provider == Provider.DELTA_COVERAGE) {
-            "'${sourceType.sourceConfigurationPath}' file collection is empty."
+            "[${context.viewName}] '${sourceType.sourceConfigurationPath}' file collection is empty."
         } else {
-            "'${sourceType.sourceConfigurationPath}' is not configured."
+            "[${context.viewName}] '${sourceType.sourceConfigurationPath}' is not configured."
         }
         error(errorMessage)
     }
 
     private fun getDeltaPluginConfiguredSource(
-        sourceType: SourceType,
-        deltaCoverageConfiguration: DeltaCoverageConfiguration
+        context: Context,
     ): FileCollection? {
-        return when (sourceType) {
-            SourceType.CLASSES -> deltaCoverageConfiguration.classesDirs
-            SourceType.SOURCES -> deltaCoverageConfiguration.srcDirs
-            SourceType.COVERAGE_BINARIES -> deltaCoverageConfiguration.coverageBinaryFiles
+        return when (context.sourceType) {
+            SourceType.SOURCES -> null
+            SourceType.CLASSES -> context.config.classesDirs
+            SourceType.COVERAGE_BINARIES -> context.config.reportViews.getAt(context.viewName).coverageBinaryFiles
         }
     }
 
     class Context private constructor(
+        val viewName: String,
         val sourcesAutoLookup: SourcesAutoLookup,
         val sourceType: SourceType,
         private val builder: Builder,
@@ -95,13 +96,19 @@ internal class SourcesResolver {
         ) {
 
             fun build(
+                viewName: String,
                 sourceType: SourceType
             ): Context {
                 val sourceAutoLookup = SourcesAutoLookup.build(
-                    config.coverage.engine.get(),
-                    SourcesAutoLookup.Context(project, config, objectFactory)
+                    coverageEngine = config.coverage.engine.get(),
+                    context = SourcesAutoLookup.Context(
+                        project = project,
+                        viewName = viewName,
+                        deltaCoverageConfiguration = config,
+                        objectFactory = objectFactory,
+                    )
                 )
-                return Context(sourceAutoLookup, sourceType, this)
+                return Context(viewName, sourceAutoLookup, sourceType, this)
             }
 
             companion object {
@@ -132,9 +139,5 @@ internal class SourcesResolver {
                 CoverageEngine.INTELLIJ -> KOVER
             }
         }
-    }
-
-    companion object {
-        val log: Logger = LoggerFactory.getLogger(SourcesResolver::class.java)
     }
 }

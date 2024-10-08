@@ -30,9 +30,8 @@ class DeltaCoverageGradleReleasesTest {
     @ParameterizedTest
     @ValueSource(
         strings = [
-            "6.7.1",
             "7.6.4",
-            "8.10", // the latest release or release candidate
+            "8.10.2", // the latest release or release candidate
         ]
     )
     fun `deltaCoverage task should be completed successfully on Gradle release`(
@@ -53,5 +52,4 @@ class DeltaCoverageGradleReleasesTest {
             .runDeltaCoverageTask()
             .assertDeltaCoverageStatusEqualsTo(SUCCESS)
     }
-
 }

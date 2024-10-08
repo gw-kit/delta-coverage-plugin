@@ -12,6 +12,7 @@ import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.file.shouldBeADirectory
 import io.kotest.matchers.file.shouldContainFile
 import io.kotest.matchers.file.shouldExist
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -47,12 +48,22 @@ class KoverMultiModuleTest {
                 coverage.engine = CoverageEngine.INTELLIJ
                 diffSource.file = "$diffFilePath"
                 reports {
-                    html.set(true)
-                    baseReportDir.set("$baseReportDir")
+                    html = true
+                    baseReportDir = "$baseReportDir"
                 }
-                violationRules {
-                    failIfCoverageLessThan(0.9)
-                    failOnViolation.set(false)
+                reportViews {
+                    val $TEST_TASK by getting {
+                        violationRules.failIfCoverageLessThan(0.9)
+                        violationRules.failOnViolation = false
+                    }
+                    val $INT_TEST_TASK by getting {
+                        violationRules.failIfCoverageLessThan(0.6)
+                        violationRules.failOnViolation = false
+                    }
+                    val $AGG_VIEW by getting {
+                        violationRules.failIfCoverageLessThan(1.0)
+                        violationRules.failOnViolation = false
+                    }
                 }
             }
         """.trimIndent()
@@ -60,20 +71,41 @@ class KoverMultiModuleTest {
 
         // WHEN // THEN
         gradleRunner
-            .runDeltaCoverageTask()
+            .runDeltaCoverageTask(gradleArgs = arrayOf(INT_TEST_TASK))
             .assertOutputContainsStrings(
-                "Fail on violations: false. Found violations: 2",
-                "BRANCH: expectedMin=0.9, actual=0.5",
-                "INSTRUCTION: expectedMin=0.9, actual=0.8",
+                "[$TEST_TASK] Fail on violations: false. Found violations: 2.",
+                "[$TEST_TASK] BRANCH: expectedMin=0.9, actual=0.5",
+                "[$TEST_TASK] INSTRUCTION: expectedMin=0.9, actual=0.88",
+
+                "[$INT_TEST_TASK] Fail on violations: false. Found violations: 3.",
+                "[$INT_TEST_TASK] INSTRUCTION: expectedMin=0.6, actual=0.16",
+                "[$INT_TEST_TASK] BRANCH: expectedMin=0.6, actual=0.25",
+                "[$INT_TEST_TASK] LINE: expectedMin=0.6, actual=0.2",
+
+                "[$AGG_VIEW] Fail on violations: false. Found violations: 2.",
+                "[$AGG_VIEW] INSTRUCTION: expectedMin=1.0, actual=0.8",
+                "[$AGG_VIEW] BRANCH: expectedMin=1.0, actual=0.75",
             )
 
         // AND THEN
-        val htmlReportDir = rootProjectDir.resolve(baseReportDir)
-            .resolve(File("coverage-reports/delta-coverage/html"))
-        assertSoftly(htmlReportDir) {
-            shouldExist()
-            shouldBeADirectory()
-            shouldContainFile("index.html")
+        assertSoftly {
+            listOf(
+                TEST_TASK,
+                INT_TEST_TASK,
+                AGG_VIEW,
+            ).forEach { view ->
+                val htmlReportDir = rootProjectDir.resolve(baseReportDir)
+                    .resolve(File("coverage-reports/delta-coverage/$view/html/"))
+                htmlReportDir.shouldExist()
+                htmlReportDir.shouldBeADirectory()
+                htmlReportDir.shouldContainFile("index.html")
+            }
         }
+    }
+
+    private companion object {
+        const val TEST_TASK = JavaPlugin.TEST_TASK_NAME
+        const val INT_TEST_TASK = "intTest"
+        const val AGG_VIEW = "aggregated"
     }
 }

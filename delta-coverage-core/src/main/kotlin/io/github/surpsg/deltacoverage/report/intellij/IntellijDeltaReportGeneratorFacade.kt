@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.report.intellij
 
 import com.intellij.rt.coverage.data.ProjectData
+import io.github.surpsg.deltacoverage.report.CoverageVerificationResult
 import io.github.surpsg.deltacoverage.report.DeltaReportGeneratorFacade
 import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportContext
@@ -10,16 +11,9 @@ import io.github.surpsg.deltacoverage.report.intellij.report.CoverageReportFacto
 import io.github.surpsg.deltacoverage.report.intellij.report.ReportBuilder
 import io.github.surpsg.deltacoverage.report.intellij.verifier.CoverageAssertion
 
-internal class IntellijDeltaReportGeneratorFacade(
-    reportContext: ReportContext
-) : DeltaReportGeneratorFacade(reportContext) {
+internal class IntellijDeltaReportGeneratorFacade : DeltaReportGeneratorFacade() {
 
-    override fun generateReport(): DeltaReportGeneratorFacade {
-        generate()
-        return this
-    }
-
-    private fun generate() {
+    override fun generate(reportContext: ReportContext): List<CoverageVerificationResult> {
         val reportBoundToLoadStrategy: Map<ReportBound, NamedReportLoadStrategy> =
             ReportLoadStrategyFactory.buildReportLoadStrategies(reportContext)
                 .associateBy { it.reportBound }
@@ -31,13 +25,19 @@ internal class IntellijDeltaReportGeneratorFacade(
             )
             .forEach(ReportBuilder::buildReport)
 
-        verifyCoverage(reportBoundToLoadStrategy)
+        return listOf(
+            verifyCoverage(reportContext, reportBoundToLoadStrategy)
+        )
     }
 
-    private fun verifyCoverage(reportBoundToLoadStrategy: Map<ReportBound, NamedReportLoadStrategy>) {
+    private fun verifyCoverage(
+        reportContext: ReportContext,
+        reportBoundToLoadStrategy: Map<ReportBound, NamedReportLoadStrategy>,
+    ): CoverageVerificationResult {
         val projectData: ProjectData = reportBoundToLoadStrategy.getValue(ReportBound.DELTA_REPORT)
             .reportLoadStrategy.projectData
-        CoverageAssertion.verify(
+        return CoverageAssertion.verify(
+            reportContext.deltaCoverageConfig.view,
             projectData,
             reportContext.deltaCoverageConfig.coverageRulesConfig
         )

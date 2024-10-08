@@ -40,7 +40,7 @@ class DeltaCoverageDiffSourcesTest {
             """
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
-                violationRules {
+                reportViews.test.violationRules {
                     failOnViolation.set(true)
                     rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.INSTRUCTION) {
                         minCoverageRatio.set(1d)
@@ -65,7 +65,8 @@ class DeltaCoverageDiffSourcesTest {
             """
             deltaCoverageReport {
                 diffSource.url.set('http://localhost:${MOCK_SERVER_PORT}/')
-                violationRules {
+                
+                reportViews.test.violationRules {
                     rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.INSTRUCTION) {
                         minCoverageRatio.set(1d)
                     }
@@ -92,8 +93,7 @@ class DeltaCoverageDiffSourcesTest {
             """
             deltaCoverageReport {
                 diffSource.git.compareWith 'HEAD'
-                
-                violationRules.failIfCoverageLessThan(0.7d)
+                reportViews.test.violationRules.failIfCoverageLessThan(0.7d)
             }
             
             """.trimIndent()
@@ -121,8 +121,7 @@ class DeltaCoverageDiffSourcesTest {
                     git.diffBase.set('HEAD')
                     git.useNativeGit.set(true)
                 }    
-                
-                violationRules.failIfCoverageLessThan(0.8d)
+                reportViews.test.violationRules.failIfCoverageLessThan(0.8d)
             }
             
             """.trimIndent()

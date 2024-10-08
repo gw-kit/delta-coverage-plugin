@@ -1,11 +1,14 @@
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.CoverageEntity.*
+import io.github.surpsg.deltacoverage.gradle.ReportView
+import org.gradle.api.plugins.jvm.JvmTestSuite
 
 plugins {
     java
-    kotlin("jvm") version "1.9.24"
-    id("io.github.surpsg.delta-coverage")
+    kotlin("jvm") version "1.9.25"
+    id("io.github.gw-kit.delta-coverage")
+    `java-test-fixtures`
 }
 
 repositories {
@@ -26,7 +29,19 @@ subprojects {
     }
 
     dependencies {
-        testImplementation(platform("org.junit:junit-bom:5.10.2"))
+        testImplementation(platform("org.junit:junit-bom:5.11.1"))
         testImplementation("org.junit.jupiter:junit-jupiter")
     }
+
+    testing.suites {
+        val intTest by registering(JvmTestSuite::class) {
+            useJUnitJupiter()
+            dependencies {
+                implementation(project())
+                implementation(platform("org.junit:junit-bom:5.11.1"))
+                implementation("org.junit.jupiter:junit-jupiter")
+            }
+        }
+    }
 }
+

@@ -2,7 +2,8 @@ import io.github.surpsg.deltacoverage.CoverageEngine
 
 plugins {
     id 'java'
-    id 'io.github.surpsg.delta-coverage'
+    id 'io.github.gw-kit.delta-coverage'
+    id 'java-test-fixtures'
 }
 
 group 'org.example'
@@ -26,7 +27,18 @@ subprojects {
     }
 
     dependencies {
-        testImplementation(platform("org.junit:junit-bom:5.10.2"))
+        testImplementation(platform("org.junit:junit-bom:5.11.1"))
         testImplementation("org.junit.jupiter:junit-jupiter")
+    }
+
+    testing.suites {
+        intTest(JvmTestSuite) {
+            useJUnitJupiter()
+            dependencies {
+                implementation(project())
+                implementation(platform("org.junit:junit-bom:5.11.1"))
+                implementation("org.junit.jupiter:junit-jupiter")
+            }
+        }
     }
 }

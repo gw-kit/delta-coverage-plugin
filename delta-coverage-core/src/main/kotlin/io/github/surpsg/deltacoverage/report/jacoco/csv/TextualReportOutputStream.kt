@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 
 internal class TextualReportOutputStream(
+    private val reportView: String,
     private val reportType: ReportType,
     private val reportBound: ReportBound,
     private val coverageRulesConfig: CoverageRulesConfig,
@@ -23,6 +24,7 @@ internal class TextualReportOutputStream(
     override fun close() {
         outputStream.use { os ->
             val buildContext = TextualReportFacade.BuildContext {
+                viewName = reportView
                 coverageDataProvider = CsvSourceRawCoverageDataProvider(byteArrayOutputStream.toByteArray())
                 reportType = this@TextualReportOutputStream.reportType
                 reportBound = this@TextualReportOutputStream.reportBound

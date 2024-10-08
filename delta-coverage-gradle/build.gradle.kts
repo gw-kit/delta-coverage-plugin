@@ -12,7 +12,7 @@ gradlePlugin {
 
     plugins {
         create("deltaCoveragePlugin") {
-            id = "io.github.surpsg.delta-coverage"
+            id = "io.github.gw-kit.delta-coverage"
             displayName = "Delta Coverage"
             description = "Plugin that computes code coverage on modified code"
             implementationClass = "io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin"
@@ -43,7 +43,7 @@ dependencies {
     functionalTestImplementation(deps.jgit)
 
     testFixturesImplementation(project(":delta-coverage-core"))
-    testFixturesImplementation(deps.assertj)
+    testFixturesImplementation(deps.kotestAssertions)
     testFixturesImplementation(deps.junitApi)
     testFixturesImplementation(deps.jgit)
     testFixturesImplementation(deps.mockk)

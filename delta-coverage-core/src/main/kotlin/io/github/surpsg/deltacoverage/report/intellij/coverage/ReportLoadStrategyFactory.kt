@@ -26,7 +26,7 @@ internal object ReportLoadStrategyFactory {
 
         val deltaReportLoadStrategy = sequenceOf(
             NamedReportLoadStrategy(
-                reportContext.deltaCoverageConfig.reportName,
+                reportContext.deltaCoverageConfig.view,
                 ReportBound.DELTA_REPORT,
                 PreloadedCoverageReportLoadStrategy(filterProjectData, binaryReports, intellijSourceInputs),
             )

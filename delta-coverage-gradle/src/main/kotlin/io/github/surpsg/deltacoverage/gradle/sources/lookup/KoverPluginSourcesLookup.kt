@@ -20,22 +20,22 @@ internal class KoverPluginSourcesLookup(
     override fun lookupCoverageBinaries(lookupContext: SourcesAutoLookup.Context): FileCollection {
         return lookupContext.project.lazyFileCollection {
             lookupContext.project.allprojects.asSequence()
-                .map { it.tasks.findByName(KOVER_GENERATE_ARTIFACTS_TASK_NAME) }
-                .filterNotNull()
+                .mapNotNull { it.tasks.findByName(KOVER_GENERATE_ARTIFACTS_TASK_NAME) }
                 .fold(setOf<String>()) { allBinaries, koverGenerateArtifactsTask ->
                     log.debug(
                         "Found Kover configuration in gradle project '{}'",
                         koverGenerateArtifactsTask.project.name
                     )
 
-                    allBinaries + obtainKoverBinaries(koverGenerateArtifactsTask)
+                    allBinaries + obtainKoverBinaries(lookupContext.viewName, koverGenerateArtifactsTask)
                 }
                 .let { lookupContext.project.files(it) }
         }
     }
 
     private fun obtainKoverBinaries(
-        koverGenerateArtifactsTask: Task
+        viewName: String,
+        koverGenerateArtifactsTask: Task,
     ): Set<String> {
         val rootProjectPath: Path = koverGenerateArtifactsTask.resolveRootProjectDirPath()
         return koverGenerateArtifactsTask.outputs
@@ -44,7 +44,7 @@ internal class KoverPluginSourcesLookup(
             .map { fileSystem.getPath(it.absolutePath) }
             .filter { it.name.endsWith(KOVER_ARTIFACTS_FILE_NAME) }
             .take(1)
-            .mapNotNull { it.parseArtifactFile(rootProjectPath) }
+            .mapNotNull { it.parseArtifactFile(viewName, rootProjectPath) }
             .flatMap { it }
             .toSet()
     }
@@ -52,13 +52,19 @@ internal class KoverPluginSourcesLookup(
     private fun Task.resolveRootProjectDirPath(): Path =
         fileSystem.getPath(project.rootProject.layout.projectDirectory.asFile.absolutePath)
 
-    private fun Path.parseArtifactFile(rootProjectPath: Path): Set<String>? = if (exists()) {
+    private fun Path.parseArtifactFile(
+        viewName: String,
+        rootProjectPath: Path,
+    ): Set<String>? = if (exists()) {
         val iterator: Iterator<String> = readLines().iterator()
 
         iterator.readArtifactsSection(rootProjectPath)
         iterator.readArtifactsSection(rootProjectPath)
 
         val coverageBinaries: Set<String> = iterator.readArtifactsSection(rootProjectPath)
+            .asSequence()
+            .filter { path -> path.endsWith("/$viewName.ic") }
+            .toSet()
         coverageBinaries
     } else {
         null

@@ -5,7 +5,12 @@ import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
 import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
 import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
 import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
+import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.file.shouldBeADirectory
+import io.kotest.matchers.file.shouldContainFile
+import io.kotest.matchers.file.shouldExist
 import org.assertj.core.api.Assertions.assertThat
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -46,25 +51,55 @@ class DeltaCoverageMultiModuleTest {
                     html.set(true)
                     baseReportDir.set('$baseReportDir')
                 }
-                violationRules.failIfCoverageLessThan 0.9
+                reportViews {
+                    view('$TEST_TASK') {
+                        violationRules.failIfCoverageLessThan 0.9
+                    }
+                    $INT_TEST_TASK {
+                        violationRules.failIfCoverageLessThan 0.6
+                    }
+                    $AGG_VIEW {
+                        violationRules.failIfCoverageLessThan 1.0
+                    }
+                }
             }
         """.trimIndent()
         )
 
         // WHEN // THEN
         gradleRunner
-            .runDeltaCoverageTaskAndFail()
+            .runDeltaCoverageTaskAndFail(gradleArgs = arrayOf(INT_TEST_TASK))
             .assertOutputContainsStrings(
-                "Fail on violations: true. Found violations: 1.",
-                "Rule violated for bundle ${TestProjects.MULTI_MODULE}: " +
-                        "branches covered ratio is 0.5, but expected minimum is 0.9"
+                "[$TEST_TASK] Fail on violations: true. Found violations: 1.",
+                "[$TEST_TASK] Rule violated for bundle $TEST_TASK: branches covered ratio is 0.5, but expected minimum is 0.9",
+
+                "[$INT_TEST_TASK] Fail on violations: true. Found violations: 3.",
+                "[$INT_TEST_TASK] Rule violated for bundle $INT_TEST_TASK: instructions covered ratio is 0.1, but expected minimum is 0.6",
+                "[$INT_TEST_TASK] Rule violated for bundle $INT_TEST_TASK: branches covered ratio is 0.2, but expected minimum is 0.6",
+                "[$INT_TEST_TASK] Rule violated for bundle $INT_TEST_TASK: lines covered ratio is 0.2, but expected minimum is 0.6",
+
+                "[$AGG_VIEW] Fail on violations: true. Found violations: 2.",
+                "[$AGG_VIEW] Rule violated for bundle $AGG_VIEW: instructions covered ratio is 0.9, but expected minimum is 1.0",
+                "[$AGG_VIEW] Rule violated for bundle $AGG_VIEW: branches covered ratio is 0.7, but expected minimum is 1.0",
             )
 
         // and assert
-        val htmlReportDir = rootProjectDir.resolve(baseReportDir).resolve("coverage-reports/delta-coverage/html")
-        assertThat(htmlReportDir.list()).containsExactlyInAnyOrder(
-            *expectedHtmlReportFiles("com.module1", "com.module2")
-        )
+        assertSoftly {
+            listOf(
+                TEST_TASK,
+                INT_TEST_TASK,
+                AGG_VIEW,
+            ).forEach { view ->
+                val htmlReportDir = rootProjectDir.resolve(baseReportDir)
+                    .resolve("coverage-reports/delta-coverage/$view/html")
+                htmlReportDir.shouldExist()
+                htmlReportDir.shouldBeADirectory()
+                htmlReportDir.shouldContainFile("index.html")
+                assertThat(htmlReportDir.list()).containsExactlyInAnyOrder(
+                    *expectedHtmlReportFiles("com.module1", "com.module2")
+                )
+            }
+        }
     }
 
     @Test
@@ -74,7 +109,7 @@ class DeltaCoverageMultiModuleTest {
             """
                 plugins {
                     id 'java'
-                    id 'io.github.surpsg.delta-coverage'
+                    id 'io.github.gw-kit.delta-coverage'
                 }
                 repositories {
                     mavenCentral()
@@ -99,7 +134,9 @@ class DeltaCoverageMultiModuleTest {
                         autoApplyPlugin.set(false)
                     }
                     diffSource.file.set('$diffFilePath')
-                    violationRules.failIfCoverageLessThan 0.7
+                    reportViews.$TEST_TASK {
+                        violationRules.failIfCoverageLessThan 0.7
+                    }
                 }
             """.trimIndent()
         )
@@ -116,10 +153,16 @@ class DeltaCoverageMultiModuleTest {
         gradleRunner
             .runDeltaCoverageTaskAndFail()
             .assertOutputContainsStrings(
-                "Fail on violations: true. Found violations: 3.",
-                "lines covered ratio is 0.5, but expected minimum is 0.7;",
-                "branches covered ratio is 0.2, but expected minimum is 0.7;",
-                "instructions covered ratio is 0.6, but expected minimum is 0.7",
+                "[$TEST_TASK] Fail on violations: true. Found violations: 3.",
+                "[$TEST_TASK] Rule violated for bundle $TEST_TASK: lines covered ratio is 0.5, but expected minimum is 0.7;",
+                "[$TEST_TASK] Rule violated for bundle $TEST_TASK: branches covered ratio is 0.2, but expected minimum is 0.7;",
+                "[$TEST_TASK] Rule violated for bundle $TEST_TASK: instructions covered ratio is 0.6, but expected minimum is 0.7",
             )
+    }
+
+    private companion object {
+        const val TEST_TASK = JavaPlugin.TEST_TASK_NAME
+        const val INT_TEST_TASK = "intTest"
+        const val AGG_VIEW = "aggregated"
     }
 }

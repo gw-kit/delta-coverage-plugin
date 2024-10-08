@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.gradle
 
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.string.shouldContain
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import java.io.File
@@ -46,6 +47,10 @@ private fun GradleRunner.tasksWithDebugOption(vararg task: String): GradleRunner
 }
 
 fun BuildResult.assertOutputContainsStrings(vararg expectedString: String): BuildResult {
-    assertThat(output).contains(*expectedString)
+    assertSoftly(output) {
+        expectedString.forEach {
+            shouldContain(it)
+        }
+    }
     return this
 }

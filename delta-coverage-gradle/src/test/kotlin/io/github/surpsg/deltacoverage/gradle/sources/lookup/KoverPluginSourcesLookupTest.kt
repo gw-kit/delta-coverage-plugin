@@ -4,11 +4,15 @@ import com.google.common.jimfs.Configuration
 import com.google.common.jimfs.Jimfs
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.sources.SourceType
+import io.github.surpsg.deltacoverage.gradle.unittest.applyKotlinPlugin
+import io.github.surpsg.deltacoverage.gradle.unittest.applyPlugin
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.matchers.collections.shouldHaveAtLeastSize
 import io.kotest.matchers.collections.shouldHaveSize
+import kotlinx.kover.gradle.plugin.KoverGradlePlugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
+import org.gradle.api.plugins.JavaPlugin
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -33,18 +37,17 @@ internal class KoverPluginSourcesLookupTest {
     fun `should return empty source if kover artifact file not found`() {
         // GIVEN
         val project: Project = testJavaProject {
-            with(pluginManager) {
-                apply("org.jetbrains.kotlin.jvm")
-                apply("org.jetbrains.kotlinx.kover")
-            }
+            applyKotlinPlugin()
+            applyPlugin<KoverGradlePlugin>()
         }
 
         val koverPluginSourcesLookup = KoverPluginSourcesLookup(
             fileSystem,
             SourcesAutoLookup.Context(
-                project,
-                DeltaCoverageConfiguration(project.objects),
-                project.objects
+                project = project,
+                viewName = JavaPlugin.TEST_TASK_NAME,
+                deltaCoverageConfiguration = DeltaCoverageConfiguration(project.objects),
+                objectFactory = project.objects,
             )
         )
 
@@ -62,10 +65,8 @@ internal class KoverPluginSourcesLookupTest {
     ) {
         // GIVEN
         val project: Project = testJavaProject {
-            with(pluginManager) {
-                apply("org.jetbrains.kotlin.jvm")
-                apply("org.jetbrains.kotlinx.kover")
-            }
+            applyKotlinPlugin()
+            applyPlugin<KoverGradlePlugin>()
         }
 
         createTestResources(project)
@@ -73,9 +74,10 @@ internal class KoverPluginSourcesLookupTest {
         val koverPluginSourcesLookup = KoverPluginSourcesLookup(
             fileSystem,
             SourcesAutoLookup.Context(
-                project,
-                DeltaCoverageConfiguration(project.objects),
-                project.objects
+                project = project,
+                viewName = JavaPlugin.TEST_TASK_NAME,
+                deltaCoverageConfiguration = DeltaCoverageConfiguration(project.objects),
+                objectFactory = project.objects,
             )
         )
 

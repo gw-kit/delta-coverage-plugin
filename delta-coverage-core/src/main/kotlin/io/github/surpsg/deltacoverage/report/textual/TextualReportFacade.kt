@@ -130,11 +130,13 @@ internal object TextualReportFacade {
     }
 
     private fun buildTitle(buildContext: BuildContext): String = when (buildContext.reportBound) {
-        ReportBound.DELTA_REPORT -> "Delta Coverage Stats"
-        ReportBound.FULL_REPORT -> "Total Coverage Stats"
+        ReportBound.DELTA_REPORT -> "[${buildContext.viewName}] Delta Coverage Stats"
+        ReportBound.FULL_REPORT -> "[${buildContext.viewName}] Total Coverage Stats"
     }
 
+    @Suppress("LongParameterList")
     internal class BuildContext private constructor(
+        val viewName: String,
         val reportType: ReportType,
         val reportBound: ReportBound,
         val coverageDataProvider: RawCoverageDataProvider,
@@ -153,6 +155,7 @@ internal object TextualReportFacade {
         }
 
         class Builder {
+            lateinit var viewName: String
             lateinit var reportType: ReportType
             lateinit var reportBound: ReportBound
             lateinit var coverageDataProvider: RawCoverageDataProvider
@@ -167,6 +170,7 @@ internal object TextualReportFacade {
 
             fun build(): BuildContext {
                 return BuildContext(
+                    viewName,
                     reportType,
                     reportBound,
                     coverageDataProvider,

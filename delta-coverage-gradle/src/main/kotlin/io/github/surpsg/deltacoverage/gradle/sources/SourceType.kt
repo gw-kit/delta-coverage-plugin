@@ -6,7 +6,10 @@ internal enum class SourceType(
 ) {
     CLASSES("deltaCoverageReport.classesDirs", ".class files"),
     SOURCES("deltaCoverageReport.srcDirs", "sources"),
-    COVERAGE_BINARIES("deltaCoverageReport.binaryCoverageFiles", "");
+    COVERAGE_BINARIES(
+        "deltaCoverageReport.reportViews.<view>.binaryCoverageFiles",
+        ""
+    );
 
     fun resourceName(sourceProvider: SourcesResolver.Provider): String {
         return when (this) {
