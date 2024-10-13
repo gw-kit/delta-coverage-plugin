@@ -7,7 +7,7 @@ import org.gradle.api.plugins.jvm.JvmTestSuite
 plugins {
     java
     kotlin("jvm") version "1.9.25"
-    id("io.github.surpsg.delta-coverage")
+    id("io.github.gw-kit.delta-coverage")
     `java-test-fixtures`
 }
 

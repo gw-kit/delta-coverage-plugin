@@ -1,11 +1,12 @@
 # Delta-Coverage Gradle plugin Changelog
 
-<!-- # NEXT-RELEASE: 3.0.0 -->
+## 3.0.0
 
 ### New features
 - Implemented report views. See [Report views](./README.md#report-views) for details.
 
 ### Breaking changes
+- Id of the plugin was changed to `io.github.gw-kit.delta-coverage`.
 - `DeltaCoverageTask` moved to package `io.github.surpsg.deltacoverage.gradle.task`.
 - `NativeGitDiffTask` moved to package `io.github.surpsg.deltacoverage.gradle.task`.
 - Violation rules are now configured via `DeltaCoverageConfiguration.reportViews.<view-name>.violationRules` extension.
@@ -13,6 +14,7 @@
 - Deleted deprecated CSV report generation.
 - Min supported JVM is **17**.
 - Min supported Gradle version is **7.6.4**.
+
 
 ## 2.5.0
 
