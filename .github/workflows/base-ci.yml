@@ -26,26 +26,11 @@ jobs:
       - name: Build & Test
         run: ${gradle_cmd} check detektMain detektTest :koverXmlReport --rerun
 
-      - name: Run Delta Coverage check
-        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
-        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
-        run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
-
-      - name: Append Delta Coverage Summary
-        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
-        continue-on-error: true
-        uses: ./actions/delta-coverage-report
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
         with:
-          title: 'Delta Coverage'
-          delta-coverage-report: build/reports/coverage-reports/delta-coverage/report.md
-
-      - name: Add test results to PR
-        uses: EnricoMi/publish-unit-test-result-action@v2.16.1
-        if: ${{ github.event_name == 'pull_request' && ( success() || failure() ) }}
-        continue-on-error: true
-        with:
-          files:
-            '**/build/test-results/*/TEST-*.xml'
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
