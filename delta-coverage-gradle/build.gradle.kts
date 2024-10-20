@@ -1,6 +1,8 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     `gradle-plugin-conventions`
+    alias(deps.plugins.shadowPlugin)
     `java-test-fixtures`
 }
 
@@ -20,9 +22,11 @@ gradlePlugin {
 }
 
 repositories {
-    maven {
-        url = uri("https://plugins.gradle.org/m2/")
-    }
+    gradlePluginPortal()
+}
+
+tasks.withType<ShadowJar> {
+    archiveClassifier.set("")
 }
 
 dependencies {

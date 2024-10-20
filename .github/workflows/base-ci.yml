@@ -36,7 +36,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '11'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -53,7 +53,8 @@ jobs:
 
       - name: Publish Snapshot Artifacts
 #        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
-        run: ${gradle_cmd} publishAllPublicationsToGitHubPackagesRepository
+        run: ${gradle_cmd} 
+          delta-coverage-gradle:publishPluginMavenPublicationToGitHubPackagesRepository
           -PsnapshotPrefix=${{ steps.git-commits.outputs.number }}
 
       - name: Run Delta Coverage check
