@@ -3,6 +3,14 @@ plugins {
     `maven-publish`
 }
 
+publishing {
+    publications {
+        create<MavenPublication>("deltaCoverageCore") {
+            from(components["java"])
+        }
+    }
+}
+
 dependencies {
     implementation(deps.jgit)
     implementation(deps.intellijCoverage)
