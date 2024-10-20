@@ -52,7 +52,7 @@ jobs:
           echo "number=$(git rev-list HEAD --count)" >> $GITHUB_OUTPUT
 
       - name: Publish Snapshot Artifacts
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+#        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
         run: ${gradle_cmd}
           delta-coverage-gradle:publishPluginMavenPublicationToGitHubPackagesRepository
           -PsnapshotPrefix=${{ steps.git-commits.outputs.number }}
