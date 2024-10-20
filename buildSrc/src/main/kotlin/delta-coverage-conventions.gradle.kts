@@ -3,7 +3,7 @@ import io.github.surpsg.deltacoverage.CoverageEngine
 plugins {
     base
     id("basic-coverage-conventions")
-    id("io.github.surpsg.delta-coverage")
+    id("io.github.gw-kit.delta-coverage")
 }
 
 deltaCoverageReport {
