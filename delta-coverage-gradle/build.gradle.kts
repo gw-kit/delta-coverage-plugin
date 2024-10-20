@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     `gradle-plugin-conventions`
-    alias(deps.plugins.shadowPlugin)
+//    alias(deps.plugins.shadowPlugin)
     `java-test-fixtures`
 }
 
@@ -25,9 +25,9 @@ repositories {
     gradlePluginPortal()
 }
 
-tasks.withType<ShadowJar> {
-    archiveClassifier.set("")
-}
+//tasks.withType<ShadowJar> {
+//    archiveClassifier.set("")
+//}
 
 dependencies {
     implementation(project(":delta-coverage-core"))
