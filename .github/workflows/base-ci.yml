@@ -54,8 +54,8 @@ jobs:
       - name: Publish Snapshot Artifacts
 #        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
 #          delta-coverage-gradle:publishPluginMavenPublicationToGitHubPackagesRepository
-        run: ${gradle_cmd} 
-          publishPluginMavenPublicationToGitHubPackagesRepository
+        run: ${gradle_cmd}
+          publishAllPublicationsToGitHubPackagesRepository
           -PsnapshotPrefix=${{ steps.git-commits.outputs.number }}
 
       - name: Run Delta Coverage check
