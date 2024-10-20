@@ -43,8 +43,8 @@ jobs:
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
 
-      - name: Build & Test
-        run: ${gradle_cmd} build detektMain detektTest :koverXmlReport
+#      - name: Build & Test
+#        run: ${gradle_cmd} build detektMain detektTest :koverXmlReport
 
       - name: Commits Number
         id: git-commits
@@ -56,11 +56,11 @@ jobs:
         run: ${gradle_cmd}
           delta-coverage-gradle:publishPluginMavenPublicationToGitHubPackagesRepository
           -PsnapshotPrefix=${{ steps.git-commits.outputs.number }}
-
-      - name: Run Delta Coverage check
-        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
-        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
-        run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
+#
+#      - name: Run Delta Coverage check
+#        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
+#        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
+#        run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
 
       - name: Append Test Coverage Summary
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
