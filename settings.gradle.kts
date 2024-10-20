@@ -3,8 +3,10 @@ plugins {
 }
 
 rootProject.name = "delta-coverage-gradle-plugin"
-include("delta-coverage-core")
-include("delta-coverage-gradle")
+include(
+    "delta-coverage-core",
+    "delta-coverage-gradle",
+)
 
 dependencyResolutionManagement {
     versionCatalogs {

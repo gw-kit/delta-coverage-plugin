@@ -11,7 +11,7 @@ mockkVer = "1.13.12"
 kotestVer = "5.9.1"
 jimfsVer = "1.3.0"
 
-deltaCoverageVer = "3.0.0-RC1"
+deltaCoverageVer = "3.0.0-RC1.566"
 
 [libraries]
 # Kotlin
