@@ -1,4 +1,4 @@
-//import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     `gradle-plugin-conventions`
@@ -25,9 +25,9 @@ repositories {
     gradlePluginPortal()
 }
 
-//tasks.withType<ShadowJar> {
-//    archiveClassifier.set("")
-//}
+tasks.withType<ShadowJar> {
+    archiveClassifier.set("")
+}
 
 dependencies {
     implementation(project(":delta-coverage-core"))

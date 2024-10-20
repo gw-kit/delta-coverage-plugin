@@ -11,11 +11,3 @@ dependencies {
     implementation(deps.httpClient)
     implementation(deps.openCsv)
 }
-
-publishing {
-    publications {
-        create<MavenPublication>("deltaCoverageCorePublishing") {
-            from(components["java"])
-        }
-    }
-}
