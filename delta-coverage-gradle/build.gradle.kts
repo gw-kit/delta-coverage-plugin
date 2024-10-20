@@ -1,4 +1,4 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+//import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     `gradle-plugin-conventions`
