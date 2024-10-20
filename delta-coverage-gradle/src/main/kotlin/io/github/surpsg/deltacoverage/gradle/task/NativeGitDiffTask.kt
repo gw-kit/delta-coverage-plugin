@@ -10,9 +10,11 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.process.internal.DefaultExecSpec
 import org.gradle.process.internal.ExecAction
 import org.gradle.process.internal.ExecActionFactory
+import org.gradle.work.DisableCachingByDefault
 import java.io.File
 import javax.inject.Inject
 
+@DisableCachingByDefault(because = "Should not cache the diff file.")
 @Suppress("UnnecessaryAbstractClass")
 abstract class NativeGitDiffTask @Inject constructor(
     objectFactory: ObjectFactory,
