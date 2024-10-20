@@ -44,7 +44,7 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
 
       - name: Build & Test
-        run: ${gradle_cmd} build detektMain detektTest :koverXmlReport
+        run: ${gradle_cmd} build detektMain detektTest -x :koverXmlReport -x funTest -x test
 
       - name: Commits Number
         id: git-commits
@@ -52,9 +52,8 @@ jobs:
           echo "number=$(git rev-list HEAD --count)" >> $GITHUB_OUTPUT
 
       - name: Publish Snapshot Artifacts
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
-        run: ${gradle_cmd}
-          delta-coverage-gradle:publishPluginMavenPublicationToGitHubPackagesRepository
+#        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+        run: ${gradle_cmd} publishAllPublicationsToGitHubPackagesRepository
           -PsnapshotPrefix=${{ steps.git-commits.outputs.number }}
 
       - name: Run Delta Coverage check

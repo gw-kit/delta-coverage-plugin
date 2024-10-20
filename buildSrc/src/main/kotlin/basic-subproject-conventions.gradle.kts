@@ -39,9 +39,6 @@ publishing {
                 username = System.getenv("GH_USER")
                 password = System.getenv("GH_TOKEN")
             }
-            mavenContent {
-                snapshotsOnly()
-            }
         }
     }
 }

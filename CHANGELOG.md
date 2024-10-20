@@ -15,6 +15,9 @@
 - Min supported JVM is **17**.
 - Min supported Gradle version is **7.6.4**.
 
+### Changed
+- #145 Caching is disabled for task `gitDiff`.
+
 
 ## 2.5.0
 

@@ -2,14 +2,6 @@ plugins {
     `basic-subproject-conventions`
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("jacocoFilteringExtension") {
-            from(components["java"])
-        }
-    }
-}
-
 dependencies {
     implementation(deps.jgit)
     implementation(deps.intellijCoverage)
