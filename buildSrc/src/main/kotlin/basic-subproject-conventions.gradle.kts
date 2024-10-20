@@ -27,7 +27,7 @@ repositories {
 
 if (project.hasProperty("snapshotPrefix")) {
     val snapshotPrefix: String by project
-    version = "$version-${snapshotPrefix}"
+    version = "$version.${snapshotPrefix}"
 }
 
 publishing {
