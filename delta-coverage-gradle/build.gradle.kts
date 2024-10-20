@@ -2,7 +2,7 @@
 
 plugins {
     `gradle-plugin-conventions`
-//    alias(deps.plugins.shadowPlugin)
+    alias(deps.plugins.shadowPlugin) apply false
     `java-test-fixtures`
 }
 

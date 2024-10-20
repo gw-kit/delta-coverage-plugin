@@ -55,6 +55,7 @@ jobs:
 #        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
 #          delta-coverage-gradle:publishPluginMavenPublicationToGitHubPackagesRepository
         run: ${gradle_cmd}
+          publishDeltaCoverageCorePublishingPublicationToGitHubPackagesRepository
           publishAllPublicationsToGitHubPackagesRepository
           -PsnapshotPrefix=${{ steps.git-commits.outputs.number }}
 

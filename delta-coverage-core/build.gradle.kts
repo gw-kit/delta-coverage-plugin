@@ -1,5 +1,6 @@
 plugins {
     `basic-subproject-conventions`
+    `maven-publish`
 }
 
 dependencies {
@@ -9,4 +10,12 @@ dependencies {
     implementation(deps.jacocoReport)
     implementation(deps.httpClient)
     implementation(deps.openCsv)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("deltaCoverageCorePublishing") {
+            from(components["java"])
+        }
+    }
 }
