@@ -6,7 +6,7 @@ httpClientVer = "5.4.1"
 jgitVer = "7.0.0.202409031743-r"
 csvVer = "5.9"
 
-junitVer = "5.11.1"
+junitVer = "5.11.3"
 mockkVer = "1.13.12"
 kotestVer = "5.9.1"
 jimfsVer = "1.3.0"
