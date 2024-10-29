@@ -4,6 +4,9 @@
 
 ### New features
 - Implemented report views. See [Report views](./README.md#report-views) for details.
+- Reworked [Delta-Coverage GitHub Action](actions/delta-coverage-report/README.md). 
+  Now it publishes Delta-Coverage report using GitHub Check API.
+  PR comment now contains only links to the check runs.
 
 ### Breaking changes
 - Id of the plugin was changed to `io.github.gw-kit.delta-coverage`.

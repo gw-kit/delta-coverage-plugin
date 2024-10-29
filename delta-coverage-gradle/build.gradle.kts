@@ -1,6 +1,8 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     `gradle-plugin-conventions`
+    alias(deps.plugins.shadowPlugin)
     `java-test-fixtures`
 }
 
@@ -17,6 +19,10 @@ gradlePlugin {
             tags.set(listOf("differential", "diff", "delta", "coverage", "jacoco"))
         }
     }
+}
+
+tasks.withType<ShadowJar> {
+    archiveClassifier = ""
 }
 
 repositories {

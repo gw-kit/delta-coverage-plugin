@@ -25,14 +25,14 @@ jobs:
     env:
       GH_USER: ${{ github.actor }}
       GH_TOKEN: ${{ github.token }}
-      gradle_cmd: "./gradlew --parallel --build-cache --console=plain --no-watch-fs -s "
+      gradle_cmd: "./gradlew --parallel --build-cache --console=plain --no-watch-fs "
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 11
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -62,21 +62,10 @@ jobs:
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
         run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
 
-      - name: Append Test Coverage Summary
+      - name: Publish Coverage Summary
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: true
         uses: ./actions/delta-coverage-report
-        with:
-          title: 'Unit Tests Coverage'
-          delta-coverage-report: build/reports/coverage-reports/delta-coverage/test/report.md
-
-      - name: Append Functional Tests Coverage Summary
-        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
-        continue-on-error: true
-        uses: ./actions/delta-coverage-report
-        with:
-          title: 'Functional Tests Coverage'
-          delta-coverage-report: build/reports/coverage-reports/delta-coverage/functionalTest/report.md
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.17.1

@@ -26,4 +26,7 @@ deltaCoverageReport {
     view("functionalTest") {
         violationRules.failIfCoverageLessThan(0.6)
     }
+    view("aggregated") {
+        violationRules.failIfCoverageLessThan(0.91)
+    }
 }

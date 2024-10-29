@@ -44,6 +44,7 @@ testing.suites {
                 maxParallelForks = 4
 
                 systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
+                systemProperty("kotest.framework.classpath.scanning.config.disable", "true")
 
                 testLogging {
                     events("skipped", "failed")

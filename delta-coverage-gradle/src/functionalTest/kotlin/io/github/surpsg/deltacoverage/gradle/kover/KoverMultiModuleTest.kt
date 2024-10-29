@@ -74,17 +74,17 @@ class KoverMultiModuleTest {
             .runDeltaCoverageTask(gradleArgs = arrayOf(INT_TEST_TASK))
             .assertOutputContainsStrings(
                 "[$TEST_TASK] Fail on violations: false. Found violations: 2.",
-                "[$TEST_TASK] BRANCH: expectedMin=0.9, actual=0.5",
-                "[$TEST_TASK] INSTRUCTION: expectedMin=0.9, actual=0.88",
+                "BRANCH: expectedMin=0.9, actual=0.5",
+                "INSTRUCTION: expectedMin=0.9, actual=0.88",
 
                 "[$INT_TEST_TASK] Fail on violations: false. Found violations: 3.",
-                "[$INT_TEST_TASK] INSTRUCTION: expectedMin=0.6, actual=0.16",
-                "[$INT_TEST_TASK] BRANCH: expectedMin=0.6, actual=0.25",
-                "[$INT_TEST_TASK] LINE: expectedMin=0.6, actual=0.2",
+                "INSTRUCTION: expectedMin=0.6, actual=0.16",
+                "BRANCH: expectedMin=0.6, actual=0.25",
+                "LINE: expectedMin=0.6, actual=0.2",
 
                 "[$AGG_VIEW] Fail on violations: false. Found violations: 2.",
-                "[$AGG_VIEW] INSTRUCTION: expectedMin=1.0, actual=0.8",
-                "[$AGG_VIEW] BRANCH: expectedMin=1.0, actual=0.75",
+                "INSTRUCTION: expectedMin=1.0, actual=0.8",
+                "BRANCH: expectedMin=1.0, actual=0.75",
             )
 
         // AND THEN

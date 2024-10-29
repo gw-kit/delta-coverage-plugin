@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle
 
+import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTask
 import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
 import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
 import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
@@ -8,8 +9,10 @@ import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.file.shouldBeADirectory
 import io.kotest.matchers.file.shouldBeAFile
+import io.kotest.matchers.file.shouldBeEmpty
 import io.kotest.matchers.file.shouldContainFile
 import io.kotest.matchers.file.shouldExist
+import io.kotest.matchers.file.shouldNotBeEmpty
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -79,6 +82,18 @@ class DeltaCoverageReportsTest {
         val baseReportDirFile = rootProjectDir.resolve(baseReportDir).resolve("coverage-reports")
         assertAllReportsCreated(baseReportDirFile.resolve("delta-coverage/$view/"))
         assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report/$view/"))
+
+        // AND THEN
+        assertSummaryReport(baseReportDirFile)
+    }
+
+    private fun assertSummaryReport(baseReportDirFile: File) {
+        val summaryReportFile = baseReportDirFile.resolve(DeltaCoverageTask.SUMMARY_REPORT_FILE_NAME)
+        assertSoftly(summaryReportFile) {
+            shouldExist()
+            shouldBeAFile()
+            shouldNotBeEmpty()
+        }
     }
 
     private fun assertAllReportsCreated(baseReportDir: File) {
