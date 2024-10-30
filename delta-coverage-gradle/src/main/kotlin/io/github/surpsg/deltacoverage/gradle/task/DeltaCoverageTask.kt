@@ -16,6 +16,7 @@ import org.gradle.api.tasks.TaskAction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.nio.file.Paths
 import javax.inject.Inject
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration as GradleDeltaCoverageConfig
 
@@ -66,7 +67,8 @@ open class DeltaCoverageTask @Inject constructor(
         val gradleCoverageConfig: GradleDeltaCoverageConfig = deltaCoverageConfigProperty.get()
         log.info("Delta-Coverage plugin configuration: $gradleCoverageConfig")
 
-        val diffSource: DiffSource = obtainDiffSource(getOutputDir(), gradleCoverageConfig)
+        val outputDir: File = getOutputDir()
+        val diffSource: DiffSource = obtainDiffSource(outputDir, gradleCoverageConfig)
         val deltaCoverageConfigs: List<DeltaCoverageConfig> = buildDeltaCoverageConfigs(
             diffSource,
             gradleCoverageConfig,
@@ -74,7 +76,10 @@ open class DeltaCoverageTask @Inject constructor(
 
         DeltaReportFacadeFactory
             .buildFacade(gradleCoverageConfig.coverage.engine.get())
-            .generateReports(deltaCoverageConfigs)
+            .generateReports(
+                outputDir.toPath().resolve(SUMMARY_REPORT_FILE_NAME),
+                deltaCoverageConfigs,
+            )
     }
 
     private fun obtainDiffSource(
@@ -111,5 +116,6 @@ open class DeltaCoverageTask @Inject constructor(
     companion object {
         val log: Logger = LoggerFactory.getLogger(DeltaCoverageTask::class.java)
         const val BASE_COVERAGE_REPORTS_DIR = "coverage-reports"
+        const val SUMMARY_REPORT_FILE_NAME = "summary.json"
     }
 }
