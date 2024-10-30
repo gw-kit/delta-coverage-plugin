@@ -16,7 +16,6 @@ import org.gradle.api.tasks.TaskAction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.nio.file.Paths
 import javax.inject.Inject
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration as GradleDeltaCoverageConfig
 
