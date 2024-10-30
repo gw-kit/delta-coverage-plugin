@@ -47,7 +47,7 @@ jobs:
         run: ${gradle_cmd} build detektMain detektTest :koverXmlReport -x funTest
 
       - name: Build & Test
-        run: ${gradle_cmd} funTest --tests '*.DeltaCoverageViolationsTest' -m
+        run: ${gradle_cmd} funTest --tests '*.DeltaCoverageViolationsTest'
 
       - name: Commits Number
         id: git-commits
@@ -55,7 +55,7 @@ jobs:
           echo "number=$(git rev-list HEAD --count)" >> $GITHUB_OUTPUT
 
       - name: Publish Snapshot Artifacts
-#        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
         run: ${gradle_cmd}
           delta-coverage-gradle:publishPluginMavenPublicationToGitHubPackagesRepository
           -PsnapshotPrefix=${{ steps.git-commits.outputs.number }}
