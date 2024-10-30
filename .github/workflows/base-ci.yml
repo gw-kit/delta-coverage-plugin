@@ -47,7 +47,7 @@ jobs:
         run: ${gradle_cmd} build detektMain detektTest :koverXmlReport -x funTest
 
       - name: Build & Test
-        run: ${gradle_cmd} funTest --tests '*.DeltaCoverageViolationsTest'
+        run: ${gradle_cmd} funTest --tests '*.DeltaCoverageViolationsTest' -m
 
       - name: Commits Number
         id: git-commits

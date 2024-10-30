@@ -79,9 +79,6 @@ runs:
       shell: bash
       continue-on-error: true
       run: |
-        pwd
-        ls -la
-        ls -la build/reports/coverage-reports
         cat build/reports/coverage-reports/summary.json
 
     - name: Create Check Run

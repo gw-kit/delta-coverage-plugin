@@ -42,4 +42,5 @@ kotestProperty = { module = "io.kotest:kotest-property-jvm", version.ref = "kote
 jimFs = { module = "com.google.jimfs:jimfs", version.ref = "jimfsVer" }
 
 [plugins]
+shadowPlugin = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
 depUpdatesPlugin = { id = "com.github.ben-manes.versions", version = "0.51.0" }
