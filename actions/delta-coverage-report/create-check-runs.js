@@ -31,13 +31,13 @@ module.exports = async (ctx) => {
             output: {
                 title: view.view,
                 summary: view.violations.join('\n'),
-                text: readViewMarkdownReport(view),
-                images: [
-                    {
-                        alt: view.status,
-                        image_url: 'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/red-circle.png'
-                    }
-                ]
+                text: readViewMarkdownReport(view)
+                // images: [
+                //     {
+                //         alt: view.status,
+                //         image_url: 'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/red-circle.png'
+                //     }
+                // ]
             }
         });
     }
