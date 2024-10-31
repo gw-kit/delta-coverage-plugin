@@ -47,13 +47,6 @@ runs:
           });
           core.setOutput('check-runs', checkRuns);
 
-    - name: Log check-runs
-      uses: actions/github-script@v7
-      continue-on-error: true
-      with:
-        script: |
-          console.log(`${{ steps.create-check-runs.outputs.check-runs }}`)
-
     - name: Create Comment Marker
       id: comment-marker
       if: ${{ inputs.title != '' }}
@@ -80,17 +73,30 @@ runs:
             return comment.id
           }
 
+    - name: Log check-runs
+      uses: actions/github-script@v7
+      continue-on-error: true
+      with:
+        script: |
+          console.log(`${{ steps.create-check-runs.outputs.check-runs }}`)
+
     - id: build-message
       uses: actions/github-script@v7
       with:
         github-token: ${{ inputs.github-token }}
         script: |
           const fs = require('fs');
-          const reportContent = fs.readFileSync('${{ inputs.summary-report-path }}');
-          const summaryBuffer = core.summary
+          const checkRunsJson = `${{ steps.create-check-runs.outputs.check-runs }}`;
+          const checkRuns = JSON.parse(checkRunsJson);
+          
+          let summaryBuffer = core.summary
             .addRaw('${{ steps.comment-marker.outputs.result }}', true)
-            .addRaw('${{ inputs.message }}', true)
-            .addRaw(reportContent, true)
+            .addRaw('Delta Coverage Check', true);
+          checkRuns.forEach(checkRun => {
+            const { title, url, conclusion } = checkRun;
+            const conclusion = checkRun.conclusion === 'success' ? '✅' : '❌';
+            summaryBuffer.addRaw(`- ${conclusion} [title](${url})`, true);
+          });
           return summaryBuffer.stringify() // generate text
 
     - name: Update or Create Comment
