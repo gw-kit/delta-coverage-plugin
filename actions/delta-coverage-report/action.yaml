@@ -26,10 +26,24 @@ runs:
       with:
         github-token: ${{ inputs.github-token }}
         script: |
-          const reportPath = `${{ inputs.delta-coverage-report }}`.trim()
+          const reportPath = `${{ inputs.summary-report-path }}`.trim()
           if (!reportPath) {
-            core.setFailed('delta-coverage-report input is empty.')
+            core.setFailed('summary-report-path input is empty.')
           }
+
+    - name: Create Check Run
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const createCheckRuns = require('${{ github.action_path }}/create-check-runs.js');
+          await createCheckRuns({
+            summaryReportPath: `${{ inputs.summary-report-path }}`,
+            core: core,
+            context: context,
+            github: github,
+            headSha: `${{ github.event.pull_request.head.sha }}`
+          });
 
     - name: Create Comment Marker
       id: comment-marker
@@ -63,26 +77,12 @@ runs:
         github-token: ${{ inputs.github-token }}
         script: |
           const fs = require('fs');
-          const reportContent = fs.readFileSync('${{ inputs.delta-coverage-report }}');
+          const reportContent = fs.readFileSync('${{ inputs.summary-report-path }}');
           const summaryBuffer = core.summary
             .addRaw('${{ steps.comment-marker.outputs.result }}', true)
             .addRaw('${{ inputs.message }}', true)
             .addRaw(reportContent, true)
           return summaryBuffer.stringify() // generate text
-
-    - name: Create Check Run
-      uses: actions/github-script@v7
-      with:
-        github-token: ${{ inputs.github-token }}
-        script: |
-          const createCheckRuns = require('${{ github.action_path }}/create-check-runs.js');
-          await createCheckRuns({
-            summaryReportPath: `${{ inputs.summary-report-path }}`,
-            core: core,
-            context: context,
-            github: github,
-            headSha: `${{ github.event.pull_request.head.sha }}`
-          });
 
     - name: Update or Create Comment
       uses: actions/github-script@v7

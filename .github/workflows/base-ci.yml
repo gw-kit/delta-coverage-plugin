@@ -70,9 +70,6 @@ jobs:
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: true
         uses: ./actions/delta-coverage-report
-        with:
-          title: 'Unit Tests Coverage'
-          delta-coverage-report: build/reports/coverage-reports/delta-coverage/test/report.md
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.17.1

@@ -26,7 +26,7 @@ module.exports = async (ctx) => {
         const hasViolations = viewHasViolations(view);
         const conclusion = hasViolations ? 'failure' : 'success';
         const viewName = capitalize(view.view);
-        ctx.github.rest.checks.create({
+        const response = await ctx.github.rest.checks.create({
             owner: ctx.context.repo.owner,
             repo: ctx.context.repo.repo,
             name: `Coverage ${viewName}`,
@@ -34,28 +34,34 @@ module.exports = async (ctx) => {
             status: 'completed',
             conclusion: conclusion,
             output: {
-                title: `Delta Coverage Check _${viewName}_`,
+                title: `Delta Coverage Check '${viewName}'`,
                 summary: readViewMarkdownReport(view),
             }
         });
+        return {
+            checkRunId: response.data.id,
+            url: response.data.html_url,
+            conclusion: conclusion
+        }
     }
 
     const createAnnotations = (view) => {
         const hasViolations = viewHasViolations(view);
         if (hasViolations) {
             const viewName = capitalize(view.view);
-            const violations = view.violations.join('\n    ');
-            ctx.core.warning(`
-                Code Coverage check failed for '${viewName}':
-                    ${violations}
-                `);
+            const violations = view.violations.join(';\n');
+            const msg = `[${viewName}]: Code Coverage check failed:\n${violations}`;
+            ctx.core.warning(msg);
         }
     }
 
     const reportContent = fs.readFileSync(ctx.summaryReportPath);
     const summaryArray = JSON.parse(reportContent);
+    const checkRuns = [];
     for (const view of summaryArray) {
         createAnnotations(view);
-        createCheckRun(view);
+        const checkRun = await createCheckRun(view);
+        checkRuns.push(checkRun);
     }
+    return checkRuns;
 };
