@@ -75,14 +75,11 @@ runs:
             .addRaw(reportContent, true)
           return summaryBuffer.stringify() // generate text
 
-    - name: Read Coverage Summary
-      id: summary
+    - name: Create Check Run
       uses: actions/github-script@v7
       with:
         github-token: ${{ inputs.github-token }}
         script: |
-          const fs = require('fs');
-  
           const buildPathToReport = (viewName) => {
             return `build/reports/coverage-reports/delta-coverage/${viewName}/report.md`;
           };
@@ -91,6 +88,7 @@ runs:
             return view.violations.length > 0;
           };
             
+          const fs = require('fs');
           const reportContent = fs.readFileSync('build/reports/coverage-reports/summary.json');
           const summaryArray = JSON.parse(reportContent);
           
@@ -102,37 +100,19 @@ runs:
             return `NO REPORT by path: ${reportPath}`;
             }
           }
-            
-          const viewsStatuses = summaryArray.map((view) => {
-            const status = viewHasViolations(view) ? 'failure' : 'success';
-            const markdownReport = readViewMarkdownReport(view);
-            return {
-              name: view.view,
-              violations: view.violations,
-              status: status,
-              markdownReport: markdownReport
-            };
-          });
-          core.setOutput('views', JSON.stringify(viewsStatuses));
-
-
-    - name: Create Check Run
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const views = JSON.parse('${{ steps.summary.outputs.views }}');
-          for (const view of views) {
+          
+          for (const view of viewsStatuses) {
             github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: `Delta Coverage Check ${view.name}`,
               head_sha: `${{ github.event.pull_request.head.sha }}`,
               status: 'completed',
-              conclusion: view.status,
+              conclusion: viewHasViolations(view) ? 'failure' : 'success',
               output: {
-                  title: view.name,
+                  title: view.view,
                   summary: view.violations,
-                  text: view.markdownReport,
+                  text: readViewMarkdownReport(view),
                   images: {
                     alt: view.status,
                     image_url: 'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/red-circle.png'
