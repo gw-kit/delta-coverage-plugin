@@ -29,12 +29,12 @@ module.exports = async (ctx) => {
         const response = await ctx.github.rest.checks.create({
             owner: ctx.context.repo.owner,
             repo: ctx.context.repo.repo,
-            name: `Coverage ${viewName}`,
+            name: `${viewName} Coverage`,
             head_sha: ctx.headSha,
             status: 'completed',
             conclusion: conclusion,
             output: {
-                title: `Delta Coverage Check '${viewName}'`,
+                title: `${viewName} Coverage`,
                 summary: readViewMarkdownReport(view),
             }
         });

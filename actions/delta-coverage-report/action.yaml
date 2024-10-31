@@ -92,6 +92,7 @@ runs:
           let summaryBuffer = core.summary
             .addHeading('Delta Coverage Check', '2')
             .addRaw('${{ steps.comment-marker.outputs.result }}', true)
+            .addEOL()
           
           checkRuns.forEach(checkRun => {
             const conclusion = checkRun.conclusion === 'success' ? '✅' : '❌';
