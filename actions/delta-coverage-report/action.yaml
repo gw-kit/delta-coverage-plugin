@@ -2,8 +2,8 @@ name: Render Delta Coverage Report
 
 inputs:
   title:
-    description: 'Title of the report.'
-    default: 'Delta Coverage Report'
+    description: 'Title in PR comment.'
+    default: 'Delta Coverage Check'
     required: false
 
   summary-report-path:
@@ -90,14 +90,14 @@ runs:
           const checkRuns = JSON.parse(checkRunsJson);
           
           let summaryBuffer = core.summary
-            .addHeading('Delta Coverage Check', '2')
+            .addHeading(`${{ inputs.title }}`, '2')
             .addRaw('${{ steps.comment-marker.outputs.result }}', true)
             .addEOL()
           
           checkRuns.forEach(checkRun => {
             const conclusion = checkRun.conclusion === 'success' ? '✅' : '❌';
             const violations = checkRun.violations
-              .map(it => `   - ${it}`)
+              .map(it => `   - \`${it}\``)
               .join('\n');
             const runText = `- ${conclusion} [${checkRun.viewName}](${checkRun.url}) \n${violations}`
             summaryBuffer = summaryBuffer.addRaw(runText, true);
