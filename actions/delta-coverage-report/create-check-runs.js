@@ -34,7 +34,7 @@ module.exports = async (ctx) => {
             status: 'completed',
             conclusion: conclusion,
             output: {
-                title: `Delta Coverage Check ${viewName}`,
+                title: `Delta Coverage Check _${viewName}_`,
                 summary: readViewMarkdownReport(view),
             }
         });
@@ -45,14 +45,14 @@ module.exports = async (ctx) => {
         if (hasViolations) {
             const viewName = capitalize(view.view);
             const violations = view.violations.join('\n    ');
-            ctx.core.warn(`
+            ctx.core.warning(`
                 Code Coverage check failed for '${viewName}':
                     ${violations}
                 `);
         }
     }
 
-    const reportContent = fs.readFileSync('build/reports/coverage-reports/summary.json');
+    const reportContent = fs.readFileSync(ctx.summaryReportPath);
     const summaryArray = JSON.parse(reportContent);
     for (const view of summaryArray) {
         createAnnotations(view);
