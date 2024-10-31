@@ -75,23 +75,32 @@ runs:
             .addRaw(reportContent, true)
           return summaryBuffer.stringify() // generate text
 
-    - name: Print Summary Report
-      shell: bash
-      continue-on-error: true
-      run: |
-        cat build/reports/coverage-reports/summary.json
+    - name: Read Coverage Summary
+      id: summary
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const fs = require('fs');
+          const reportContent = fs.readFileSync('build/reports/coverage-reports/summary.json');
+          const summaryArray = JSON.parse(reportContent)
+          
+          return summaryArray.some((view) => view.violations.length > 0);
+
 
     - name: Create Check Run
       uses: actions/github-script@v7
       with:
         script: |
+          const violations = ${{ steps.summary.outputs.result }};
+          const conclusion = violations ? 'failure' : 'success';
           const res = await github.rest.checks.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
             name: 'Test Name',
             head_sha: `${{ github.event.pull_request.head.sha }}`,
             status: 'completed',
-            conclusion: 'success',
+            conclusion: conclusion,
             output: {
                 title: 'Delta Coverage Report',
                 summary: ${{ steps.build-message.outputs.result }}
