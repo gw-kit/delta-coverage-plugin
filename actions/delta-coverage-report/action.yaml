@@ -90,8 +90,9 @@ runs:
           const checkRuns = JSON.parse(checkRunsJson);
           
           let summaryBuffer = core.summary
-            .addRaw('${{ steps.comment-marker.outputs.result }}', true)
             .addHeading('Delta Coverage Check', '2')
+            .addRaw('${{ steps.comment-marker.outputs.result }}', true)
+          
           checkRuns.forEach(checkRun => {
             const conclusion = checkRun.conclusion === 'success' ? '✅' : '❌';
             const violations = checkRun.violations
