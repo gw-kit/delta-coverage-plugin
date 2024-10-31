@@ -37,13 +37,21 @@ runs:
         github-token: ${{ inputs.github-token }}
         script: |
           const createCheckRuns = require('${{ github.action_path }}/create-check-runs.js');
-          await createCheckRuns({
+          const checkRuns = await createCheckRuns({
             summaryReportPath: `${{ inputs.summary-report-path }}`,
             core: core,
             context: context,
             github: github,
             headSha: `${{ github.event.pull_request.head.sha }}`
           });
+          core.setOutput('check-runs', checkRuns);
+
+    - name: Log check-runs
+      uses: actions/github-script@v7
+      continue-on-error: true
+      with:
+        script: |
+          console.log(`${{ steps.create-check-runs.outputs.check-runs }}`)
 
     - name: Create Comment Marker
       id: comment-marker
