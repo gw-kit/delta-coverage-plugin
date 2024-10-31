@@ -1,4 +1,5 @@
 module.exports = async (ctx) => {
+    const fs = require('fs');
 
     const buildPathToReport = (viewName) => {
         return `build/reports/coverage-reports/delta-coverage/${viewName}/report.md`;
@@ -7,8 +8,6 @@ module.exports = async (ctx) => {
     const viewHasViolations = (view) => {
         return view.violations.length > 0;
     };
-
-    const fs = require('fs');
 
     const readViewMarkdownReport = (view) => {
         const reportPath = buildPathToReport(view.view);
@@ -31,14 +30,15 @@ module.exports = async (ctx) => {
             conclusion: viewHasViolations(view) ? 'failure' : 'success',
             output: {
                 title: view.view,
-                summary: view.violations,
+                summary: view.violations.join('\n'),
                 text: readViewMarkdownReport(view),
-                images: {
-                    alt: view.status,
-                    image_url: 'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/red-circle.png'
-                }
+                images: [
+                    {
+                        alt: view.status,
+                        image_url: 'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/red-circle.png'
+                    }
+                ]
             }
         });
     }
-
 };
