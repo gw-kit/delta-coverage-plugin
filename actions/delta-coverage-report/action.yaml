@@ -82,6 +82,7 @@ runs:
         script: |
           const createCheckRuns = require('${{ github.action_path }}/create-check-runs.js');
           await createCheckRuns({
+            core: core,
             context: context,
             github: github,
             headSha: `${{ github.event.pull_request.head.sha }}`

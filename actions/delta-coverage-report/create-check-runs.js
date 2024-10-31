@@ -18,28 +18,43 @@ module.exports = async (ctx) => {
         }
     }
 
-    const reportContent = fs.readFileSync('build/reports/coverage-reports/summary.json');
-    const summaryArray = JSON.parse(reportContent);
-    for (const view of summaryArray) {
-        const conclusion = viewHasViolations(view) ? 'failure' : 'success';
+    const capitalize = (s) => {
+        return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    const createCheckRun = async (view) => {
+        const viewName = capitalize(view.view);
+        const conclusion = hasViolations ? 'failure' : 'success';
         ctx.github.rest.checks.create({
             owner: ctx.context.repo.owner,
             repo: ctx.context.repo.repo,
-            name: `Delta Coverage Check ${view.view}`,
+            name: `Coverage ${viewName}`,
             head_sha: ctx.headSha,
             status: 'completed',
             conclusion: conclusion,
             output: {
-                title: view.view,
+                title: `Delta Coverage Check ${viewName}`,
                 summary: readViewMarkdownReport(view),
-                // text: readViewMarkdownReport(view),
-                images: [
-                    {
-                        alt: conclusion,
-                        image_url: 'https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/red-circle.png'
-                    }
-                ]
             }
         });
+    }
+
+    const createAnnotations = (view) => {
+        const hasViolations = viewHasViolations(view);
+        if (hasViolations) {
+            const viewName = capitalize(view.view);
+            const violations = view.violations.join('\n    ');
+            ctx.core.warn(`
+                Code Coverage check failed for '${viewName}':
+                    ${violations}
+                `);
+        }
+    }
+
+    const reportContent = fs.readFileSync('build/reports/coverage-reports/summary.json');
+    const summaryArray = JSON.parse(reportContent);
+    for (const view of summaryArray) {
+        createAnnotations(view);
+        createCheckRun(view);
     }
 };
