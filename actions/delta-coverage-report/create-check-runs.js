@@ -53,7 +53,6 @@ module.exports = async (ctx) => {
             const violations = view.violations.join(';\n');
             const msg = `[${viewName}]: Code Coverage check failed:\n${violations}`;
             ctx.core.error(msg);
-            ctx.core.notice(msg);
         }
     }
 

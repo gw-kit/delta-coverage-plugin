@@ -93,9 +93,8 @@ runs:
             .addRaw('${{ steps.comment-marker.outputs.result }}', true)
             .addRaw('Delta Coverage Check', true);
           checkRuns.forEach(checkRun => {
-            const { title, url, conclusion } = checkRun;
             const conclusion = checkRun.conclusion === 'success' ? '✅' : '❌';
-            summaryBuffer.addRaw(`- ${conclusion} [title](${url})`, true);
+            summaryBuffer = summaryBuffer.addRaw(`- ${conclusion} [${checkRun.title}](${checkRun.url})`, true);
           });
           return summaryBuffer.stringify() // generate text
 
