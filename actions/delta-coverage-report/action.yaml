@@ -101,7 +101,7 @@ runs:
           
           const reportContent = fs.readFileSync('build/reports/coverage-reports/summary.json');
           const summaryArray = JSON.parse(reportContent);
-          for (const view of viewsStatuses) {
+          for (const view of summaryArray) {
             github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
