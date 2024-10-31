@@ -195,8 +195,6 @@ class TextualReportFacadeTest {
 
             // THEN
             val expectedReport = """
-            ### [any] Delta Coverage Stats
-            
             | Class        | Lines    | Branches | Instr.   |
             |--------------|----------|----------|----------|
             | class2       | 87.50%   | 83.33%   | 90%      |
@@ -231,8 +229,6 @@ class TextualReportFacadeTest {
 
             // THEN
             val expectedReport = """
-            ### [any] Delta Coverage Stats
-            
             | Class        | Lines | Branches | Instr. |
             |--------------|-------|----------|--------|
             | class1       | NaN%  |          | NaN%   |
