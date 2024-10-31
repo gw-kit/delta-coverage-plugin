@@ -23,8 +23,9 @@ module.exports = async (ctx) => {
     }
 
     const createCheckRun = async (view) => {
-        const viewName = capitalize(view.view);
+        const hasViolations = viewHasViolations(view);
         const conclusion = hasViolations ? 'failure' : 'success';
+        const viewName = capitalize(view.view);
         ctx.github.rest.checks.create({
             owner: ctx.context.repo.owner,
             repo: ctx.context.repo.repo,
