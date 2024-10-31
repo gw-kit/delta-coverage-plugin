@@ -89,8 +89,6 @@ runs:
           };
             
           const fs = require('fs');
-          const reportContent = fs.readFileSync('build/reports/coverage-reports/summary.json');
-          const summaryArray = JSON.parse(reportContent);
           
           const readViewMarkdownReport = (view) => {
             const reportPath = buildPathToReport(view.view);
@@ -101,6 +99,8 @@ runs:
             }
           }
           
+          const reportContent = fs.readFileSync('build/reports/coverage-reports/summary.json');
+          const summaryArray = JSON.parse(reportContent);
           for (const view of viewsStatuses) {
             github.rest.checks.create({
               owner: context.repo.owner,
