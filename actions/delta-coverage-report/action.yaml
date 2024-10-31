@@ -84,7 +84,7 @@ runs:
           await createCheckRuns({
             context: context,
             github: github,
-            headSha: ${{ github.event.pull_request.head.sha }},
+            headSha: `${{ github.event.pull_request.head.sha }}`
           });
 
     - name: Update or Create Comment
