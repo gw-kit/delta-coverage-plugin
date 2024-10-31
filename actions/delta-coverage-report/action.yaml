@@ -111,7 +111,7 @@ runs:
               conclusion: viewHasViolations(view) ? 'failure' : 'success',
               output: {
                   title: view.view,
-                  summary: view.violations,
+                  summary: view.violations.join('\n'),
                   text: readViewMarkdownReport(view),
                   images: {
                     alt: view.status,
