@@ -39,8 +39,8 @@ module.exports = async (ctx) => {
             }
         });
         return {
-            checkRunId: response.data.id,
-            title: response.data.output.title,
+            viewName: viewName,
+            violations: view.violations,
             url: response.data.html_url,
             conclusion: conclusion
         }

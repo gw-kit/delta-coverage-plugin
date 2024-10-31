@@ -91,10 +91,14 @@ runs:
           
           let summaryBuffer = core.summary
             .addRaw('${{ steps.comment-marker.outputs.result }}', true)
-            .addRaw('Delta Coverage Check', true);
+            .addHeading('Delta Coverage Check', '2')
           checkRuns.forEach(checkRun => {
             const conclusion = checkRun.conclusion === 'success' ? '✅' : '❌';
-            summaryBuffer = summaryBuffer.addRaw(`- ${conclusion} [${checkRun.title}](${checkRun.url})`, true);
+            const violations = checkRun.violations
+              .map(it => `   - ${it}`)
+              .join('\n');
+            const runText = `- ${conclusion} [${checkRun.viewName}](${checkRun.url}) \n${violations}`
+            summaryBuffer = summaryBuffer.addRaw(runText, true);
           });
           return summaryBuffer.stringify() // generate text
 
