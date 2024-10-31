@@ -82,30 +82,51 @@ runs:
         github-token: ${{ inputs.github-token }}
         script: |
           const fs = require('fs');
-          const reportContent = fs.readFileSync('build/reports/coverage-reports/summary.json');
-          const summaryArray = JSON.parse(reportContent)
           
-          return summaryArray.some((view) => view.violations.length > 0);
+          const buildPathToReport = (viewName) => {
+            return `build/reports/coverage-reports/delta-coverage/${viewName}/report.md`;
+          };
+          
+          const viewHasViolations = (view) => {
+            return view.violations.length > 0;
+          };
+          
+          const reportContent = fs.readFileSync('build/reports/coverage-reports/summary.json');
+          const summaryArray = JSON.parse(reportContent);
+          
+          const viewsStatuses = summaryArray.map((view) => {
+            const status = viewHasViolations(view) ? 'failure' : 'success';
+            const markdownReport = fs.readFileSync(buildPathToReport(view.name));
+            return {
+              name: view.name,
+              violations: view.violations,
+              status: status,
+              markdownReport: markdownReport
+            };
+          });
+          core.setOutput('views', JSON.stringify(viewsStatuses));
 
 
     - name: Create Check Run
       uses: actions/github-script@v7
       with:
         script: |
-          const violations = ${{ steps.summary.outputs.result }};
-          const conclusion = violations ? 'failure' : 'success';
-          const res = await github.rest.checks.create({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            name: 'Test Name',
-            head_sha: `${{ github.event.pull_request.head.sha }}`,
-            status: 'completed',
-            conclusion: conclusion,
-            output: {
-                title: 'Delta Coverage Report',
-                summary: ${{ steps.build-message.outputs.result }}
-            }
-          });
+          const views = JSON.parse('${{ steps.summary.outputs.views }}');
+          for (const view of views) {
+            const res = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: `Delta Coverage Check ${view.name}`,
+              head_sha: `${{ github.event.pull_request.head.sha }}`,
+              status: 'completed',
+              conclusion: view.status,
+              output: {
+                  title: view.name,
+                  summary: view.violations,
+                  text: view.markdownReport
+              }
+            });
+          }
 
     - name: Update or Create Comment
       uses: actions/github-script@v7
