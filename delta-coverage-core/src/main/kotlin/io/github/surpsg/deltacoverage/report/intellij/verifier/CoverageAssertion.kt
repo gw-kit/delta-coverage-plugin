@@ -14,7 +14,7 @@ internal object CoverageAssertion {
         val violations: List<String> = IntellijVerifierFactory
             .buildVerifiers(projectData, coverageRulesConfig)
             .flatMap { coverageVerifier -> coverageVerifier.verify() }
-            .map { it.buildCoverageViolatedMessage(view) }
+            .map { it.buildCoverageViolatedMessage() }
 
         return CoverageVerificationResult(
             view = view,
@@ -23,7 +23,7 @@ internal object CoverageAssertion {
         )
     }
 
-    private fun CoverageVerifier.Violation.buildCoverageViolatedMessage(view: String): String {
+    private fun CoverageVerifier.Violation.buildCoverageViolatedMessage(): String {
         return "$coverageTrackType: expectedMin=$expectedMinValue, actual=$actualValue"
     }
 }
