@@ -13,10 +13,7 @@ internal object MarkdownReportRenderer : TextualReportRenderer() {
     override val vDelim: String = "|"
     override val joinDelim: String = "|"
 
-    override fun Context.renderTitle(printWriter: PrintWriter, widthMap: List<Int>) = with(printWriter) {
-        println("### $title")
-        println()
-    }
+    override fun Context.renderTitle(printWriter: PrintWriter, widthMap: List<Int>) = Unit
 
     override fun Context.renderHeader(printWriter: PrintWriter, widthMap: List<Int>) = with(printWriter) {
         printRow(headers, widthMap)

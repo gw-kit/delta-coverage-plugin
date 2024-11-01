@@ -20,8 +20,9 @@ gradlePlugin {
         }
     }
 }
-tasks.withType(ShadowJar::class.java) {
-    archiveClassifier.set("")
+
+tasks.withType<ShadowJar> {
+    archiveClassifier = ""
 }
 
 repositories {

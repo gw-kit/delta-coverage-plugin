@@ -17,4 +17,7 @@ dependencies {
     implementation(deps.jacocoReport)
     implementation(deps.httpClient)
     implementation(deps.openCsv)
+    implementation(deps.jackson)
+
+    testImplementation(deps.jimFs)
 }
