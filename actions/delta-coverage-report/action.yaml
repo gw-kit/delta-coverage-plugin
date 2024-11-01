@@ -11,6 +11,11 @@ inputs:
     required: true
     default: 'build/reports/coverage-reports/summary.json'
 
+  suppress-check-failures:
+    description: 'Suppress failures.'
+    required: false
+    default: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
+
   github-token:
     description: 'GitHub token.'
     required: false
@@ -40,6 +45,7 @@ runs:
           const createCheckRuns = require('${{ github.action_path }}/create-check-runs.js');
           const checkRuns = await createCheckRuns({
             summaryReportPath: `${{ inputs.summary-report-path }}`,
+            ignoreCoverageFailure: ${{ inputs.suppress-check-failures }},
             core: core,
             context: context,
             github: github,

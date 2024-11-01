@@ -22,9 +22,14 @@ module.exports = async (ctx) => {
         return s.charAt(0).toUpperCase() + s.slice(1);
     }
 
+    const computeViewConclusion = (view) => {
+        return !ctx.ignoreCoverageFailure && viewHasViolations(view)
+            ? 'failure'
+            : 'success';
+    }
+
     const createCheckRun = async (view) => {
-        const hasViolations = viewHasViolations(view);
-        const conclusion = hasViolations ? 'failure' : 'success';
+        const conclusion = computeViewConclusion(view);
         const viewName = capitalize(view.view);
         const response = await ctx.github.rest.checks.create({
             owner: ctx.context.repo.owner,
