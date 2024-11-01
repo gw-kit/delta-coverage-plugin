@@ -5,6 +5,7 @@ jacocoVer = "0.8.12"
 httpClientVer = "5.4.1"
 jgitVer = "7.0.0.202409031743-r"
 csvVer = "5.9"
+jacksonVer = "2.18.1"
 
 junitVer = "5.11.3"
 mockkVer = "1.13.13"
@@ -30,6 +31,7 @@ jacocoReport = { module = "org.jacoco:org.jacoco.report", version.ref = "jacocoV
 httpClient = { module = "org.apache.httpcomponents.client5:httpclient5", version.ref = "httpClientVer" }
 jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version.ref = "jgitVer" }
 openCsv = { module = "com.opencsv:opencsv", version.ref = "csvVer" }
+jackson = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jacksonVer" }
 
 # Testing
 junitApi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junitVer" }

@@ -38,7 +38,7 @@ class JgitDiff(workingDir: File) {
     fun obtain(revision: String): String {
         val diffContent = ByteArrayOutputStream()
         Git(repository).use { git ->
-            DiffFormatter(diffContent).apply { // changed
+            DiffFormatter(diffContent).apply {
                 initialize()
 
                 setDiffComparator(RawTextComparator.WS_IGNORE_ALL)

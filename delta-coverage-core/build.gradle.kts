@@ -17,7 +17,7 @@ dependencies {
     implementation(deps.jacocoReport)
     implementation(deps.httpClient)
     implementation(deps.openCsv)
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.1")
+    implementation(deps.jackson)
 
     testImplementation(deps.jimFs)
 }

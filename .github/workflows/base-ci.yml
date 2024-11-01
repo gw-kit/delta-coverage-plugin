@@ -44,11 +44,7 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
 
       - name: Build & Test
-#        run: ${gradle_cmd} build detektMain detektTest :koverXmlReport -x funTest
-        run: ${gradle_cmd} delta-coverage-core:test
-
-      - name: Build & Test
-        run: ${gradle_cmd} funTest --tests '*.DeltaCoverageViolationsTest'
+        run: ${gradle_cmd} build detektMain detektTest :koverXmlReport -x funTest
 
       - name: Commits Number
         id: git-commits
@@ -66,7 +62,7 @@ jobs:
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
         run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
 
-      - name: Append Test Coverage Summary
+      - name: Publish Coverage Summary
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: true
         uses: ./actions/delta-coverage-report
