@@ -5,8 +5,9 @@ import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.config.ViolationRule
 import io.github.surpsg.deltacoverage.report.jacoco.verification.ViolationsOutputResolver
 import io.kotest.assertions.assertSoftly
-import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.maps.shouldBeEmpty
+import io.kotest.matchers.maps.shouldContain
+import io.kotest.matchers.maps.shouldHaveSize
 import io.mockk.mockk
 import org.jacoco.core.analysis.CoverageNodeImpl
 import org.jacoco.core.analysis.ICounter
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.EnumSource
-import org.junit.jupiter.params.provider.ValueSource
 
 class ViolationsOutputResolverTest {
 
@@ -28,35 +28,57 @@ class ViolationsOutputResolverTest {
         val violationsOutputResolver = ViolationsOutputResolver(mockk())
 
         // WHEN
-        val actualViolations: List<String> = violationsOutputResolver.getViolations()
+        val actualViolations: Map<CoverageEntity, String> = violationsOutputResolver.getViolations()
 
         // THEN
         actualViolations.shouldBeEmpty()
     }
 
     @ParameterizedTest
-    @ValueSource(strings = ["LINE", "INSTRUCTION", "BRANCH"])
-    fun `should return violation message if rule violated`(entityName: String) {
+    @EnumSource(CoverageEntity::class)
+    fun `should return violation message if rule violated`(entity: CoverageEntity) {
         // GIVEN
 
         val violationsOutputResolver = ViolationsOutputResolver(
             CoverageRulesConfig {
                 violationRules += ViolationRule {
                     minCoverageRatio = 0.1
-                    coverageEntity = CoverageEntity.valueOf(entityName)
+                    coverageEntity = entity
                 }
             }
         )
         val node: CoverageNodeImpl = buildCoverageNode()
-        val limit: Limit = ICoverageNode.CounterEntity.valueOf(entityName).buildLimit()
+        val limit: Limit = ICoverageNode.CounterEntity.valueOf(entity.name).buildLimit()
 
         // WHEN
         violationsOutputResolver.onViolation(node, Rule(), limit, COVERAGE_ERROR_MSG)
 
         // THEN
         assertSoftly(violationsOutputResolver.getViolations()) {
-            shouldContainExactly(COVERAGE_ERROR_MSG)
+            shouldHaveSize(1)
+            shouldContain(entity to COVERAGE_ERROR_MSG)
         }
+    }
+
+    @Test
+    fun `should ignore violation if coverage entity is not supported`() {
+        // GIVEN
+        val violationsOutputResolver = ViolationsOutputResolver(
+            CoverageRulesConfig {
+                violationRules += ViolationRule {
+                    minCoverageRatio = 0.1
+                    coverageEntity = CoverageEntity.INSTRUCTION
+                }
+            }
+        )
+        val node: CoverageNodeImpl = buildCoverageNode()
+        val limit: Limit = ICoverageNode.CounterEntity.CLASS.buildLimit()
+
+        // WHEN
+        violationsOutputResolver.onViolation(node, Rule(), limit, COVERAGE_ERROR_MSG)
+
+        // THEN
+        violationsOutputResolver.getViolations().shouldBeEmpty()
     }
 
     @ParameterizedTest
@@ -68,7 +90,7 @@ class ViolationsOutputResolverTest {
         ]
     )
     fun `should return violation message if rule violated and total count is greater than or equal to threshold`(
-        entityName: String,
+        entity: CoverageEntity,
         totalCount: Int,
         threshold: Int
     ) {
@@ -77,20 +99,21 @@ class ViolationsOutputResolverTest {
             CoverageRulesConfig {
                 violationRules += ViolationRule {
                     minCoverageRatio = 0.2
-                    coverageEntity = CoverageEntity.valueOf(entityName)
+                    coverageEntity = entity
                     entityCountThreshold = threshold
                 }
             }
         )
         val coverageNode: CoverageNodeImpl = buildCoverageNode(totalCount)
-        val limit: Limit = ICoverageNode.CounterEntity.valueOf(entityName).buildLimit()
+        val limit: Limit = ICoverageNode.CounterEntity.valueOf(entity.name).buildLimit()
 
         // WHEN
         violationsOutputResolver.onViolation(coverageNode, Rule(), limit, COVERAGE_ERROR_MSG)
 
         // THEN
         assertSoftly(violationsOutputResolver.getViolations()) {
-            shouldContainExactly(COVERAGE_ERROR_MSG)
+            shouldHaveSize(1)
+            shouldContain(entity to COVERAGE_ERROR_MSG)
         }
     }
 
@@ -103,7 +126,7 @@ class ViolationsOutputResolverTest {
         ]
     )
     fun `should return empty violations if rule violated and total count does not reach threshold`(
-        entityName: String,
+        entity: CoverageEntity,
         totalCount: Int,
         threshold: Int
     ) {
@@ -112,13 +135,13 @@ class ViolationsOutputResolverTest {
             CoverageRulesConfig {
                 violationRules += ViolationRule {
                     minCoverageRatio = 0.3
-                    coverageEntity = CoverageEntity.valueOf(entityName)
+                    coverageEntity = entity
                     entityCountThreshold = threshold
                 }
             }
         )
         val coverageNode: CoverageNodeImpl = buildCoverageNode(totalCount)
-        val limit: Limit = ICoverageNode.CounterEntity.valueOf(entityName).buildLimit()
+        val limit: Limit = ICoverageNode.CounterEntity.valueOf(entity.name).buildLimit()
 
         // WHEN
         violationsOutputResolver.onViolation(coverageNode, Rule(), limit, COVERAGE_ERROR_MSG)
@@ -128,20 +151,23 @@ class ViolationsOutputResolverTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = ICoverageNode.CounterEntity::class)
+    @EnumSource(value = CoverageEntity::class)
     fun `should not ignore violation if delta violation rule is not found by jacoco entity`(
-        jacocoEntity: ICoverageNode.CounterEntity,
+        entity: CoverageEntity,
     ) {
         // GIVEN
         val violationsOutputResolver = ViolationsOutputResolver(CoverageRulesConfig())
         val coverageNode: CoverageNodeImpl = buildCoverageNode(1)
-        val limit: Limit = jacocoEntity.buildLimit()
+        val limit: Limit = ICoverageNode.CounterEntity.valueOf(entity.name).buildLimit()
 
         // WHEN
         violationsOutputResolver.onViolation(coverageNode, Rule(), limit, COVERAGE_ERROR_MSG)
 
         // THEN
-        violationsOutputResolver.getViolations().shouldContainExactly(COVERAGE_ERROR_MSG)
+        assertSoftly(violationsOutputResolver.getViolations()) {
+            shouldHaveSize(1)
+            shouldContain(entity to COVERAGE_ERROR_MSG)
+        }
     }
 
     private fun buildCoverageNode(totalCount: Int = 0): CoverageNodeImpl {

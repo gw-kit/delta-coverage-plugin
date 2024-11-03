@@ -1,4 +1,5 @@
 import io.gradle.surpsg.deltacoverage.libDeps
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.kotlin.dsl.base
 import org.gradle.kotlin.dsl.`jvm-test-suite`
 
@@ -47,7 +48,7 @@ testing.suites {
                 systemProperty("kotest.framework.classpath.scanning.config.disable", "true")
 
                 testLogging {
-                    events("skipped", "failed")
+                    events(TestLogEvent.SKIPPED, TestLogEvent.FAILED, TestLogEvent.PASSED)
                     showStandardStreams = true
                 }
             }

@@ -51,10 +51,22 @@ jobs:
         run: |
           echo "number=$(git rev-list HEAD --count)" >> $GITHUB_OUTPUT
 
+      - name: Check publish
+        id: publish-snapshot
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const hasLabel = ${{ contains(github.event.pull_request.labels.*.name, 'publish-snapshot-artifacts') }};
+            const isPushEvent = ${{ github.event_name == 'push' }};
+            const isDevelopBranch = ${{ github.ref == 'refs/heads/develop' }};
+            const shouldPublish = hasLabel || (isPushEvent && isDevelopBranch);
+            core.setOutput('should-publish', `${shouldPublish}`);
+            console.log(`shouldPublish: ${shouldPublish}`);
+
       - name: Publish Snapshot Artifacts
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
-        run: ${gradle_cmd}
-          delta-coverage-gradle:publishPluginMavenPublicationToGitHubPackagesRepository
+        if: ${{ steps.publish-snapshot.outputs.should-publish == 'true' }}
+        run: ${gradle_cmd} 
+          delta-coverage-gradle:publishPluginMavenPublicationToGitHubPackagesRepository 
           -PsnapshotPrefix=${{ steps.git-commits.outputs.number }}
 
       - name: Run Delta Coverage check

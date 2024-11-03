@@ -3,7 +3,7 @@ package io.github.surpsg.deltacoverage.report.jacoco
 import com.google.common.jimfs.Configuration
 import com.google.common.jimfs.Jimfs
 import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
-import io.github.surpsg.deltacoverage.report.CoverageVerificationResult
+import io.github.surpsg.deltacoverage.report.CoverageSummary
 import io.github.surpsg.deltacoverage.report.DeltaReportGeneratorFacade
 import io.github.surpsg.deltacoverage.report.ReportContext
 import io.kotest.matchers.shouldBe
@@ -25,7 +25,7 @@ class DeltaReportGeneratorFacadeTest {
     @Suppress("VarCouldBeVal")
     @SpyK
     private var deltaReportGeneratorFacade = object : DeltaReportGeneratorFacade() {
-        override fun generate(reportContext: ReportContext) = emptyList<CoverageVerificationResult>()
+        override fun generate(reportContext: ReportContext) = listOf<CoverageSummary>()
     }
 
     @Test

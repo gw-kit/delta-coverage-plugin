@@ -1,6 +1,6 @@
 package io.github.surpsg.deltacoverage.report.jacoco
 
-import io.github.surpsg.deltacoverage.report.CoverageVerificationResult
+import io.github.surpsg.deltacoverage.report.CoverageSummary
 import io.github.surpsg.deltacoverage.report.DeltaReportGeneratorFacade
 import io.github.surpsg.deltacoverage.report.ReportContext
 import io.github.surpsg.deltacoverage.report.jacoco.analyzable.AnalyzableReport
@@ -18,12 +18,12 @@ import org.jacoco.report.MultiSourceFileLocator
 
 internal class JacocoDeltaReportGeneratorFacade : DeltaReportGeneratorFacade() {
 
-    override fun generate(reportContext: ReportContext): List<CoverageVerificationResult> {
+    override fun generate(reportContext: ReportContext): List<CoverageSummary> {
         val analyzableReports: Set<AnalyzableReport> = analyzableReportFactory(reportContext)
 
         val execFileLoader = CoverageLoader.loadExecFiles(reportContext.binaryCoverageFiles)
 
-        return analyzableReports.flatMap {
+        return analyzableReports.map {
             create(reportContext, execFileLoader, it)
         }
     }
@@ -32,7 +32,7 @@ internal class JacocoDeltaReportGeneratorFacade : DeltaReportGeneratorFacade() {
         reportContext: ReportContext,
         execFileLoader: ExecFileLoader,
         analyzableReport: AnalyzableReport,
-    ): List<CoverageVerificationResult> {
+    ): CoverageSummary {
         val bundleCoverage: IBundleCoverage = analyzeStructure(reportContext) { coverageVisitor ->
             analyzableReport.buildAnalyzer(execFileLoader.executionDataStore, coverageVisitor)
         }
@@ -51,7 +51,13 @@ internal class JacocoDeltaReportGeneratorFacade : DeltaReportGeneratorFacade() {
 
             visitEnd()
         }
-        return verifiableVisitor.verificationResults
+        return CoverageSummary(
+            reportBound = verifiableVisitor.reportBound,
+            view = reportContext.deltaCoverageConfig.view,
+            coverageRulesConfig = reportContext.deltaCoverageConfig.coverageRulesConfig,
+            verifications = verifiableVisitor.verificationResults,
+            coverageInfo = verifiableVisitor.coverageInfo
+        )
     }
 
     private fun analyzeStructure(

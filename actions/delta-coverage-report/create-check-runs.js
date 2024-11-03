@@ -6,7 +6,7 @@ module.exports = async (ctx) => {
     };
 
     const viewHasViolations = (view) => {
-        return view.violations.length > 0;
+        return view.verifications.length > 0;
     };
 
     const readViewMarkdownReport = (view) => {
@@ -34,7 +34,7 @@ module.exports = async (ctx) => {
         const response = await ctx.github.rest.checks.create({
             owner: ctx.context.repo.owner,
             repo: ctx.context.repo.repo,
-            name: `${viewName} Coverage`,
+            name: `📈${viewName} Coverage`,
             head_sha: ctx.headSha,
             status: 'completed',
             conclusion: conclusion,
@@ -45,9 +45,11 @@ module.exports = async (ctx) => {
         });
         return {
             viewName: viewName,
-            violations: view.violations,
+            verifications: view.verifications,
+            coverageRules: view.coverageRulesConfig,
             url: response.data.html_url,
-            conclusion: conclusion
+            conclusion: conclusion,
+            coverageInfo: view.coverageInfo
         }
     }
 
@@ -55,7 +57,7 @@ module.exports = async (ctx) => {
         const hasViolations = viewHasViolations(view);
         if (hasViolations) {
             const viewName = capitalize(view.view);
-            const violations = view.violations.join(';\n');
+            const violations = view.verifications.map(it => it.violation).join(';\n');
             const msg = `[${viewName}]: Code Coverage check failed:\n${violations}`;
             ctx.core.error(msg);
         }

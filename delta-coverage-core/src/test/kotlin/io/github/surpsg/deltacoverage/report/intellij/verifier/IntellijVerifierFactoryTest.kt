@@ -6,19 +6,17 @@ import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.config.ViolationRule
 import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.shouldBe
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 
 class IntellijVerifierFactoryTest {
 
-    @ParameterizedTest
-    @EnumSource
-    fun `buildVerifiers should return verifier if coverage ratio is set`(
-        entity: CoverageEntity
-    ) {
+    @Test
+    fun `buildVerifiers should return verifier if coverage ratio is set`() {
         // GIVEN
+        val entity = CoverageEntity.LINE
         val expectedMinCoverage = 0.3
         val expectedThreshold = 111
         val config = CoverageRulesConfig {
@@ -34,13 +32,29 @@ class IntellijVerifierFactoryTest {
 
         // THEN
         assertSoftly(actualVerifiers) {
-            shouldHaveSize(1)
-            first().rule shouldBe CoverageRuleWithThreshold(
-                id = 0,
-                coverageEntity = entity,
-                valueType = ValueType.COVERED_RATE,
-                min = expectedMinCoverage.toBigDecimal(),
-                threshold = expectedThreshold,
+            shouldHaveSize(3)
+            map { it.rule }.shouldContainExactly(
+                CoverageRuleWithThreshold(
+                    id = 0,
+                    coverageEntity = CoverageEntity.INSTRUCTION,
+                    valueType = ValueType.COVERED_RATE,
+                    min = BigDecimal.valueOf(0.0),
+                    threshold = null,
+                ),
+                CoverageRuleWithThreshold(
+                    id = 1,
+                    coverageEntity = CoverageEntity.BRANCH,
+                    valueType = ValueType.COVERED_RATE,
+                    min = BigDecimal.valueOf(0.0),
+                    threshold = null,
+                ),
+                CoverageRuleWithThreshold(
+                    id = 2,
+                    coverageEntity = entity,
+                    valueType = ValueType.COVERED_RATE,
+                    min = expectedMinCoverage.toBigDecimal(),
+                    threshold = expectedThreshold,
+                ),
             )
         }
     }
