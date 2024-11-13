@@ -55,7 +55,7 @@ class CoverageViolationsCollectorTest {
 
         // THEN
         coverageViolationsCollector.violations shouldContain CoverageVerifier.Violation(
-            coverageTrackType = coverageEntity.name,
+            coverageEntity = coverageEntity,
             expectedMinValue = minCoverage,
             actualValue = 0.2
         )
@@ -102,7 +102,7 @@ class CoverageViolationsCollectorTest {
 
         // THEN
         coverageViolationsCollector.violations shouldContain CoverageVerifier.Violation(
-            coverageTrackType = coverageEntity.name,
+            coverageEntity = coverageEntity,
             expectedMinValue = minCoverage,
             actualValue = 0.3
         )

@@ -146,7 +146,6 @@ class CoverageReportFactoryTest {
     }
 
     private fun anyReportLoadStrategy() = NamedReportLoadStrategy(
-        reportName = REPORT_VIEW,
         reportBound = REPORT_BOUND,
         reportLoadStrategy = ReportLoadStrategy.RawReportLoadStrategy(
             emptyList(),

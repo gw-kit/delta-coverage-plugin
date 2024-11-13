@@ -5,6 +5,7 @@ import io.github.surpsg.deltacoverage.diff.parse.ClassFile
 import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportContext
 import io.github.surpsg.deltacoverage.report.jacoco.filters.ModifiedLinesFilter
+import io.github.surpsg.deltacoverage.report.jacoco.report.CoverageInfoVisitor
 import io.github.surpsg.deltacoverage.report.jacoco.report.JacocoReport
 import io.github.surpsg.deltacoverage.report.jacoco.report.VerifiableReportVisitor
 import io.github.surpsg.deltacoverage.report.jacoco.verification.DefaultCoverageRulesVisitor
@@ -21,8 +22,10 @@ internal class DeltaCoverageAnalyzableReport(
 
     override fun buildVisitor(): VerifiableReportVisitor {
         return VerifiableReportVisitor.create(
+            ReportBound.DELTA_REPORT,
             reportVisitors(),
             DefaultCoverageRulesVisitor.create(reportContext),
+            CoverageInfoVisitor.create(),
         )
     }
 

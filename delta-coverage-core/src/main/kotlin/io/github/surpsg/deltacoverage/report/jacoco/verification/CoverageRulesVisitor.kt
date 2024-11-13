@@ -1,36 +1,36 @@
 package io.github.surpsg.deltacoverage.report.jacoco.verification
 
-import io.github.surpsg.deltacoverage.report.CoverageVerificationResult
+import io.github.surpsg.deltacoverage.report.CoverageSummary
 import io.github.surpsg.deltacoverage.report.ReportContext
 import org.jacoco.report.IReportVisitor
 import org.jacoco.report.MultiReportVisitor
 import org.jacoco.report.check.RulesChecker
 
 internal interface CoverageRulesVisitor : IReportVisitor {
-    val verificationResults: List<CoverageVerificationResult>
+    val verificationResults: List<CoverageSummary.VerificationResult>
 }
 
 internal object NoOpCoverageRulesVisitor : IReportVisitor by MultiReportVisitor(emptyList()), CoverageRulesVisitor {
-    override val verificationResults: List<CoverageVerificationResult> = emptyList()
+    override val verificationResults: List<CoverageSummary.VerificationResult> = emptyList()
 }
 
 internal class DefaultCoverageRulesVisitor(
-    private val reportContext: ReportContext,
     private val violationsOutput: ViolationsOutputResolver,
     rulesCheckerReportVisitor: IReportVisitor,
 ) : IReportVisitor by rulesCheckerReportVisitor, CoverageRulesVisitor {
 
-    private val innerVerificationResults: MutableList<CoverageVerificationResult> = mutableListOf()
+    private val innerVerificationResults: MutableList<CoverageSummary.VerificationResult> = mutableListOf()
 
-    override val verificationResults: List<CoverageVerificationResult>
+    override val verificationResults: List<CoverageSummary.VerificationResult>
         get() = innerVerificationResults
 
     override fun visitEnd() {
-        innerVerificationResults += CoverageVerificationResult(
-            view = reportContext.deltaCoverageConfig.reportsConfig.view,
-            coverageRulesConfig = reportContext.deltaCoverageConfig.coverageRulesConfig,
-            violations = violationsOutput.getViolations(),
-        )
+        violationsOutput.getViolations().forEach { (entity, violation) ->
+            innerVerificationResults += CoverageSummary.VerificationResult(
+                coverageEntity = entity,
+                violation = violation,
+            )
+        }
     }
 
     companion object {
@@ -44,7 +44,7 @@ internal class DefaultCoverageRulesVisitor(
                 }
                 .createVisitor(violationsOutput)
 
-            return DefaultCoverageRulesVisitor(reportContext, violationsOutput, reportVisitor)
+            return DefaultCoverageRulesVisitor(violationsOutput, reportVisitor)
         }
     }
 }

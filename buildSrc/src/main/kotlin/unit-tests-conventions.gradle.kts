@@ -1,4 +1,5 @@
 import io.gradle.surpsg.deltacoverage.libDeps
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     kotlin("jvm")
@@ -33,7 +34,10 @@ testing {
                     systemProperty("junit.jupiter.execution.parallel.config.fixed.parallelism", 2)
                     systemProperty("kotest.framework.classpath.scanning.config.disable", "true")
 
-                    testLogging.showStandardStreams = true
+                    testLogging {
+                        events(TestLogEvent.SKIPPED, TestLogEvent.FAILED, TestLogEvent.PASSED)
+                        showStandardStreams = true
+                    }
                 }
             }
         }

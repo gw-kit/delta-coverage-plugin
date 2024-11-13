@@ -4,7 +4,6 @@ import com.intellij.rt.coverage.report.ReportLoadStrategy
 import io.github.surpsg.deltacoverage.report.ReportBound
 
 internal class NamedReportLoadStrategy(
-    val reportName: String,
     val reportBound: ReportBound,
     val reportLoadStrategy: ReportLoadStrategy,
 )

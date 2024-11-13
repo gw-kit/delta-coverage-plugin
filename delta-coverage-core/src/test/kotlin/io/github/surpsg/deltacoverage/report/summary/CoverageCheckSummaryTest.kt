@@ -8,7 +8,8 @@ import com.google.common.jimfs.Jimfs
 import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.config.ViolationRule
-import io.github.surpsg.deltacoverage.report.CoverageVerificationResult
+import io.github.surpsg.deltacoverage.report.CoverageSummary
+import io.github.surpsg.deltacoverage.report.ReportBound
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.maps.shouldContainAll
@@ -44,45 +45,90 @@ class CoverageCheckSummaryTest {
             createFile().writeText(UNEXPECTED_TEXT)
         }
 
-        val verificationResults = listOf(
-            CoverageVerificationResult(
-                view = VIEW_NAME,
-                violations = listOf(VIOLATION_TEXT),
-                coverageRulesConfig = CoverageRulesConfig {
-                    failOnViolation = true
-                    violationRules += ViolationRule {
-                        coverageEntity = COVERAGE_ENTITY
-                        minCoverageRatio = MIN_COVERAGE_RATIO
-                        entityCountThreshold = ENTITY_COUNT_THRESHOLD
-                    }
-                },
-            )
-        )
+        val coverageSummaries: List<CoverageSummary> = listOf(buildSummary())
 
         // WHEN
-        CoverageCheckSummary.create(file, verificationResults)
+        CoverageCheckSummary.create(file, coverageSummaries)
 
         // THEN
         val actualDeserialized: List<Map<String, Any>> = file.readText().deserializeJsonToMap()
+        val expected: Map<String, Any> = buildExpectedSummary()
         assertSoftly(actualDeserialized) {
             shouldHaveSize(1)
-            first().shouldContainAll(
-                mapOf(
-                    "view" to VIEW_NAME,
-                    "violations" to listOf(VIOLATION_TEXT),
-                    "coverageRulesConfig" to linkedMapOf(
-                        "failOnViolation" to true,
-                        "entitiesRules" to linkedMapOf(
-                            "$COVERAGE_ENTITY" to linkedMapOf(
-                                "coverageEntity" to "$COVERAGE_ENTITY",
-                                "minCoverageRatio" to MIN_COVERAGE_RATIO,
-                                "entityCountThreshold" to ENTITY_COUNT_THRESHOLD
-                            )
-                        ),
-                    )
-                )
-            )
+            first().shouldContainAll(expected)
         }
+    }
+
+    @Test
+    fun `should filter out summaries for full coverage`() {
+        // GIVEN
+        val file: Path = fileSystem.getPath("/summary-3.json")
+
+        val coverageSummaries: List<CoverageSummary> = listOf(
+            buildSummary().copy(reportBound = ReportBound.FULL_REPORT)
+        )
+
+        // WHEN
+        CoverageCheckSummary.create(file, coverageSummaries)
+
+        // THEN
+        file.readText() shouldBe "[]"
+    }
+
+    private fun buildSummary() = CoverageSummary(
+        view = VIEW_NAME,
+        reportBound = ReportBound.DELTA_REPORT,
+        coverageRulesConfig = CoverageRulesConfig {
+            failOnViolation = true
+            violationRules += ViolationRule {
+                coverageEntity = COVERAGE_ENTITY
+                minCoverageRatio = MIN_COVERAGE_RATIO
+                entityCountThreshold = ENTITY_COUNT_THRESHOLD
+            }
+        },
+        verifications = listOf(
+            CoverageSummary.VerificationResult(
+                coverageEntity = COVERAGE_ENTITY,
+                violation = VIOLATION_TEXT,
+            )
+        ),
+        coverageInfo = listOf(
+            CoverageSummary.Info(
+                coverageEntity = COVERAGE_ENTITY,
+                covered = ACTUAL_COVERED,
+                total = TOTAL_ENTITIES
+            )
+        ),
+    )
+
+    private fun buildExpectedSummary(): Map<String, Any> {
+        return mapOf(
+            "view" to VIEW_NAME,
+            "verifications" to listOf(
+                mapOf(
+                    "coverageEntity" to "$COVERAGE_ENTITY",
+                    "violation" to VIOLATION_TEXT,
+                ),
+            ),
+            "coverageInfo" to listOf(
+                mapOf(
+                    "coverageEntity" to "$COVERAGE_ENTITY",
+                    "covered" to ACTUAL_COVERED,
+                    "total" to TOTAL_ENTITIES,
+                    "percents" to ACTUAL_COVERAGE,
+                ),
+            ),
+            "coverageRulesConfig" to linkedMapOf(
+                "failOnViolation" to true,
+                "entitiesRules" to linkedMapOf(
+                    "$COVERAGE_ENTITY" to linkedMapOf(
+                        "coverageEntity" to "$COVERAGE_ENTITY",
+                        "minCoverageRatio" to MIN_COVERAGE_RATIO,
+                        "entityCountThreshold" to ENTITY_COUNT_THRESHOLD,
+                    ),
+                ),
+            )
+        )
     }
 
     private fun String.deserializeJsonToMap(): List<Map<String, Any>> {
@@ -103,6 +149,10 @@ class CoverageCheckSummaryTest {
         val COVERAGE_ENTITY = CoverageEntity.BRANCH
         const val MIN_COVERAGE_RATIO = 0.31
         const val ENTITY_COUNT_THRESHOLD = 23
+
+        const val ACTUAL_COVERED = 45
+        const val TOTAL_ENTITIES = 100
+        val ACTUAL_COVERAGE = ACTUAL_COVERED.toDouble() / TOTAL_ENTITIES * 100
     }
 }
 

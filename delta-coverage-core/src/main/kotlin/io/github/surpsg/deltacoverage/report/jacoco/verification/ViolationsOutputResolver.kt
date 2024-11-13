@@ -19,9 +19,9 @@ internal class ViolationsOutputResolver(
 
     private val violationRules: Map<CoverageEntity, ViolationRule> by lazy { violationRuleConfig.entitiesRules }
 
-    private val foundViolations: MutableList<String> = mutableListOf()
+    private val foundViolations: MutableMap<CoverageEntity, String> = mutableMapOf()
 
-    fun getViolations(): List<String> = foundViolations
+    fun getViolations(): Map<CoverageEntity, String> = foundViolations
 
     override fun onViolation(node: ICoverageNode, rule: Rule, limit: Limit, message: String) {
         log.debug("New violation: $message")
@@ -32,10 +32,12 @@ internal class ViolationsOutputResolver(
                 "Coverage violation of {} was ignored because threshold={} but total={}",
                 violationResolveContext.coverageEntity,
                 violationResolveContext.thresholdCount,
-                violationResolveContext.totalCount
+                violationResolveContext.totalCount,
             )
         } else {
-            foundViolations += message
+            limit.entity.mapToCoverageEntity()?.let { coverageEntity ->
+                foundViolations[coverageEntity] = message
+            }
         }
     }
 

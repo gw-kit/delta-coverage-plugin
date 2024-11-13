@@ -9,8 +9,6 @@ import io.github.surpsg.deltacoverage.report.ReportBound
 
 internal object ReportLoadStrategyFactory {
 
-    private const val FULL_COVERAGE_REPORT = "full-coverage-report"
-
     fun buildReportLoadStrategies(reportContext: ReportContext): Sequence<NamedReportLoadStrategy> {
         val binaryReports: List<BinaryReport> = buildBinaryReports(reportContext)
         val intellijSourceInputs = IntellijSourceInputs(
@@ -26,14 +24,12 @@ internal object ReportLoadStrategyFactory {
 
         val deltaReportLoadStrategy = sequenceOf(
             NamedReportLoadStrategy(
-                reportContext.deltaCoverageConfig.view,
                 ReportBound.DELTA_REPORT,
                 PreloadedCoverageReportLoadStrategy(filterProjectData, binaryReports, intellijSourceInputs),
             )
         )
         return if (reportContext.deltaCoverageConfig.reportsConfig.fullCoverageReport) {
             deltaReportLoadStrategy + NamedReportLoadStrategy(
-                FULL_COVERAGE_REPORT,
                 ReportBound.FULL_REPORT,
                 buildRawReportLoadStrategy(binaryReports, intellijSourceInputs)
             )
