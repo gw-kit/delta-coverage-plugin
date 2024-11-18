@@ -41,7 +41,7 @@ class DeltaCoverageDiffSourcesTest {
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
                 reportViews.test.violationRules {
-                    failOnViolation.set(true)
+                    failOnViolation.set(false)
                     rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.INSTRUCTION) {
                         minCoverageRatio.set(1d)
                     }
@@ -53,7 +53,7 @@ class DeltaCoverageDiffSourcesTest {
         MockHttpServer(MOCK_SERVER_PORT, File(diffFilePath).readText()).use {
             // run // assert
             gradleRunner
-                .runDeltaCoverageTaskAndFail()
+                .runDeltaCoverageTask()
                 .assertOutputContainsStrings("instructions covered ratio is 0.5, but expected minimum is 1")
         }
     }
@@ -70,7 +70,7 @@ class DeltaCoverageDiffSourcesTest {
                     rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.INSTRUCTION) {
                         minCoverageRatio.set(1d)
                     }
-                    failOnViolation.set(true)
+                    failOnViolation.set(false)
                 }
             }
             """.trimIndent()
@@ -79,7 +79,7 @@ class DeltaCoverageDiffSourcesTest {
         MockHttpServer(MOCK_SERVER_PORT, File(diffFilePath).readText()).use {
             // run // assert
             gradleRunner
-                .runDeltaCoverageTaskAndFail()
+                .runDeltaCoverageTask()
                 .assertOutputContainsStrings("instructions covered ratio is 0.5, but expected minimum is 1")
         }
     }
@@ -93,7 +93,10 @@ class DeltaCoverageDiffSourcesTest {
             """
             deltaCoverageReport {
                 diffSource.git.compareWith 'HEAD'
-                reportViews.test.violationRules.failIfCoverageLessThan(0.7d)
+                reportViews.test.violationRules {
+                    failIfCoverageLessThan(0.7d)
+                    failOnViolation.set(false)
+                }    
             }
             
             """.trimIndent()
@@ -101,7 +104,7 @@ class DeltaCoverageDiffSourcesTest {
 
         // run // assert
         gradleRunner
-            .runDeltaCoverageTaskAndFail()
+            .runDeltaCoverageTask()
             .assertOutputContainsStrings(
                 "instructions covered ratio is 0.5, but expected minimum is 0.7",
                 "branches covered ratio is 0.5, but expected minimum is 0.7",
@@ -121,7 +124,10 @@ class DeltaCoverageDiffSourcesTest {
                     git.diffBase.set('HEAD')
                     git.useNativeGit.set(true)
                 }    
-                reportViews.test.violationRules.failIfCoverageLessThan(0.8d)
+                reportViews.test.violationRules {
+                    failIfCoverageLessThan(0.8d)
+                    failOnViolation.set(false)
+                } 
             }
             
             """.trimIndent()
@@ -129,7 +135,7 @@ class DeltaCoverageDiffSourcesTest {
 
         // run // assert
         gradleRunner
-            .runDeltaCoverageTaskAndFail()
+            .runDeltaCoverageTask()
             .assertOutputContainsStrings(
                 "instructions covered ratio is 0.5, but expected minimum is 0.8",
                 "branches covered ratio is 0.5, but expected minimum is 0.8",

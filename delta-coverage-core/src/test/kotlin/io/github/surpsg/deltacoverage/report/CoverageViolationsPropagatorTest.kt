@@ -16,60 +16,54 @@ class CoverageViolationsPropagatorTest {
     @Test
     fun `propagate should throw CoverageViolatedException if failOnViolation is true and there are violations`() {
         // GIVEN
-        val verificationResults = listOf(
-            coverageSummary {
-                coverageRulesConfig = CoverageRulesConfig {
-                    failOnViolation = true
-                }
-                verifications += VerificationResult(
-                    coverageEntity = CoverageEntity.INSTRUCTION,
-                    violation = "any violation 3"
-                )
+        val coverageSummary = coverageSummary {
+            coverageRulesConfig = CoverageRulesConfig {
+                failOnViolation = true
             }
-        )
+            verifications += VerificationResult(
+                coverageEntity = CoverageEntity.INSTRUCTION,
+                violation = "any violation 3"
+            )
+        }
 
         // WHEN // THEN
         shouldThrow<CoverageViolatedException> {
-            propagator.propagateAll(verificationResults)
+            propagator.propagateAll(coverageSummary)
         }
     }
 
     @Test
     fun `propagate should not throw any exception if failOnViolation is true and there are no violations`() {
         // GIVEN
-        val verificationResults = listOf(
-            coverageSummary {
-                coverageRulesConfig = CoverageRulesConfig {
-                    failOnViolation = true
-                }
-                verifications.clear()
+        val coverageSummary = coverageSummary {
+            coverageRulesConfig = CoverageRulesConfig {
+                failOnViolation = true
             }
-        )
+            verifications.clear()
+        }
 
         // WHEN // THEN
         shouldNotThrow<CoverageViolatedException> {
-            propagator.propagateAll(verificationResults)
+            propagator.propagateAll(coverageSummary)
         }
     }
 
     @Test
     fun `propagate should not throw any exception if failOnViolation is false`() {
         // GIVEN
-        val verificationResults = listOf(
-            coverageSummary {
-                coverageRulesConfig = CoverageRulesConfig {
-                    failOnViolation = false
-                }
-                verifications += VerificationResult(
-                    coverageEntity = CoverageEntity.INSTRUCTION,
-                    violation = "any violation 3"
-                )
+        val coverageSummary = coverageSummary {
+            coverageRulesConfig = CoverageRulesConfig {
+                failOnViolation = false
             }
-        )
+            verifications += VerificationResult(
+                coverageEntity = CoverageEntity.INSTRUCTION,
+                violation = "any violation 3"
+            )
+        }
 
         // WHEN // THEN
         shouldNotThrow<CoverageViolatedException> {
-            propagator.propagateAll(verificationResults)
+            propagator.propagateAll(coverageSummary)
         }
     }
 

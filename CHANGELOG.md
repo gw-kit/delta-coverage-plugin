@@ -4,6 +4,8 @@
 
 ### New features
 - Implemented report views. See [Report views](./README.md#report-views) for details.
+  - Each view produces a separate `deltaCoverage<view-name>` task.
+- Now `deltaCoverage` is lifecycle task that depends on all `deltaCoverage<view-name>`.
 - Reworked [Delta-Coverage GitHub Action](actions/delta-coverage-report/README.md). 
   - Now it publishes Delta-Coverage report using GitHub Check API.
   - PR comment now contains only links to the check runs and short summary.

@@ -11,6 +11,7 @@ import io.kotest.matchers.paths.shouldBeADirectory
 import io.kotest.matchers.paths.shouldContainFile
 import io.kotest.matchers.paths.shouldExist
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -44,36 +45,10 @@ class DeltaCoverageViolationsTest {
 
         @Test
         fun `delta-coverage should validate coverage`() {
-            // setup
-            val baseReportDir = "build/custom/reports/dir/jacoco/"
-            buildFile.file.appendText(
-                """
-                deltaCoverageReport {
-                    diffSource.file.set('$diffFilePath')
-                    reportConfiguration.baseReportDir.set('$baseReportDir')
-                    reportViews.test {
-                        violationRules {
-                            failIfCoverageLessThan 1.0
-                            failOnViolation.set(true)
-                        }
-                    }
-                }
-            """.trimIndent()
-            )
-
-            // run // assert
-            gradleRunner
-                .runDeltaCoverageTaskAndFail()
-                .assertOutputContainsStrings("Fail on violations: true. Found violations: 3")
-        }
-
-        @Test
-        fun `delta-coverage should fail on violation and generate html report`() {
-            // setup
+            // GIVEN
             val absolutePathBaseReportDir = rootProjectDir
                 .resolve("build/absolute/path/reports/jacoco/")
                 .toUnixAbsolutePath()
-
             buildFile.file.appendText(
                 """
                 deltaCoverageReport {
@@ -82,33 +57,47 @@ class DeltaCoverageViolationsTest {
                         html.set(true)
                         baseReportDir.set('$absolutePathBaseReportDir')
                     }
-                    reportViews.test {
-                        violationRules {
-                            failOnViolation.set(true)
-                            rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.LINE) {
-                                minCoverageRatio.set(0.7d)
+                    reportViews {
+                        test {
+                            violationRules {
+                                failOnViolation.set(true)
+                                rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.LINE) {
+                                    minCoverageRatio.set(0.7d)
+                                }
+                                rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.INSTRUCTION) {
+                                    minCoverageRatio.set(0.8d)
+                                }
+                                rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.BRANCH) {
+                                    minCoverageRatio.set(0.6d)
+                                }
                             }
-                            rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.INSTRUCTION) {
-                                minCoverageRatio.set(0.8d)
-                            }
-                            rule(io.github.surpsg.deltacoverage.gradle.CoverageEntity.BRANCH) {
-                                minCoverageRatio.set(0.6d)
-                            }
+                        }
+                        aggregated {
+                            violationRules.failIfCoverageLessThan 0.6
                         }
                     }
                 }
             """.trimIndent()
             )
 
-            // run // assert
-            gradleRunner
-                .runDeltaCoverageTaskAndFail()
+            // WHEN
+            val result = gradleRunner.runDeltaCoverageTaskAndFail(printLogs = false, "--continue")
+
+            // THEN
+            result.assertTaskStatusEqualsTo(TEST_VIEW.deltaCoverageTask(), TaskOutcome.FAILED)
+                .assertTaskStatusEqualsTo(AGGREGATED_VIEW.deltaCoverageTask(), TaskOutcome.FAILED)
                 .assertOutputContainsStrings(
-                    "instructions covered ratio is 0.5, but expected minimum is 0.8",
-                    "branches covered ratio is 0.5, but expected minimum is 0.6",
-                    "lines covered ratio is 0.6, but expected minimum is 0.7"
+                    "[test] Fail on violations: true. Found violations: 3",
+                    "Rule violated for bundle test: instructions covered ratio is 0.5, but expected minimum is 0.8",
+                    "Rule violated for bundle test: branches covered ratio is 0.5, but expected minimum is 0.6",
+                    "Rule violated for bundle test: lines covered ratio is 0.6, but expected minimum is 0.7",
+
+                    "[aggregated] Fail on violations: true. Found violations: 2",
+                    "Rule violated for bundle aggregated: instructions covered ratio is 0.5, but expected minimum is 0.6",
+                    "Rule violated for bundle aggregated: branches covered ratio is 0.5, but expected minimum is 0.6",
                 )
 
+            // AND THEN
             val htmlReportDir = Paths.get(
                 absolutePathBaseReportDir, "coverage-reports", "delta-coverage", "test", "html"
             )

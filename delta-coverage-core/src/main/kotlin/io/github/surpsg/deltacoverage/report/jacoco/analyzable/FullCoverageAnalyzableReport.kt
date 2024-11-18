@@ -15,7 +15,7 @@ internal open class FullCoverageAnalyzableReport(
     private val jacocoReports: List<JacocoReport>
 ) : AnalyzableReport {
 
-    open val reportBound: ReportBound = ReportBound.FULL_REPORT
+    override val reportBound: ReportBound = ReportBound.FULL_REPORT
 
     override fun buildVisitor(): VerifiableReportVisitor {
         return VerifiableReportVisitor.create(

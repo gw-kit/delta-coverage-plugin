@@ -13,7 +13,10 @@ import org.jacoco.core.data.ExecutionDataStore
 
 internal interface AnalyzableReport {
 
+    val reportBound: ReportBound
+
     fun buildVisitor(): VerifiableReportVisitor
+
     fun buildAnalyzer(executionDataStore: ExecutionDataStore, coverageVisitor: ICoverageVisitor): Analyzer
 }
 
