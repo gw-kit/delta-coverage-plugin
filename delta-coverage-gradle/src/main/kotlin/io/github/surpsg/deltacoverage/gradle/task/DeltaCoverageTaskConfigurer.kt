@@ -11,20 +11,19 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.testing.Test
 
-private typealias CollectionProvider<T> = Collection<Provider<T>>
-private typealias MapProvider<K, V> = Map<K, Provider<V>>
-
 internal object DeltaCoverageTaskConfigurer {
 
     const val AGGREGATED_REPORT_VIEW_NAME = "aggregated"
 
     fun configure(
+        view: String,
         deltaCoverageConfig: DeltaCoverageConfiguration,
         deltaCoverageTask: DeltaCoverageTask,
     ) = with(deltaCoverageTask) {
+        viewName.set(view)
         deltaCoverageConfigProperty.set(deltaCoverageConfig)
         configureDependencies()
-        applySourcesInputs(deltaCoverageConfig)
+        applySourcesInputs(view, deltaCoverageConfig)
     }
 
     private fun DeltaCoverageTask.configureDependencies() = project.afterEvaluate {
@@ -51,42 +50,49 @@ internal object DeltaCoverageTaskConfigurer {
     }
 
     private fun DeltaCoverageTask.applySourcesInputs(
+        viewName: String,
         config: DeltaCoverageConfiguration
     ) = project.gradle.taskGraph.whenReady {
-        project.obtainViewSources(config)
-            .forEach { (view, viewSourcesProvider) ->
-                sourcesFiles.set(viewSourcesProvider.map { it.sources })
-                classesFiles.set(viewSourcesProvider.map { it.classes })
-                coverageBinaryFiles.put(view, viewSourcesProvider.map { it.coverageBinaries })
-            }
+        val viewSourcesProvider: Provider<ViewSources> = project.obtainViewSources(viewName, config)
+        sourcesFiles.set(
+            viewSourcesProvider.map { it.sources }
+        )
+        classesFiles.set(
+            viewSourcesProvider.map { it.classes }
+        )
+        coverageBinaryFiles.put(
+            viewName,
+            viewSourcesProvider.map { it.coverageBinaries },
+        )
     }
 
     private fun Project.obtainViewSources(
+        viewName: String,
         config: DeltaCoverageConfiguration,
-    ): Map<String, Provider<ViewSources>> {
+    ): Provider<ViewSources> {
         val contextBuilder = SourcesResolver.Context.Builder.newBuilder(project, project.objects, config)
-        val viewSources: MapProvider<String, ViewSources> = config.reportViews
-            .asSequence()
-            .filter { it.name != AGGREGATED_REPORT_VIEW_NAME }
-            .map { view ->
-                view.name to provider {
-                    ViewSources(
-                        viewName = view.name,
-                        sources = resolveSource(view.name, contextBuilder, SourceType.SOURCES),
-                        classes = resolveSource(view.name, contextBuilder, SourceType.CLASSES),
-                        coverageBinaries = resolveSource(view.name, contextBuilder, SourceType.COVERAGE_BINARIES)
-                    )
-                }
+        return if (viewName == AGGREGATED_REPORT_VIEW_NAME) {
+            project.buildAggregatedViewSources(config, contextBuilder)
+        } else {
+            provider {
+                buildViewSources(viewName, contextBuilder)
             }
-            .toMap()
-
-        val aggregated: Provider<ViewSources> = project.buildAggregatedViewSources(viewSources.values)
-
-        return viewSources + (AGGREGATED_REPORT_VIEW_NAME to aggregated)
+        }
     }
 
+    private fun buildViewSources(
+        viewName: String,
+        contextBuilder: SourcesResolver.Context.Builder,
+    ): ViewSources = ViewSources(
+        viewName = viewName,
+        sources = resolveSource(viewName, contextBuilder, SourceType.SOURCES),
+        classes = resolveSource(viewName, contextBuilder, SourceType.CLASSES),
+        coverageBinaries = resolveSource(viewName, contextBuilder, SourceType.COVERAGE_BINARIES)
+    )
+
     private fun Project.buildAggregatedViewSources(
-        viewSources: CollectionProvider<ViewSources>,
+        config: DeltaCoverageConfiguration,
+        contextBuilder: SourcesResolver.Context.Builder,
     ): Provider<ViewSources> {
         val seedProvider = provider {
             ViewSources(
@@ -96,18 +102,14 @@ internal object DeltaCoverageTaskConfigurer {
                 coverageBinaries = files(),
             )
         }
-        return viewSources.fold(seedProvider) { accProvider, nextSourcesProvider ->
-            accProvider.flatMap { acc ->
-                nextSourcesProvider.map { next ->
-                    ViewSources(
-                        viewName = acc.viewName,
-                        sources = acc.sources + next.sources,
-                        classes = acc.classes + next.classes,
-                        coverageBinaries = acc.coverageBinaries + next.coverageBinaries
-                    )
+        return config.reportViews
+            .asSequence()
+            .filter { it.name != AGGREGATED_REPORT_VIEW_NAME }
+            .fold(seedProvider) { accProvider, view ->
+                accProvider.map { acc ->
+                    acc + buildViewSources(view.name, contextBuilder)
                 }
             }
-        }
     }
 
     private fun resolveSource(
@@ -124,5 +126,13 @@ internal object DeltaCoverageTaskConfigurer {
         val sources: FileCollection,
         val classes: FileCollection,
         val coverageBinaries: FileCollection,
-    )
+    ) {
+
+        operator fun plus(other: ViewSources): ViewSources = ViewSources(
+            viewName = viewName,
+            sources = sources + other.sources,
+            classes = classes + other.classes,
+            coverageBinaries = coverageBinaries + other.coverageBinaries,
+        )
+    }
 }

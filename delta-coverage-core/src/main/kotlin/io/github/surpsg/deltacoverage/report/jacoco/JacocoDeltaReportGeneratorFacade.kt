@@ -2,6 +2,7 @@ package io.github.surpsg.deltacoverage.report.jacoco
 
 import io.github.surpsg.deltacoverage.report.CoverageSummary
 import io.github.surpsg.deltacoverage.report.DeltaReportGeneratorFacade
+import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportContext
 import io.github.surpsg.deltacoverage.report.jacoco.analyzable.AnalyzableReport
 import io.github.surpsg.deltacoverage.report.jacoco.analyzable.analyzableReportFactory
@@ -18,14 +19,19 @@ import org.jacoco.report.MultiSourceFileLocator
 
 internal class JacocoDeltaReportGeneratorFacade : DeltaReportGeneratorFacade() {
 
-    override fun generate(reportContext: ReportContext): List<CoverageSummary> {
+    override fun generate(reportContext: ReportContext): CoverageSummary {
         val analyzableReports: Set<AnalyzableReport> = analyzableReportFactory(reportContext)
 
         val execFileLoader = CoverageLoader.loadExecFiles(reportContext.binaryCoverageFiles)
 
-        return analyzableReports.map {
-            create(reportContext, execFileLoader, it)
-        }
+        val summaries: Map<ReportBound, CoverageSummary> = analyzableReports
+            .asSequence()
+            .map { it.reportBound to it }
+            .map { (reportBound, analyzableReport) ->
+                reportBound to create(reportContext, execFileLoader, analyzableReport)
+            }
+            .toMap()
+        return summaries.getValue(ReportBound.DELTA_REPORT)
     }
 
     private fun create(

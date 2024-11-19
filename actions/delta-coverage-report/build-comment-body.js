@@ -2,7 +2,7 @@ module.exports = (ctx) => {
 
     const createCheckRunSummaryText = (checkRun) => {
         const conclusion = checkRun.conclusion === 'success' ? '✅' : '❌';
-        return `${conclusion} [${checkRun.viewName}](${checkRun.url}).`;
+        return `${conclusion} [${checkRun.viewName}](${checkRun.url})`;
     }
 
     const buildCoverageInfoMap = (checkRun) => {

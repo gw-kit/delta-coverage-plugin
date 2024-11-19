@@ -13,7 +13,7 @@ import io.github.surpsg.deltacoverage.report.intellij.verifier.CoverageAssertion
 
 internal class IntellijDeltaReportGeneratorFacade : DeltaReportGeneratorFacade() {
 
-    override fun generate(reportContext: ReportContext): List<CoverageSummary> {
+    override fun generate(reportContext: ReportContext): CoverageSummary {
         val reportBoundToLoadStrategy: Map<ReportBound, NamedReportLoadStrategy> =
             ReportLoadStrategyFactory.buildReportLoadStrategies(reportContext)
                 .associateBy { it.reportBound }
@@ -25,9 +25,7 @@ internal class IntellijDeltaReportGeneratorFacade : DeltaReportGeneratorFacade()
             )
             .forEach(ReportBuilder::buildReport)
 
-        return listOf(
-            verifyCoverage(reportContext, reportBoundToLoadStrategy)
-        )
+        return verifyCoverage(reportContext, reportBoundToLoadStrategy)
     }
 
     private fun verifyCoverage(

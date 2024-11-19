@@ -8,9 +8,9 @@ import java.lang.invoke.MethodHandles
 internal class CoverageViolationsPropagator {
 
     fun propagateAll(
-        coverageSummaries: Iterable<CoverageSummary>,
+        coverageSummary: CoverageSummary,
     ) {
-        val exceptionMsg: String = coverageSummaries.asSequence()
+        val exceptionMsg: String = sequenceOf(coverageSummary)
             .filter { result -> filterOutSoftViolations(result) }
             .flatMap { result -> result.contextualViolations().asSequence() }
             .joinToString(";\n")

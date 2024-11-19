@@ -10,10 +10,8 @@ import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.config.ViolationRule
 import io.github.surpsg.deltacoverage.report.CoverageSummary
 import io.github.surpsg.deltacoverage.report.ReportBound
-import io.kotest.assertions.assertSoftly
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.maps.shouldContainAll
-import io.kotest.matchers.shouldBe
+import io.kotest.matchers.paths.shouldNotExist
 import org.junit.jupiter.api.Test
 import java.nio.file.FileSystem
 import java.nio.file.Path
@@ -27,52 +25,35 @@ class CoverageCheckSummaryTest {
     private val fileSystem: FileSystem = Jimfs.newFileSystem(Configuration.unix())
 
     @Test
-    fun `should create file with empty json array`() {
-        // GIVEN
-        val file: Path = fileSystem.getPath("/summary-1.json")
-
-        // WHEN
-        CoverageCheckSummary.create(file, emptyList())
-
-        // THEN
-        file.readText() shouldBe "[]"
-    }
-
-    @Test
     fun `should overwrite file with summary`() {
         // GIVEN
         val file: Path = fileSystem.getPath("/summary-2.json").apply {
             createFile().writeText(UNEXPECTED_TEXT)
         }
 
-        val coverageSummaries: List<CoverageSummary> = listOf(buildSummary())
+        val coverageSummary: CoverageSummary = buildSummary()
 
         // WHEN
-        CoverageCheckSummary.create(file, coverageSummaries)
+        CoverageCheckSummary.create(file, coverageSummary)
 
         // THEN
-        val actualDeserialized: List<Map<String, Any>> = file.readText().deserializeJsonToMap()
+        val actualDeserialized: Map<String, Any> = file.readText().deserializeJsonToMap()
         val expected: Map<String, Any> = buildExpectedSummary()
-        assertSoftly(actualDeserialized) {
-            shouldHaveSize(1)
-            first().shouldContainAll(expected)
-        }
+        actualDeserialized.shouldContainAll(expected)
     }
 
     @Test
-    fun `should filter out summaries for full coverage`() {
+    fun `should do nothing if coverage bound is not delta coverage`() {
         // GIVEN
-        val file: Path = fileSystem.getPath("/summary-3.json")
+        val file: Path = fileSystem.getPath("/summary-any.json")
 
-        val coverageSummaries: List<CoverageSummary> = listOf(
-            buildSummary().copy(reportBound = ReportBound.FULL_REPORT)
-        )
+        val coverageSummary: CoverageSummary = buildSummary().copy(reportBound = ReportBound.FULL_REPORT)
 
         // WHEN
-        CoverageCheckSummary.create(file, coverageSummaries)
+        CoverageCheckSummary.create(file, coverageSummary)
 
         // THEN
-        file.readText() shouldBe "[]"
+        file.shouldNotExist()
     }
 
     private fun buildSummary() = CoverageSummary(
@@ -131,12 +112,12 @@ class CoverageCheckSummaryTest {
         )
     }
 
-    private fun String.deserializeJsonToMap(): List<Map<String, Any>> {
+    private fun String.deserializeJsonToMap(): Map<String, Any> {
         return ObjectMapper().let { mapper ->
             val jsonNode: JsonNode = mapper.readTree(this)
             mapper.convertValue(
                 jsonNode,
-                object : TypeReference<List<Map<String, Any>>>() {}
+                object : TypeReference<Map<String, Any>>() {}
             )
         }
     }

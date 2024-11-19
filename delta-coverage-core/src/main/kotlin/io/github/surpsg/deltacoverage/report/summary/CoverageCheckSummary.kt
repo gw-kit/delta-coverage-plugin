@@ -11,10 +11,11 @@ internal object CoverageCheckSummary {
 
     fun create(
         reportLocation: Path,
-        coverageSummaries: List<CoverageSummary>
+        coverageSummary: CoverageSummary
     ) {
-        val deltaCoverageSuppress = coverageSummaries.filter { it.reportBound == ReportBound.DELTA_REPORT }
-        val writeValueAsString = objectMapper.writeValueAsString(deltaCoverageSuppress)
-        reportLocation.writeText(writeValueAsString)
+        if (coverageSummary.reportBound == ReportBound.DELTA_REPORT) {
+            val writeValueAsString = objectMapper.writeValueAsString(coverageSummary)
+            reportLocation.writeText(writeValueAsString)
+        }
     }
 }

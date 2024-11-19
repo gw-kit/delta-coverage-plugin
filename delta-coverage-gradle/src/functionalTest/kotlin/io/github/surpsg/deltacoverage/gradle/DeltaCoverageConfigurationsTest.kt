@@ -5,6 +5,7 @@ import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
 import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
 import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
 import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
+import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -40,7 +41,7 @@ class DeltaCoverageConfigurationsTest {
 
         // WHEN // THEN
         gradleRunner
-            .runDeltaCoverageTaskAndFail()
+            .runTaskAndFail(TEST_TASK_NAME, DELTA_COVERAGE_TASK)
             .assertOutputContainsStrings("'deltaCoverageReport.classesDirs' file collection is empty.")
     }
 
@@ -58,5 +59,25 @@ class DeltaCoverageConfigurationsTest {
 
         // WHEN // THEN
         gradleRunner.runDeltaCoverageTask()
+    }
+
+    @Test
+    fun `should create delta coverage tasks`() {
+        // GIVEN
+        buildFile.file.appendText(
+            """
+            deltaCoverageReport {
+                diffSource.file.set('$diffFilePath')
+            }
+        """.trimIndent()
+        )
+
+        // WHEN
+        gradleRunner.runTask(DELTA_COVERAGE_TASK, "--dry-run")
+            .assertOutputContainsStrings(
+                "':deltaCoverage'",
+                "':deltaCoverageTest'",
+                "':deltaCoverageAggregated'",
+            )
     }
 }
