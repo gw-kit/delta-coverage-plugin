@@ -1,7 +1,7 @@
 # Delta Coverage gradle plugin
 
 ![GitHub Release](https://img.shields.io/github/v/release/SurpSG/delta-coverage-plugin)
-[![Main branch checks](https://github.com/SurpSG/delta-coverage-plugin/actions/workflows/main-branch.yml/badge.svg?branch=main)](https://github.com/SurpSG/delta-coverage-plugin/actions/workflows/main-branch.yml)
+[![Build](https://github.com/gw-kit/delta-coverage-plugin/actions/workflows/base-ci.yml/badge.svg?branch=main)](https://github.com/gw-kit/delta-coverage-plugin/actions/workflows/base-ci.yml)
 [![codecov](https://codecov.io/gh/gw-kit/delta-coverage-plugin/graph/badge.svg?token=69BAXyEhse)](https://codecov.io/gh/gw-kit/delta-coverage-plugin)
 [![GitHub issues](https://img.shields.io/github/issues/SurpSG/delta-coverage-plugin)](https://github.com/SurpSG/delta-coverage-plugin/issues)
 [![GitHub stars](https://img.shields.io/github/stars/SurpSG/delta-coverage-plugin?style=flat-square)](https://github.com/SurpSG/delta-coverage-plugin/stargazers)
