@@ -1,6 +1,6 @@
 # Delta-Coverage Gradle plugin Changelog
 
-## 3.0.0-RC
+## 3.0.0
 
 ### New features
 - Implemented report views. See [Report views](./README.md#report-views) for details.
