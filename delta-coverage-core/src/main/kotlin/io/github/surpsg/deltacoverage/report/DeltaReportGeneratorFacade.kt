@@ -13,17 +13,14 @@ abstract class DeltaReportGeneratorFacade {
 
     fun generateReports(
         summaryFileLocation: Path,
-        configs: Iterable<DeltaCoverageConfig>,
+        config: DeltaCoverageConfig,
     ) {
-        val verificationResults: List<CoverageVerificationResult> = configs.flatMap {
-            log.debug("[{}] Run Delta-Coverage with config: {}", it.view, it)
-            val context = ReportContext(it)
-            generate(context)
-        }
+        log.debug("[{}] Run Delta-Coverage with config: {}", config.view, config)
+        val coverageSummary: CoverageSummary = generate(ReportContext(config))
 
-        CoverageCheckSummary.create(summaryFileLocation, verificationResults)
-        CoverageViolationsPropagator().propagateAll(verificationResults)
+        CoverageCheckSummary.create(summaryFileLocation, coverageSummary)
+        CoverageViolationsPropagator().propagateAll(coverageSummary)
     }
 
-    internal abstract fun generate(reportContext: ReportContext): List<CoverageVerificationResult>
+    internal abstract fun generate(reportContext: ReportContext): CoverageSummary
 }

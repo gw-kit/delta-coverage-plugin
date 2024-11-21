@@ -252,11 +252,12 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
 
 ## Gradle task description
 
-The plugin adds a task `deltaCoverage` that depends on compile tasks.
+The plugin adds tasks `deltaCoverage<report-view>` and lifecycle task `deltaCoverage` that depends on 
+all `deltaCoverage<report-view>` tasks.
 
-The task does the following:
+`deltaCoverage<report-view>` task does the following:
 
-* loads code coverage data specified by `deltaCoverageReport.<report-view>.coverageBinaryFiles` for all views.
+* loads code coverage data specified by `deltaCoverageReport.<report-view>.coverageBinaryFiles`.
 * analyzes the coverage data and filters according to `diffSource.url`/`diffSource.file`.
 * generates html report(if enabled: `reports.html = true`) to directory `reports.baseReportsDir`.
 * checks coverage ratio if `<report-view>.violationRules` is specified.

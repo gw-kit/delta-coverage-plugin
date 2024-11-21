@@ -3,7 +3,7 @@ name: Render Delta Coverage Report
 inputs:
   title:
     description: 'Title in PR comment.'
-    default: 'Delta Coverage Check'
+    default: '📈 Δelta Coverage Check'
     required: false
 
   summary-report-path:
@@ -79,36 +79,18 @@ runs:
             return comment.id
           }
 
-    - name: Log check-runs
-      uses: actions/github-script@v7
-      continue-on-error: true
-      with:
-        script: |
-          console.log(`${{ steps.create-check-runs.outputs.check-runs }}`)
-
     - id: build-message
       uses: actions/github-script@v7
       with:
         github-token: ${{ inputs.github-token }}
         script: |
-          const fs = require('fs');
-          const checkRunsJson = `${{ steps.create-check-runs.outputs.check-runs }}`;
-          const checkRuns = JSON.parse(checkRunsJson);
-          
-          let summaryBuffer = core.summary
-            .addHeading(`${{ inputs.title }}`, '2')
-            .addRaw('${{ steps.comment-marker.outputs.result }}', true)
-            .addEOL()
-          
-          checkRuns.forEach(checkRun => {
-            const conclusion = checkRun.conclusion === 'success' ? '✅' : '❌';
-            const violations = checkRun.violations
-              .map(it => `   - \`${it}\``)
-              .join('\n');
-            const runText = `- ${conclusion} [${checkRun.viewName}](${checkRun.url}) \n${violations}`
-            summaryBuffer = summaryBuffer.addRaw(runText, true);
+          const createCommentMsg = require('${{ github.action_path }}/build-comment-body.js');
+          return createCommentMsg({
+            checkRunsContent: `${{ steps.create-check-runs.outputs.check-runs }}`,
+            commentTitle: '${{ inputs.title }}',
+            commentMarker: `${{ steps.comment-marker.outputs.result }}`,
+            core: core
           });
-          return summaryBuffer.stringify() // generate text
 
     - name: Update or Create Comment
       uses: actions/github-script@v7

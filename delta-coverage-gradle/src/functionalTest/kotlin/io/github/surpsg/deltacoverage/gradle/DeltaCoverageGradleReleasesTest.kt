@@ -50,6 +50,5 @@ class DeltaCoverageGradleReleasesTest {
         gradleRunner
             .withGradleVersion(gradleVersion)
             .runDeltaCoverageTask()
-            .assertDeltaCoverageStatusEqualsTo(SUCCESS)
     }
 }

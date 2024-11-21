@@ -13,22 +13,28 @@ internal object IntellijVerifierFactory {
         projectData: ProjectData,
         violationRuleConfig: CoverageRulesConfig,
     ): Iterable<CoverageVerifier> {
-        return violationRuleConfig.entitiesRules.asSequence()
-            .mapIndexed { index, (entity, rule) ->
-                entity.buildRule(index, rule)
+        return CoverageEntity.entries.asSequence()
+            .map { entity ->
+                violationRuleConfig.entitiesRules[entity] ?: entity.noOpViolationRule()
             }
+            .mapIndexed { index, violationRule -> buildCoverageRule(index, violationRule) }
             .map { rule -> CoverageVerifier(projectData, rule) }
             .toList()
     }
 
-    private fun CoverageEntity.buildRule(
+    private fun buildCoverageRule(
         id: Int,
         violationRule: ViolationRule
     ) = CoverageRuleWithThreshold( // TODO maybe extract common part from jacoco and this one
         id,
-        this,
+        violationRule.coverageEntity,
         ValueType.COVERED_RATE,
         BigDecimal.valueOf(violationRule.minCoverageRatio),
         violationRule.entityCountThreshold,
     )
+
+    private fun CoverageEntity.noOpViolationRule() = ViolationRule {
+        coverageEntity = this@noOpViolationRule
+        minCoverageRatio = 0.0
+    }
 }

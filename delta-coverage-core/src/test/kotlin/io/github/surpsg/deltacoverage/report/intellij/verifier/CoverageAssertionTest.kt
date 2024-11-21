@@ -6,7 +6,8 @@ import com.intellij.rt.coverage.data.instructions.ClassInstructions
 import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.config.ViolationRule
-import io.github.surpsg.deltacoverage.report.CoverageVerificationResult
+import io.github.surpsg.deltacoverage.report.CoverageSummary
+import io.github.surpsg.deltacoverage.report.ReportBound
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -19,17 +20,23 @@ class CoverageAssertionTest {
         val coverageRulesConfig = CoverageRulesConfig {}
 
         // WHEN
-        val verificationResults: CoverageVerificationResult = CoverageAssertion.verify(
+        val coverageSummary: CoverageSummary = CoverageAssertion.verify(
             view,
             ProjectData(),
             coverageRulesConfig
         )
 
         // THEN
-        verificationResults shouldBe CoverageVerificationResult(
+        coverageSummary shouldBe CoverageSummary(
             view = view,
+            reportBound = ReportBound.DELTA_REPORT,
             coverageRulesConfig = coverageRulesConfig,
-            violations = emptyList()
+            verifications = emptyList(),
+            coverageInfo = listOf(
+                CoverageSummary.Info(CoverageEntity.INSTRUCTION, 0, 0),
+                CoverageSummary.Info(CoverageEntity.BRANCH, 0, 0),
+                CoverageSummary.Info(CoverageEntity.LINE, 0, 0),
+            ),
         )
     }
 
@@ -37,25 +44,37 @@ class CoverageAssertionTest {
     fun `should return verification result with violations when violation found`() {
         // GIVEN
         val view = "violated"
+        val entity = CoverageEntity.LINE
         val coverageRulesConfig = CoverageRulesConfig {
             violationRules += ViolationRule {
-                coverageEntity = CoverageEntity.LINE
+                coverageEntity = entity
                 minCoverageRatio = 1.0
             }
         }
 
         // WHEN
-        val verificationResults: CoverageVerificationResult = CoverageAssertion.verify(
+        val coverageSummary: CoverageSummary = CoverageAssertion.verify(
             view,
             buildCoverageProjectData(),
-            coverageRulesConfig
+            coverageRulesConfig,
         )
 
         // THEN
-        verificationResults shouldBe CoverageVerificationResult(
+        coverageSummary shouldBe CoverageSummary(
             view = view,
+            reportBound = ReportBound.DELTA_REPORT,
             coverageRulesConfig = coverageRulesConfig,
-            violations = listOf("LINE: expectedMin=1.0, actual=0.0")
+            coverageInfo = listOf(
+                CoverageSummary.Info(CoverageEntity.INSTRUCTION, 0, 0),
+                CoverageSummary.Info(CoverageEntity.BRANCH, 0, 0),
+                CoverageSummary.Info(CoverageEntity.LINE, 0, 1),
+            ),
+            verifications = listOf(
+                CoverageSummary.VerificationResult(
+                    coverageEntity = entity,
+                    violation = ("$entity: expectedMin=1.0, actual=0.0"),
+                )
+            )
         )
     }
 

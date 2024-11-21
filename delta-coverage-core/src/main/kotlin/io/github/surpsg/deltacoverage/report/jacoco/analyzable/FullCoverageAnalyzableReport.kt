@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.report.jacoco.analyzable
 
 import io.github.surpsg.deltacoverage.report.ReportBound
+import io.github.surpsg.deltacoverage.report.jacoco.report.CoverageInfoVisitor
 import io.github.surpsg.deltacoverage.report.jacoco.report.JacocoReport
 import io.github.surpsg.deltacoverage.report.jacoco.report.ReportVisitorFactory
 import io.github.surpsg.deltacoverage.report.jacoco.report.VerifiableReportVisitor
@@ -14,12 +15,14 @@ internal open class FullCoverageAnalyzableReport(
     private val jacocoReports: List<JacocoReport>
 ) : AnalyzableReport {
 
-    open val reportBound: ReportBound = ReportBound.FULL_REPORT
+    override val reportBound: ReportBound = ReportBound.FULL_REPORT
 
     override fun buildVisitor(): VerifiableReportVisitor {
         return VerifiableReportVisitor.create(
+            ReportBound.FULL_REPORT,
             reportVisitors(),
             NoOpCoverageRulesVisitor,
+            CoverageInfoVisitor.NO_OP_VISITOR,
         )
     }
 

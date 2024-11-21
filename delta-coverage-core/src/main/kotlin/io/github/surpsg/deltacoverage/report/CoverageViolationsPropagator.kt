@@ -8,10 +8,10 @@ import java.lang.invoke.MethodHandles
 internal class CoverageViolationsPropagator {
 
     fun propagateAll(
-        verificationResults: Iterable<CoverageVerificationResult>,
+        coverageSummary: CoverageSummary,
     ) {
-        val exceptionMsg: String = verificationResults.asSequence()
-            .mapNotNull { result -> filterOutSoftViolations(result) }
+        val exceptionMsg: String = sequenceOf(coverageSummary)
+            .filter { result -> filterOutSoftViolations(result) }
             .flatMap { result -> result.contextualViolations().asSequence() }
             .joinToString(";\n")
 
@@ -21,21 +21,21 @@ internal class CoverageViolationsPropagator {
     }
 
     private fun filterOutSoftViolations(
-        verificationResult: CoverageVerificationResult,
-    ): CoverageVerificationResult? {
+        coverageSummary: CoverageSummary,
+    ): Boolean {
         log.info(
             "[{}] Fail on violations: {}. Found violations: {}.",
-            verificationResult.view,
-            verificationResult.coverageRulesConfig.failOnViolation,
-            verificationResult.violations.size,
+            coverageSummary.view,
+            coverageSummary.coverageRulesConfig.failOnViolation,
+            coverageSummary.verifications.size,
         )
-        return if (verificationResult.coverageRulesConfig.failOnViolation) {
-            verificationResult
+        return if (coverageSummary.coverageRulesConfig.failOnViolation) {
+            true
         } else {
-            verificationResult.violations.forEach { violation ->
-                log.warn(violation)
+            coverageSummary.verifications.forEach { verification ->
+                log.warn("[{}] {}", coverageSummary.view, verification.violation)
             }
-            null
+            false
         }
     }
 

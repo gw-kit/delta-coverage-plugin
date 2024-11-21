@@ -1,7 +1,7 @@
 package io.github.surpsg.deltacoverage.report.intellij
 
 import com.intellij.rt.coverage.data.ProjectData
-import io.github.surpsg.deltacoverage.report.CoverageVerificationResult
+import io.github.surpsg.deltacoverage.report.CoverageSummary
 import io.github.surpsg.deltacoverage.report.DeltaReportGeneratorFacade
 import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportContext
@@ -13,7 +13,7 @@ import io.github.surpsg.deltacoverage.report.intellij.verifier.CoverageAssertion
 
 internal class IntellijDeltaReportGeneratorFacade : DeltaReportGeneratorFacade() {
 
-    override fun generate(reportContext: ReportContext): List<CoverageVerificationResult> {
+    override fun generate(reportContext: ReportContext): CoverageSummary {
         val reportBoundToLoadStrategy: Map<ReportBound, NamedReportLoadStrategy> =
             ReportLoadStrategyFactory.buildReportLoadStrategies(reportContext)
                 .associateBy { it.reportBound }
@@ -25,21 +25,19 @@ internal class IntellijDeltaReportGeneratorFacade : DeltaReportGeneratorFacade()
             )
             .forEach(ReportBuilder::buildReport)
 
-        return listOf(
-            verifyCoverage(reportContext, reportBoundToLoadStrategy)
-        )
+        return verifyCoverage(reportContext, reportBoundToLoadStrategy)
     }
 
     private fun verifyCoverage(
         reportContext: ReportContext,
         reportBoundToLoadStrategy: Map<ReportBound, NamedReportLoadStrategy>,
-    ): CoverageVerificationResult {
-        val projectData: ProjectData = reportBoundToLoadStrategy.getValue(ReportBound.DELTA_REPORT)
-            .reportLoadStrategy.projectData
+    ): CoverageSummary {
+        val value: NamedReportLoadStrategy = reportBoundToLoadStrategy.getValue(ReportBound.DELTA_REPORT)
+        val projectData: ProjectData = value.reportLoadStrategy.projectData
         return CoverageAssertion.verify(
-            reportContext.deltaCoverageConfig.view,
-            projectData,
-            reportContext.deltaCoverageConfig.coverageRulesConfig
+            view = reportContext.deltaCoverageConfig.view,
+            projectData = projectData,
+            coverageRulesConfig = reportContext.deltaCoverageConfig.coverageRulesConfig,
         )
     }
 }
