@@ -6,10 +6,10 @@ inputs:
     default: '📈 Δelta Coverage Check'
     required: false
 
-  summary-report-path:
-    description: 'Report to delta-coverage summary report.'
+  summary-report-base-path:
+    description: 'Base path for all summary reports.'
     required: true
-    default: 'build/reports/coverage-reports/summary.json'
+    default: 'build/reports/coverage-reports/'
 
   suppress-check-failures:
     description: 'Suppress failures.'
@@ -26,15 +26,22 @@ runs:
 
   steps:
 
-    - name: Validate args
+    - name: Build All Summaries
+      id: all-summaries
       uses: actions/github-script@v7
       with:
         github-token: ${{ inputs.github-token }}
         script: |
-          const reportPath = `${{ inputs.summary-report-path }}`.trim()
-          if (!reportPath) {
-            core.setFailed('summary-report-path input is empty.')
-          }
+          const fs = require('fs');
+          const files = fs.readdirSync(`${{ inputs.summary-report-base-path }}`);
+          const summaryFiles = files.filter(file => file.includes('-summary.json'));
+          const summaries = summaryFiles.map(file => 
+            JSON.parse(fs.readFileSync(`build/reports/coverage-reports/${file}`, 'utf8'))
+          );
+          const allSummaries = JSON.stringify(summaries);
+          const allSummariesFile = 'all-summaries.json';
+          fs.writeFileSync(allSummariesFile, allSummaries);
+          core.setOutput('file', allSummariesFile);
 
     - name: Create Check Run
       id: create-check-runs
@@ -44,7 +51,7 @@ runs:
         script: |
           const createCheckRuns = require('${{ github.action_path }}/create-check-runs.js');
           const checkRuns = await createCheckRuns({
-            summaryReportPath: `${{ inputs.summary-report-path }}`,
+            summaryReportPath: `${{ steps.all-summaries.outputs.file }}`,
             ignoreCoverageFailure: ${{ inputs.suppress-check-failures }},
             core: core,
             context: context,

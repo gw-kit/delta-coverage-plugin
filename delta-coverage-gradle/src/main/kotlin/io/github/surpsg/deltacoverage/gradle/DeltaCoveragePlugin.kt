@@ -3,16 +3,13 @@ package io.github.surpsg.deltacoverage.gradle
 import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply
 import io.github.surpsg.deltacoverage.gradle.reportview.ViewLookup
 import io.github.surpsg.deltacoverage.gradle.sources.lookup.KoverPluginSourcesLookup
-import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageLifecycleTask
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTask
-import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTask.Companion.BASE_COVERAGE_REPORTS_DIR
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTaskConfigurer
 import io.github.surpsg.deltacoverage.gradle.task.NativeGitDiffTask
-import io.github.surpsg.deltacoverage.gradle.utils.resolveByPath
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -30,13 +27,12 @@ open class DeltaCoveragePlugin : Plugin<Project> {
             CoverageEngineAutoApply().apply(project, config)
 
             val nativeGitDiffTask = createNativeGitDiffTask(config)
-            val deltaCoverageLifecycleTask = project.createDeltaCoverageLifecycle(config)
+            val deltaCoverageLifecycleTask: Task = project.tasks.create(DELTA_COVERAGE_TASK)
 
             project.autoRegisterReportViews(config) { viewName ->
                 val deltaTask = createDeltaCoverageViewTask(viewName, config)
 
                 deltaCoverageLifecycleTask.dependsOn(deltaTask)
-                deltaCoverageLifecycleTask.summaries.from(deltaTask.summaryReportPath)
                 afterEvaluate {
                     if (config.diffSource.git.useNativeGit.get()) {
                         deltaTask.dependsOn(nativeGitDiffTask)
@@ -56,17 +52,6 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         }
         ViewLookup.lookup(this, registerView)
         registerView(DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME)
-    }
-
-    private fun Project.createDeltaCoverageLifecycle(
-        config: DeltaCoverageConfiguration,
-    ): DeltaCoverageLifecycleTask {
-        return tasks.create(DELTA_COVERAGE_TASK, DeltaCoverageLifecycleTask::class.java) {
-            val summaryOutputDir: Provider<String> = config.reportConfiguration.baseReportDir.map { path ->
-                project.projectDir.resolveByPath(path).resolve(BASE_COVERAGE_REPORTS_DIR).path
-            }
-            it.reportDir.set(summaryOutputDir)
-        }
     }
 
     private fun Project.createNativeGitDiffTask(
