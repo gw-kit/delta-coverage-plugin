@@ -1,6 +1,5 @@
 package io.github.surpsg.deltacoverage.gradle
 
-import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTask
 import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
 import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
 import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
@@ -9,10 +8,8 @@ import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.file.shouldBeADirectory
 import io.kotest.matchers.file.shouldBeAFile
-import io.kotest.matchers.file.shouldBeEmpty
 import io.kotest.matchers.file.shouldContainFile
 import io.kotest.matchers.file.shouldExist
-import io.kotest.matchers.file.shouldNotBeEmpty
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -88,11 +85,10 @@ class DeltaCoverageReportsTest {
     }
 
     private fun assertSummaryReport(baseReportDirFile: File) {
-        val summaryReportFile = baseReportDirFile.resolve(DeltaCoverageTask.SUMMARY_REPORT_FILE_NAME)
-        assertSoftly(summaryReportFile) {
+        assertSoftly(baseReportDirFile) {
             shouldExist()
-            shouldBeAFile()
-            shouldNotBeEmpty()
+            shouldContainFile("test-summary.json")
+            shouldContainFile("aggregated-summary.json")
         }
     }
 
