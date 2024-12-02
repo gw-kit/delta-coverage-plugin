@@ -109,17 +109,17 @@ class TextualReportFacadeTest {
 
             // THEN
             val expectedReport = """
-                +--------------+-------+----------+--------+
-                | [any] Delta Coverage Stats               |
-                +--------------+-------+----------+--------+
-                | Class        | Lines | Branches | Instr. |
-                +--------------+-------+----------+--------+
-                | class12      | NaN%  |          | NaN%   |
-                +--------------+-------+----------+--------+
-                | Total        | NaN%  |          | NaN%   |
-                +--------------+-------+----------+--------+
-                | Min expected |       |          |        |
-                +--------------+-------+----------+--------+
+                +--------------+---------+----------+---------+
+                | [any] Delta Coverage Stats                  |
+                +--------------+---------+----------+---------+
+                | Class        | Lines   | Branches | Instr.  |
+                +--------------+---------+----------+---------+
+                | class12      | no diff |          | no diff |
+                +--------------+---------+----------+---------+
+                | Total        | no diff |          | no diff |
+                +--------------+---------+----------+---------+
+                | Min expected |         |          |         |
+                +--------------+---------+----------+---------+
                 
             """.trimIndent()
             stream.toString() shouldBe expectedReport
@@ -229,11 +229,11 @@ class TextualReportFacadeTest {
 
             // THEN
             val expectedReport = """
-            | Class        | Lines | Branches | Instr. |
-            |--------------|-------|----------|--------|
-            | class1       | NaN%  |          | NaN%   |
-            | Total        | NaN%  |          | NaN%   |
-            | Min expected |       |          |        |
+            | Class        | Lines   | Branches | Instr.  |
+            |--------------|---------|----------|---------|
+            | class1       | no diff |          | no diff |
+            | Total        | no diff |          | no diff |
+            | Min expected |         |          |         |
             
         """.trimIndent()
             stream.toString() shouldBe expectedReport
