@@ -109,14 +109,19 @@ internal object TextualReportFacade {
     )
 
     private fun Double.formatToPercentage(): String {
-        val percents: Double = this * PERCENT_MULTIPLIER
-        val percentsInt = percents.toInt()
-        val pattern = if (percents > percentsInt) {
-            "%.2f%%"
+        return if (this.isNaN()) {
+            "no diff"
         } else {
-            "%.0f%%"
+            val percents: Double = this * PERCENT_MULTIPLIER
+            val percentsInt = percents.toInt()
+            val pattern = if (percents > percentsInt) {
+                "%.2f%%"
+            } else {
+                "%.0f%%"
+            }
+
+            pattern.format(percents)
         }
-        return pattern.format(percents)
     }
 
     private fun String.shrinkClassName(maxLength: Int): String {

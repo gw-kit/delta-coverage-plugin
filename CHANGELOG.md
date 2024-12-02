@@ -1,9 +1,15 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## 3.0.2
+
+- #180 Markdown and console report now print `no diff` instead of `NaN%`. 
+
+
 ## 3.0.1
 
 - GitHub action now generates the aggregated summary report. 
   It fixes the case when delta coverage check is failed and now summary is published.
+
 
 ## 3.0.0
 
