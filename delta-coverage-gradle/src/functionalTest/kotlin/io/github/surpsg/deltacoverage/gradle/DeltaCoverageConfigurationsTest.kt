@@ -52,10 +52,13 @@ class DeltaCoverageConfigurationsTest {
             """
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
+                view("aza") {
+                       // coverageBinaryFiles.set(files("/Users/sergnat/ideaProjects/delta-coverage-plugin-org/delta-coverage-gradle/src/functionalTest/kotlin/io/github/surpsg/deltacoverage/gradle/DeltaCoverageConfigurationsTest.kt"))
+                }
             }
         """.trimIndent()
         )
-        gradleRunner.runDeltaCoverageTask()
+        gradleRunner.runDeltaCoverageTask(printLogs = true)
 
         // WHEN // THEN
         gradleRunner.runDeltaCoverageTask()

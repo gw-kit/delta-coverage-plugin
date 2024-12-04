@@ -4,6 +4,7 @@ import io.github.surpsg.deltacoverage.diff.CodeUpdateInfo
 import io.github.surpsg.deltacoverage.diff.parse.ClassFile
 import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportContext
+import io.github.surpsg.deltacoverage.report.jacoco.filters.CompositeFilter
 import io.github.surpsg.deltacoverage.report.jacoco.filters.ModifiedLinesFilter
 import io.github.surpsg.deltacoverage.report.jacoco.report.CoverageInfoVisitor
 import io.github.surpsg.deltacoverage.report.jacoco.report.JacocoReport
@@ -12,6 +13,7 @@ import io.github.surpsg.deltacoverage.report.jacoco.verification.DefaultCoverage
 import org.jacoco.core.analysis.Analyzer
 import org.jacoco.core.analysis.ICoverageVisitor
 import org.jacoco.core.data.ExecutionDataStore
+import org.jacoco.core.internal.analysis.filter.ProtoExhaustiveWhenFilter
 
 internal class DeltaCoverageAnalyzableReport(
     private val reportContext: ReportContext,
@@ -39,7 +41,12 @@ internal class DeltaCoverageAnalyzableReport(
             codeUpdateInfo.isInfoExists(it)
         }
         return FilteringAnalyzer(executionDataStore, coverageVisitor, classFileFilter) {
-            ModifiedLinesFilter(codeUpdateInfo)
+            CompositeFilter(
+                listOf(
+                    ModifiedLinesFilter(codeUpdateInfo),
+                    ProtoExhaustiveWhenFilter(),
+                )
+            )
         }
     }
 }
