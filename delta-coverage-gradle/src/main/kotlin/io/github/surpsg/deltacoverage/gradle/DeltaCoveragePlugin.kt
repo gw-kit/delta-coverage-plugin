@@ -25,9 +25,7 @@ open class DeltaCoveragePlugin : Plugin<Project> {
 
         extensions.configure<DeltaCoverageConfiguration>(DELTA_COVERAGE_REPORT_EXTENSION) { config ->
             CoverageEngineAutoApply().apply(project, config)
-config.reportViews.names.forEach {
-    println("Configure configuration: view=$it")
-}
+
             val nativeGitDiffTask = createNativeGitDiffTask(config)
             val deltaCoverageLifecycleTask: Task = project.tasks.create(DELTA_COVERAGE_TASK)
 
@@ -48,11 +46,12 @@ config.reportViews.names.forEach {
     private fun Project.registerReportViews(
         config: DeltaCoverageConfiguration,
         onView: (String) -> Unit,
-    ) {
+    ) = afterEvaluate {
         val registerView = { viewName: String ->
             config.reportViews.maybeCreate(viewName)
             onView(viewName)
         }
+
         config.reportViews.names.forEach(registerView)
         ViewLookup.lookup(this, registerView)
     }

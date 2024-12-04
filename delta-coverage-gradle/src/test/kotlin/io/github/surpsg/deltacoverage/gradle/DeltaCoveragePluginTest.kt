@@ -57,7 +57,7 @@ class DeltaCoveragePluginTest {
             applyDeltaCoveragePlugin()
             extensions.configure(DeltaCoverageConfiguration::class.java) { config ->
                 config.diffSource.git.useNativeGit.set(true)
-                config.reportViews.register("aza")
+                config.reportViews.register("custom")
             }
         }
 
@@ -78,11 +78,10 @@ class DeltaCoveragePluginTest {
                     gitDiffTask.shouldNotBeNull()
                 }
             tasks.names shouldContainExactlyInAnyOrder listOf(
-                "deltaCoverage",
                 "deltaCoverageTest",
-                "deltaCoverageAza",
+                "deltaCoverageCustom",
+                "deltaCoverageAggregated",
             )
-            tasks.names.shouldContainExactlyInAnyOrder("deltaCoverageTaskAza")
         }
     }
 
