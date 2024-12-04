@@ -55,7 +55,7 @@ class DeltaCoverageConfigurationsTest {
             }
         """.trimIndent()
         )
-        gradleRunner.runDeltaCoverageTask(printLogs = true)
+        gradleRunner.runDeltaCoverageTask()
 
         // WHEN // THEN
         gradleRunner.runDeltaCoverageTask()

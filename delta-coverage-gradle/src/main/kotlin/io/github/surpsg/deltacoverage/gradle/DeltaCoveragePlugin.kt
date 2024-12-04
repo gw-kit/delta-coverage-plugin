@@ -30,7 +30,6 @@ open class DeltaCoveragePlugin : Plugin<Project> {
             val deltaCoverageLifecycleTask: Task = project.tasks.create(DELTA_COVERAGE_TASK)
 
             project.registerReportViews(config) { viewName ->
-                println("Registering view: $viewName")
                 val deltaTask = createDeltaCoverageViewTask(viewName, config)
 
                 deltaCoverageLifecycleTask.dependsOn(deltaTask)
