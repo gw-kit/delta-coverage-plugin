@@ -1,5 +1,10 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## NEXT RELEASE
+
+- Fix `deltaCoverage*` task creation for custom view.
+
+
 ## 3.0.2
 
 - #180 Markdown and console report now print `no diff` instead of `NaN%`. 

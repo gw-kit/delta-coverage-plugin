@@ -29,7 +29,7 @@ open class DeltaCoveragePlugin : Plugin<Project> {
             val nativeGitDiffTask = createNativeGitDiffTask(config)
             val deltaCoverageLifecycleTask: Task = project.tasks.create(DELTA_COVERAGE_TASK)
 
-            project.autoRegisterReportViews(config) { viewName ->
+            project.registerReportViews(config) { viewName ->
                 val deltaTask = createDeltaCoverageViewTask(viewName, config)
 
                 deltaCoverageLifecycleTask.dependsOn(deltaTask)
@@ -42,16 +42,17 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         }
     }
 
-    private fun Project.autoRegisterReportViews(
+    private fun Project.registerReportViews(
         config: DeltaCoverageConfiguration,
         onView: (String) -> Unit,
-    ) {
+    ) = afterEvaluate {
         val registerView = { viewName: String ->
             config.reportViews.maybeCreate(viewName)
             onView(viewName)
         }
+
+        config.reportViews.names.forEach(registerView)
         ViewLookup.lookup(this, registerView)
-        registerView(DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME)
     }
 
     private fun Project.createNativeGitDiffTask(
