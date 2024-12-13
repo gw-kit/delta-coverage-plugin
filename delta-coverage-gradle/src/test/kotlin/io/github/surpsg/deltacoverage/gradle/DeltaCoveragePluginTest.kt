@@ -37,10 +37,9 @@ class DeltaCoveragePluginTest {
         }
 
         // WHEN
-        parentProj.evaluate()
+        val config = parentProj.extensions.getByType(DeltaCoverageConfiguration::class.java)
 
         // THEN
-        val config = parentProj.extensions.getByType(DeltaCoverageConfiguration::class.java)
         config.reportViews.names.shouldContainExactlyInAnyOrder(TEST_VIEW, AGGREGATED_VIEW, customViewName)
 
         // AND THEN
@@ -75,10 +74,10 @@ class DeltaCoveragePluginTest {
         }
 
         // WHEN
-        proj.evaluate()
+        val gitDiffTask = proj.tasks.findByName(DeltaCoveragePlugin.GIT_DIFF_TASK)
 
         // THEN
-        proj.tasks.findByName(DeltaCoveragePlugin.GIT_DIFF_TASK).shouldBeInstanceOf<NativeGitDiffTask>()
+        gitDiffTask.shouldBeInstanceOf<NativeGitDiffTask>()
 
         // AND THEN
         val deltaCoverageTasks = proj.tasks.withType(DeltaCoverageTask::class.java)

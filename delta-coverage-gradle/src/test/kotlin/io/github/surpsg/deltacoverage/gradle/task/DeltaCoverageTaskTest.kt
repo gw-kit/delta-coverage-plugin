@@ -35,7 +35,6 @@ class DeltaCoverageTaskTest {
                 }
             }
         }
-        project.evaluate()
 
         // WHEN
         project.tasks.withType(DeltaCoverageTask::class.java).forEach { task ->

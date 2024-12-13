@@ -52,7 +52,7 @@ internal object DeltaCoverageTaskConfigurer {
     private fun DeltaCoverageTask.applySourcesInputs(
         viewName: String,
         config: DeltaCoverageConfiguration
-    ) {
+    ) = project.gradle.taskGraph.whenReady {
         val viewSourcesProvider: Provider<ViewSources> = project.obtainViewSources(viewName, config)
         sourcesFiles.set(
             viewSourcesProvider.map { it.sources }
