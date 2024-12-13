@@ -2,7 +2,6 @@ package io.github.surpsg.deltacoverage.gradle.autoapply
 
 import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.Coverage
-import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.utils.deltaCoverageConfig
 import org.gradle.api.Project
 import org.slf4j.Logger
