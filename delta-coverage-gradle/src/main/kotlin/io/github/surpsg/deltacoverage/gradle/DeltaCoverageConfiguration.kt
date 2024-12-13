@@ -99,6 +99,11 @@ open class ReportView @Inject constructor(
     @Nested
     val violationRules: ViolationRules = objectFactory.new<ViolationRules>()
 
+    @Input
+    val matchClasses: ListProperty<String> = objectFactory
+        .listProperty(String::class.javaObjectType)
+        .convention(emptyList())
+
     fun violationRules(action: Action<in ViolationRules>) {
         action.execute(violationRules)
     }
