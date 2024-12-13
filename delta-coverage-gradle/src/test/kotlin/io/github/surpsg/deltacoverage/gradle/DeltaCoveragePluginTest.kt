@@ -81,15 +81,13 @@ class DeltaCoveragePluginTest {
 
         // AND THEN
         val deltaCoverageTasks = proj.tasks.withType(DeltaCoverageTask::class.java)
-        assertSoftly(deltaCoverageTasks) { tasks ->
-            tasks
-                .forEach { deltaTask ->
-                    val gitDiffTask = deltaTask.dependsOn.firstNotNullOfOrNull {
-                        it as? TaskProvider<NativeGitDiffTask>
-                    }
-                    gitDiffTask.shouldNotBeNull()
+        deltaCoverageTasks
+            .forEach { deltaTask ->
+                val gitDiffTask = deltaTask.dependsOn.firstNotNullOfOrNull {
+                    it as? TaskProvider<NativeGitDiffTask>
                 }
-        }
+                gitDiffTask.shouldNotBeNull()
+            }
     }
 
     private companion object {

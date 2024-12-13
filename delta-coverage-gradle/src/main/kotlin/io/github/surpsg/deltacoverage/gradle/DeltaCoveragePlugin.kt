@@ -48,12 +48,20 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         }
     }
 
+    private fun Project.registerReportViews(
+        config: DeltaCoverageConfiguration,
+        onView: (String) -> Unit,
+    ) = ViewLookup.lookup(this) { viewName: String ->
+        config.reportViews.maybeCreate(viewName)
+        onView(viewName)
+    }
+
     private fun Project.deltaTaskForViewConfigurer(): (String) -> Unit {
         val deltaCoverageLifecycleTask: Task = project.tasks.create(DELTA_COVERAGE_TASK)
         val nativeGitDiffTask: TaskProvider<NativeGitDiffTask> = createNativeGitDiffTask()
-        val config: DeltaCoverageConfiguration = deltaCoverageConfig
 
         return { viewName: String ->
+            val config: DeltaCoverageConfiguration = deltaCoverageConfig
             val deltaTask = createDeltaCoverageViewTask(viewName, config)
             deltaCoverageLifecycleTask.dependsOn(deltaTask)
             afterEvaluate {
@@ -65,12 +73,14 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         }
     }
 
-    private fun Project.registerReportViews(
+    private fun Project.createDeltaCoverageViewTask(
+        viewName: String,
         config: DeltaCoverageConfiguration,
-        onView: (String) -> Unit,
-    ) = ViewLookup.lookup(this) { viewName: String ->
-        config.reportViews.maybeCreate(viewName)
-        onView(viewName)
+    ): DeltaCoverageTask {
+        val taskName: String = DELTA_COVERAGE_TASK + viewName.capitalize()
+        return project.tasks.create(taskName, DeltaCoverageTask::class.java) { deltaCoverageTask ->
+            DeltaCoverageTaskConfigurer.configure(viewName, config, deltaCoverageTask)
+        }
     }
 
     private fun Project.createNativeGitDiffTask(): TaskProvider<NativeGitDiffTask> {
@@ -81,16 +91,6 @@ open class DeltaCoveragePlugin : Plugin<Project> {
 
             diffSource.git.nativeGitDiffFile.set(gitDiffTask.diffFile)
             gitDiffTask.dependsOn(JavaPlugin.CLASSES_TASK_NAME)
-        }
-    }
-
-    private fun Project.createDeltaCoverageViewTask(
-        viewName: String,
-        config: DeltaCoverageConfiguration,
-    ): DeltaCoverageTask {
-        val taskName: String = DELTA_COVERAGE_TASK + viewName.capitalize()
-        return project.tasks.create(taskName, DeltaCoverageTask::class.java) { deltaCoverageTask ->
-            DeltaCoverageTaskConfigurer.configure(viewName, config, deltaCoverageTask)
         }
     }
 
