@@ -3,6 +3,7 @@ package io.github.surpsg.deltacoverage.gradle.task
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.unittest.applyDeltaCoveragePlugin
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
+import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.file.shouldExist
 import org.gradle.api.internal.project.ProjectInternal
 import org.junit.jupiter.api.Test
@@ -35,14 +36,18 @@ class DeltaCoverageTaskTest {
             }
         }
 
-        val deltaTask: DeltaCoverageTask = project.tasks.withType(DeltaCoverageTask::class.java).first()
-
         // WHEN
-        deltaTask.executeAction()
+        project.tasks.withType(DeltaCoverageTask::class.java).forEach { task ->
+            task.executeAction()
+        }
 
         // THEN
-        val summaryFile = project.layout.buildDirectory.file("reports/coverage-reports/aggregated-summary.json")
-            .get().asFile
-        summaryFile.shouldExist()
+        assertSoftly {
+            listOf("test-summary.json", "aggregated-summary.json").forEach { summaryFileName ->
+                val summaryFile = "reports/coverage-reports/$summaryFileName"
+                val actualSummaryFile = project.layout.buildDirectory.file(summaryFile).get().asFile
+                actualSummaryFile.shouldExist()
+            }
+        }
     }
 }
