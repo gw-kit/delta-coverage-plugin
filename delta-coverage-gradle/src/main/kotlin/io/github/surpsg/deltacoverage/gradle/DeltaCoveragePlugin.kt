@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory
 
 open class DeltaCoveragePlugin : Plugin<Project> {
 
+    private val registeredViews = mutableSetOf<String>()
+
     override fun apply(project: Project) = with(project) {
         extensions.create(
             DELTA_COVERAGE_REPORT_EXTENSION,
@@ -23,43 +25,58 @@ open class DeltaCoveragePlugin : Plugin<Project> {
             objects,
         )
 
+        val deltaTaskForViewConfigurer: (String) -> Unit = deltaTaskForViewConfigurer()
+
         extensions.configure<DeltaCoverageConfiguration>(DELTA_COVERAGE_REPORT_EXTENSION) { config ->
             CoverageEngineAutoApply().apply(project, config)
 
-            val nativeGitDiffTask = createNativeGitDiffTask(config)
-            val deltaCoverageLifecycleTask: Task = project.tasks.create(DELTA_COVERAGE_TASK)
+            // auto-register views from test tasks
+            registerReportViews(config, deltaTaskForViewConfigurer)
+        }
 
-            project.registerReportViews(config) { viewName ->
-                val deltaTask = createDeltaCoverageViewTask(viewName, config)
+        afterEvaluate {
+            // Register custom views
+            getDeltaConfig().reportViews.names.asSequence()
+                .filter { it !in registeredViews }
+                .filter { it != DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME }
+                .forEach { viewName ->
+                    deltaTaskForViewConfigurer(viewName)
+                }
 
-                deltaCoverageLifecycleTask.dependsOn(deltaTask)
-                afterEvaluate {
-                    if (config.diffSource.git.useNativeGit.get()) {
-                        deltaTask.dependsOn(nativeGitDiffTask)
-                    }
+            // Finally, register the aggregated view
+            deltaTaskForViewConfigurer(DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME)
+        }
+    }
+
+    private fun Project.deltaTaskForViewConfigurer(): (String) -> Unit {
+        val deltaCoverageLifecycleTask: Task = project.tasks.create(DELTA_COVERAGE_TASK)
+        val nativeGitDiffTask: TaskProvider<NativeGitDiffTask> = createNativeGitDiffTask()
+        val config = getDeltaConfig()
+
+        return { viewName: String ->
+            val deltaTask = createDeltaCoverageViewTask(viewName, config)
+            deltaCoverageLifecycleTask.dependsOn(deltaTask)
+            afterEvaluate {
+                if (config.diffSource.git.useNativeGit.get()) {
+                    deltaTask.dependsOn(nativeGitDiffTask)
                 }
             }
+            registeredViews += viewName
         }
     }
 
     private fun Project.registerReportViews(
         config: DeltaCoverageConfiguration,
         onView: (String) -> Unit,
-    ) = afterEvaluate {
-        val registerView = { viewName: String ->
-            config.reportViews.maybeCreate(viewName)
-            onView(viewName)
-        }
-
-        config.reportViews.names.forEach(registerView)
-        ViewLookup.lookup(this, registerView)
+    ) = ViewLookup.lookup(this) { viewName: String ->
+        config.reportViews.maybeCreate(viewName)
+        onView(viewName)
     }
 
-    private fun Project.createNativeGitDiffTask(
-        config: DeltaCoverageConfiguration,
-    ): TaskProvider<NativeGitDiffTask> {
+    private fun Project.createNativeGitDiffTask(): TaskProvider<NativeGitDiffTask> {
         return tasks.register(GIT_DIFF_TASK, NativeGitDiffTask::class.java) { gitDiffTask ->
-            val diffSource = config.diffSource
+
+            val diffSource = getDeltaConfig().diffSource
             gitDiffTask.targetBranch.set(diffSource.git.diffBase)
 
             diffSource.git.nativeGitDiffFile.set(gitDiffTask.diffFile)
@@ -76,6 +93,10 @@ open class DeltaCoveragePlugin : Plugin<Project> {
             DeltaCoverageTaskConfigurer.configure(viewName, config, deltaCoverageTask)
         }
     }
+
+    private fun Project.getDeltaConfig(): DeltaCoverageConfiguration = extensions.getByType(
+        DeltaCoverageConfiguration::class.java
+    )
 
     companion object {
         const val DELTA_COVERAGE_REPORT_EXTENSION = "deltaCoverageReport"

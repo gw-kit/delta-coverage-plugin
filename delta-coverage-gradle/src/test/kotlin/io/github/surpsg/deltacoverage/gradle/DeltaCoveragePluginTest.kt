@@ -21,6 +21,7 @@ class DeltaCoveragePluginTest {
     @Test
     fun `apply plugin should automatically create aggregated view and views from test tasks`() {
         // GIVEN
+        val customViewName = "custom"
         val parentProj: ProjectInternal = testJavaProject(attachSettings = true) {
             newProject {
                 withName("child")
@@ -28,6 +29,11 @@ class DeltaCoveragePluginTest {
             }
             allprojects { proj -> proj.applyPlugin<JavaPlugin>() }
             applyDeltaCoveragePlugin()
+            extensions.configure(DeltaCoverageConfiguration::class.java) { config ->
+                config.reportViews.register(customViewName) {
+                    it.coverageBinaryFiles = files("1.txt")
+                }
+            }
         }
 
         // WHEN
@@ -35,7 +41,7 @@ class DeltaCoveragePluginTest {
 
         // THEN
         val config = parentProj.extensions.getByType(DeltaCoverageConfiguration::class.java)
-        config.reportViews.names.shouldContainExactlyInAnyOrder(TEST_VIEW, AGGREGATED_VIEW)
+        config.reportViews.names.shouldContainExactlyInAnyOrder(TEST_VIEW, AGGREGATED_VIEW, customViewName)
 
         // AND THEN
         val deltaCoverageTasks = parentProj.tasks.withType(DeltaCoverageTask::class.java)
@@ -48,6 +54,13 @@ class DeltaCoveragePluginTest {
                 task.coverageBinaryFiles.get()[viewName].shouldNotBeEmpty()
             }
         }
+
+        // AND THEN
+        deltaCoverageTasks.names shouldContainExactlyInAnyOrder listOf(
+            "deltaCoverageTest",
+            "deltaCoverageCustom",
+            "deltaCoverageAggregated",
+        )
     }
 
     @Test
@@ -77,11 +90,6 @@ class DeltaCoveragePluginTest {
                     }
                     gitDiffTask.shouldNotBeNull()
                 }
-            tasks.names shouldContainExactlyInAnyOrder listOf(
-                "deltaCoverageTest",
-                "deltaCoverageCustom",
-                "deltaCoverageAggregated",
-            )
         }
     }
 
