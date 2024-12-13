@@ -68,6 +68,9 @@ class DeltaCoverageConfigurationsTest {
             """
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
+                view('myCustom') {
+                    coverageBinaryFiles = files('coverage.bin')
+                }
             }
         """.trimIndent()
         )
@@ -78,6 +81,7 @@ class DeltaCoverageConfigurationsTest {
                 "':deltaCoverage'",
                 "':deltaCoverageTest'",
                 "':deltaCoverageAggregated'",
+                "':deltaCoverageMyCustom'",
             )
     }
 }
