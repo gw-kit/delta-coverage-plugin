@@ -28,13 +28,14 @@ internal fun interface SourceFilter {
             viewName: String,
             config: DeltaCoverageConfiguration,
         ): SourceFilter {
-            val includePatterns: List<String> = config.reportViews.findByName(viewName)?.matchClasses
-                ?.orNull ?: emptyList()
-
-            val includeFilter: SourceFilter = if (includePatterns.isEmpty()) {
-                NOOP_FILTER
+            val includeFilter: SourceFilter = if (config.reportViews.names.contains(viewName)) {
+                config.reportViews.getByName(viewName).matchClasses.get()
+                    .filter { it.isNotBlank() }
+                    .takeIf { it.isNotEmpty() }
+                    ?.let { AntSourceIncludeFilter(it) }
+                    ?: NOOP_FILTER
             } else {
-                AntSourceIncludeFilter(includePatterns)
+                NOOP_FILTER
             }
             return CompositeFilter(
                 listOf(
