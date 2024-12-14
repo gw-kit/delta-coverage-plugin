@@ -20,7 +20,7 @@ import org.jacoco.report.MultiSourceFileLocator
 internal class JacocoDeltaReportGeneratorFacade : DeltaReportGeneratorFacade() {
 
     override fun generate(reportContext: ReportContext): CoverageSummary {
-        if (System.currentTimeMillis() % 2 == 0L) { println(1) }
+        if (System.currentTimeMillis() % 100 == 0L) { println(1) }
         val analyzableReports: Set<AnalyzableReport> = analyzableReportFactory(reportContext)
 
         val execFileLoader = CoverageLoader.loadExecFiles(reportContext.binaryCoverageFiles)
