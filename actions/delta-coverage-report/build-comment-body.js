@@ -25,7 +25,10 @@ module.exports = (ctx) => {
         };
 
         return checkRun.coverageInfo.reduce((acc, it) => {
-            const actualPercentsText = bold(it.percents !== 0 ? `${it.percents}%` : '_');
+            if (it.percents === 0) {
+                return acc;
+            }
+            const actualPercentsText = bold(`${it.percents}%`);
             const text = `${bold(it.coverageEntity)}: ` + [
                 buildExpectedText(it.coverageEntity, coverageMap),
                 `actual ${actualPercentsText}`
