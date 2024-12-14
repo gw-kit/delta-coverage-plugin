@@ -17,8 +17,9 @@ class DeltaCoverageTaskTest {
     private lateinit var tempDir: File
 
     @Test
-    fun `should create summary report`() {
+    fun `should create summary report for all views`() {
         // GIVEN
+        val customView = "someCustom"
         val project: ProjectInternal = testJavaProject {
             applyDeltaCoveragePlugin()
 
@@ -26,12 +27,15 @@ class DeltaCoverageTaskTest {
                 createNewFile()
             }
 
-            extensions.configure(DeltaCoverageConfiguration::class.java) {
-                with(it) {
+            extensions.configure(DeltaCoverageConfiguration::class.java) { config ->
+                with(config) {
                     diffSource { source ->
                         source.file.set(diffFile.absolutePath)
                     }
                     reportViews.getByName("test").coverageBinaryFiles = files("any")
+                    view(customView) {
+                        it.coverageBinaryFiles = files("any-custom")
+                    }
                 }
             }
         }
@@ -43,7 +47,11 @@ class DeltaCoverageTaskTest {
 
         // THEN
         assertSoftly {
-            listOf("test-summary.json", "aggregated-summary.json").forEach { summaryFileName ->
+            listOf(
+                "test-summary.json",
+                "aggregated-summary.json",
+                "$customView-summary.json",
+            ).forEach { summaryFileName ->
                 val summaryFile = "reports/coverage-reports/$summaryFileName"
                 val actualSummaryFile = project.layout.buildDirectory.file(summaryFile).get().asFile
                 actualSummaryFile.shouldExist()

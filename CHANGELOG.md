@@ -4,6 +4,10 @@
 
 ### New features
 - Added extra property `matchClasses` to set patterns of classes for a particular view.
+- Added `DeltaCoverageConfiguration.reportViews.<view-name>.enabled` property that allows enabling/disabling a particular view.
+
+### Changed
+- Now the `aggregated` view is disabled by default if there is only one view is configured.
 
 ### Fixed
 - Fix `deltaCoverage*` task creation for custom view.
