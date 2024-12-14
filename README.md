@@ -208,6 +208,11 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
             // For Intellij engine: by default '.ic' coverage binary files are configured from kover plugin.
             coverageBinaryFiles = files("/path/to/jacoco/exec/file.exec")
 
+            // Optional. Specifies classes to include for the analysis.
+            matchClasses.value(
+              listOf("**/com/*/classes/to/include/Class*")
+            )
+
             // If violation rules are not configured, then no violations will be checked.
             violationRules {
                 failOnViolation.set(true) // Optional. Default `false`. If `true` then task will fail if any violation is found.

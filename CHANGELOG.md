@@ -2,6 +2,10 @@
 
 ## NEXT RELEASE
 
+### New features
+- Added extra property `matchClasses` to set patterns of classes for a particular view.
+
+### Fixed
 - Fix `deltaCoverage*` task creation for custom view.
 
 

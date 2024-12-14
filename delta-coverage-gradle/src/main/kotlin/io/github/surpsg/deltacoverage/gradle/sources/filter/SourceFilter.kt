@@ -14,13 +14,35 @@ internal fun interface SourceFilter {
         private val NOOP_FILTER: SourceFilter = SourceFilter { it.originSources }
 
         fun build(
+            view: String,
             config: DeltaCoverageConfiguration,
             sourceType: SourceType
         ): SourceFilter {
             return when (sourceType) {
-                SourceType.CLASSES -> AntSourceExcludeFilter(config.excludeClasses.get())
+                SourceType.CLASSES -> buildClassesFilter(view, config)
                 else -> NOOP_FILTER
             }
+        }
+
+        private fun buildClassesFilter(
+            viewName: String,
+            config: DeltaCoverageConfiguration,
+        ): SourceFilter {
+            val includeFilter: SourceFilter = if (config.reportViews.names.contains(viewName)) {
+                config.reportViews.getByName(viewName).matchClasses.get()
+                    .filter { it.isNotBlank() }
+                    .takeIf { it.isNotEmpty() }
+                    ?.let { AntSourceIncludeFilter(it) }
+                    ?: NOOP_FILTER
+            } else {
+                NOOP_FILTER
+            }
+            return CompositeFilter(
+                listOf(
+                    AntSourceExcludeFilter(config.excludeClasses.get()),
+                    includeFilter,
+                )
+            )
         }
     }
 
