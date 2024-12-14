@@ -17,6 +17,26 @@ Why should I use it?
 * helps to increase total code coverage(especially useful for old legacy projects)
 * reduces time of code review(you don't need to waste your time to track what code is covered)
 
+<!-- TOC -->
+* [Delta Coverage gradle plugin](#delta-coverage-gradle-plugin)
+  * [Installation](#installation)
+    * [Compatibility](#compatibility)
+    * [Apply `Delta Coverage` plugin](#apply-delta-coverage-plugin)
+  * [Configuration](#configuration)
+    * [Coverage engine](#coverage-engine)
+    * [Report Views](#report-views)
+      * [Auto-configuration](#auto-configuration)
+    * [Parameters description](#parameters-description)
+  * [Execute](#execute)
+  * [Gradle task description](#gradle-task-description)
+  * [Violations check output example](#violations-check-output-example)
+  * [Delta Coverage report examples](#delta-coverage-report-examples)
+    * [HTML report](#html-report)
+    * [Console report](#console-report)
+    * [Markdown report](#markdown-report)
+  * [GitHub Integration](#github-integration)
+<!-- TOC -->
+
 ## Installation
 
 ### Compatibility
@@ -60,22 +80,6 @@ plugins {
 ```
 
 </details>
-
-## Coverage engine
-
-Delta Coverage plugin doesn't collect coverage data itself.
-It uses coverage data that is already collected by a coverage engine.
-
-The plugin supports two coverage engines:
-
-- [JaCoCo](https://github.com/jacoco/jacoco) is standard coverage engine for JVM projects.
-- [Intellij coverage](https://github.com/JetBrains/intellij-coverage) is coverage engine that used by default in
-  Intellij IDE.
-  Intellij coverage could be applied to your Gradle project by applying [Kover](https://github.com/Kotlin/kotlinx-kover)
-  plugin.
-  Intellij coverage is better choice for **Kotlin** projects.
-
-See [Configuration](#configuration) section to configure coverage engine.
 
 ## Configuration
 
@@ -121,6 +125,23 @@ deltaCoverageReport {
 
 </details>
 
+### Coverage engine
+
+Delta Coverage plugin doesn't collect coverage data itself.
+It uses coverage data that is already collected by a coverage engine.
+
+The plugin supports two coverage engines:
+
+- [JaCoCo](https://github.com/jacoco/jacoco) is standard coverage engine for JVM projects.
+- [Intellij coverage](https://github.com/JetBrains/intellij-coverage) is coverage engine that used by default in
+  Intellij IDE.
+  Intellij coverage could be applied to your Gradle project by applying [Kover](https://github.com/Kotlin/kotlinx-kover)
+  plugin.
+  Intellij coverage is better choice for **Kotlin** projects.
+
+See [Configuration](#configuration) section to configure coverage engine.
+
+
 ### Report Views
 
 The concept of views is used to configure different coverage reports for different test tasks.
@@ -137,13 +158,7 @@ The plugin will automatically register and configures the next views:
 - `integrationTest` - for task `integrationTest`.
 - `aggregated` - merged coverage data from all test tasks.
 
-## Execute
-
-```shell
-./gradlew test deltaCoverage
-```
-
-## Parameters description
+### Parameters description
 
 See [Parameters description v2](https://github.com/gw-kit/delta-coverage-plugin/blob/2.5.0/README.md#parameters-description) if using the plugin version v2. 
 
@@ -153,9 +168,11 @@ See [Parameters description v2](https://github.com/gw-kit/delta-coverage-plugin/
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     // Configures coverage engine. Default is 'JACOCO'.
     coverage {
-        engine = CoverageEngine.JACOCO // Required. Default is 'JACOCO'. Could be set to INTELLIJ engine.
-        autoApplyPlugin =
-            true // Required. Default is 'true'. If 'true' then the corresponding coverage engine plugin is applied to a project and all it's subprojects.
+        // Required. Default is 'JACOCO'. Could be set to INTELLIJ engine.
+        engine = CoverageEngine.JACOCO 
+        
+        // Required. Default is 'true'. If 'true' then the corresponding coverage engine plugin is applied to a project and all it's subprojects.
+        autoApplyPlugin = true 
     }
 
     // Required. Only one of `file`, `url` or git must be specified.
@@ -259,6 +276,12 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
 }
 ```
 
+## Execute
+
+```shell
+./gradlew test deltaCoverage
+```
+
 ## Gradle task description
 
 The plugin adds tasks `deltaCoverage<report-view>` and lifecycle task `deltaCoverage` that depends on 
@@ -338,3 +361,9 @@ The report is saved to the file `build/reports/coverage-reports/delta-coverage/t
 | class1       | 75%       | 50%      | 83.33%    |
 | Total        | 🔴 83.33% | 🟢 75%   | 🔴 87.50% |
 | Min expected | 90%       | 75%      | 95%       |
+
+
+## GitHub Integration
+
+The plugin provides a GitHub action that posts the Delta Coverage report to the PR comment.
+For more details see [Delta Coverage Report GitHub Action](actions/delta-coverage-report/README.md).
