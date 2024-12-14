@@ -28,7 +28,7 @@ module.exports = (ctx) => {
             const actualPercentsText = bold(it.percents !== 0 ? `${it.percents}%` : '_');
             const text = `${bold(it.coverageEntity)}: ` + [
                 buildExpectedText(it.coverageEntity, coverageMap),
-                `actual ${actualPercentsText}%`
+                `actual ${actualPercentsText}`
             ].join(', ');
             acc.set(it.coverageEntity, text);
             return acc;
