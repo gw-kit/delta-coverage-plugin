@@ -72,7 +72,10 @@ jobs:
       - name: Run Delta Coverage check
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
-        run: ${gradle_cmd} deltaCoverage -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" -x test -x functionalTest
+        run: ${gradle_cmd} deltaCoverage 
+          -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" 
+          -x test -x functionalTest
+          --continue
 
       - name: Publish Coverage Summary
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}

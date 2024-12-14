@@ -1,5 +1,7 @@
 module.exports = (ctx) => {
 
+    const bold = (text) => `**${text}**`;
+
     const createCheckRunSummaryText = (checkRun) => {
         const conclusion = checkRun.conclusion === 'success' ? '✅' : '❌';
         return `${conclusion} [${checkRun.viewName}](${checkRun.url})`;
@@ -15,16 +17,21 @@ module.exports = (ctx) => {
         const buildExpectedText = (entity, coverageMap) => {
             const expectedCoverageRatio = coverageMap.get(entity);
             if (expectedCoverageRatio) {
-                return `expected ${expectedCoverageRatio * 100}%`;
+                const percentsText = bold(`${expectedCoverageRatio * 100}%`);
+                return `expected ${percentsText}`;
             } else {
-                return '';
+                return bold('_');
             }
         };
 
         return checkRun.coverageInfo.reduce((acc, it) => {
-            const text = `${it.coverageEntity}: ` + [
+            if (it.percents === 0) {
+                return acc;
+            }
+            const actualPercentsText = bold(`${it.percents}%`);
+            const text = `${bold(it.coverageEntity)}: ` + [
                 buildExpectedText(it.coverageEntity, coverageMap),
-                `actual ${it.percents}%`
+                `actual ${actualPercentsText}`
             ].join(', ');
             acc.set(it.coverageEntity, text);
             return acc;
@@ -34,11 +41,11 @@ module.exports = (ctx) => {
     const buildCheckRunForViewText = (checkRun) => {
         const coverageInfo = buildCoverageInfoMap(checkRun);
         checkRun.verifications.forEach((it) => {
-            coverageInfo.set(it.coverageEntity, `🔴 ${it.violation}`)
+            coverageInfo.set(it.coverageEntity, `🔴 \`${it.violation}\``)
         });
 
         const violations = Array.from(coverageInfo.values())
-            .map(it => `   - \`${it}\``)
+            .map(it => `   - ${it}`)
             .join('\n');
         const checkRunSummary = createCheckRunSummaryText(checkRun);
         return `- ${checkRunSummary} \n${violations}`
