@@ -92,6 +92,9 @@ open class ReportView @Inject constructor(
     objectFactory: ObjectFactory,
 ) : Named {
 
+    @Input
+    val enabled: Property<Boolean> = objectFactory.property(Boolean::class.javaObjectType)
+
     @Optional
     @InputFiles
     var coverageBinaryFiles: FileCollection? = null

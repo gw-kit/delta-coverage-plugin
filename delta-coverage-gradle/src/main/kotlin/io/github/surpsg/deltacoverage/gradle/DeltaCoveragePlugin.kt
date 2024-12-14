@@ -14,10 +14,11 @@ import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.TaskProvider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.concurrent.ConcurrentHashMap
 
 open class DeltaCoveragePlugin : Plugin<Project> {
 
-    private val registeredViews = mutableSetOf<String>()
+    private val registeredViews = ConcurrentHashMap.newKeySet<String>()
 
     override fun apply(project: Project) = with(project) {
         extensions.create(
@@ -35,15 +36,20 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         }
 
         afterEvaluate {
-            // Register custom views
+            // Register custom views tasks
             deltaCoverageConfig.reportViews.names.asSequence()
-                .filter { it !in registeredViews }
                 .filter { it != DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME }
+                .filter { it !in registeredViews }
                 .forEach { viewName ->
                     deltaTaskForViewConfigurer(viewName)
                 }
 
-            // Finally, register the aggregated view
+            deltaCoverageConfig.reportViews.named(DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME) {
+                if (!it.enabled.isPresent) {
+                    it.enabled.set(registeredViews.size > 1)
+                }
+            }
+            // Finally, register the aggregated view task
             deltaTaskForViewConfigurer(DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME)
         }
     }
@@ -80,6 +86,9 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         val taskName: String = DELTA_COVERAGE_TASK + viewName.capitalize()
         return project.tasks.create(taskName, DeltaCoverageTask::class.java) { deltaCoverageTask ->
             DeltaCoverageTaskConfigurer.configure(viewName, config, deltaCoverageTask)
+            deltaCoverageTask.onlyIf {
+                config.reportViews.getByName(viewName).enabled.convention(true).get()
+            }
         }
     }
 

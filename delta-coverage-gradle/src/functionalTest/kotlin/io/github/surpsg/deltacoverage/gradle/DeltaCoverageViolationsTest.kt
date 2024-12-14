@@ -73,6 +73,7 @@ class DeltaCoverageViolationsTest {
                             }
                         }
                         aggregated {
+                            enabled = true
                             violationRules.failIfCoverageLessThan 0.6
                         }
                     }

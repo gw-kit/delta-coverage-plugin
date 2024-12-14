@@ -203,6 +203,10 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
         }
 
         view("customView") { // Registering a custom report view.
+            // Enables/disables report view. Default `true`.
+            // If `false` then the corresponding deltaCoverageTask is disabled: `onlyIf { false }`.
+            enabled.set(false)
+            
             // Required. 
             // For JaCoCo engine: by default '.exec' coverage binary files are configured from jacoco plugin.
             // For Intellij engine: by default '.ic' coverage binary files are configured from kover plugin.

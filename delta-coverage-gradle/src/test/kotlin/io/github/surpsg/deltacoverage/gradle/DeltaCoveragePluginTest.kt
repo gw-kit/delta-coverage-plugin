@@ -7,6 +7,8 @@ import io.github.surpsg.deltacoverage.gradle.unittest.applyPlugin
 import io.github.surpsg.deltacoverage.gradle.unittest.newProject
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -60,6 +62,58 @@ class DeltaCoveragePluginTest {
             "deltaCoverageCustom",
             "deltaCoverageAggregated",
         )
+
+        // AND THEN
+        with(deltaCoverageTasks.getByName("deltaCoverageAggregated")) {
+            onlyIf.isSatisfiedBy(this).shouldBeTrue()
+        }
+    }
+
+    @Test
+    fun `apply plugin should create aggregated view task with disabled state when there is only one view`() {
+        // GIVEN
+        val parentProj: ProjectInternal = testJavaProject(attachSettings = true) {
+            applyDeltaCoveragePlugin()
+        }
+
+        // WHEN
+        val config = parentProj.extensions.getByType(DeltaCoverageConfiguration::class.java)
+
+        // THEN
+        config.reportViews.names.shouldContainExactlyInAnyOrder(TEST_VIEW, AGGREGATED_VIEW)
+
+        // AND THEN
+        val deltaCoverageTasks = parentProj.tasks.withType(DeltaCoverageTask::class.java)
+        deltaCoverageTasks.names shouldContainExactlyInAnyOrder listOf(
+            "deltaCoverageTest",
+            "deltaCoverageAggregated",
+        )
+
+        // AND THEN
+        with(deltaCoverageTasks.getByName("deltaCoverageAggregated")) {
+            onlyIf.isSatisfiedBy(this).shouldBeFalse()
+        }
+    }
+
+    @Test
+    fun `apply plugin should create aggregated view task with disabled state disabled manually`() {
+        // GIVEN
+        val parentProj: ProjectInternal = testJavaProject(attachSettings = true) {
+            applyDeltaCoveragePlugin()
+            extensions.configure(DeltaCoverageConfiguration::class.java) { config ->
+                config.reportViews.named("aggregated") {
+                    it.enabled.set(false)
+                }
+            }
+        }
+
+        // WHEN
+        val deltaCoverageTasks = parentProj.tasks.withType(DeltaCoverageTask::class.java)
+
+        // AND THEN
+        with(deltaCoverageTasks.getByName("deltaCoverageAggregated")) {
+            onlyIf.isSatisfiedBy(this).shouldBeFalse()
+        }
     }
 
     @Test
