@@ -15,16 +15,16 @@ module.exports = (ctx) => {
         const buildExpectedText = (entity, coverageMap) => {
             const expectedCoverageRatio = coverageMap.get(entity);
             if (expectedCoverageRatio) {
-                return `expected ${expectedCoverageRatio * 100}%`;
+                return `expected \`${expectedCoverageRatio * 100}%\``;
             } else {
                 return '';
             }
         };
 
         return checkRun.coverageInfo.reduce((acc, it) => {
-            const text = `${it.coverageEntity}: ` + [
+            const text = `\`${it.coverageEntity}\`: ` + [
                 buildExpectedText(it.coverageEntity, coverageMap),
-                `actual ${it.percents}%`
+                `actual \`${it.percents}%\``
             ].join(', ');
             acc.set(it.coverageEntity, text);
             return acc;
@@ -34,11 +34,11 @@ module.exports = (ctx) => {
     const buildCheckRunForViewText = (checkRun) => {
         const coverageInfo = buildCoverageInfoMap(checkRun);
         checkRun.verifications.forEach((it) => {
-            coverageInfo.set(it.coverageEntity, `🔴 ${it.violation}`)
+            coverageInfo.set(it.coverageEntity, `🔴 \`${it.violation}\``)
         });
 
         const violations = Array.from(coverageInfo.values())
-            .map(it => `   - \`${it}\``)
+            .map(it => `   - ${it}`)
             .join('\n');
         const checkRunSummary = createCheckRunSummaryText(checkRun);
         return `- ${checkRunSummary} \n${violations}`
