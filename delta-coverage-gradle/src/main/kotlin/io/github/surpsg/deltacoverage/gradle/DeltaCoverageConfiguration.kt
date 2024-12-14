@@ -8,7 +8,6 @@ import io.github.surpsg.deltacoverage.gradle.utils.map
 import io.github.surpsg.deltacoverage.gradle.utils.new
 import io.github.surpsg.deltacoverage.gradle.utils.stringProperty
 import org.gradle.api.Action
-import org.gradle.api.Incubating
 import org.gradle.api.Named
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.file.FileCollection
@@ -47,7 +46,6 @@ open class DeltaCoverageConfiguration @Inject constructor(
     @Nested
     val reportConfiguration: ReportsConfiguration = ReportsConfiguration(objectFactory)
 
-    @Incubating
     @Internal
     val reportViews: NamedDomainObjectContainer<ReportView> =
         objectFactory.domainObjectContainer(ReportView::class.java) { name ->
@@ -86,7 +84,6 @@ open class DeltaCoverageConfiguration @Inject constructor(
     }
 }
 
-@Incubating
 open class ReportView @Inject constructor(
     private val name: String,
     objectFactory: ObjectFactory,
