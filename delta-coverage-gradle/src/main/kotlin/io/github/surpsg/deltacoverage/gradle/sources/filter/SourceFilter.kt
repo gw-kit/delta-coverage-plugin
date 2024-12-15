@@ -37,12 +37,11 @@ internal fun interface SourceFilter {
             } else {
                 NOOP_FILTER
             }
-            return CompositeFilter(
-                listOf(
-                    AntSourceExcludeFilter(config.excludeClasses.get()),
-                    includeFilter,
-                )
-            )
+            return if (includeFilter == NOOP_FILTER) {
+                AntSourceExcludeFilter(config.excludeClasses.get())
+            } else {
+                includeFilter
+            }
         }
     }
 
