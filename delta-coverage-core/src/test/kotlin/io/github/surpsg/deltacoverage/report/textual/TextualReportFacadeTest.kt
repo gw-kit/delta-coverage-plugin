@@ -163,17 +163,17 @@ class TextualReportFacadeTest {
         fun `generateReport should render report`() {
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
+                    aClass = "class3"
+                    branches(1, 2); lines(3, 4); instr(8, 10)
+                },
+                RawCoverageData.newBlank {
                     aClass = "class1"
-                    branches(1, 2)
-                    lines(3, 4)
-                    instr(5, 6)
+                    branches(1, 2); lines(3, 4); instr(5, 6)
                 },
                 RawCoverageData.newBlank {
                     aClass = "class2"
-                    branches(5, 6)
-                    lines(7, 8)
-                    instr(9, 10)
-                }
+                    branches(5, 6); lines(7, 8); instr(9, 10)
+                },
             )
             val stream = ByteArrayOutputStream()
             val buildContext = TextualReportFacade.BuildContext {
@@ -186,7 +186,7 @@ class TextualReportFacadeTest {
                 outputStream = stream
 
                 targetCoverage(CoverageEntity.INSTRUCTION, 0.95)
-                targetCoverage(CoverageEntity.BRANCH, 0.75)
+                targetCoverage(CoverageEntity.BRANCH, 0.7)
                 targetCoverage(CoverageEntity.LINE, 0.9)
             }
 
@@ -199,8 +199,9 @@ class TextualReportFacadeTest {
             |--------------|----------|----------|----------|
             | class2       | 87.50%   | 83.33%   | 90%      |
             | class1       | 75%      | 50%      | 83.33%   |
-            | Total        | 🔴 83.33% | 🟢 75%   | 🔴 87.50% |
-            | Min expected | 90%      | 75%      | 95%      |
+            | class3       | 75%      | 50%      | 80%      |
+            | Total        | 🔴 81.25% | 🟢 70%   | 🔴 84.62% |
+            | Min expected | 90%      | 70%      | 95%      |
             
         """.trimIndent()
             stream.toString() shouldBe expectedReport
