@@ -21,15 +21,12 @@ module.exports = (ctx) => {
         return entities.map((entity) => {
             const expectedRatio = entityToExpectedRatio.get(entity) || NO_EXPECTED;
             const expectedPercents = expectedRatio * 100;
-            console.log(`Expected: ${expectedPercents}% ratio=${expectedRatio}`)
             const actualPercents = entityToActualPercents.get(entity) || NO_COVERAGE;
-            console.log(`Actual: ${actualPercents}%`)
             const isFailed = actualPercents > NO_COVERAGE && actualPercents < expectedPercents;
-            console.log(`isFailed: ${isFailed}`)
             return {
                 entity,
                 isFailed,
-                expected: entityToExpectedRatio.get(entity),
+                expected: expectedPercents,
                 actual: actualPercents
             }
         });
@@ -39,7 +36,6 @@ module.exports = (ctx) => {
         const buildProgressImgLink = (entityData) => {
             const color = entityData.actual < entityData.expected ? 'C4625A' : '7AB56D';
             const actualInteger = Math.round(entityData.actual);
-            console.log(`Progress: float=${entityData.actual} int=${actualInteger}% color=${color}`)
             return `https://progress-bar.xyz/${actualInteger}/?progress_color=${color}`;
         }
 
@@ -54,8 +50,6 @@ module.exports = (ctx) => {
             const ruleValue = (entityData.expected > NO_EXPECTED)
                 ? `🎯 ${entityData.expected}% 🎯`
                 : ``;
-            console.log(`entityData.actual=${entityData.actual} NO_COVERAGE=${NO_COVERAGE}`);
-            console.log(`entityData.actual > NO_COVERAGE: ${ entityData.actual > NO_COVERAGE}`);
             const actualValue = entityData.actual > NO_COVERAGE
                 ? `<img src="${buildProgressImgLink(entityData)}" />`
                 : '';
