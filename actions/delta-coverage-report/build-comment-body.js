@@ -7,7 +7,6 @@ module.exports = (ctx) => {
         const entitiesRules = checkRun.coverageRules.entitiesRules;
         const entityToExpectedRatio = new Map();
         for (const [entityName, entityConfig] of Object.entries(entitiesRules)) {
-            coverageMap.set(entityName, entityConfig.minCoverageRatio);
             entityToExpectedRatio.set(entityName, entityConfig.minCoverageRatio);
         }
 
