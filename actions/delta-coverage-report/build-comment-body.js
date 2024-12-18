@@ -30,7 +30,7 @@ module.exports = (ctx) => {
                 entity,
                 isFailed,
                 expected: entityToExpectedRatio.get(entity),
-                actual: entityToActualPercents.get(entity)
+                actual: actualPercents
             }
         });
     };
@@ -60,11 +60,11 @@ module.exports = (ctx) => {
                 ? `<img src="${buildProgressImgLink(entityData)}" />`
                 : '';
             return `<tr>
-            ${viewCellInRow}
-            <td>${entityData.entity}</td>
-            <td>${ruleValue}</td>
-            <td>${actualValue}</td>
-            </tr>`.trim();
+                ${viewCellInRow}
+                <td>${entityData.entity}</td>
+                <td>${ruleValue}</td>
+                <td>${actualValue}</td>
+            </tr>`.trim().replace(/^ +/gm, '');
         }).join('\n');
     }
 
