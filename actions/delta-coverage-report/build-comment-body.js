@@ -11,7 +11,7 @@ module.exports = (ctx) => {
         }
 
         const entityToActualPercents = checkRun.coverageInfo.reduce((acc, it) => {
-            entityToActualPercents.set(it.coverageEntity, it.percents);
+            acc.set(it.coverageEntity, it.percents);
             return acc;
         }, new Map());
 
