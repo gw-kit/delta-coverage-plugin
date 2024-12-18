@@ -7,15 +7,13 @@ module.exports = (ctx) => {
         const entitiesRules = checkRun.coverageRules.entitiesRules;
         const entityToExpectedRatio = new Map();
         for (const [entityName, entityConfig] of Object.entries(entitiesRules)) {
-            console.log(`Rules:`)
-            console.log(JSON.stringify(entityConfig))
             entityToExpectedRatio.set(entityName, entityConfig.minCoverageRatio);
         }
 
         const entityToActualPercents = checkRun.coverageInfo.reduce((acc, it) => {
-            console.log(`Actual:`)
-            console.log(JSON.stringify(it))
-            acc.set(it.coverageEntity, it.percents);
+            if (it.total !== 0) {
+                acc.set(it.coverageEntity, it.percents);
+            }
             return acc;
         }, new Map());
 
@@ -23,10 +21,10 @@ module.exports = (ctx) => {
         return entities.map((entity) => {
             const expectedRatio = entityToExpectedRatio.get(entity) || NO_EXPECTED;
             const expectedPercents = expectedRatio * 100;
-            console.log(`Expected: ${expectedPercents}% ratio=${expectedRatio}, map=${entityToExpectedRatio.get(entity)}`)
+            console.log(`Expected: ${expectedPercents}% ratio=${expectedRatio}`)
             const actualPercents = entityToActualPercents.get(entity) || NO_COVERAGE;
-            console.log(`Actual: ${actualPercents}%, map=${entityToActualPercents.get(entity)}`)
-            const isFailed = actualPercents < expectedPercents;
+            console.log(`Actual: ${actualPercents}%`)
+            const isFailed = actualPercents > NO_COVERAGE && actualPercents < expectedPercents;
             console.log(`isFailed: ${isFailed}`)
             return {
                 entity,
@@ -54,19 +52,19 @@ module.exports = (ctx) => {
         return viewSummaryData.map((entityData, index) => {
             const viewCellInRow = (index === 0) ? viewCellValue : '';
             const ruleValue = (entityData.expected > NO_EXPECTED)
-                ? `🎯 ${entityData.actual}% 🎯`
+                ? `🎯 ${entityData.expected}% 🎯`
                 : ``;
+            console.log(`entityData.actual=${entityData.actual} NO_COVERAGE=${NO_COVERAGE}`);
+            console.log(`entityData.actual > NO_COVERAGE: ${ entityData.actual > NO_COVERAGE}`);
             const actualValue = entityData.actual > NO_COVERAGE
                 ? `<img src="${buildProgressImgLink(entityData)}" />`
                 : '';
-            return `
-                <tr>
-                    ${viewCellInRow}
-                    <td>${entityData.entity}</td>
-                    <td>${ruleValue}</td>
-                    <td>${actualValue}</td>
-                </tr>
-            `.trim();
+            return `<tr>
+            ${viewCellInRow}
+            <td>${entityData.entity}</td>
+            <td>${ruleValue}</td>
+            <td>${actualValue}</td>
+            </tr>`.trim();
         }).join('\n');
     }
 
