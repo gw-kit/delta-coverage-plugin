@@ -15,7 +15,8 @@ module.exports = (ctx) => {
             return acc;
         }, new Map());
 
-        return entityToExpectedRatio.keys().map((entity) => {
+        const entities = [ ...entityToExpectedRatio.keys() ];
+        return entities.map((entity) => {
             const expectedRatio = entityToExpectedRatio.get(entity) || NO_EXPECTED;
             const expectedPercents = expectedRatio * 100;
             const actualPercents = entityToActualPercents.get(entity) || NO_COVERAGE;
