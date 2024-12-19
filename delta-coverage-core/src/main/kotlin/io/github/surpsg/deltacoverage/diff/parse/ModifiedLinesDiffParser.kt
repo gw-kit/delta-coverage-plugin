@@ -7,7 +7,6 @@ import java.util.regex.Pattern
 internal class ModifiedLinesDiffParser {
 
     fun collectModifiedLines(lines: List<String>): Map<String, Set<Int>> {
-        if (System.getenv().containsKey("AZAAZA")) { println(1) } else { println(2) }
         val iterator = lines.listIterator()
 
         val fileNameToChangedLines = hashMapOf<String, Set<Int>>()

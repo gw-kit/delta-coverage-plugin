@@ -43,7 +43,7 @@ module.exports = (ctx) => {
         const hasFailure = viewSummaryData.some(it => it.isFailed);
         const statusSymbol = hasFailure ? '🔴' : '🟢';
         const viewCellValue = `
-            <td rowspan=3><a href="${checkRun.url}">${statusSymbol} ${checkRun.viewName}</a></td>
+            <td rowspan=3>${statusSymbol} <a href="${checkRun.url}">${checkRun.viewName}</a></td>
         `.trim();
         return viewSummaryData.map((entityData, index) => {
             const viewCellInRow = (index === 0) ? viewCellValue : '';
