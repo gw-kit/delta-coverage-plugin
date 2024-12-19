@@ -2,6 +2,11 @@ module.exports = (ctx) => {
 
     const NO_EXPECTED = -1;
     const NO_COVERAGE = -1;
+    const TOOLTIPS = new Map([
+        ['INSTRUCTION', 'The Java bytecode instructions executed during testing'],
+        ['BRANCH', 'he branches in conditional statements like if, switch, or loops that are executed.'],
+        ['LINE', 'The source code lines covered by the tests.']
+    ])
 
     const buildViewSummaryData = (checkRun) => {
         const entitiesRules = checkRun.coverageRules.entitiesRules;
@@ -53,9 +58,10 @@ module.exports = (ctx) => {
             const actualValue = entityData.actual > NO_COVERAGE
                 ? `<img src="${buildProgressImgLink(entityData)}" />`
                 : '';
+            const toolTipText = TOOLTIPS.get(entityData.entity) || '';
             return `<tr>
                 ${viewCellInRow}
-                <td>${entityData.entity}</td>
+                <td><span title="${toolTipText}">${entityData.entity}</span></td>
                 <td>${ruleValue}</td>
                 <td>${actualValue}</td>
             </tr>`.trim().replace(/^ +/gm, '');
