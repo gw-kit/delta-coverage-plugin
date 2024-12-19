@@ -44,25 +44,43 @@ module.exports = (ctx) => {
             return `https://progress-bar.xyz/${actualInteger}/?progress_color=${color}`;
         }
 
+        const isSameExpectedForAllEntities = (viewSummaryData) => {
+            const allExpected = viewSummaryData.map(it => it.expected);
+            return new Set(allExpected).size === 1;
+        }
+
+        const buildRuleValueColumnHtml = (entityData, entityIndex, shouldFoldExpectedColumn) => {
+            if (shouldFoldExpectedColumn && entityIndex > 0) {
+                return '';
+            }
+            const rowSpanAttr = (shouldFoldExpectedColumn && entityIndex === 0) ? `rowspan=3` : '';
+            const expectedText = (entityData.expected > NO_EXPECTED) ? `🎯 ${entityData.expected}% 🎯` : '';
+            return `<td ${rowSpanAttr}>${expectedText}</td>`;
+        }
+
         const viewSummaryData = buildViewSummaryData(checkRun);
         const hasFailure = viewSummaryData.some(it => it.isFailed);
+        const shouldFoldExpectedColumn = isSameExpectedForAllEntities(viewSummaryData);
+
         const statusSymbol = hasFailure ? '🔴' : '🟢';
         const viewCellValue = `
             <td rowspan=3>${statusSymbol} <a href="${checkRun.url}">${checkRun.viewName}</a></td>
         `.trim();
+
         return viewSummaryData.map((entityData, index) => {
             const viewCellInRow = (index === 0) ? viewCellValue : '';
-            const ruleValue = (entityData.expected > NO_EXPECTED)
-                ? `🎯 ${entityData.expected}% 🎯`
-                : ``;
+
+            const ruleColumnHtml = buildRuleValueColumnHtml(entityData, index, shouldFoldExpectedColumn);
+
             const actualValue = entityData.actual > NO_COVERAGE
                 ? `<img src="${buildProgressImgLink(entityData)}" />`
                 : '';
             const toolTipText = TOOLTIPS.get(entityData.entity) || '';
+
             return `<tr>
                 ${viewCellInRow}
                 <td><span title="${toolTipText}">${entityData.entity}</span></td>
-                <td>${ruleValue}</td>
+                ${ruleColumnHtml}
                 <td>${actualValue}</td>
             </tr>`.trim().replace(/^ +/gm, '');
         }).join('\n');
