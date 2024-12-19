@@ -1,5 +1,20 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## 3.1.0
+
+### New features
+- Added extra property `matchClasses` to set patterns of classes for a particular view.
+- Added `DeltaCoverageConfiguration.reportViews.<view-name>.enabled` property that allows enabling/disabling a particular view.
+
+### Changed
+- Now the `aggregated` view is disabled by default if there is only one view is configured.
+- Textual reports now sorted by DESC branches, lines, instructions.
+- Reworked GHA PR comment summary report.
+
+### Fixed
+- Fix `deltaCoverage*` task creation for custom view.
+
+
 ## 3.0.2
 
 - #180 Markdown and console report now print `no diff` instead of `NaN%`. 

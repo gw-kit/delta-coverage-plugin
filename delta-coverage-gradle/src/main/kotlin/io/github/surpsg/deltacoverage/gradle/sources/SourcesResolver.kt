@@ -49,7 +49,7 @@ internal object SourcesResolver {
         resolvedSources: FileCollection
     ): FileCollection {
         val sourcesToFilter = SourceFilter.InputSource(resolvedSources, provider, context.sourceType)
-        return SourceFilter.build(context.config, context.sourceType)
+        return SourceFilter.build(context.viewName, context.config, context.sourceType)
             .filter(sourcesToFilter)
     }
 

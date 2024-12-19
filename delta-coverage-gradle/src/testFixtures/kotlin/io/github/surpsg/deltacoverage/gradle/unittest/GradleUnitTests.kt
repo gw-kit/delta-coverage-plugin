@@ -25,6 +25,7 @@ fun testJavaProject(
 
     it.customize()
 
+    it.evaluate()
     it.gradle.taskGraph.populate(FinalizedExecutionPlan.EMPTY)
 }
 

@@ -62,12 +62,37 @@ class DeltaCoverageConfigurationsTest {
     }
 
     @Test
+    fun `delta-coverage outputs caching should be disabled 2`() {
+        // GIVEN
+        buildFile.file.appendText(
+            """
+            deltaCoverageReport {
+                diffSource.file.set('$diffFilePath')
+                view('testView') {
+                    coverageBinaryFiles = files('coverage.any.file')
+                    violationRules.failIfCoverageLessThan(1.0d)
+                    matchClasses.set([
+                        '**/UnchagedClass.*',
+                    ])          
+                }
+            }
+        """.trimIndent()
+        )
+
+        // WHEN // THEN
+        gradleRunner.runDeltaCoverageTask()
+    }
+
+    @Test
     fun `should create delta coverage tasks`() {
         // GIVEN
         buildFile.file.appendText(
             """
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
+                view('myCustom') {
+                    coverageBinaryFiles = files('coverage.bin')
+                }
             }
         """.trimIndent()
         )
@@ -78,6 +103,7 @@ class DeltaCoverageConfigurationsTest {
                 "':deltaCoverage'",
                 "':deltaCoverageTest'",
                 "':deltaCoverageAggregated'",
+                "':deltaCoverageMyCustom'",
             )
     }
 }

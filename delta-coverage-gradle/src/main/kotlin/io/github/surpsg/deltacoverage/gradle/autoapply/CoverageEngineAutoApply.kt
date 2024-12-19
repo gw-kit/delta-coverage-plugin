@@ -2,18 +2,17 @@ package io.github.surpsg.deltacoverage.gradle.autoapply
 
 import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.Coverage
-import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
+import io.github.surpsg.deltacoverage.gradle.utils.deltaCoverageConfig
 import org.gradle.api.Project
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 internal class CoverageEngineAutoApply {
 
-    fun apply(
+    fun applyEngine(
         project: Project,
-        deltaCoverageConfig: DeltaCoverageConfiguration,
     ) = project.afterEvaluate { thisProject ->
-        val coverageConfiguration: Coverage = deltaCoverageConfig.coverage
+        val coverageConfiguration: Coverage = project.deltaCoverageConfig.coverage
         if (coverageConfiguration.autoApplyPlugin.get()) {
             thisProject.autoApplyCoverageEngine(coverageConfiguration.engine.get())
         }

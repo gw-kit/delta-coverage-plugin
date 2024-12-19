@@ -52,11 +52,14 @@ class DeltaCoverageReportsTest {
                     markdown.set(true)
                     fullCoverageReport.set(true)
                 }
-                reportViews.$view {
-                    violationRules {
-                        failIfCoverageLessThan(0.6d)
-                        failOnViolation.set(false)
+                reportViews {
+                    $view {
+                        violationRules {
+                            failIfCoverageLessThan(0.6d)
+                            failOnViolation.set(false)
+                        }
                     }
+                    aggregated.enabled = true
                 }
             }
         """.trimIndent()

@@ -37,9 +37,9 @@ internal class CoverageEngineAutoApplyTest {
         }
 
         // WHEN
-        project.evaluate()
+        val hasPlugin = project.plugins.hasPlugin(coveragePluginId)
 
         // THEN
-        project.plugins.hasPlugin(coveragePluginId) shouldBeEqualComparingTo expectedIsApplied
+        hasPlugin shouldBeEqualComparingTo expectedIsApplied
     }
 }

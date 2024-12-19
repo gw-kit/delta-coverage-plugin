@@ -7,6 +7,8 @@ import io.github.surpsg.deltacoverage.gradle.unittest.applyPlugin
 import io.github.surpsg.deltacoverage.gradle.unittest.newProject
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -21,6 +23,7 @@ class DeltaCoveragePluginTest {
     @Test
     fun `apply plugin should automatically create aggregated view and views from test tasks`() {
         // GIVEN
+        val customViewName = "custom"
         val parentProj: ProjectInternal = testJavaProject(attachSettings = true) {
             newProject {
                 withName("child")
@@ -28,14 +31,18 @@ class DeltaCoveragePluginTest {
             }
             allprojects { proj -> proj.applyPlugin<JavaPlugin>() }
             applyDeltaCoveragePlugin()
+            extensions.configure(DeltaCoverageConfiguration::class.java) { config ->
+                config.reportViews.register(customViewName) {
+                    it.coverageBinaryFiles = files("1.txt")
+                }
+            }
         }
 
         // WHEN
-        parentProj.evaluate()
+        val config = parentProj.extensions.getByType(DeltaCoverageConfiguration::class.java)
 
         // THEN
-        val config = parentProj.extensions.getByType(DeltaCoverageConfiguration::class.java)
-        config.reportViews.names.shouldContainExactlyInAnyOrder(TEST_VIEW, AGGREGATED_VIEW)
+        config.reportViews.names.shouldContainExactlyInAnyOrder(TEST_VIEW, AGGREGATED_VIEW, customViewName)
 
         // AND THEN
         val deltaCoverageTasks = parentProj.tasks.withType(DeltaCoverageTask::class.java)
@@ -48,6 +55,65 @@ class DeltaCoveragePluginTest {
                 task.coverageBinaryFiles.get()[viewName].shouldNotBeEmpty()
             }
         }
+
+        // AND THEN
+        deltaCoverageTasks.names shouldContainExactlyInAnyOrder listOf(
+            "deltaCoverageTest",
+            "deltaCoverageCustom",
+            "deltaCoverageAggregated",
+        )
+
+        // AND THEN
+        with(deltaCoverageTasks.getByName("deltaCoverageAggregated")) {
+            onlyIf.isSatisfiedBy(this).shouldBeTrue()
+        }
+    }
+
+    @Test
+    fun `apply plugin should create aggregated view task with disabled state when there is only one view`() {
+        // GIVEN
+        val parentProj: ProjectInternal = testJavaProject(attachSettings = true) {
+            applyDeltaCoveragePlugin()
+        }
+
+        // WHEN
+        val config = parentProj.extensions.getByType(DeltaCoverageConfiguration::class.java)
+
+        // THEN
+        config.reportViews.names.shouldContainExactlyInAnyOrder(TEST_VIEW, AGGREGATED_VIEW)
+
+        // AND THEN
+        val deltaCoverageTasks = parentProj.tasks.withType(DeltaCoverageTask::class.java)
+        deltaCoverageTasks.names shouldContainExactlyInAnyOrder listOf(
+            "deltaCoverageTest",
+            "deltaCoverageAggregated",
+        )
+
+        // AND THEN
+        with(deltaCoverageTasks.getByName("deltaCoverageAggregated")) {
+            onlyIf.isSatisfiedBy(this).shouldBeFalse()
+        }
+    }
+
+    @Test
+    fun `apply plugin should create aggregated view task with disabled state disabled manually`() {
+        // GIVEN
+        val parentProj: ProjectInternal = testJavaProject(attachSettings = true) {
+            applyDeltaCoveragePlugin()
+            extensions.configure(DeltaCoverageConfiguration::class.java) { config ->
+                config.reportViews.named("aggregated") {
+                    it.enabled.set(false)
+                }
+            }
+        }
+
+        // WHEN
+        val deltaCoverageTasks = parentProj.tasks.withType(DeltaCoverageTask::class.java)
+
+        // AND THEN
+        with(deltaCoverageTasks.getByName("deltaCoverageAggregated")) {
+            onlyIf.isSatisfiedBy(this).shouldBeFalse()
+        }
     }
 
     @Test
@@ -57,26 +123,25 @@ class DeltaCoveragePluginTest {
             applyDeltaCoveragePlugin()
             extensions.configure(DeltaCoverageConfiguration::class.java) { config ->
                 config.diffSource.git.useNativeGit.set(true)
+                config.reportViews.register("custom")
             }
         }
 
         // WHEN
-        proj.evaluate()
+        val gitDiffTask = proj.tasks.findByName(DeltaCoveragePlugin.GIT_DIFF_TASK)
 
         // THEN
-        proj.tasks.findByName(DeltaCoveragePlugin.GIT_DIFF_TASK).shouldBeInstanceOf<NativeGitDiffTask>()
+        gitDiffTask.shouldBeInstanceOf<NativeGitDiffTask>()
 
         // AND THEN
         val deltaCoverageTasks = proj.tasks.withType(DeltaCoverageTask::class.java)
-        assertSoftly(deltaCoverageTasks) { tasks ->
-            tasks
-                .forEach { deltaTask ->
-                    val gitDiffTask = deltaTask.dependsOn.firstNotNullOfOrNull {
-                        it as? TaskProvider<NativeGitDiffTask>
-                    }
-                    gitDiffTask.shouldNotBeNull()
+        deltaCoverageTasks
+            .forEach { deltaTask ->
+                val gitDiffTask = deltaTask.dependsOn.firstNotNullOfOrNull {
+                    it as? TaskProvider<NativeGitDiffTask>
                 }
-        }
+                gitDiffTask.shouldNotBeNull()
+            }
     }
 
     private companion object {

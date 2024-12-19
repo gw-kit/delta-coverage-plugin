@@ -27,7 +27,13 @@ internal object TextualReportFacade {
         val rawCoverageData: List<RawCoverageData> = buildContext.coverageDataProvider.obtainData()
         val coverageDataValues: List<List<String>> =
             rawCoverageData
-                .sortedByDescending { it.lines.ratio }
+                .sortedWith(
+                    compareBy<RawCoverageData>(
+                        { it.branches.ratio },
+                        { it.lines.ratio },
+                        { it.instr.ratio },
+                    ).reversed()
+                )
                 .asSequence()
                 .map { it.toValuesCollection(buildContext) }
                 .toList()
