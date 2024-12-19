@@ -1,6 +1,6 @@
 # Delta-Coverage Gradle plugin Changelog
 
-## NEXT RELEASE
+## 3.1.0
 
 ### New features
 - Added extra property `matchClasses` to set patterns of classes for a particular view.
