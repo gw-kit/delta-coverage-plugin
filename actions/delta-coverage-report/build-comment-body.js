@@ -1,54 +1,71 @@
 module.exports = (ctx) => {
 
-    const bold = (text) => `**${text}**`;
+    const NO_EXPECTED = -1;
+    const NO_COVERAGE = -1;
+    const TOOLTIPS = new Map([
+        ['INSTRUCTION', 'The Java bytecode instructions executed during testing'],
+        ['BRANCH', 'he branches in conditional statements like if, switch, or loops that are executed.'],
+        ['LINE', 'The source code lines covered by the tests.']
+    ])
 
-    const createCheckRunSummaryText = (checkRun) => {
-        const conclusion = checkRun.conclusion === 'success' ? '✅' : '❌';
-        return `${conclusion} [${checkRun.viewName}](${checkRun.url})`;
-    }
-
-    const buildCoverageInfoMap = (checkRun) => {
+    const buildViewSummaryData = (checkRun) => {
         const entitiesRules = checkRun.coverageRules.entitiesRules;
-        const coverageMap = new Map();
+        const entityToExpectedRatio = new Map();
         for (const [entityName, entityConfig] of Object.entries(entitiesRules)) {
-            coverageMap.set(entityName, entityConfig.minCoverageRatio);
+            entityToExpectedRatio.set(entityName, entityConfig.minCoverageRatio);
         }
 
-        const buildExpectedText = (entity, coverageMap) => {
-            const expectedCoverageRatio = coverageMap.get(entity);
-            if (expectedCoverageRatio) {
-                const percentsText = bold(`${expectedCoverageRatio * 100}%`);
-                return `expected ${percentsText}`;
-            } else {
-                return bold('_');
+        const entityToActualPercents = checkRun.coverageInfo.reduce((acc, it) => {
+            if (it.total !== 0) {
+                acc.set(it.coverageEntity, it.percents);
             }
-        };
-
-        return checkRun.coverageInfo.reduce((acc, it) => {
-            if (it.percents === 0) {
-                return acc;
-            }
-            const actualPercentsText = bold(`${it.percents}%`);
-            const text = `${bold(it.coverageEntity)}: ` + [
-                buildExpectedText(it.coverageEntity, coverageMap),
-                `actual ${actualPercentsText}`
-            ].join(', ');
-            acc.set(it.coverageEntity, text);
             return acc;
         }, new Map());
-    }
+
+        const entities = [ ...entityToExpectedRatio.keys() ];
+        return entities.map((entity) => {
+            const expectedRatio = entityToExpectedRatio.get(entity) || NO_EXPECTED;
+            const expectedPercents = expectedRatio * 100;
+            const actualPercents = entityToActualPercents.get(entity) || NO_COVERAGE;
+            const isFailed = actualPercents > NO_COVERAGE && actualPercents < expectedPercents;
+            return {
+                entity,
+                isFailed,
+                expected: expectedPercents,
+                actual: actualPercents
+            }
+        });
+    };
 
     const buildCheckRunForViewText = (checkRun) => {
-        const coverageInfo = buildCoverageInfoMap(checkRun);
-        checkRun.verifications.forEach((it) => {
-            coverageInfo.set(it.coverageEntity, `🔴 \`${it.violation}\``)
-        });
+        const buildProgressImgLink = (entityData) => {
+            const color = entityData.actual < entityData.expected ? 'C4625A' : '7AB56D';
+            const actualInteger = Math.round(entityData.actual);
+            return `https://progress-bar.xyz/${actualInteger}/?progress_color=${color}`;
+        }
 
-        const violations = Array.from(coverageInfo.values())
-            .map(it => `   - ${it}`)
-            .join('\n');
-        const checkRunSummary = createCheckRunSummaryText(checkRun);
-        return `- ${checkRunSummary} \n${violations}`
+        const viewSummaryData = buildViewSummaryData(checkRun);
+        const hasFailure = viewSummaryData.some(it => it.isFailed);
+        const statusSymbol = hasFailure ? '🔴' : '🟢';
+        const viewCellValue = `
+            <td rowspan=3>${statusSymbol} <a href="${checkRun.url}">${checkRun.viewName}</a></td>
+        `.trim();
+        return viewSummaryData.map((entityData, index) => {
+            const viewCellInRow = (index === 0) ? viewCellValue : '';
+            const ruleValue = (entityData.expected > NO_EXPECTED)
+                ? `🎯 ${entityData.expected}% 🎯`
+                : ``;
+            const actualValue = entityData.actual > NO_COVERAGE
+                ? `<img src="${buildProgressImgLink(entityData)}" />`
+                : '';
+            const toolTipText = TOOLTIPS.get(entityData.entity) || '';
+            return `<tr>
+                ${viewCellInRow}
+                <td><span title="${toolTipText}">${entityData.entity}</span></td>
+                <td>${ruleValue}</td>
+                <td>${actualValue}</td>
+            </tr>`.trim().replace(/^ +/gm, '');
+        }).join('\n');
     }
 
     const checkRuns = JSON.parse(ctx.checkRunsContent);
@@ -56,10 +73,13 @@ module.exports = (ctx) => {
         .addHeading(ctx.commentTitle, '2')
         .addRaw(ctx.commentMarker, true)
         .addEOL()
+        .addRaw(`<table><tbody>`);
 
     checkRuns.forEach(checkRun => {
         const runText = buildCheckRunForViewText(checkRun);
         summaryBuffer = summaryBuffer.addRaw(runText, true);
     });
-    return summaryBuffer.stringify()
+    return summaryBuffer
+        .addRaw(`</tbody></table>`)
+        .stringify()
 };

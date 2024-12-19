@@ -9,6 +9,7 @@
 ### Changed
 - Now the `aggregated` view is disabled by default if there is only one view is configured.
 - Textual reports now sorted by DESC branches, lines, instructions.
+- Reworked GHA PR comment summary report.
 
 ### Fixed
 - Fix `deltaCoverage*` task creation for custom view.
