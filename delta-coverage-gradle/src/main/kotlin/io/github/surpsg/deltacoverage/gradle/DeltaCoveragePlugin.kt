@@ -21,6 +21,7 @@ open class DeltaCoveragePlugin : Plugin<Project> {
     private val registeredViews = ConcurrentHashMap.newKeySet<String>()
 
     override fun apply(project: Project) = with(project) {
+        if (System.getenv().containsKey("azazazaz")) { println(1)} else { println(2)}
         extensions.create(
             DELTA_COVERAGE_REPORT_EXTENSION,
             DeltaCoverageConfiguration::class.java,

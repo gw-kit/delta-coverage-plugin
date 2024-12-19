@@ -50,9 +50,7 @@ module.exports = (ctx) => {
         }
 
         const buildRuleValueColumnHtml = (entityData, entityIndex, shouldFoldExpectedColumn) => {
-            console.log(`entityData=${JSON.stringify(entityData)}, entityIndex=${entityIndex}, shouldFoldExpectedColumn=${shouldFoldExpectedColumn}`);
             if (shouldFoldExpectedColumn && entityIndex > 0) {
-                console.log('skip entity cell shouldFoldExpectedColumn && entityIndex > 0');
                 return '';
             }
             const rowSpanAttr = (shouldFoldExpectedColumn && entityIndex === 0) ? `rowspan=3` : '';

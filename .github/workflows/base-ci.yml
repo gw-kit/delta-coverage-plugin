@@ -44,7 +44,7 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
 
       - name: Build & Test
-        run: ${gradle_cmd} build detektMain detektTest :koverXmlReport --continue -x funTest
+        run: ${gradle_cmd} build detektMain detektTest :koverXmlReport --continue
 
       - name: Commits Number
         id: git-commits
