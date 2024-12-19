@@ -50,7 +50,9 @@ module.exports = (ctx) => {
         }
 
         const buildRuleValueColumnHtml = (entityData, entityIndex, shouldFoldExpectedColumn) => {
-            if (shouldFoldExpectedColumn && entityIndex >= 0) {
+            console.log(`entityData=${JSON.stringify(entityData)}, entityIndex=${entityIndex}, shouldFoldExpectedColumn=${shouldFoldExpectedColumn}`);
+            if (shouldFoldExpectedColumn && entityIndex > 0) {
+                console.log('skip entity cell shouldFoldExpectedColumn && entityIndex > 0');
                 return '';
             }
             const rowSpanAttr = (shouldFoldExpectedColumn && entityIndex === 0) ? `rowspan=3` : '';
@@ -70,9 +72,6 @@ module.exports = (ctx) => {
         return viewSummaryData.map((entityData, index) => {
             const viewCellInRow = (index === 0) ? viewCellValue : '';
 
-            if (shouldFoldExpectedColumn && index > 0) {
-
-            }
             const ruleColumnHtml = buildRuleValueColumnHtml(entityData, index, shouldFoldExpectedColumn);
 
             const actualValue = entityData.actual > NO_COVERAGE
