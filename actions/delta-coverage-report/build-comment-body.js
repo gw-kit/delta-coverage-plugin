@@ -2,6 +2,7 @@ module.exports = (ctx) => {
 
     const NO_EXPECTED = -1;
     const NO_COVERAGE = -1;
+    const ENTITIES = ['INSTRUCTION', 'BRANCH', 'LINE'];
     const TOOLTIPS = new Map([
         ['INSTRUCTION', 'The Java bytecode instructions executed during testing'],
         ['BRANCH', 'he branches in conditional statements like if, switch, or loops that are executed.'],
@@ -22,8 +23,7 @@ module.exports = (ctx) => {
             return acc;
         }, new Map());
 
-        const entities = [ ...entityToExpectedRatio.keys() ];
-        return entities.map((entity) => {
+        return ENTITIES.map((entity) => {
             const expectedRatio = entityToExpectedRatio.get(entity) || NO_EXPECTED;
             const expectedPercents = expectedRatio * 100;
             const actualPercents = entityToActualPercents.get(entity) || NO_COVERAGE;
