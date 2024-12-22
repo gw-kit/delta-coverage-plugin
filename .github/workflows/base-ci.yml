@@ -80,7 +80,7 @@ jobs:
       - name: Publish Coverage Summary
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: true
-        uses: gw-kit/delta-coverage-action@main
+        uses: gw-kit/delta-coverage-action@render-progress-when-no-code
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.17.1
