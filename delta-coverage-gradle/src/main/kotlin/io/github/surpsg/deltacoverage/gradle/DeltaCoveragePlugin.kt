@@ -26,7 +26,7 @@ open class DeltaCoveragePlugin : Plugin<Project> {
             DeltaCoverageConfiguration::class.java,
             objects,
         )
-        CoverageEngineAutoApply().applyEngine(project)
+        CoverageEngineAutoApply().applyEngine(project) //
 
         val deltaTaskForViewConfigurer: (String) -> Unit = deltaTaskForViewConfigurer()
 
