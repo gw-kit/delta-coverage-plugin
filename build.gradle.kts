@@ -23,9 +23,3 @@ tasks.named("check") {
         }
     )
 }
-
-deltaCoverageReport {
-    reportViews.create("aza") {
-        coverageBinaryFiles = files("build/reports/jacoco/test/jacocoTest.exec")
-    }
-}
