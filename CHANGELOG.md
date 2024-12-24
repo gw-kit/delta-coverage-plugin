@@ -1,5 +1,11 @@
 # Delta-Coverage Gradle plugin Changelog
 
+# Next release
+
+### Fixed
+- Fix aggregated view default enable state when there is only one view is enabled.
+
+
 ## 3.1.0
 
 ### New features

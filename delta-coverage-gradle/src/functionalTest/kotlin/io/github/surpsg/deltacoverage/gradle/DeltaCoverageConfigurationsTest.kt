@@ -62,7 +62,7 @@ class DeltaCoverageConfigurationsTest {
     }
 
     @Test
-    fun `delta-coverage outputs caching should be disabled 2`() {
+    fun `delta-coverage should successfully pass if no matched classes by include filter in changed files list`() {
         // GIVEN
         buildFile.file.appendText(
             """
