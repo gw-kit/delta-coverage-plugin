@@ -96,6 +96,27 @@ class DeltaCoveragePluginTest {
     }
 
     @Test
+    fun `apply plugin should create aggregated view task with disabled state when there is only one view enabled`() {
+        // GIVEN
+        val parentProj: ProjectInternal = testJavaProject(attachSettings = true) {
+            applyDeltaCoveragePlugin()
+            extensions.configure(DeltaCoverageConfiguration::class.java) { config ->
+                config.reportViews.register("custom") {
+                    it.enabled.set(false)
+                }
+            }
+        }
+        val aggView = parentProj.tasks.withType(DeltaCoverageTask::class.java)
+            .getByName("deltaCoverageAggregated")
+
+        // WHEN
+        val isViewEnabled = aggView.onlyIf.isSatisfiedBy(aggView)
+
+        // THEN
+        isViewEnabled.shouldBeFalse()
+    }
+
+    @Test
     fun `apply plugin should create aggregated view task with disabled state disabled manually`() {
         // GIVEN
         val parentProj: ProjectInternal = testJavaProject(attachSettings = true) {
