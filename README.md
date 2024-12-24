@@ -367,4 +367,4 @@ The report is saved to the file `build/reports/coverage-reports/delta-coverage/t
 ## GitHub Integration
 
 The plugin provides a GitHub action that posts the Delta Coverage report to the PR comment.
-For more details see [Delta Coverage Report GitHub Action](actions/delta-coverage-report/README.md).
+For more details see [Delta Coverage Report GitHub Action](https://github.com/gw-kit/delta-coverage-action).

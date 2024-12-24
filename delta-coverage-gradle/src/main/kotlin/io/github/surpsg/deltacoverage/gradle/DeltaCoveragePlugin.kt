@@ -46,7 +46,10 @@ open class DeltaCoveragePlugin : Plugin<Project> {
 
             deltaCoverageConfig.reportViews.named(DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME) {
                 if (!it.enabled.isPresent) {
-                    it.enabled.set(registeredViews.size > 1)
+                    val enabledViewsCount = registeredViews.count { view ->
+                        deltaCoverageConfig.reportViews.getByName(view).isEnabled()
+                    }
+                    it.enabled.set(enabledViewsCount > 1)
                 }
             }
             // Finally, register the aggregated view task
@@ -87,7 +90,7 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         return project.tasks.create(taskName, DeltaCoverageTask::class.java) { deltaCoverageTask ->
             DeltaCoverageTaskConfigurer.configure(viewName, config, deltaCoverageTask)
             deltaCoverageTask.onlyIf {
-                config.reportViews.getByName(viewName).enabled.convention(true).get()
+                config.reportViews.getByName(viewName).isEnabled()
             }
         }
     }
@@ -102,6 +105,8 @@ open class DeltaCoveragePlugin : Plugin<Project> {
             gitDiffTask.dependsOn(JavaPlugin.CLASSES_TASK_NAME)
         }
     }
+
+    private fun ReportView.isEnabled(): Boolean = enabled.getOrElse(true)
 
     companion object {
         const val DELTA_COVERAGE_REPORT_EXTENSION = "deltaCoverageReport"
