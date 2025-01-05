@@ -60,9 +60,8 @@ internal object DeltaCoverageTaskConfigurer {
         classesFiles.set(
             viewSourcesProvider.map { it.classes }
         )
-        coverageBinaryFiles.put(
-            viewName,
-            viewSourcesProvider.map { it.coverageBinaries },
+        coverageBinaryFiles.set(
+            viewSourcesProvider.map { it.coverageBinaries }
         )
     }
 
