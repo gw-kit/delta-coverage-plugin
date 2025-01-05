@@ -3,7 +3,7 @@ package io.github.surpsg.deltacoverage.report.textual
 import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.github.surpsg.deltacoverage.report.textual.Coverage.Companion.has
 
-internal class RawCoverageData private constructor(
+internal data class RawCoverageData private constructor(
     val aClass: String,
     val instr: Coverage,
     val lines: Coverage,
