@@ -35,15 +35,15 @@ class TextualReportFacadeTest {
             val rawCoverageData = listOf(
                 RawCoverageData.newBlank {
                     aClass = "class1"
-                    instr(2, 3)
-                    branches(1, 2)
-                    lines(3, 4)
+                    instr(2, 3); branches(1, 2); lines(3, 4)
                 },
                 RawCoverageData.newBlank {
                     aClass = "class2"
-                    instr(1, 3)
-                    branches(5, 6)
-                    lines(7, 8)
+                    instr(0, 2); branches(5, 6); lines(6, 7)
+                },
+                RawCoverageData.newBlank {
+                    aClass = "class2.new Function() {...}"
+                    instr(1, 1); branches(0, 0); lines(1, 1)
                 }
             )
             val stream = ByteArrayOutputStream()

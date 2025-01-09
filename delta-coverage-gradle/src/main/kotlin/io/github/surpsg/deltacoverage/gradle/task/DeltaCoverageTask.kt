@@ -9,7 +9,6 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
@@ -36,11 +35,8 @@ open class DeltaCoverageTask @Inject constructor(
     @Input
     val viewName: Property<String> = objectFactory.property(String::class.java)
 
-    @get:Nested
-    val coverageBinaryFiles: MapProperty<String, FileCollection> = objectFactory.mapProperty(
-        String::class.java,
-        FileCollection::class.java
-    )
+    @get:InputFiles
+    val coverageBinaryFiles: Property<FileCollection> = objectFactory.property(FileCollection::class.java)
 
     @get:InputFiles
     val sourcesFiles: Property<FileCollection> = objectFactory.property(FileCollection::class.java)
@@ -113,7 +109,7 @@ open class DeltaCoverageTask @Inject constructor(
             deltaCoverageConfig = gradleCoverageConfig,
             sourcesFiles = sourcesFiles.get().files,
             classesFiles = classesFiles.get().files,
-            coverageBinaryFiles = coverageBinaryFiles.getting(view).get().files,
+            coverageBinaryFiles = coverageBinaryFiles.get().files,
         )
     }
 

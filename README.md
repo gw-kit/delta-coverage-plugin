@@ -190,7 +190,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     }
 
     // Required. By default, sources are taken from jacoco plugin(or intellij) if the plugin is applied to a project.
-    srcDirs = files("/path/to/sources")
+    sources = files("/path/to/sources")
 
     // Required. By default, classes are taken from jacoco plugin(or intellij) if the plugin is applied to a project.
     classesDirs = files("/path/to/compiled/classes")

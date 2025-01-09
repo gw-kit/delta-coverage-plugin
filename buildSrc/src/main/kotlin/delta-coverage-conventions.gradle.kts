@@ -1,4 +1,5 @@
 import io.github.surpsg.deltacoverage.CoverageEngine
+import io.github.surpsg.deltacoverage.gradle.CoverageEntity
 
 plugins {
     base
@@ -24,7 +25,12 @@ deltaCoverageReport {
         violationRules.failIfCoverageLessThan(0.9)
     }
     view("functionalTest") {
-        violationRules.failIfCoverageLessThan(0.6)
+        violationRules {
+            failIfCoverageLessThan(0.6)
+            CoverageEntity.BRANCH {
+                minCoverageRatio = 0.5
+            }
+        }
     }
     view("aggregated") {
         violationRules.failIfCoverageLessThan(0.91)

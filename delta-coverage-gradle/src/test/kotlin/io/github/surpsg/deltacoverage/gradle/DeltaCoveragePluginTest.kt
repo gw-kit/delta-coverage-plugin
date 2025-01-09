@@ -51,8 +51,7 @@ class DeltaCoveragePluginTest {
                 task.sourcesFiles.get().shouldNotBeEmpty()
                 task.classesFiles.get().shouldNotBeEmpty()
 
-                val viewName: String = task.viewName.get()
-                task.coverageBinaryFiles.get()[viewName].shouldNotBeEmpty()
+                task.coverageBinaryFiles.get().shouldNotBeEmpty()
             }
         }
 

@@ -9,6 +9,8 @@ import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 @GradlePluginTest(TestProjects.SINGLE_MODULE)
 class DeltaCoverageConfigurationsTest {
@@ -27,14 +29,22 @@ class DeltaCoverageConfigurationsTest {
         buildFile.restoreOriginContent()
     }
 
-    @Test
-    fun `delta-coverage should fail if classes file collection is empty`() {
+    @ParameterizedTest
+    @ValueSource(
+        strings = [
+            "classesDirs",
+            "sources",
+        ]
+    )
+    fun `delta-coverage should fail if sources file collection is empty`(
+        sourceName: String
+    ) {
         // GIVEN
         buildFile.file.appendText(
             """
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
-                classesDirs = files()
+                $sourceName = files()
             }
         """.trimIndent()
         )
@@ -42,7 +52,7 @@ class DeltaCoverageConfigurationsTest {
         // WHEN // THEN
         gradleRunner
             .runTaskAndFail(TEST_TASK_NAME, DELTA_COVERAGE_TASK)
-            .assertOutputContainsStrings("'deltaCoverageReport.classesDirs' file collection is empty.")
+            .assertOutputContainsStrings("'deltaCoverageReport.${sourceName}' file collection is empty.")
     }
 
     @Test

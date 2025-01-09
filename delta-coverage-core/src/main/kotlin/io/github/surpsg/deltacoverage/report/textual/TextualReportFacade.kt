@@ -24,19 +24,13 @@ internal object TextualReportFacade {
     fun generateReport(
         buildContext: BuildContext,
     ) {
-        val rawCoverageData: List<RawCoverageData> = buildContext.coverageDataProvider.obtainData()
-        val coverageDataValues: List<List<String>> =
-            rawCoverageData
-                .sortedWith(
-                    compareBy<RawCoverageData>(
-                        { it.branches.ratio },
-                        { it.lines.ratio },
-                        { it.instr.ratio },
-                    ).reversed()
-                )
-                .asSequence()
-                .map { it.toValuesCollection(buildContext) }
-                .toList()
+        val rawCoverageData: List<RawCoverageData> = CoverageDataTransforming.transform(
+            buildContext.coverageDataProvider.obtainData()
+        )
+        val coverageDataValues: List<List<String>> = rawCoverageData
+            .asSequence()
+            .map { it.toValuesCollection(buildContext) }
+            .toList()
 
         TextualReportRendererFactory.getBy(buildContext.reportType).render(
             Context {
