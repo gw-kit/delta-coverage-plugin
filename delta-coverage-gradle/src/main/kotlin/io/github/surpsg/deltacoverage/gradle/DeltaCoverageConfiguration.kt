@@ -35,6 +35,10 @@ open class DeltaCoverageConfiguration @Inject constructor(
     @InputFiles
     var classesDirs: FileCollection? = null
 
+    @Optional
+    @InputFiles
+    var sources: FileCollection? = null
+
     @Input
     val excludeClasses: ListProperty<String> = objectFactory
         .listProperty(String::class.javaObjectType)

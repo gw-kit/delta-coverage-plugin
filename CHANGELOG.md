@@ -3,7 +3,11 @@
 # NEXT RELEASE
 
 ### Changed
-- Now lambda coverage is folded into the parent class in textual reports. 
+- Now lambda coverage is folded into the parent class in textual reports.
+- Add `sources` to the `deltaCoverageReport` extension. Now it is possible to override the default source paths.
+
+### Fixed
+- #206 Fixed delta coverage input for coverage binaries
 
 
 # 3.1.1

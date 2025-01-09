@@ -70,7 +70,7 @@ internal object SourcesResolver {
         context: Context,
     ): FileCollection? {
         return when (context.sourceType) {
-            SourceType.SOURCES -> null
+            SourceType.SOURCES -> context.config.sources
             SourceType.CLASSES -> context.config.classesDirs
             SourceType.COVERAGE_BINARIES -> context.config.reportViews.getAt(context.viewName).coverageBinaryFiles
         }
