@@ -5,7 +5,7 @@ internal enum class SourceType(
     private val genericResourceName: String
 ) {
     CLASSES("deltaCoverageReport.classesDirs", ".class files"),
-    SOURCES("deltaCoverageReport.srcDirs", "sources"),
+    SOURCES("deltaCoverageReport.sources", "sources"),
     COVERAGE_BINARIES(
         "deltaCoverageReport.reportViews.<view>.binaryCoverageFiles",
         ""

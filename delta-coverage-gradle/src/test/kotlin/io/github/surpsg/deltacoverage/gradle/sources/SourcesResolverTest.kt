@@ -152,6 +152,11 @@ internal class SourcesResolverTest {
                 ),
 
                 arguments(
+                    SourceType.SOURCES,
+                    { config: DeltaConfig, files: FileCollection -> config.sources = files },
+                ),
+
+                arguments(
                     SourceType.COVERAGE_BINARIES,
                     { config: DeltaConfig, files: FileCollection ->
                         config.reportViews.register(VIEW_NAME) { view ->
