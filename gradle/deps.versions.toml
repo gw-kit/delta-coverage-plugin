@@ -5,7 +5,7 @@ jacocoVer = "0.8.12"
 httpClientVer = "5.4.1"
 jgitVer = "7.0.0.202409031743-r"
 csvVer = "5.9"
-jacksonVer = "2.18.1"
+jacksonVer = "2.18.2"
 
 junitVer = "5.11.3"
 mockkVer = "1.13.14"
