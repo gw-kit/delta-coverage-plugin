@@ -1,6 +1,6 @@
 # Delta-Coverage Gradle plugin Changelog
 
-# NEXT RELEASE
+# 3.2.0
 
 ### Changed
 - Now lambda coverage is folded into the parent class in textual reports.
