@@ -11,6 +11,6 @@ dependencies {
     implementation(deps.pluginPublish)
 
     implementation(deps.detekt)
-    implementation(deps.koverPlugin)
+    implementation(deps.coverJetPlugin)
     implementation(deps.deltaCoverage)
 }

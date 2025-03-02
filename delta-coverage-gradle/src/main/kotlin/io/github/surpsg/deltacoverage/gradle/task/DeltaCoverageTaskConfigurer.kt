@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle.task
 
+import io.github.gwkit.coverjet.gradle.task.CovAgentProperties
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.DELTA_TASK_DEPENDENCIES
 import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.log
@@ -41,7 +42,7 @@ internal object DeltaCoverageTaskConfigurer {
             dependsOn(task)
         }
 
-        task is Test -> {
+        task is Test || task is CovAgentProperties -> {
             log.info("Configuring {} to run after {}", this, task)
             mustRunAfter(task)
         }

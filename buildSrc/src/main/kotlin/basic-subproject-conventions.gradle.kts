@@ -21,10 +21,6 @@ java {
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
 if (project.hasProperty("snapshotPrefix")) {
     val snapshotPrefix: String by project
     version = "$version.${snapshotPrefix}"

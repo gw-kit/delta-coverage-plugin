@@ -21,7 +21,7 @@ internal class CoverageEngineAutoApply {
     private fun Project.autoApplyCoverageEngine(engine: CoverageEngine) {
         val pluginId: String = when (engine) {
             CoverageEngine.JACOCO -> JACOCO_PLUGIN_ID
-            CoverageEngine.INTELLIJ -> KOVER_PLUGIN_ID
+            CoverageEngine.INTELLIJ -> COVER_JET_PLUGIN_ID
         }
         allprojects.forEach {
             log.info("Auto-applying {} plugin to project '{}'", pluginId, it.name)
@@ -31,7 +31,7 @@ internal class CoverageEngineAutoApply {
 
     companion object {
         const val JACOCO_PLUGIN_ID = "jacoco"
-        const val KOVER_PLUGIN_ID = "org.jetbrains.kotlinx.kover"
+        const val COVER_JET_PLUGIN_ID = "io.github.gw-kit.cover-jet"
 
         val log: Logger = LoggerFactory.getLogger(CoverageEngineAutoApply::class.java)
     }

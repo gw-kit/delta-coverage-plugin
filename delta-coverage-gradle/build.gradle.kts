@@ -1,8 +1,5 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
     `gradle-plugin-conventions`
-    alias(deps.plugins.shadowPlugin)
     `java-test-fixtures`
 }
 
@@ -21,19 +18,9 @@ gradlePlugin {
     }
 }
 
-tasks.withType<ShadowJar> {
-    archiveClassifier = ""
-}
-
-repositories {
-    maven {
-        url = uri("https://plugins.gradle.org/m2/")
-    }
-}
-
 dependencies {
     implementation(project(":delta-coverage-core"))
-    implementation(deps.koverPlugin)
+    implementation(deps.coverJetPlugin)
 
     testImplementation(gradleApi()) // required to add this dependency explicitly after applying shadowJar plugin
     testImplementation(deps.jimFs)
@@ -48,10 +35,4 @@ dependencies {
     testFixturesImplementation(deps.junitApi)
     testFixturesImplementation(deps.jgit)
     testFixturesImplementation(deps.mockk)
-}
-
-kover {
-    excludeInstrumentation {
-        packages("org.jetbrains.kotlin.gradle") // exclude to avoid coverage collecting failure
-    }
 }

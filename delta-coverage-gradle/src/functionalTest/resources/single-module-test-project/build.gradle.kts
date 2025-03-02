@@ -6,6 +6,7 @@ plugins {
     java
     kotlin("jvm") version "1.9.25"
     id("io.github.gw-kit.delta-coverage")
+    // {EXTRA_PLUGINS_PLACEHOLDER}
 }
 
 repositories {

@@ -2,7 +2,6 @@ package io.github.surpsg.deltacoverage.gradle
 
 import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply
 import io.github.surpsg.deltacoverage.gradle.reportview.ViewLookup
-import io.github.surpsg.deltacoverage.gradle.sources.lookup.KoverPluginSourcesLookup
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTask
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTaskConfigurer
 import io.github.surpsg.deltacoverage.gradle.task.NativeGitDiffTask
@@ -115,7 +114,6 @@ open class DeltaCoveragePlugin : Plugin<Project> {
 
         val DELTA_TASK_DEPENDENCIES = setOf(
             JavaPlugin.CLASSES_TASK_NAME,
-            KoverPluginSourcesLookup.KOVER_GENERATE_ARTIFACTS_TASK_NAME,
         )
         val log: Logger = LoggerFactory.getLogger(DeltaCoveragePlugin::class.java)
     }

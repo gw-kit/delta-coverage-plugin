@@ -6,7 +6,6 @@ import io.github.surpsg.deltacoverage.gradle.sources.SourceType
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
-import java.nio.file.FileSystems
 
 internal interface SourcesAutoLookup {
 
@@ -32,7 +31,7 @@ internal interface SourcesAutoLookup {
             context: Context,
         ): SourcesAutoLookup = when (coverageEngine) {
             CoverageEngine.JACOCO -> JacocoPluginSourcesLookup(context)
-            CoverageEngine.INTELLIJ -> KoverPluginSourcesLookup(FileSystems.getDefault(), context)
+            CoverageEngine.INTELLIJ -> CoverJetPluginSourcesLookup(context)
         }
     }
 }

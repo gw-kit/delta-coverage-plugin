@@ -1,13 +1,7 @@
 plugins {
     base
-    `delta-coverage-conventions`
+//    `delta-coverage-conventions`
     `test-report-aggregation`
-    `coverage-aggregate-conventions`
-    alias(deps.plugins.depUpdatesPlugin)
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {
@@ -23,3 +17,12 @@ tasks.named("check") {
         }
     )
 }
+
+//deltaCoverageReport {
+//    view("functionalTest") {
+//        // TODO it's temporary solution
+//        coverageBinaryFiles = files(
+//            project(":delta-coverage-gradle").layout.buildDirectory.file("coverage/functionalTest.ic")
+//        )
+//    }
+//}

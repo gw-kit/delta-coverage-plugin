@@ -4,7 +4,7 @@ plugins {
 
 publishing {
     publications {
-        create<MavenPublication>("jacocoFilteringExtension") {
+        create<MavenPublication>("DeltaCoverageCore") {
             from(components["java"])
         }
     }
