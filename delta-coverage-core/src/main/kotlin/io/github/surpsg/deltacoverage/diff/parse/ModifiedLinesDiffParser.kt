@@ -1,9 +1,11 @@
 package io.github.surpsg.deltacoverage.diff.parse
 
 import org.eclipse.jgit.util.QuotedString
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.regex.Pattern
 
+@Suppress("TooManyFunctions")
 internal class ModifiedLinesDiffParser {
 
     fun collectModifiedLines(lines: List<String>): Map<String, Set<Int>> {
@@ -78,11 +80,10 @@ internal class ModifiedLinesDiffParser {
 
     private fun parseFileDiffBlockOffset(line: String): Int {
         val matcher = FILE_OFFSET_PATTERN.matcher(line)
-        return if (matcher.find()) {
-            matcher.group(1).toInt()
-        } else {
-            throw IllegalArgumentException("Couldn't parse file's range information: $line")
+        require(matcher.find()) {
+            "Couldn't parse file's range information: $line"
         }
+        return matcher.group(1).toInt()
     }
 
     private fun obtainFilesAddedOrUpdatedLines(
@@ -118,7 +119,7 @@ internal class ModifiedLinesDiffParser {
         val FILE_RELATIVE_PATH_PATTERN = Pattern.compile("^\\+\\+\\+\\s([^\"][^\\t]*)([\\t]+.*)?\$")!!
         val FILE_RELATIVE_PATH_QUOTED_PATTERN = Pattern.compile("^\\+\\+\\+\\s(\".+?\")\\s*\\t*.*\$")!!
 
-        val log = LoggerFactory.getLogger(ModifiedLinesDiffParser::class.java)
+        private val log: Logger = LoggerFactory.getLogger(ModifiedLinesDiffParser::class.java)
 
         const val ADDED_LINE_SIGN = '+'
         const val DELETED_LINE_SIGN = '-'

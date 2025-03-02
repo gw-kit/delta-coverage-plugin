@@ -30,12 +30,6 @@ import kotlin.reflect.KClass
 
 class ModifiedLinesFilterTest : StringSpec({
 
-    beforeTest {
-        ModifiedLinesFilter.log = object : Logger by NOPLogger.NOP_LOGGER {
-            override fun isDebugEnabled(): Boolean = true
-        }
-    }
-
     "filter should ignore all non-modified lines" {
         // setup
         val classPackage = "com/delta"

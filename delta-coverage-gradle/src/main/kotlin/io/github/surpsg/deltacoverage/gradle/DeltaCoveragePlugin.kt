@@ -2,7 +2,6 @@ package io.github.surpsg.deltacoverage.gradle
 
 import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply
 import io.github.surpsg.deltacoverage.gradle.reportview.ViewLookup
-import io.github.surpsg.deltacoverage.gradle.sources.lookup.KoverPluginSourcesLookup
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTask
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTaskConfigurer
 import io.github.surpsg.deltacoverage.gradle.task.NativeGitDiffTask
@@ -18,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 open class DeltaCoveragePlugin : Plugin<Project> {
 
-    private val registeredViews = ConcurrentHashMap.newKeySet<String>()
+    private val registeredViews: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     override fun apply(project: Project) = with(project) {
         extensions.create(
@@ -38,18 +37,18 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         afterEvaluate {
             // Register custom views tasks
             deltaCoverageConfig.reportViews.names.asSequence()
-                .filter { it != DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME }
-                .filter { it !in registeredViews }
+                .filter { viewName -> viewName != DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME }
+                .filter { viewName -> viewName !in registeredViews }
                 .forEach { viewName ->
                     deltaTaskForViewConfigurer(viewName)
                 }
 
-            deltaCoverageConfig.reportViews.named(DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME) {
-                if (!it.enabled.isPresent) {
+            deltaCoverageConfig.reportViews.named(DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME) { task ->
+                if (!task.enabled.isPresent) {
                     val enabledViewsCount = registeredViews.count { view ->
                         deltaCoverageConfig.reportViews.getByName(view).isEnabled()
                     }
-                    it.enabled.set(enabledViewsCount > 1)
+                    task.enabled.set(enabledViewsCount > 1)
                 }
             }
             // Finally, register the aggregated view task
@@ -70,15 +69,17 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         val nativeGitDiffTask: TaskProvider<NativeGitDiffTask> = createNativeGitDiffTask()
 
         return { viewName: String ->
-            val config: DeltaCoverageConfiguration = deltaCoverageConfig
-            val deltaTask = createDeltaCoverageViewTask(viewName, config)
-            deltaCoverageLifecycleTask.dependsOn(deltaTask)
-            afterEvaluate {
-                if (config.diffSource.git.useNativeGit.get()) {
-                    deltaTask.dependsOn(nativeGitDiffTask)
+            if (registeredViews.add(viewName)) {
+                val config: DeltaCoverageConfiguration = deltaCoverageConfig
+                val deltaTask = createDeltaCoverageViewTask(viewName, config)
+                deltaCoverageLifecycleTask.dependsOn(deltaTask)
+                afterEvaluate {
+                    if (config.diffSource.git.useNativeGit.get()) {
+                        deltaTask.dependsOn(nativeGitDiffTask)
+                    }
                 }
+                registeredViews += viewName
             }
-            registeredViews += viewName
         }
     }
 
@@ -97,12 +98,10 @@ open class DeltaCoveragePlugin : Plugin<Project> {
 
     private fun Project.createNativeGitDiffTask(): TaskProvider<NativeGitDiffTask> {
         return tasks.register(GIT_DIFF_TASK, NativeGitDiffTask::class.java) { gitDiffTask ->
-
             val diffSource = deltaCoverageConfig.diffSource
             gitDiffTask.targetBranch.set(diffSource.git.diffBase)
 
             diffSource.git.nativeGitDiffFile.set(gitDiffTask.diffFile)
-            gitDiffTask.dependsOn(JavaPlugin.CLASSES_TASK_NAME)
         }
     }
 
@@ -115,7 +114,6 @@ open class DeltaCoveragePlugin : Plugin<Project> {
 
         val DELTA_TASK_DEPENDENCIES = setOf(
             JavaPlugin.CLASSES_TASK_NAME,
-            KoverPluginSourcesLookup.KOVER_GENERATE_ARTIFACTS_TASK_NAME,
         )
         val log: Logger = LoggerFactory.getLogger(DeltaCoveragePlugin::class.java)
     }

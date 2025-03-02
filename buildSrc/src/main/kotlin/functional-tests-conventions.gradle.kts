@@ -7,7 +7,6 @@ plugins {
     base
     kotlin("jvm")
     `jvm-test-suite`
-    id("basic-coverage-conventions")
 }
 
 testing.suites {

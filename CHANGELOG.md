@@ -1,6 +1,18 @@
 # Delta-Coverage Gradle plugin Changelog
 
-# 3.2.0
+## <!-- # NEXT-RELEASE: 3.3.0 -->
+
+### Changed
+- `CoverageEngine` moved to `io.github.surpsg.deltacoverage.gradle` package.
+- Intellij coverage under the hood uses [CoverJet](https://github.com/gw-kit/cover-jet-plugin) plugin instead of Kover.
+- The plugin is distributed as a regular jar artifact instead of a fat jar.
+- Native git diff task is always out-of-date.
+
+### Fixed
+- Fixed `deltaCoverage<View>` task already exists error when convention plugins are applied.
+
+
+## 3.2.0
 
 ### Changed
 - Now lambda coverage is folded into the parent class in textual reports.
@@ -10,7 +22,7 @@
 - #206 Fixed delta coverage input for coverage binaries
 
 
-# 3.1.1
+## 3.1.1
 
 ### Fixed
 - Fix aggregated view default enable state when there is only one view is enabled.

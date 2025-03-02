@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle.task
 
+import io.github.gwkit.coverjet.gradle.task.CovAgentProperties
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.DELTA_TASK_DEPENDENCIES
 import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.log
@@ -29,7 +30,7 @@ internal object DeltaCoverageTaskConfigurer {
     private fun DeltaCoverageTask.configureDependencies() = project.afterEvaluate {
         val deltaCoverageTask: DeltaCoverageTask = this
         project.getAllTasks(true).values.asSequence()
-            .flatMap { it.asSequence() }
+            .flatMap { tasks -> tasks.asSequence() }
             .forEach { task ->
                 deltaCoverageTask.configureDependencyOn(task)
             }
@@ -41,7 +42,7 @@ internal object DeltaCoverageTaskConfigurer {
             dependsOn(task)
         }
 
-        task is Test -> {
+        task is Test || task is CovAgentProperties -> {
             log.info("Configuring {} to run after {}", this, task)
             mustRunAfter(task)
         }
@@ -55,13 +56,13 @@ internal object DeltaCoverageTaskConfigurer {
     ) = project.gradle.taskGraph.whenReady {
         val viewSourcesProvider: Provider<ViewSources> = project.obtainViewSources(viewName, config)
         sourcesFiles.set(
-            viewSourcesProvider.map { it.sources }
+            viewSourcesProvider.map { viewSource -> viewSource.sources }
         )
         classesFiles.set(
-            viewSourcesProvider.map { it.classes }
+            viewSourcesProvider.map { viewSource -> viewSource.classes }
         )
         coverageBinaryFiles.set(
-            viewSourcesProvider.map { it.coverageBinaries }
+            viewSourcesProvider.map { viewSource -> viewSource.coverageBinaries }
         )
     }
 

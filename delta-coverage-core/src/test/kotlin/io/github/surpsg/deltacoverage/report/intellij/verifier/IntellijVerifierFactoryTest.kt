@@ -33,7 +33,7 @@ class IntellijVerifierFactoryTest {
         // THEN
         assertSoftly(actualVerifiers) {
             shouldHaveSize(3)
-            map { it.rule }.shouldContainExactly(
+            map { verifier -> verifier.rule }.shouldContainExactly(
                 CoverageRuleWithThreshold(
                     id = 0,
                     coverageEntity = CoverageEntity.INSTRUCTION,

@@ -147,18 +147,16 @@ class DeltaCoveragePluginTest {
             }
         }
 
-        // WHEN
-        val gitDiffTask = proj.tasks.findByName(DeltaCoveragePlugin.GIT_DIFF_TASK)
-
-        // THEN
-        gitDiffTask.shouldBeInstanceOf<NativeGitDiffTask>()
+        // WHEN // THEN
+        proj.tasks.findByName(DeltaCoveragePlugin.GIT_DIFF_TASK)
+            .shouldBeInstanceOf<NativeGitDiffTask>()
 
         // AND THEN
         val deltaCoverageTasks = proj.tasks.withType(DeltaCoverageTask::class.java)
         deltaCoverageTasks
             .forEach { deltaTask ->
-                val gitDiffTask = deltaTask.dependsOn.firstNotNullOfOrNull {
-                    it as? TaskProvider<NativeGitDiffTask>
+                val gitDiffTask = deltaTask.dependsOn.firstNotNullOfOrNull { taskProvider ->
+                    taskProvider as? TaskProvider<NativeGitDiffTask>
                 }
                 gitDiffTask.shouldNotBeNull()
             }

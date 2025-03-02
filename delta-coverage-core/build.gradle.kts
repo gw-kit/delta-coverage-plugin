@@ -1,10 +1,10 @@
 plugins {
-    `basic-subproject-conventions`
+    `jvm-project-conventions`
 }
 
 publishing {
     publications {
-        create<MavenPublication>("jacocoFilteringExtension") {
+        create<MavenPublication>("DeltaCoverageCore") {
             from(components["java"])
         }
     }

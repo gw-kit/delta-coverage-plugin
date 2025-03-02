@@ -53,7 +53,7 @@ class DeltaCoverageConfigurationTest {
             shouldNotBeNull()
             violationRules.failOnViolation.get().shouldBeTrue()
 
-            violationRules.rules.get().values.map { it.minCoverageRatio.get() }.shouldContainExactly(
+            violationRules.rules.get().values.map { rule -> rule.minCoverageRatio.get() }.shouldContainExactly(
                 List(CoverageEntity.entries.size) { expectedMinCoverage }
             )
         }

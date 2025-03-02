@@ -110,6 +110,7 @@ class DeltaCoverageMultiModuleTest {
         // GIVEN
         buildFile.file.writeText(
             """
+                import io.github.surpsg.deltacoverage.gradle.CoverageEngine
                 plugins {
                     id 'java'
                     id 'io.github.gw-kit.delta-coverage'
@@ -133,7 +134,7 @@ class DeltaCoverageMultiModuleTest {
                 }
                 deltaCoverageReport {
                     coverage {
-                        engine.set(io.github.surpsg.deltacoverage.CoverageEngine.JACOCO)
+                        engine.set(CoverageEngine.JACOCO)
                         autoApplyPlugin.set(false)
                     }
                     diffSource.file.set('$diffFilePath')

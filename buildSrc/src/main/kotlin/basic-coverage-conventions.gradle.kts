@@ -1,4 +1,4 @@
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.kotlinx.kover")
+    id("io.github.gw-kit.cover-jet")
 }

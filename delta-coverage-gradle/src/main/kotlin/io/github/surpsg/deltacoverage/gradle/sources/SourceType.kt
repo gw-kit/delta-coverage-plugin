@@ -21,7 +21,7 @@ internal enum class SourceType(
     private fun binariesResourceName(sourceProvider: SourcesResolver.Provider): String {
         return when (sourceProvider) {
             SourcesResolver.Provider.JACOCO -> "'.exec' files"
-            SourcesResolver.Provider.KOVER -> "'.ic' files"
+            SourcesResolver.Provider.INTELLIJ -> "'.ic' files"
             SourcesResolver.Provider.DELTA_COVERAGE -> sourceConfigurationPath
         }
     }
