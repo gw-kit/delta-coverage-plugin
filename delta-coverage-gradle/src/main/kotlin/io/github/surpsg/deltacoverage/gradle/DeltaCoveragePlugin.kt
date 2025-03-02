@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 open class DeltaCoveragePlugin : Plugin<Project> {
 
-    private val registeredViews = ConcurrentHashMap.newKeySet<String>()
+    private val registeredViews: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     override fun apply(project: Project) = with(project) {
         extensions.create(
@@ -69,15 +69,17 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         val nativeGitDiffTask: TaskProvider<NativeGitDiffTask> = createNativeGitDiffTask()
 
         return { viewName: String ->
-            val config: DeltaCoverageConfiguration = deltaCoverageConfig
-            val deltaTask = createDeltaCoverageViewTask(viewName, config)
-            deltaCoverageLifecycleTask.dependsOn(deltaTask)
-            afterEvaluate {
-                if (config.diffSource.git.useNativeGit.get()) {
-                    deltaTask.dependsOn(nativeGitDiffTask)
+            if (registeredViews.add(viewName)) {
+                val config: DeltaCoverageConfiguration = deltaCoverageConfig
+                val deltaTask = createDeltaCoverageViewTask(viewName, config)
+                deltaCoverageLifecycleTask.dependsOn(deltaTask)
+                afterEvaluate {
+                    if (config.diffSource.git.useNativeGit.get()) {
+                        deltaTask.dependsOn(nativeGitDiffTask)
+                    }
                 }
+                registeredViews += viewName
             }
-            registeredViews += viewName
         }
     }
 
