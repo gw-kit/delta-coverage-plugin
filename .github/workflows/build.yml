@@ -58,12 +58,12 @@ jobs:
             core.setOutput('should-publish', `${shouldPublish}`);
             core.notice(`shouldPublish: ${shouldPublish}`);
 
-      - name: Publish Snapshot Artifacts
+      - name: 🏺Publish Snapshot Artifacts
         if: ${{ steps.publish-snapshot.outputs.should-publish == 'true' }}
         run: ${gradle_cmd} publishAllPublicationsToGhPackagesRepository
           -PsnapshotPrefix='SNAPSHOT.${{ github.run_id }}'
 
-      - name: Run Delta Coverage check
+      - name: 📈Run Delta Coverage check
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
         run: ${gradle_cmd} deltaCoverage 
@@ -75,7 +75,7 @@ jobs:
         continue-on-error: true
         uses: gw-kit/delta-coverage-action@main
 
-      - name: Add test results to PR
+      - name: 📊Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.18.0
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: true
