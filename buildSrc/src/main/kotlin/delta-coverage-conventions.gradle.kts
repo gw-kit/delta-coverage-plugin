@@ -1,5 +1,4 @@
 import io.github.surpsg.deltacoverage.CoverageEngine
-import io.github.surpsg.deltacoverage.gradle.CoverageEntity
 
 plugins {
     id("io.github.gw-kit.delta-coverage")
@@ -7,7 +6,7 @@ plugins {
 
 deltaCoverageReport {
     coverage {
-        engine = CoverageEngine.INTELLIJ
+//        engine = CoverageEngine.INTELLIJ
         autoApplyPlugin = false
     }
 

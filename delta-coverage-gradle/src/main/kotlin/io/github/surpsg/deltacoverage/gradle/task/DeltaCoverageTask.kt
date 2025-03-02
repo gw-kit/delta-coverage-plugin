@@ -79,7 +79,7 @@ open class DeltaCoverageTask @Inject constructor(
         )
 
         DeltaReportFacadeFactory
-            .buildFacade(gradleCoverageConfig.coverage.engine.get())
+            .buildFacade(gradleCoverageConfig.coverage.engine.get().asCoreEngine())
             .generateReports(
                 summaryReportPath.get().asFile.toPath(),
                 deltaCoverageConfig,

@@ -1,6 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle.autoapply
 
-import io.github.surpsg.deltacoverage.CoverageEngine
+import io.github.surpsg.deltacoverage.gradle.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply.Companion.COVER_JET_PLUGIN_ID
 import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply.Companion.JACOCO_PLUGIN_ID

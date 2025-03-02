@@ -1,6 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle.sources
 
-import io.github.surpsg.deltacoverage.CoverageEngine
+import io.github.surpsg.deltacoverage.gradle.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.sources.filter.SourceFilter
 import io.github.surpsg.deltacoverage.gradle.sources.lookup.SourcesAutoLookup

@@ -1,6 +1,5 @@
 package io.github.surpsg.deltacoverage.gradle
 
-import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTaskConfigurer
 import io.github.surpsg.deltacoverage.gradle.utils.booleanProperty
 import io.github.surpsg.deltacoverage.gradle.utils.doubleProperty
