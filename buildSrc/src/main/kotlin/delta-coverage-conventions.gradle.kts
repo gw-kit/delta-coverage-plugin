@@ -1,4 +1,5 @@
-import io.github.surpsg.deltacoverage.CoverageEngine
+import io.github.surpsg.deltacoverage.gradle.CoverageEngine
+import io.github.surpsg.deltacoverage.gradle.CoverageEntity
 
 plugins {
     id("io.github.gw-kit.delta-coverage")
@@ -6,7 +7,7 @@ plugins {
 
 deltaCoverageReport {
     coverage {
-//        engine = CoverageEngine.INTELLIJ
+        engine = CoverageEngine.INTELLIJ
         autoApplyPlugin = false
     }
 
@@ -21,19 +22,24 @@ deltaCoverageReport {
         markdown = true
     }
 
-//    view(JavaPlugin.TEST_TASK_NAME) {
-//        violationRules.failIfCoverageLessThan(0.9)
-//    }
-//
-//    view("functionalTest") {
-//        violationRules {
-//            failIfCoverageLessThan(0.6)
-//            CoverageEntity.BRANCH {
-//                minCoverageRatio = 0.5
-//            }
-//        }
-//    }
-//    view("aggregated") {
-//        violationRules.failIfCoverageLessThan(0.91)
-//    }
+    view(JavaPlugin.TEST_TASK_NAME) {
+        violationRules.failIfCoverageLessThan(0.9)
+    }
+
+    view("functionalTest") {
+        violationRules {
+            failIfCoverageLessThan(0.6)
+            CoverageEntity.BRANCH {
+                minCoverageRatio = 0.5
+            }
+        }
+    }
+    view("aggregated") {
+        violationRules{
+            failIfCoverageLessThan(0.91)
+            CoverageEntity.BRANCH {
+                minCoverageRatio = 0.9
+            }
+        }
+    }
 }

@@ -8,6 +8,8 @@ import java.io.File
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 
+private const val TEST_KIT_FILE_PROP = "io.github.gwkit.coverjet.test-kit"
+
 val GRADLE_HOME: String
     get() {
         val userHome: String = System.getProperty("user.home") ?: error("Cannot obtain 'user.home'.")
@@ -24,12 +26,10 @@ fun buildGradleRunner(
             projectRoot.resolve(GRADLE_HOME).apply { mkdirs() }
         )
         .apply {
-            // gradle testkit jacoco support
-            javaClass.classLoader.getResourceAsStream("testkit-gradle.properties")?.use { inputStream ->
-                File(projectDir, "gradle.properties").outputStream().use { outputStream ->
-                    inputStream.copyTo(outputStream)
-                }
-            }
+            val testKitPath: String = System.getProperty(TEST_KIT_FILE_PROP)
+            File(projectDir, "gradle.properties").appendText(
+                File(testKitPath).readText()
+            )
         }
 }
 
