@@ -6,10 +6,7 @@ plugins {
 }
 
 deltaCoverageReport {
-    coverage {
-        engine = CoverageEngine.INTELLIJ
-        autoApplyPlugin = false
-    }
+    coverage.engine = CoverageEngine.INTELLIJ
 
     diffSource.byGit {
         diffBase = project.properties["diffBase"]?.toString() ?: "refs/remotes/origin/main"

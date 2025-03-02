@@ -98,12 +98,10 @@ open class DeltaCoveragePlugin : Plugin<Project> {
 
     private fun Project.createNativeGitDiffTask(): TaskProvider<NativeGitDiffTask> {
         return tasks.register(GIT_DIFF_TASK, NativeGitDiffTask::class.java) { gitDiffTask ->
-
             val diffSource = deltaCoverageConfig.diffSource
             gitDiffTask.targetBranch.set(diffSource.git.diffBase)
 
             diffSource.git.nativeGitDiffFile.set(gitDiffTask.diffFile)
-            gitDiffTask.dependsOn(JavaPlugin.CLASSES_TASK_NAME)
         }
     }
 
