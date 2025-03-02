@@ -7,7 +7,7 @@ class DiffSourceConfig private constructor(
 ) {
 
     init {
-        val initializedCount = sequenceOf(file, url, diffBase).filter { it.isNotBlank() }.count()
+        val initializedCount = sequenceOf(file, url, diffBase).count { it.isNotBlank() }
         require(initializedCount == 1) {
             "Required single diff source initialized but was: $this"
         }

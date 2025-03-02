@@ -21,7 +21,8 @@ internal class CodeUpdateInfo(
         return fileNameToModifiedLineNumbers.asSequence()
             .filter { it.key.endsWith(classFile.path) }
             .map { it.value }
-            .firstOrNull() ?: emptySet()
+            .firstOrNull()
+            .orEmpty()
     }
 }
 

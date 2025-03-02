@@ -30,7 +30,7 @@ internal object DeltaCoverageTaskConfigurer {
     private fun DeltaCoverageTask.configureDependencies() = project.afterEvaluate {
         val deltaCoverageTask: DeltaCoverageTask = this
         project.getAllTasks(true).values.asSequence()
-            .flatMap { it.asSequence() }
+            .flatMap { tasks -> tasks.asSequence() }
             .forEach { task ->
                 deltaCoverageTask.configureDependencyOn(task)
             }
@@ -56,13 +56,13 @@ internal object DeltaCoverageTaskConfigurer {
     ) = project.gradle.taskGraph.whenReady {
         val viewSourcesProvider: Provider<ViewSources> = project.obtainViewSources(viewName, config)
         sourcesFiles.set(
-            viewSourcesProvider.map { it.sources }
+            viewSourcesProvider.map { viewSource -> viewSource.sources }
         )
         classesFiles.set(
-            viewSourcesProvider.map { it.classes }
+            viewSourcesProvider.map { viewSource -> viewSource.classes }
         )
         coverageBinaryFiles.set(
-            viewSourcesProvider.map { it.coverageBinaries }
+            viewSourcesProvider.map { viewSource -> viewSource.coverageBinaries }
         )
     }
 

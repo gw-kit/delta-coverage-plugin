@@ -72,7 +72,7 @@ class CoverageViolationsPropagatorTest {
         var coverageRulesConfig: CoverageRulesConfig = CoverageRulesConfig {
             failOnViolation = false
         }
-        var verifications: MutableList<VerificationResult> = mutableListOf(
+        val verifications: MutableList<VerificationResult> = mutableListOf(
             VerificationResult(
                 coverageEntity = CoverageEntity.LINE,
                 violation = "any violation 1"
@@ -82,7 +82,7 @@ class CoverageViolationsPropagatorTest {
                 violation = "any violation 2"
             )
         )
-        var coverageInfo: MutableList<Info> = mutableListOf(
+        val coverageInfo: MutableList<Info> = mutableListOf(
             Info(
                 coverageEntity = CoverageEntity.LINE,
                 covered = 1,

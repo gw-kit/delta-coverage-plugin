@@ -27,6 +27,7 @@ internal class IntellijRawCoverageDataProvider(
             }
             .toList()
 
+    @Suppress("UseOrEmpty")
     private fun collectClassCoverageData(
         classData: ClassData,
         classInstructions: ClassInstructions?,

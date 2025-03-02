@@ -37,18 +37,18 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         afterEvaluate {
             // Register custom views tasks
             deltaCoverageConfig.reportViews.names.asSequence()
-                .filter { it != DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME }
-                .filter { it !in registeredViews }
+                .filter { viewName -> viewName != DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME }
+                .filter { viewName -> viewName !in registeredViews }
                 .forEach { viewName ->
                     deltaTaskForViewConfigurer(viewName)
                 }
 
-            deltaCoverageConfig.reportViews.named(DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME) {
-                if (!it.enabled.isPresent) {
+            deltaCoverageConfig.reportViews.named(DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME) { task ->
+                if (!task.enabled.isPresent) {
                     val enabledViewsCount = registeredViews.count { view ->
                         deltaCoverageConfig.reportViews.getByName(view).isEnabled()
                     }
-                    it.enabled.set(enabledViewsCount > 1)
+                    task.enabled.set(enabledViewsCount > 1)
                 }
             }
             // Finally, register the aggregated view task

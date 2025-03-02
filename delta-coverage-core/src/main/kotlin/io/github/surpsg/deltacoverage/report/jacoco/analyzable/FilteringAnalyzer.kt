@@ -24,6 +24,7 @@ class FilteringAnalyzer(
     private val customFilterProvider: (IClassCoverage) -> IFilter
 ) : Analyzer(executionData, coverageVisitor) {
 
+    @Suppress("TooGenericExceptionCaught")
     override fun analyzeClass(buffer: ByteArray, location: String) {
         try {
             analyzeClass(buffer)

@@ -41,7 +41,7 @@ internal class FileDiffSource(
         return if (file.exists() && file.isFile) {
             file.readLines()
         } else {
-            throw RuntimeException("'$filePath' not a file or doesn't exist")
+            error("'$filePath' not a file or doesn't exist")
         }
     }
 

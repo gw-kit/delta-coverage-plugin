@@ -32,7 +32,7 @@ class CoverageRulesConfig private constructor(
 
     @DeltaCoverageConfigMarker
     class Builder internal constructor() {
-        var violationRules: MutableList<ViolationRule> = mutableListOf()
+        val violationRules: MutableList<ViolationRule> = mutableListOf()
         var failOnViolation: Boolean = false
 
         fun build(): CoverageRulesConfig = CoverageRulesConfig(
