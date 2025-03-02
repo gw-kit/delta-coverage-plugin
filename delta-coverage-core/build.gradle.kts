@@ -1,5 +1,5 @@
 plugins {
-    `basic-subproject-conventions`
+    `jvm-project-conventions`
 }
 
 publishing {

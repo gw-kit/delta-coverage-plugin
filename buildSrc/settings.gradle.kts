@@ -9,7 +9,6 @@ dependencyResolutionManagement {
             "https://maven.pkg.github.com/gw-kit/delta-coverage-plugin",
             "https://maven.pkg.github.com/gw-kit/cover-jet-plugin",
         ).forEach { ghUrl ->
-            println("Adding GitHub repository: $ghUrl")
             maven {
                 url = uri(ghUrl)
                 credentials {

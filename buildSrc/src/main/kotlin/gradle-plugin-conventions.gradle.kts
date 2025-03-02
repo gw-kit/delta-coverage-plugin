@@ -1,4 +1,5 @@
 plugins {
+    id("jvm-project-conventions")
     id("java-gradle-plugin")
     id("functional-tests-conventions")
     `java-test-fixtures`
