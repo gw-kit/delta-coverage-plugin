@@ -1,7 +1,7 @@
 [versions]
 intellijCoverageVer = "1.0.744"
 jacocoVer = "0.8.12"
-httpClientVer = "5.4.1"
+httpClientVer = "5.4.2"
 jgitVer = "7.1.0.202411261347-r"
 csvVer = "5.10"
 jacksonVer = "2.18.2"
