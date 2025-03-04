@@ -1,6 +1,6 @@
 # Delta-Coverage Gradle plugin Changelog
 
-## <!-- # NEXT-RELEASE: 3.3.0 -->
+## 3.3.0
 
 ### Changed
 - `CoverageEngine` moved to `io.github.surpsg.deltacoverage.gradle` package.
