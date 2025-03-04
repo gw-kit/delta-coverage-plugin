@@ -1,3 +1,4 @@
+@file:Suppress("InvalidPackageDeclaration")
 package org.jacoco.core.internal.analysis
 
 import org.jacoco.core.internal.analysis.filter.Filters

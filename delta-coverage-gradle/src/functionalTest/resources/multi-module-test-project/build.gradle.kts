@@ -1,5 +1,5 @@
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
-import io.github.surpsg.deltacoverage.CoverageEngine
+import io.github.surpsg.deltacoverage.gradle.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.CoverageEntity.*
 import io.github.surpsg.deltacoverage.gradle.ReportView
 import org.gradle.api.plugins.jvm.JvmTestSuite
@@ -18,7 +18,6 @@ repositories {
 subprojects {
     apply(plugin = "java")
     apply(plugin = "kotlin")
-    apply(plugin = "org.jetbrains.kotlinx.kover")
 
     repositories {
         mavenCentral()
@@ -29,7 +28,7 @@ subprojects {
     }
 
     dependencies {
-        testImplementation(platform("org.junit:junit-bom:5.11.3"))
+        testImplementation(platform("org.junit:junit-bom:5.11.4"))
         testImplementation("org.junit.jupiter:junit-jupiter")
     }
 
@@ -38,7 +37,7 @@ subprojects {
             useJUnitJupiter()
             dependencies {
                 implementation(project())
-                implementation(platform("org.junit:junit-bom:5.11.3"))
+                implementation(platform("org.junit:junit-bom:5.11.4"))
                 implementation("org.junit.jupiter:junit-jupiter")
             }
         }

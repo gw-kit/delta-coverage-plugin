@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory
 
 internal class ModifiedLinesFilter(private val codeUpdateInfo: CodeUpdateInfo) : IFilter {
 
+    @Suppress("UseOrEmpty")
     override fun filter(
         methodNode: MethodNode,
         context: IFilterContext,
@@ -87,7 +88,7 @@ internal class ModifiedLinesFilter(private val codeUpdateInfo: CodeUpdateInfo) :
         var lineNodeLastInstruction: AbstractInsnNode = lineNode
     )
 
-    internal companion object {
-        var log = LoggerFactory.getLogger(ModifiedLinesFilter::class.java)
+    companion object {
+        private val log = LoggerFactory.getLogger(ModifiedLinesFilter::class.java)
     }
 }

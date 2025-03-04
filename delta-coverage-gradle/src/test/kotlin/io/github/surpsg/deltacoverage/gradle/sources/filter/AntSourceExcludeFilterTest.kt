@@ -34,7 +34,7 @@ internal class AntSourceExcludeFilterTest {
 
         // THEN
         assertSoftly(actualFilteredFiles) {
-            map { it.name }.shouldContainExactlyInAnyOrder(*expectedFiles)
+            map { file -> file.name }.shouldContainExactlyInAnyOrder(*expectedFiles)
         }
     }
 
@@ -74,7 +74,7 @@ internal class AntSourceExcludeFilterTest {
 
         // THEN
         assertSoftly(actualFilteredFiles) {
-            map { it.name } shouldHaveSingleElement expectedFile
+            map { file -> file.name } shouldHaveSingleElement expectedFile
         }
     }
 }

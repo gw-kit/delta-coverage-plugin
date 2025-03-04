@@ -1,9 +1,9 @@
 package io.github.surpsg.deltacoverage.gradle.autoapply
 
-import io.github.surpsg.deltacoverage.CoverageEngine
+import io.github.surpsg.deltacoverage.gradle.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
+import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply.Companion.COVER_JET_PLUGIN_ID
 import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply.Companion.JACOCO_PLUGIN_ID
-import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply.Companion.KOVER_PLUGIN_ID
 import io.github.surpsg.deltacoverage.gradle.unittest.applyDeltaCoveragePlugin
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.matchers.comparables.shouldBeEqualComparingTo
@@ -15,8 +15,8 @@ internal class CoverageEngineAutoApplyTest {
 
     @ParameterizedTest
     @CsvSource(
-        "INTELLIJ, $KOVER_PLUGIN_ID, true",
-        "INTELLIJ, $KOVER_PLUGIN_ID, false",
+        "INTELLIJ, $COVER_JET_PLUGIN_ID, true",
+        "INTELLIJ, $COVER_JET_PLUGIN_ID, false",
 
         "JACOCO, $JACOCO_PLUGIN_ID, true",
         "JACOCO, $JACOCO_PLUGIN_ID, false",

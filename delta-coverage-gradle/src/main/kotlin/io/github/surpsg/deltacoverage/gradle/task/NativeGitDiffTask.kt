@@ -32,6 +32,7 @@ abstract class NativeGitDiffTask @Inject constructor(
 
     init {
         description = "Generate a diff file using native git."
+        outputs.upToDateWhen { false }
     }
 
     @TaskAction

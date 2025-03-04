@@ -1,4 +1,4 @@
-import io.github.surpsg.deltacoverage.CoverageEngine
+import io.github.surpsg.deltacoverage.gradle.CoverageEngine
 
 plugins {
     id 'java'
@@ -14,6 +14,6 @@ tasks.withType(Test) {
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.11.3')
+    testImplementation platform('org.junit:junit-bom:5.11.4')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }

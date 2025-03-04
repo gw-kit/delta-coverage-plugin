@@ -1,11 +1,7 @@
-import io.gradle.surpsg.deltacoverage.testkit.IntellijCoverageTestKitExtension
-
 plugins {
-    id("basic-subproject-conventions")
-
+    id("jvm-project-conventions")
     id("java-gradle-plugin")
     id("functional-tests-conventions")
-    id("kover-config-convention")
     `java-test-fixtures`
 
     id("com.gradle.plugin-publish")
@@ -18,8 +14,4 @@ configure<GradlePluginDevelopmentExtension> {
         functionalTestSuite.sources,
         project.extensions.getByType(JavaPluginExtension::class).sourceSets.getByName("testFixtures")
     )
-}
-
-configure<IntellijCoverageTestKitExtension> {
-    testTaskName = functionalTestTaskName
 }

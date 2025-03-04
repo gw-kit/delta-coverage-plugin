@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.gradle.kover
+package io.github.surpsg.deltacoverage.gradle.intellij
 
 import io.github.surpsg.deltacoverage.gradle.TestProjects
 import io.github.surpsg.deltacoverage.gradle.assertOutputContainsStrings
@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test
 import java.io.File
 
 @GradlePluginTest(TestProjects.SINGLE_MODULE, kts = true)
-class KoverReportsTest {
+class CoverJetPluginVariantReportsTest {
 
     @RootProjectDir
     lateinit var rootProjectDir: File

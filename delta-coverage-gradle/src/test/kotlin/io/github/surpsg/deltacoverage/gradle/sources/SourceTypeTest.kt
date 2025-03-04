@@ -10,8 +10,8 @@ internal class SourceTypeTest {
 
     @ParameterizedTest
     @CsvSource(
-        "KOVER, CLASSES, .class files",
-        "KOVER, SOURCES, sources",
+        "INTELLIJ, CLASSES, .class files",
+        "INTELLIJ, SOURCES, sources",
 
         "DELTA_COVERAGE, CLASSES, .class files",
         "DELTA_COVERAGE, SOURCES, sources",
@@ -33,7 +33,7 @@ internal class SourceTypeTest {
 
     @ParameterizedTest
     @CsvSource(
-        "KOVER, '.ic' files",
+        "INTELLIJ, '.ic' files",
         "JACOCO, '.exec' files",
         "DELTA_COVERAGE, deltaCoverageReport.reportViews.<view>.binaryCoverageFiles",
     )

@@ -11,6 +11,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 
+@Suppress("InjectDispatcher")
 class FileDiffSourceTest : StringSpec() {
 
     private val testProjectDir: File by lazy {

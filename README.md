@@ -135,7 +135,7 @@ The plugin supports two coverage engines:
 - [JaCoCo](https://github.com/jacoco/jacoco) is standard coverage engine for JVM projects.
 - [Intellij coverage](https://github.com/JetBrains/intellij-coverage) is coverage engine that used by default in
   Intellij IDE.
-  Intellij coverage could be applied to your Gradle project by applying [Kover](https://github.com/Kotlin/kotlinx-kover)
+  Intellij coverage could be applied to your Gradle project by applying [CoverJet](https://github.com/gw-kit/cover-jet-plugin) plugin.
   plugin.
   Intellij coverage is better choice for **Kotlin** projects.
 
@@ -226,7 +226,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
             
             // Required. 
             // For JaCoCo engine: by default '.exec' coverage binary files are configured from jacoco plugin.
-            // For Intellij engine: by default '.ic' coverage binary files are configured from kover plugin.
+            // For Intellij engine: by default '.ic' coverage binary files are configured from CoverJet plugin.
             coverageBinaryFiles = files("/path/to/jacoco/exec/file.exec")
 
             // Optional. Specifies classes to include for the analysis.

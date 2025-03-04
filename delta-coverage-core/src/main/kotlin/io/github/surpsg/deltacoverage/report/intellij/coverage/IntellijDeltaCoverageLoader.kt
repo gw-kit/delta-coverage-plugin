@@ -16,6 +16,7 @@ import io.github.surpsg.deltacoverage.diff.ClassModifications
 import io.github.surpsg.deltacoverage.diff.CodeUpdateInfo
 import io.github.surpsg.deltacoverage.diff.parse.ClassFile
 
+@Suppress("UseOrEmpty")
 internal object IntellijDeltaCoverageLoader {
 
     fun getDeltaProjectData(

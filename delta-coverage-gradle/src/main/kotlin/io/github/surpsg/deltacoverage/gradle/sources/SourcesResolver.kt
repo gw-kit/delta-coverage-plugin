@@ -1,6 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle.sources
 
-import io.github.surpsg.deltacoverage.CoverageEngine
+import io.github.surpsg.deltacoverage.gradle.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.sources.filter.SourceFilter
 import io.github.surpsg.deltacoverage.gradle.sources.lookup.SourcesAutoLookup
@@ -128,7 +128,7 @@ internal object SourcesResolver {
 
     enum class Provider(val pluginName: String) {
         JACOCO("JaCoCo"),
-        KOVER("Kover"),
+        INTELLIJ("Intellij-Coverage"),
         DELTA_COVERAGE("Delta-Coverage"),
         ;
 
@@ -136,7 +136,7 @@ internal object SourcesResolver {
 
             fun fromEngine(engine: CoverageEngine): Provider = when (engine) {
                 CoverageEngine.JACOCO -> JACOCO
-                CoverageEngine.INTELLIJ -> KOVER
+                CoverageEngine.INTELLIJ -> INTELLIJ
             }
         }
     }

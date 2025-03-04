@@ -8,7 +8,7 @@ import java.io.IOException
 import java.lang.invoke.MethodHandles
 
 internal object CoverageLoader {
-    val log: Logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
+    private val log: Logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
 
     fun loadExecFiles(
         binaryCoverageFiles: Set<File>
@@ -19,7 +19,7 @@ internal object CoverageLoader {
             try {
                 execFileLoader.load(it)
             } catch (e: IOException) {
-                throw RuntimeException("Cannot load coverage data from file: $it", e)
+                throw IllegalStateException("Cannot load coverage data from file: $it", e)
             }
         }
         return execFileLoader

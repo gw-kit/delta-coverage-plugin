@@ -25,7 +25,7 @@ jobs:
     env:
       GH_USER: ${{ github.actor }}
       GH_TOKEN: ${{ github.token }}
-      gradle_cmd: "./gradlew --parallel --build-cache --console=plain --no-watch-fs "
+      gradle_cmd: "./gradlew --parallel --build-cache --console=plain -Pci "
 
     steps:
       - uses: actions/checkout@v4
@@ -43,13 +43,8 @@ jobs:
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
 
-      - name: Build & Test
-        run: ${gradle_cmd} build detektMain detektTest :koverXmlReport --continue
-
-      - name: Commits Number
-        id: git-commits
-        run: |
-          echo "number=$(git rev-list HEAD --count)" >> $GITHUB_OUTPUT
+      - name: ⚙️Build & Test
+        run: ${gradle_cmd} build detektMain detektTest --continue
 
       - name: Check publish
         id: publish-snapshot
@@ -61,20 +56,18 @@ jobs:
             const isDevelopBranch = ${{ github.ref == 'refs/heads/develop' }};
             const shouldPublish = hasLabel || (isPushEvent && isDevelopBranch);
             core.setOutput('should-publish', `${shouldPublish}`);
-            console.log(`shouldPublish: ${shouldPublish}`);
+            core.notice(`shouldPublish: ${shouldPublish}`);
 
-      - name: Publish Snapshot Artifacts
+      - name: 🏺Publish Snapshot Artifacts
         if: ${{ steps.publish-snapshot.outputs.should-publish == 'true' }}
-        run: ${gradle_cmd} 
-          delta-coverage-gradle:publishPluginMavenPublicationToGitHubPackagesRepository 
-          -PsnapshotPrefix=${{ steps.git-commits.outputs.number }}
+        run: ${gradle_cmd} publishAllPublicationsToGhPackagesRepository
+          -PsnapshotPrefix='SNAPSHOT.${{ github.run_id }}'
 
-      - name: Run Delta Coverage check
+      - name: 📈Run Delta Coverage check
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
-        run: ${gradle_cmd} deltaCoverage 
-          -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" 
-          -x test -x functionalTest
+        run: ${gradle_cmd} deltaCoverage
+          -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
           --continue
 
       - name: Publish Coverage Summary
@@ -82,16 +75,17 @@ jobs:
         continue-on-error: true
         uses: gw-kit/delta-coverage-action@main
 
-      - name: Add test results to PR
-        uses: EnricoMi/publish-unit-test-result-action@v2.17.1
+      - name: 📊Add test results to PR
+        uses: EnricoMi/publish-unit-test-result-action@v2.18.0
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: true
         with:
+          check_name: '📊Test Results'
           files:
             '**/build/test-results/*/TEST-*.xml'
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: build/reports/kover/report.xml
+          files: build/reports/coverage-reports/delta-coverage/**/report.xml

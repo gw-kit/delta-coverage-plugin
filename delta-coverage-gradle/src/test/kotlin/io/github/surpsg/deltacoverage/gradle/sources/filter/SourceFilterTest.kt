@@ -60,7 +60,7 @@ class SourceFilterTest {
 
         // THEN
         assertSoftly(actualFilteredFiles) {
-            map { it.name } shouldHaveSingleElement expectedFile.name
+            map { file -> file.name } shouldHaveSingleElement expectedFile.name
         }
     }
 
@@ -106,7 +106,7 @@ class SourceFilterTest {
 
         // THEN
         assertSoftly(actualFilteredFiles) {
-            map { it.name } shouldContainExactlyInAnyOrder expectedFiles
+            map { file -> file.name } shouldContainExactlyInAnyOrder expectedFiles
         }
     }
 
