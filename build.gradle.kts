@@ -3,8 +3,6 @@ plugins {
     `test-report-aggregation`
 }
 
-dependencies {
-    allprojects {
-        testReportAggregation(this)
-    }
+repositories {
+    mavenCentral()
 }
