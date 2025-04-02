@@ -16,7 +16,8 @@ internal object ReportLoadStrategyFactory {
             sourcesFiles = reportContext.deltaCoverageConfig.sourceFiles.toList()
         )
 
-        val buildRawReportLoadStrategy: ReportLoadStrategy = buildRawReportLoadStrategy(binaryReports, intellijSourceInputs)
+        val buildRawReportLoadStrategy: ReportLoadStrategy =
+            buildRawReportLoadStrategy(binaryReports, intellijSourceInputs)
         val data = buildRawReportLoadStrategy.projectData
         val filterProjectData: ProjectData = IntellijDeltaCoverageLoader.getDeltaProjectData(
             data,
