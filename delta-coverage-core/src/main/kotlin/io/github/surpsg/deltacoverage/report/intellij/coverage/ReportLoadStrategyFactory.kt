@@ -16,10 +16,11 @@ internal object ReportLoadStrategyFactory {
             sourcesFiles = reportContext.deltaCoverageConfig.sourceFiles.toList()
         )
 
+        val buildRawReportLoadStrategy: ReportLoadStrategy = buildRawReportLoadStrategy(binaryReports, intellijSourceInputs)
+        val data = buildRawReportLoadStrategy.projectData
         val filterProjectData: ProjectData = IntellijDeltaCoverageLoader.getDeltaProjectData(
-            binaryReports,
-            intellijSourceInputs,
-            reportContext.codeUpdateInfo
+            data,
+            reportContext.codeUpdateInfo,
         )
 
         val deltaReportLoadStrategy = sequenceOf(
@@ -31,7 +32,7 @@ internal object ReportLoadStrategyFactory {
         return if (reportContext.deltaCoverageConfig.reportsConfig.fullCoverageReport) {
             deltaReportLoadStrategy + NamedReportLoadStrategy(
                 ReportBound.FULL_REPORT,
-                buildRawReportLoadStrategy(binaryReports, intellijSourceInputs)
+                buildRawReportLoadStrategy,
             )
         } else {
             deltaReportLoadStrategy
@@ -39,7 +40,7 @@ internal object ReportLoadStrategyFactory {
     }
 
     private fun buildBinaryReports(reportContext: ReportContext): List<BinaryReport> {
-        return reportContext.deltaCoverageConfig.binaryCoverageFiles.map { binaryCoverageFile ->
+        return reportContext.deltaCoverageConfig.binaryCoverageFiles.filter { it.exists() }.map { binaryCoverageFile ->
             BinaryReport(binaryCoverageFile, null)
         }
     }
