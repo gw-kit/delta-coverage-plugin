@@ -1,5 +1,11 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## 3.3.1
+
+### Dependency updates
+- Updated JaCoCo dependency to [0.8.13](https://github.com/jacoco/jacoco/releases/tag/v0.8.13)
+
+
 ## 3.3.0
 
 ### Changed
