@@ -36,3 +36,7 @@ dependencies {
     testFixturesImplementation(deps.jgit)
     testFixturesImplementation(deps.mockk)
 }
+
+configurations.all {
+    resolutionStrategy.force(deps.intellijCoverageAgent)
+}
