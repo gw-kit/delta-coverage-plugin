@@ -1,5 +1,5 @@
 [versions]
-intellijCoverageVer = "1.0.744"
+intellijCoverageVer = "1.0.766"
 jacocoVer = "0.8.13"
 httpClientVer = "5.4.2"
 jgitVer = "7.1.0.202411261347-r"
@@ -26,6 +26,7 @@ detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version 
 # Project deps
 coverJetPlugin = { module = "io.github.gw-kit.cover-jet:io.github.gw-kit.cover-jet.gradle.plugin", version.ref = "coverJetVer" }
 intellijCoverage = { module = "org.jetbrains.intellij.deps:intellij-coverage-reporter", version.ref = "intellijCoverageVer" }
+intellijCoverageAgent = { module = "org.jetbrains.intellij.deps:intellij-coverage-agent", version.ref = "intellijCoverageVer" }
 jacocoCore = { module = "org.jacoco:org.jacoco.core", version.ref = "jacocoVer" }
 jacocoReport = { module = "org.jacoco:org.jacoco.report", version.ref = "jacocoVer" }
 httpClient = { module = "org.apache.httpcomponents.client5:httpclient5", version.ref = "httpClientVer" }
@@ -35,7 +36,6 @@ jackson = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref 
 
 # Testing
 junitApi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junitVer" }
-junitParams = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junitVer" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockkVer" }
 assertj = { module = "org.assertj:assertj-core", version = "3.27.3" }
 kotestRunnerJunit5 = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotestVer" }

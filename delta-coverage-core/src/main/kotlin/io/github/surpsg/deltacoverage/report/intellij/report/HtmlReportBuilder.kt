@@ -19,8 +19,7 @@ internal class HtmlReportBuilder(
 
         reporter.createHTMLReport(
             reportPath,
-            reportsConfig.view,
-            null
+            null,
         )
     }
 }

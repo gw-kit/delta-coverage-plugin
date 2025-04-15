@@ -1,7 +1,6 @@
 package io.github.surpsg.deltacoverage.report.intellij.coverage
 
 import com.intellij.rt.coverage.data.ClassData
-import com.intellij.rt.coverage.data.FileMapData
 import com.intellij.rt.coverage.data.LineData
 import com.intellij.rt.coverage.data.ProjectData
 import com.intellij.rt.coverage.data.instructions.ClassInstructions
@@ -16,16 +15,10 @@ internal object IntellijDeltaCoverageLoader {
         fullCoverage: ProjectData,
         codeUpdateInfo: CodeUpdateInfo
     ): ProjectData {
-        val projectDataCopy = ProjectData().apply {
+        return ProjectData().apply {
             setInstructionsCoverage(true)
+            copyAllClassDataWithFiltering(fullCoverage, codeUpdateInfo)
         }
-        fullCoverage.copyAllClassDataWithFiltering(projectDataCopy, codeUpdateInfo)
-
-        val mappings: Map<String, Array<FileMapData>> = fullCoverage.linesMap ?: emptyMap()
-        mappings.forEach { (key, value) ->
-            projectDataCopy.addLineMaps(key, value)
-        }
-        return projectDataCopy
     }
 
     private fun ClassData.filterLines(classModifications: ClassModifications): ClassData {
@@ -44,10 +37,10 @@ internal object IntellijDeltaCoverageLoader {
     }
 
     private fun ProjectData.copyAllClassDataWithFiltering(
-        copyToProjectData: ProjectData,
+        sourceProjectData: ProjectData,
         codeUpdateInfo: CodeUpdateInfo,
     ) {
-        val sourceProjectData: ProjectData = this
+        val copyToProjectData: ProjectData = this
         sourceProjectData.classesCollection.asSequence()
             .mapNotNull { sourceClassData ->
                 val classFile: ClassFile = classFileFrom(sourceClassData)
@@ -99,7 +92,7 @@ internal object IntellijDeltaCoverageLoader {
         private fun copyClassInstructions() {
             val className: String = className
             allSourceClassInstructions[className]?.let { sourceClassInstructions ->
-                copyToClassInstructions.merge(sourceClassInstructions, copyToClassData)
+                copyToClassInstructions.merge(sourceClassInstructions)
             }
         }
     }
