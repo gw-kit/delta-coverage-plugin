@@ -82,7 +82,7 @@ class CoverageViolationsPropagatorTest {
                 violation = "any violation 2"
             )
         )
-        val coverageInfo: MutableList<Info> = mutableListOf(
+        val coverageInfo: Set<Info> = setOf(
             Info(
                 coverageEntity = CoverageEntity.LINE,
                 covered = 1,

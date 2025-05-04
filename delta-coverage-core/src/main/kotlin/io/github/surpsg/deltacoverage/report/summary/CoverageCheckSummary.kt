@@ -2,8 +2,8 @@ package io.github.surpsg.deltacoverage.report.summary
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.surpsg.deltacoverage.report.CoverageSummary
-import io.github.surpsg.deltacoverage.report.ReportBound
 import java.nio.file.Path
+import java.nio.file.StandardOpenOption
 import kotlin.io.path.writeText
 
 internal object CoverageCheckSummary {
@@ -11,11 +11,10 @@ internal object CoverageCheckSummary {
 
     fun create(
         reportLocation: Path,
-        coverageSummary: CoverageSummary
+        coverageSummary: CoverageSummary,
     ) {
-        if (coverageSummary.reportBound == ReportBound.DELTA_REPORT) {
-            val writeValueAsString = objectMapper.writeValueAsString(coverageSummary)
-            reportLocation.writeText(writeValueAsString)
-        }
+        val writeValueAsString = objectMapper.writeValueAsString(coverageSummary)
+        reportLocation.writeText(writeValueAsString)
+//        reportLocation.writeText(writeValueAsString, options = arrayOf(StandardOpenOption.CREATE))
     }
 }

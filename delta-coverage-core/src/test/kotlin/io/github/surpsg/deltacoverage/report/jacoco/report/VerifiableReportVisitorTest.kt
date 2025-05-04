@@ -47,12 +47,12 @@ class VerifiableReportVisitorTest {
             reportVisitors = emptyList(),
             coverageRulesVisitor = NoOpCoverageRulesVisitor,
             coverageInfoVisitor = object : CoverageInfoVisitor() {
-                override val coverageSummary: List<CoverageSummary.Info> = listOf(expectedInfo)
+                override val coverageSummary: Set<CoverageSummary.Info> = setOf(expectedInfo)
             },
         )
 
         // WHEN
-        val actualResults: List<CoverageSummary.Info> = reportVisitor.coverageInfo
+        val actualResults: Set<CoverageSummary.Info> = reportVisitor.coverageInfo
 
         // THEN
         actualResults.shouldContainExactly(expectedInfo)

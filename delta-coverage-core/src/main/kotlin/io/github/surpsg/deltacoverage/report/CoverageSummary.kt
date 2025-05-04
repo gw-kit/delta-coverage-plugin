@@ -10,7 +10,7 @@ internal data class CoverageSummary(
     val reportBound: ReportBound,
     val coverageRulesConfig: CoverageRulesConfig,
     val verifications: List<VerificationResult>,
-    val coverageInfo: List<Info>,
+    val coverageInfo: Set<Info>,
 ) {
 
     fun contextualViolations(): List<String> =

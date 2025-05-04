@@ -51,7 +51,7 @@ internal object CoverageAssertion {
     }
 
     private data class CoverageSummaryAgg(
-        val coverageInfo: List<CoverageSummary.Info>,
+        val coverageInfo: Set<CoverageSummary.Info>,
         val verificationResults: List<CoverageSummary.VerificationResult>,
     ) {
         infix fun mergeWith(other: CoverageSummaryAgg): CoverageSummaryAgg {
@@ -62,7 +62,7 @@ internal object CoverageAssertion {
         }
 
         companion object {
-            val EMPTY = CoverageSummaryAgg(emptyList(), emptyList())
+            val EMPTY = CoverageSummaryAgg(emptySet(), emptyList())
         }
     }
 }

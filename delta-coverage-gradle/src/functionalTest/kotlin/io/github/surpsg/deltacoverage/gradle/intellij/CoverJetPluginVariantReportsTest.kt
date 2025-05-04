@@ -8,6 +8,8 @@ import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
 import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
 import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
 import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
+import io.github.surpsg.deltacoverage.gradle.test.assertion.assertSummaryReportExist
+import io.github.surpsg.deltacoverage.report.ReportBound
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.file.shouldBeADirectory
 import io.kotest.matchers.file.shouldBeAFile
@@ -41,7 +43,7 @@ class CoverJetPluginVariantReportsTest {
     @Test
     fun `delta-coverage should create all reports`() {
         // GIVEN
-        val baseReportDir = "build/custom/reports/dir/kover/"
+        val baseReportDir = "build/custom/reports/dir/cover-jet/"
         val view = "test"
         buildFile.file.appendText(
             """
@@ -88,6 +90,11 @@ class CoverJetPluginVariantReportsTest {
         val baseReportDirFile = rootProjectDir.resolve(baseReportDir).resolve("coverage-reports")
         assertAllReportsCreated(baseReportDirFile.resolve("delta-coverage/$view"))
         assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report/$view"))
+
+        // AND THEN
+        baseReportDirFile
+            .assertSummaryReportExist(ReportBound.DELTA_REPORT, view)
+            .assertSummaryReportExist(ReportBound.FULL_REPORT, view)
     }
 
     private fun assertAllReportsCreated(baseReportDir: File) {

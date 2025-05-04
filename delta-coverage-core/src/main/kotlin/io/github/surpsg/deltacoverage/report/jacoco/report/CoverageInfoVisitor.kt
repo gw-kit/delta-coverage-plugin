@@ -9,12 +9,12 @@ import org.jacoco.report.ISourceFileLocator
 
 internal abstract class CoverageInfoVisitor : IReportVisitor by NoOpCoverageRulesVisitor {
 
-    abstract val coverageSummary: List<CoverageSummary.Info>
+    abstract val coverageSummary: Set<CoverageSummary.Info>
 
     private class DefaultCoverageInfoVisitor : CoverageInfoVisitor() {
-        private val innerCoverageInfo: MutableList<CoverageSummary.Info> = mutableListOf()
+        private val innerCoverageInfo: MutableSet<CoverageSummary.Info> = mutableSetOf()
 
-        override val coverageSummary: List<CoverageSummary.Info>
+        override val coverageSummary: Set<CoverageSummary.Info>
             get() = innerCoverageInfo
 
         override fun visitBundle(bundle: IBundleCoverage, locator: ISourceFileLocator?) {
@@ -34,7 +34,7 @@ internal abstract class CoverageInfoVisitor : IReportVisitor by NoOpCoverageRule
 
     companion object {
         val NO_OP_VISITOR = object : CoverageInfoVisitor() {
-            override val coverageSummary: List<CoverageSummary.Info> = emptyList()
+            override val coverageSummary: Set<CoverageSummary.Info> = setOf()
         }
 
         fun create(): CoverageInfoVisitor = DefaultCoverageInfoVisitor()

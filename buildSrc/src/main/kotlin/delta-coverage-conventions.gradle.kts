@@ -17,6 +17,7 @@ deltaCoverageReport {
         html = true
         xml = true
         markdown = true
+        fullCoverageReport = true
     }
 
     view(JavaPlugin.TEST_TASK_NAME) {
