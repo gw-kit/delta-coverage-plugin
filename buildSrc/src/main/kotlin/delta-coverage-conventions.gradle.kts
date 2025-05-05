@@ -33,7 +33,7 @@ deltaCoverageReport {
         }
     }
     view("aggregated") {
-        violationRules{
+        violationRules {
             failIfCoverageLessThan(0.91)
             CoverageEntity.BRANCH {
                 minCoverageRatio = 0.9
