@@ -32,7 +32,7 @@ class CoverageAssertionTest {
             reportBound = ReportBound.DELTA_REPORT,
             coverageRulesConfig = coverageRulesConfig,
             verifications = emptyList(),
-            coverageInfo = listOf(
+            coverageInfo = setOf(
                 CoverageSummary.Info(CoverageEntity.INSTRUCTION, 0, 0),
                 CoverageSummary.Info(CoverageEntity.BRANCH, 0, 0),
                 CoverageSummary.Info(CoverageEntity.LINE, 0, 0),
@@ -64,7 +64,7 @@ class CoverageAssertionTest {
             view = view,
             reportBound = ReportBound.DELTA_REPORT,
             coverageRulesConfig = coverageRulesConfig,
-            coverageInfo = listOf(
+            coverageInfo = setOf(
                 CoverageSummary.Info(CoverageEntity.INSTRUCTION, 0, 0),
                 CoverageSummary.Info(CoverageEntity.BRANCH, 0, 0),
                 CoverageSummary.Info(CoverageEntity.LINE, 0, 1),

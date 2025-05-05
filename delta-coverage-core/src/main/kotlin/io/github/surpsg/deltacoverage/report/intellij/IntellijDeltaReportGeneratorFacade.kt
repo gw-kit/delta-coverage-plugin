@@ -1,6 +1,6 @@
 package io.github.surpsg.deltacoverage.report.intellij
 
-import com.intellij.rt.coverage.data.ProjectData
+import io.github.surpsg.deltacoverage.config.CoverageRulesConfig
 import io.github.surpsg.deltacoverage.report.CoverageSummary
 import io.github.surpsg.deltacoverage.report.DeltaReportGeneratorFacade
 import io.github.surpsg.deltacoverage.report.ReportBound
@@ -13,7 +13,7 @@ import io.github.surpsg.deltacoverage.report.intellij.verifier.CoverageAssertion
 
 internal class IntellijDeltaReportGeneratorFacade : DeltaReportGeneratorFacade() {
 
-    override fun generate(reportContext: ReportContext): CoverageSummary {
+    override fun generate(reportContext: ReportContext): Map<ReportBound, CoverageSummary> {
         val reportBoundToLoadStrategy: Map<ReportBound, NamedReportLoadStrategy> =
             ReportLoadStrategyFactory.buildReportLoadStrategies(reportContext)
                 .associateBy { it.reportBound }
@@ -31,13 +31,15 @@ internal class IntellijDeltaReportGeneratorFacade : DeltaReportGeneratorFacade()
     private fun verifyCoverage(
         reportContext: ReportContext,
         reportBoundToLoadStrategy: Map<ReportBound, NamedReportLoadStrategy>,
-    ): CoverageSummary {
-        val value: NamedReportLoadStrategy = reportBoundToLoadStrategy.getValue(ReportBound.DELTA_REPORT)
-        val projectData: ProjectData = value.reportLoadStrategy.projectData
-        return CoverageAssertion.verify(
+    ): Map<ReportBound, CoverageSummary> = reportBoundToLoadStrategy.mapValues { (reportBound, strategy) ->
+        val coverageRules = when (reportBound) {
+            ReportBound.FULL_REPORT -> CoverageRulesConfig()
+            ReportBound.DELTA_REPORT -> reportContext.deltaCoverageConfig.coverageRulesConfig
+        }
+        CoverageAssertion.verify(
             view = reportContext.deltaCoverageConfig.view,
-            projectData = projectData,
-            coverageRulesConfig = reportContext.deltaCoverageConfig.coverageRulesConfig,
+            projectData = strategy.reportLoadStrategy.projectData,
+            coverageRulesConfig = coverageRules,
         )
     }
 }
