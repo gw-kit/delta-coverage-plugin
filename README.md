@@ -2,11 +2,9 @@
 
 ![GitHub Release](https://img.shields.io/github/v/release/SurpSG/delta-coverage-plugin)
 [![Build](https://github.com/gw-kit/delta-coverage-plugin/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/gw-kit/delta-coverage-plugin/actions/workflows/build.yml)
-[![codecov](https://codecov.io/gh/gw-kit/delta-coverage-plugin/graph/badge.svg?token=69BAXyEhse)](https://codecov.io/gh/gw-kit/delta-coverage-plugin)
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/SurpSG/43f6a35717133f3efd245b784826e563/raw/dc-aggregated-coverage.json)
 [![GitHub issues](https://img.shields.io/github/issues/SurpSG/delta-coverage-plugin)](https://github.com/SurpSG/delta-coverage-plugin/issues)
 [![GitHub stars](https://img.shields.io/github/stars/SurpSG/delta-coverage-plugin?style=flat-square)](https://github.com/SurpSG/delta-coverage-plugin/stargazers)
-
-![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/SurpSG/43f6a35717133f3efd245b784826e563/raw/dc-coverage.json)
 
 
 `Delta Coverage` is coverage analyzing tool that computes code coverage of new/modified code based on a

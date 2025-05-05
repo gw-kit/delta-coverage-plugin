@@ -76,7 +76,7 @@ jobs:
         uses: gw-kit/delta-coverage-action@main
 
       - name: Update Coverage Badge Data
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         uses: ./.github/actions/update-coverage-badge
         with:
           gist-id: ${{ vars.COV_GIST_ID }}
@@ -90,9 +90,3 @@ jobs:
           check_name: '📊Test Results'
           files:
             '**/build/test-results/*/TEST-*.xml'
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: build/reports/coverage-reports/delta-coverage/**/report.xml
