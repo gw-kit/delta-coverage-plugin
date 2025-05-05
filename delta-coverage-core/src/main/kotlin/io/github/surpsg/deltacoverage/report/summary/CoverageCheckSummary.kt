@@ -15,6 +15,5 @@ internal object CoverageCheckSummary {
     ) {
         val writeValueAsString = objectMapper.writeValueAsString(coverageSummary)
         reportLocation.writeText(writeValueAsString)
-//        reportLocation.writeText(writeValueAsString, options = arrayOf(StandardOpenOption.CREATE))
     }
 }
