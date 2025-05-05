@@ -79,7 +79,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: ./.github/actions/update-coverage-badge
         with:
-          gist-id: ${{ vars.GIST_ID }}
+          gist-id: ${{ vars.COV_GIST_ID }}
           gist-secret: ${{ secrets.GIST_SECRET }}
 
       - name: 📊Add test results to PR
