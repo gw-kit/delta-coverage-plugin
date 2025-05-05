@@ -51,4 +51,4 @@ runs:
         filename: ${{ steps.shield-coverage-data.outputs.file }}
         label: '${{ steps.shield-coverage-data.outputs.view }} coverage'
         message: ${{ steps.shield-coverage-data.outputs.coverage }}
-        color: orange
+        color: blue
