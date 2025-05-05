@@ -75,6 +75,40 @@ jobs:
         continue-on-error: true
         uses: gw-kit/delta-coverage-action@main
 
+      - name: Gen Full Coverage Json
+        id: shield-coverage-data
+        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summariesPath = 'build/reports/coverage-reports/full-coverage-aggregated-summary.json';
+            const summariesRaw = fs.readFileSync(summariesPath, 'utf8');
+            const summary = JSON.parse(summariesRaw);
+            
+            const linesCoverage = summary.coverageInfo
+              .find(entityCoverage => entityCoverage.coverageEntity === 'LINE');
+            
+            const badgeData = {
+              schemaVersion: 1,
+              label: summary.view,
+              "message": `${linesCoverage.percents}%`,
+              "color": "green"
+            };
+            const badgeDataFilePath = `dc-coverage.json`;
+            fs.writeFileSync(badgeDataFilePath, JSON.stringify(badgeData, null, 2));
+            core.setOutput('file', badgeDataFilePath);
+
+      - name: Create Awesome Badge
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: ${{ vars.GIST_ID }}
+          filename: ${{ steps.shield-coverage-data.outputs.file }}
+          label: Coverage
+          message: 70%
+          color: orange
+
       - name: 📊Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.19.0
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}

@@ -6,6 +6,9 @@
 [![GitHub issues](https://img.shields.io/github/issues/SurpSG/delta-coverage-plugin)](https://github.com/SurpSG/delta-coverage-plugin/issues)
 [![GitHub stars](https://img.shields.io/github/stars/SurpSG/delta-coverage-plugin?style=flat-square)](https://github.com/SurpSG/delta-coverage-plugin/stargazers)
 
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/SurpSG/43f6a35717133f3efd245b784826e563/raw/dc-coverage.json)
+
+
 `Delta Coverage` is coverage analyzing tool that computes code coverage of new/modified code based on a
 provided [diff](https://en.wikipedia.org/wiki/Diff#Unified_format).
 The diff content can be provided via path to patch file, URL or using embedded git(
