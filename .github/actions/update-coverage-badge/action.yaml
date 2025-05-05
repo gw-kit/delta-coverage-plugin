@@ -28,20 +28,16 @@ runs:
 
           const linesCoverage = summary.coverageInfo
             .find(entityCoverage => entityCoverage.coverageEntity === 'LINE');
-
-          const badgeData = {
-            schemaVersion: 1,
-            label: summary.view,
-            "message": `${linesCoverage.percents}%`,
-            "color": "green"
-          };
+          
           const badgeDataFile = `dc-${summary.view}-coverage.json`;
-          fs.writeFileSync(badgeDataFile, JSON.stringify(badgeData, null, 2));
+          
           core.setOutput('file', badgeDataFile);
+          core.setOutput('view', summary.view);
+          core.setOutput('coverage', `${linesCoverage.percents}%`);
           
           const badgeDataUrl = `https://gist.githubusercontent.com/SurpSG/${{ inputs.gist-id }}/raw/${badgeDataFile}`;
           const badgeUrl = `https://img.shields.io/endpoint?url=${badgeDataUrl}`
-          core.summary.addRaw(`${badgeUrl}`).write();
+          core.summary.addRaw(`![badge](${badgeUrl})`).write();
 
     - name: Create Awesome Badge
       uses: schneegans/dynamic-badges-action@v1.7.0
@@ -49,6 +45,6 @@ runs:
         auth: ${{ inputs.gist-secret }}
         gistID: ${{ inputs.gist-id }}
         filename: ${{ steps.shield-coverage-data.outputs.file }}
-        label: Coverage
-        message: 70%
+        label: ${{ steps.shield-coverage-data.outputs.view }}
+        message: ${{ steps.shield-coverage-data.outputs.coverage }}
         color: orange
