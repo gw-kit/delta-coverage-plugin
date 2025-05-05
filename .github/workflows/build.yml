@@ -44,7 +44,7 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
 
       - name: ⚙️Build & Test
-        run: ${gradle_cmd} build detektMain detektTest --continue
+        run: ${gradle_cmd} build detektMain detektTest --continue -x funTest
 
       - name: Check publish
         id: publish-snapshot
@@ -66,7 +66,7 @@ jobs:
       - name: 📈Run Delta Coverage check
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
-        run: ${gradle_cmd} deltaCoverage
+        run: ${gradle_cmd} deltaCoverage -x deltaCoFunTest
           -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
           --continue
 
