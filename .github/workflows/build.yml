@@ -76,6 +76,7 @@ jobs:
         uses: gw-kit/delta-coverage-action@main
 
       - name: Update Coverage Badge Data
+        if: ${{ !cancelled() }}
         uses: ./.github/actions/update-coverage-badge
         with:
           gist-id: ${{ vars.GIST_ID }}

@@ -46,8 +46,8 @@ runs:
     - name: Create Awesome Badge
       uses: schneegans/dynamic-badges-action@v1.7.0
       with:
-        auth: ${{ secrets.GIST_SECRET }}
-        gistID: ${{ vars.GIST_ID }}
+        auth: ${{ inputs.gist-secret }}
+        gistID: ${{ inputs.gist-id }}
         filename: ${{ steps.shield-coverage-data.outputs.file }}
         label: Coverage
         message: 70%
