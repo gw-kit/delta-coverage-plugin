@@ -28,17 +28,14 @@ jobs:
           app-id: ${{ secrets.BADGES_APP_ID }}
           private-key: ${{ secrets.BADGES_APP_KEY }}
 
-      - uses: lasith-kg/dispatch-workflow@v1
-        id: workflow-dispatch
-        name: 'Dispatch Workflow using workflow_dispatch Method'
+      - name: Call Workflow
+        uses: benc-uk/workflow-dispatch@v1
         with:
-          dispatch-method: workflow_dispatch
-          repo: 'coverage-badges'
-          owner: ${{ github.repository_owner }}
-          ref: refs/heads/main # or main
           workflow: update-badges.yaml
+          ref: refs/heads/main
           token: ${{ steps.generate-token.outputs.token }}
-          workflow-inputs: |
+          repo: '${{ github.repository_owner }}/coverage-badges'
+          inputs: |
             {
               "target-repo": "${{ github.event.repository.name }}"
             }
