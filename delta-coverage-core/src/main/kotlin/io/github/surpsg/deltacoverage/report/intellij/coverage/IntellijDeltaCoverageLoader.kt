@@ -46,15 +46,6 @@ internal object IntellijDeltaCoverageLoader {
                 val classFile: ClassFile = classFileFrom(sourceClassData)
                 codeUpdateInfo.isInfoExists(classFile)
             }
-//            .mapNotNull { sourceClassData ->
-//                val classFile: ClassFile = classFileFrom(sourceClassData)
-//                if (codeUpdateInfo.isInfoExists(classFile)) {
-//                    val classModifications = codeUpdateInfo.getClassModifications(classFile)
-//                    sourceClassData.filterLines(classModifications)
-//                } else {
-//                    null
-//                }
-//            }
             .map { sourceClassData ->
                 ClassDataCopingContext(sourceClassData.name, sourceProjectData, copyToProjectData)
             }
