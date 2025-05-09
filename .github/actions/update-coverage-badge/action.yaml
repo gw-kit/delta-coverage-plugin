@@ -3,6 +3,10 @@ description: "Start docker-compose environment."
 
 inputs:
 
+  repository:
+    description: 'Repository name with owner. For example, actions/checkout'
+    required: true
+
   branch:
     description: 'Branch to push the changes.'
     required: true
@@ -20,7 +24,7 @@ runs:
       uses: actions/checkout@v4
       with:
         token: ${{ inputs.token }}
-        repository: '${{ github.repository_owner }}/coverage-badges'
+        repository: ${{ inputs.repository }}
         ref: ${{ inputs.branch }}
 
     - name: Create and commit file
