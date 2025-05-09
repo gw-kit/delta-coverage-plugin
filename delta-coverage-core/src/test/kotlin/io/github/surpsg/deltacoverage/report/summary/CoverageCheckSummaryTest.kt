@@ -13,6 +13,9 @@ import io.github.surpsg.deltacoverage.report.ReportBound
 import io.kotest.matchers.maps.shouldContainAll
 import io.kotest.matchers.paths.shouldNotExist
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.ValueSource
 import java.nio.file.FileSystem
 import java.nio.file.Path
 import kotlin.io.path.createFile
@@ -24,14 +27,15 @@ class CoverageCheckSummaryTest {
 
     private val fileSystem: FileSystem = Jimfs.newFileSystem(Configuration.unix())
 
-    @Test
-    fun `should overwrite file with summary`() {
+    @ParameterizedTest
+    @EnumSource(ReportBound::class)
+    fun `should create file with summary`(reportBound: ReportBound) {
         // GIVEN
         val file: Path = fileSystem.getPath("/summary-2.json").apply {
             createFile().writeText(UNEXPECTED_TEXT)
         }
 
-        val coverageSummary: CoverageSummary = buildSummary()
+        val coverageSummary: CoverageSummary = buildSummary(reportBound)
 
         // WHEN
         CoverageCheckSummary.create(file, coverageSummary)
@@ -42,23 +46,9 @@ class CoverageCheckSummaryTest {
         actualDeserialized.shouldContainAll(expected)
     }
 
-    @Test
-    fun `should do nothing if coverage bound is not delta coverage`() {
-        // GIVEN
-        val file: Path = fileSystem.getPath("/summary-any.json")
-
-        val coverageSummary: CoverageSummary = buildSummary().copy(reportBound = ReportBound.FULL_REPORT)
-
-        // WHEN
-        CoverageCheckSummary.create(file, coverageSummary)
-
-        // THEN
-        file.shouldNotExist()
-    }
-
-    private fun buildSummary() = CoverageSummary(
+    private fun buildSummary(bound: ReportBound) = CoverageSummary(
         view = VIEW_NAME,
-        reportBound = ReportBound.DELTA_REPORT,
+        reportBound = bound,
         coverageRulesConfig = CoverageRulesConfig {
             failOnViolation = true
             violationRules += ViolationRule {
@@ -73,7 +63,7 @@ class CoverageCheckSummaryTest {
                 violation = VIOLATION_TEXT,
             )
         ),
-        coverageInfo = listOf(
+        coverageInfo = setOf(
             CoverageSummary.Info(
                 coverageEntity = COVERAGE_ENTITY,
                 covered = ACTUAL_COVERED,

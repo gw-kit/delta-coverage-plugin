@@ -9,8 +9,12 @@ import io.github.surpsg.deltacoverage.diff.DiffSource
 import io.github.surpsg.deltacoverage.report.CoverageSummary
 import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportContext
+import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.equality.shouldBeEqualUsingFields
+import io.kotest.matchers.equals.shouldBeEqual
+import io.kotest.matchers.maps.shouldContainKeys
+import io.kotest.matchers.maps.shouldContainValue
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
@@ -35,31 +39,41 @@ class JacocoDeltaReportGeneratorFacadeTest {
                     xml = reportConfig
                     console = reportConfig
                     markdown = reportConfig
+                    fullCoverageReport = true
                 }
             }
         )
 
         // WHEN
-        val actual: CoverageSummary = reportGeneratorFacade.generate(context)
+        val actual: Map<ReportBound, CoverageSummary> = reportGeneratorFacade.generate(context)
 
         // THEN
-        actual.shouldBeEqualUsingFields {
+        actual.shouldContainKeys(*ReportBound.entries.toTypedArray())
+        val expectedDeltaSummary = CoverageSummary(
+            view = testViewName,
+            reportBound = ReportBound.DELTA_REPORT,
+            coverageRulesConfig = CoverageRulesConfig {},
+            verifications = emptyList(),
+            coverageInfo = emptySet(),
+        )
+        actual.getValue(ReportBound.DELTA_REPORT) shouldMatchTo expectedDeltaSummary
+        actual.getValue(ReportBound.FULL_REPORT) shouldMatchTo expectedDeltaSummary.copy(
+            reportBound = ReportBound.FULL_REPORT
+        )
+    }
+
+    private infix fun CoverageSummary.shouldMatchTo(expected: CoverageSummary) {
+        val actualSummary = this
+        actualSummary.shouldBeEqualUsingFields {
             excludedProperties = setOf(
                 CoverageSummary::coverageRulesConfig,
                 CoverageSummary::coverageInfo,
             )
-            CoverageSummary(
-                view = testViewName,
-                reportBound = ReportBound.DELTA_REPORT,
-                coverageRulesConfig = CoverageRulesConfig {},
-                verifications = emptyList(),
-                coverageInfo = emptyList(),
-            )
+            expected
         }
-
-        // AND THEN
-        actual.coverageInfo shouldContainExactlyInAnyOrder CoverageEntity.entries
-            .map { entity -> CoverageSummary.Info(entity, 0, 0) }
+        actualSummary.coverageInfo shouldContainExactlyInAnyOrder CoverageEntity.entries.map { entity ->
+            CoverageSummary.Info(entity, 0, 0)
+        }
     }
 }
 

@@ -1,0 +1,54 @@
+name: Start Docker Environment
+description: "Start docker-compose environment."
+
+inputs:
+
+  gist-id:
+    description: 'Gist ID to store the badge.'
+    required: true
+
+  gist-secret:
+    description: 'Gist secret to store the badge.'
+    required: true
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Gen Full Coverage Json
+      id: shield-coverage-data
+      if: ${{ github.event_name == 'pull_request' && !cancelled() }}
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const summariesPath = 'build/reports/coverage-reports/full-coverage-aggregated-summary.json';
+          const summariesRaw = fs.readFileSync(summariesPath, 'utf8');
+          const summary = JSON.parse(summariesRaw);
+
+          const linesCoverage = summary.coverageInfo
+            .find(entityCoverage => entityCoverage.coverageEntity === 'LINE');
+          
+          const badgeDataFile = `dc-${summary.view}-coverage.json`;
+          
+          core.setOutput('file', badgeDataFile);
+          core.setOutput('view', summary.view);
+          core.setOutput('coverage', `${linesCoverage.percents}%`);
+          
+          const badgeDataUrl = `https://gist.githubusercontent.com/SurpSG/${{ inputs.gist-id }}/raw/${badgeDataFile}`;
+          const badgeUrl = `https://img.shields.io/endpoint?url=${badgeDataUrl}`
+          const badgeMarkdown = `![badge](${badgeUrl})`;
+          core.summary
+            .addRaw(badgeMarkdown).addEOL()
+            .addCodeBlock(badgeMarkdown).addEOL()
+            .write();
+
+    - name: Create Awesome Badge
+      uses: schneegans/dynamic-badges-action@v1.7.0
+      with:
+        auth: ${{ inputs.gist-secret }}
+        gistID: ${{ inputs.gist-id }}
+        filename: ${{ steps.shield-coverage-data.outputs.file }}
+        label: '${{ steps.shield-coverage-data.outputs.view }} coverage'
+        message: ${{ steps.shield-coverage-data.outputs.coverage }}
+        color: blue

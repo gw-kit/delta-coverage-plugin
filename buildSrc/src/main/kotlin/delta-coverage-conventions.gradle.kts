@@ -17,6 +17,7 @@ deltaCoverageReport {
         html = true
         xml = true
         markdown = true
+        fullCoverageReport = true
     }
 
     view(JavaPlugin.TEST_TASK_NAME) {
@@ -32,7 +33,7 @@ deltaCoverageReport {
         }
     }
     view("aggregated") {
-        violationRules{
+        violationRules {
             failIfCoverageLessThan(0.91)
             CoverageEntity.BRANCH {
                 minCoverageRatio = 0.9

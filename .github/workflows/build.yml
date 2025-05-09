@@ -64,28 +64,29 @@ jobs:
           -PsnapshotPrefix='SNAPSHOT.${{ github.run_id }}'
 
       - name: 📈Run Delta Coverage check
-        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
+        if: ${{ !cancelled() }}
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
         run: ${gradle_cmd} deltaCoverage
           -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
           --continue
 
       - name: Publish Coverage Summary
-        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
+        if: ${{ !cancelled() }}
         continue-on-error: true
         uses: gw-kit/delta-coverage-action@main
 
+      - name: Update Coverage Badge Data
+        if: ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: ./.github/actions/update-coverage-badge
+        with:
+          gist-id: ${{ vars.COV_GIST_ID }}
+          gist-secret: ${{ secrets.GIST_SECRET }}
+
       - name: 📊Add test results to PR
-        uses: EnricoMi/publish-unit-test-result-action@v2.18.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.19.0
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: true
         with:
           check_name: '📊Test Results'
           files:
             '**/build/test-results/*/TEST-*.xml'
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: build/reports/coverage-reports/delta-coverage/**/report.xml
