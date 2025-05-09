@@ -63,17 +63,33 @@ jobs:
         run: ${gradle_cmd} publishAllPublicationsToGhPackagesRepository
           -PsnapshotPrefix='SNAPSHOT.${{ github.run_id }}'
 
+      - name: Check Ignore Coverage Failure
+        id: ignore-coverage-failure
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ignoreByLabel = ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }};
+            const ignoreByEvent = ${{ github.event_name == 'push' }};
+            const resolution = ignoreByLabel || ignoreByEvent;
+            core.setOutput('result', resolution);
+            if (resolution) {
+              core.notice(`Coverage failure is ignored by: label=${ignoreByLabel}, event=${ignoreByEvent}`);
+            }
+
       - name: 📈Run Delta Coverage check
         if: ${{ !cancelled() }}
-        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
+        continue-on-error: ${{ steps.ignore-coverage-failure.outputs.result == 'true' }}
+        env:
+          COMPARE_WITH: ${{ github.base_ref || github.ref_name }}
         run: ${gradle_cmd} deltaCoverage
-          -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
+          -PdiffBase="refs/remotes/origin/${COMPARE_WITH}"
           --continue
 
       - name: Publish Coverage Summary
         if: ${{ !cancelled() }}
-        continue-on-error: true
         uses: gw-kit/delta-coverage-action@main
+        with:
+          suppress-check-failures: ${{ steps.ignore-coverage-failure.outputs.result }}
 
       - name: Update Coverage Badge Data
         if: ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
