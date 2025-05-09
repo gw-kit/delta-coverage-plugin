@@ -27,7 +27,6 @@ jobs:
         with:
           app-id: ${{ secrets.BADGES_APP_ID }}
           private-key: ${{ secrets.BADGES_APP_KEY }}
-          repositories: 'gw-kit/coverage-badges'
 
       - name: Update Coverage Badge Data
         if: ${{ !cancelled() }}
