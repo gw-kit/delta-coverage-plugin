@@ -25,6 +25,7 @@ runs:
       with:
         token: ${{ inputs.token }}
         repository: ${{ inputs.repository }}
+        path: '${{ inputs.repository }}'
         ref: ${{ inputs.branch }}
 
     - name: Create and commit file

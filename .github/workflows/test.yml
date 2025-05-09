@@ -28,10 +28,17 @@ jobs:
           app-id: ${{ secrets.BADGES_APP_ID }}
           private-key: ${{ secrets.BADGES_APP_KEY }}
 
-      - name: Update Coverage Badge Data
-        if: ${{ !cancelled() }}
-        uses: ./.github/actions/update-coverage-badge
+      - uses: lasith-kg/dispatch-workflow@v1
+        id: workflow-dispatch
+        name: 'Dispatch Workflow using workflow_dispatch Method'
         with:
+          dispatch-method: workflow_dispatch
+          repo: 'coverage-badges'
+          owner: ${{ github.repository_owner }}
+          ref: refs/heads/main # or main
+          workflow: update-badges.yaml
           token: ${{ steps.generate-token.outputs.token }}
-          repository: '${{ github.repository_owner }}/coverage-badges'
-          branch: main
+          workflow-inputs: |
+            {
+              "target-repo": "${{ github.event.repository.name }}"
+            }
