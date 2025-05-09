@@ -1,7 +1,6 @@
 package io.github.surpsg.deltacoverage.report.intellij.coverage
 
 import com.intellij.rt.coverage.data.ClassData
-import com.intellij.rt.coverage.data.FileMapData
 import com.intellij.rt.coverage.data.LineData
 import com.intellij.rt.coverage.data.ProjectData
 import com.intellij.rt.coverage.data.instructions.ClassInstructions
@@ -16,16 +15,10 @@ internal object IntellijDeltaCoverageLoader {
         fullCoverage: ProjectData,
         codeUpdateInfo: CodeUpdateInfo
     ): ProjectData {
-        val projectDataCopy = ProjectData().apply {
+        return ProjectData().apply {
             setInstructionsCoverage(true)
+            copyAllClassDataWithFiltering(fullCoverage, codeUpdateInfo)
         }
-        fullCoverage.copyAllClassDataWithFiltering(projectDataCopy, codeUpdateInfo)
-
-        val mappings: Map<String, Array<FileMapData>> = fullCoverage.linesMap ?: emptyMap()
-        mappings.forEach { (key, value) ->
-            projectDataCopy.addLineMaps(key, value)
-        }
-        return projectDataCopy
     }
 
     private fun ClassData.filterLines(classModifications: ClassModifications): ClassData {
@@ -44,25 +37,23 @@ internal object IntellijDeltaCoverageLoader {
     }
 
     private fun ProjectData.copyAllClassDataWithFiltering(
-        copyToProjectData: ProjectData,
+        sourceProjectData: ProjectData,
         codeUpdateInfo: CodeUpdateInfo,
     ) {
-        val sourceProjectData: ProjectData = this
+        val copyToProjectData: ProjectData = this
         sourceProjectData.classesCollection.asSequence()
-            .mapNotNull { sourceClassData ->
+            .filter { sourceClassData ->
                 val classFile: ClassFile = classFileFrom(sourceClassData)
-                if (codeUpdateInfo.isInfoExists(classFile)) {
-                    val classModifications = codeUpdateInfo.getClassModifications(classFile)
-                    sourceClassData.filterLines(classModifications)
-                } else {
-                    null
-                }
+                codeUpdateInfo.isInfoExists(classFile)
             }
             .map { sourceClassData ->
                 ClassDataCopingContext(sourceClassData.name, sourceProjectData, copyToProjectData)
             }
             .forEach { classCopyContext ->
-                classCopyContext.copyClassData()
+                val copied = classCopyContext.copyClassData()
+                val classFile: ClassFile = classFileFrom(classCopyContext.sourceClassData)
+                val classModifications = codeUpdateInfo.getClassModifications(classFile)
+                copied.filterLines(classModifications)
             }
     }
 
@@ -86,7 +77,7 @@ internal object IntellijDeltaCoverageLoader {
                 ClassInstructions()
             }
 
-        fun copyClassData() {
+        fun copyClassData(): ClassData {
             val sourceClass: ClassData = sourceClassData
             copyToClassData.apply {
                 source = sourceClass.source
@@ -94,12 +85,14 @@ internal object IntellijDeltaCoverageLoader {
             }
 
             copyClassInstructions()
+
+            return copyToClassData
         }
 
         private fun copyClassInstructions() {
             val className: String = className
             allSourceClassInstructions[className]?.let { sourceClassInstructions ->
-                copyToClassInstructions.merge(sourceClassInstructions, copyToClassData)
+                copyToClassInstructions.merge(sourceClassInstructions)
             }
         }
     }
