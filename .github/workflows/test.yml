@@ -46,6 +46,6 @@ jobs:
           inputs: |
             {
               "target-repo": "${{ github.event.repository.name }}",
-              "artifacts-source-run-id": "${{ steps.upload-file.outputs.artifact-id }}",
-              "workflow-run-id": "${{ github.run_id }}"
+              "badges-artifact-id": "${{ steps.upload-file.outputs.artifact-id }}",
+              "artifacts-source-run-id": "${{ github.run_id }}"
             }
