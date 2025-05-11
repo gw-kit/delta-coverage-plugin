@@ -29,7 +29,26 @@ jobs:
           private-key: ${{ secrets.BADGES_APP_KEY }}
           owner: ${{ github.repository_owner }}
 
+      - name: Create File
+        run: |
+          echo "##[section]Creating file"
+          echo "This is a test file" > test.txt
+          echo "##[section]File created"
+
+      - name: Upload file
+        id: upload-file
+        uses: actions/upload-artifact@v4
+        with:
+          name: test.txt
+          path: test.txt
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: test.txt
+
       - name: Call Workflow
+        if: false
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: update-badges.yaml
@@ -38,5 +57,6 @@ jobs:
           repo: '${{ github.repository_owner }}/coverage-badges'
           inputs: |
             {
-              "target-repo": "${{ github.event.repository.name }}"
+              "target-repo": "${{ github.event.repository.name }}",
+              "workflow-run-id": "${{ github.run_id }}",
             }
