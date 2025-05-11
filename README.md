@@ -14,7 +14,7 @@
 
 `Delta Coverage` is coverage analyzing tool that computes code coverage of new/modified code based on a
 provided [diff](https://en.wikipedia.org/wiki/Diff#Unified_format).
-The diff content can be provided via path to patch1 file, URL or using embedded git(
+The diff content can be provided via path to patch file, URL or using embedded git(
 see [parameters description](#Parameters-description)).
 
 Why should I use it?
