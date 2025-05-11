@@ -14,7 +14,6 @@ on:
 jobs:
 
   build-and-check:
-    if: false
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -72,18 +71,28 @@ jobs:
           --continue
 
       - name: Publish Coverage Summary
+        id: publish-coverage
         if: ${{ !cancelled() }}
         continue-on-error: true
-        uses: gw-kit/delta-coverage-action@main
+        uses: gw-kit/delta-coverage-action@test-badges
 
-      - name: Update Coverage Badge Data
-        if: ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        uses: ./.github/actions/update-coverage-badge
+      - name: Generate Token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
         with:
-          gist-id: ${{ vars.COV_GIST_ID }}
-          gist-secret: ${{ secrets.GIST_SECRET }}
+          app-id: ${{ secrets.BADGES_APP_ID }}
+          private-key: ${{ secrets.BADGES_APP_KEY }}
+          owner: ${{ github.repository_owner }}
 
-      - name: 📊Add test results to PR
+      - name: Update Coverage Badges
+        if: ${{ !cancelled() }}
+#        if: ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: ./.github/actions/update-coverage-badges
+        with:
+          badge-files: ${{ steps.publish-coverage.outputs.badges-dir }}
+          token: ${{ steps.generate-token.outputs.token }}
+
+      - name: 📊Add Test Results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.19.0
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: true
