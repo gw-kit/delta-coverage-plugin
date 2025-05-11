@@ -31,7 +31,7 @@ runs:
       with:
         workflow: update-badges.yaml
         ref: refs/heads/main
-        token: ${{ steps.generate-token.outputs.token }}
+        token: ${{ inputs.token }}
         repo: '${{ inputs.badges-repository }}'
         inputs: |
           {
