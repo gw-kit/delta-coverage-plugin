@@ -32,7 +32,6 @@ jobs:
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: update-badges.yaml
-          ref: refs/heads/main
           token: ${{ steps.generate-token.outputs.token }}
           repo: '${{ github.repository_owner }}/coverage-badges'
           inputs: |
