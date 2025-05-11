@@ -53,11 +53,6 @@ open class DeltaCoverageTask @Inject constructor(
 
     private val rootProjectDirProperty: File = project.rootProject.projectDir
 
-    @OutputFile
-    val summaryReportPath: RegularFileProperty = objectFactory.fileProperty().convention {
-        getOutputDir().resolve("${viewName.get()}-$SUMMARY_REPORT_FILE_NAME")
-    }
-
     @OutputDirectory
     fun getOutputDir(): File {
         val baseReportDirPath: String = deltaCoverageConfigProperty.get().reportConfiguration.baseReportDir.get()
@@ -79,11 +74,8 @@ open class DeltaCoverageTask @Inject constructor(
         )
 
         DeltaReportFacadeFactory
-            .buildFacade(gradleCoverageConfig.coverage.engine.get().asCoreEngine())
-            .generateReports(
-                summaryReportPath.get().asFile.toPath(),
-                deltaCoverageConfig,
-            )
+            .buildFacade(deltaCoverageConfig.coverageEngine)
+            .generateReports(deltaCoverageConfig)
     }
 
     private fun obtainDiffSource(
@@ -116,6 +108,5 @@ open class DeltaCoverageTask @Inject constructor(
     companion object {
         val log: Logger = LoggerFactory.getLogger(DeltaCoverageTask::class.java)
         const val BASE_COVERAGE_REPORTS_DIR = "coverage-reports"
-        const val SUMMARY_REPORT_FILE_NAME = "summary.json"
     }
 }

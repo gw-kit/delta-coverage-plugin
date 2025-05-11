@@ -63,29 +63,57 @@ jobs:
         run: ${gradle_cmd} publishAllPublicationsToGhPackagesRepository
           -PsnapshotPrefix='SNAPSHOT.${{ github.run_id }}'
 
+      - name: Check Ignore Coverage Failure
+        id: ignore-coverage-failure
+        if: ${{ cancelled() }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ignoreByLabel = ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }};
+            const ignoreByEvent = ${{ github.event_name == 'push' }};
+            const resolution = ignoreByLabel || ignoreByEvent;
+            core.setOutput('result', resolution);
+            if (resolution) {
+              core.notice(`Coverage failure is ignored by: label=${ignoreByLabel}, event=${ignoreByEvent}`);
+            }
+
       - name: 📈Run Delta Coverage check
-        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
-        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
+        if: ${{ !cancelled() }}
+        continue-on-error: ${{ steps.ignore-coverage-failure.outputs.result == 'true' }}
+        env:
+          COMPARE_WITH: ${{ github.base_ref || github.ref_name }}
         run: ${gradle_cmd} deltaCoverage
-          -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF"
+          -PdiffBase="refs/remotes/origin/${COMPARE_WITH}"
           --continue
 
       - name: Publish Coverage Summary
-        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
-        continue-on-error: true
-        uses: gw-kit/delta-coverage-action@main
+        id: publish-coverage
+        if: ${{ !cancelled() }}
+        uses: gw-kit/delta-coverage-action@v1
+        with:
+          suppress-check-failures: ${{ steps.ignore-coverage-failure.outputs.result }}
 
-      - name: 📊Add test results to PR
-        uses: EnricoMi/publish-unit-test-result-action@v2.18.0
-        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
+      - name: Generate Token
+        id: generate-token
+        if: ${{ !cancelled() }}
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.BADGES_APP_ID }}
+          private-key: ${{ secrets.BADGES_APP_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Update Coverage Badges
+        if: ${{ !cancelled() && github.event_name == 'push' }}
+        uses: ./.github/actions/update-coverage-badges
+        with:
+          badge-files: ${{ steps.publish-coverage.outputs.badges-dir }}
+          token: ${{ steps.generate-token.outputs.token }}
+
+      - name: 📊Add Test Results to PR
+        uses: EnricoMi/publish-unit-test-result-action@v2.19.0
+        if: ${{ !cancelled() }}
         continue-on-error: true
         with:
           check_name: '📊Test Results'
           files:
             '**/build/test-results/*/TEST-*.xml'
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: build/reports/coverage-reports/delta-coverage/**/report.xml

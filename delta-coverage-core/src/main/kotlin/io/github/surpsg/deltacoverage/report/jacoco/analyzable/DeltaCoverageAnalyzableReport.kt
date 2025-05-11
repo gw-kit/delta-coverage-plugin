@@ -22,7 +22,7 @@ internal class DeltaCoverageAnalyzableReport(
 
     override fun buildVisitor(): VerifiableReportVisitor {
         return VerifiableReportVisitor.create(
-            ReportBound.DELTA_REPORT,
+            reportBound,
             reportVisitors(),
             DefaultCoverageRulesVisitor.create(reportContext),
             CoverageInfoVisitor.create(),

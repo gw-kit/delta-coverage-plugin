@@ -2,6 +2,7 @@ rootProject.name = "delta-coverage-conventions"
 
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         mavenCentral()
         gradlePluginPortal()
 

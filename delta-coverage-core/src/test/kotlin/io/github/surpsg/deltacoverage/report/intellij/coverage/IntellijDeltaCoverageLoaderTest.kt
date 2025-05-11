@@ -11,9 +11,8 @@ internal class IntellijDeltaCoverageLoaderTest {
     fun `getDeltaProjectData should return empty data if binary reports list is empty`() {
         // WHEN
         val deltaProjectData: ProjectData = IntellijDeltaCoverageLoader.getDeltaProjectData(
-            emptyList(),
-            IntellijSourceInputs(emptyList(), emptyList()),
-            CodeUpdateInfo(emptyMap())
+            ProjectData(),
+            CodeUpdateInfo(emptyMap()),
         )
 
         // THEN

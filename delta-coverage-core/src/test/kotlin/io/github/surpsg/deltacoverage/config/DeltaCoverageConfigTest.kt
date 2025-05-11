@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.config
 
 import io.github.surpsg.deltacoverage.diff.DiffSource
+import io.github.surpsg.deltacoverage.report.ReportBound
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import java.io.File
+import java.nio.file.Paths
 
 class DeltaCoverageConfigTest {
 
@@ -32,7 +34,13 @@ class DeltaCoverageConfigTest {
         assertSoftly(actualConfig) {
             view shouldBeEqualComparingTo expectedViewName
             diffSource shouldBe expectedDiffSource
-            reportsConfig shouldBeEqualToComparingFields ReportsConfig {}.apply { view = expectedViewName }
+            reportsConfig shouldBeEqualToComparingFields ReportsConfig {}.apply {
+                view = expectedViewName
+                summaries = mapOf(
+                    ReportBound.DELTA_REPORT to Paths.get("delta-coverage-report-summary.json"),
+                    ReportBound.FULL_REPORT to Paths.get("full-coverage-delta-coverage-report-summary.json"),
+                )
+            }
             coverageRulesConfig shouldBeEqualToComparingFields CoverageRulesConfig {}
             binaryCoverageFiles.shouldBeEmpty()
             classFiles.shouldBeEmpty()

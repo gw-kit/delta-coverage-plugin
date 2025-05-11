@@ -38,7 +38,7 @@ internal object CoverageReportFactory {
         reportsContext: ReportContext,
     ): ReportBuilder {
         val reportsConfig = reportsContext.deltaCoverageConfig.reportsConfig
-        val reporter = Reporter(reportLoadStrategy.reportLoadStrategy)
+        val reporter = Reporter(reportLoadStrategy.reportLoadStrategy, reportsContext.deltaCoverageConfig.view)
         return when (this) {
             ReportType.HTML -> HtmlReportBuilder(
                 reportBound = reportLoadStrategy.reportBound,
