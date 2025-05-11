@@ -5,6 +5,8 @@ import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
 import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
 import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
 import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
+import io.github.surpsg.deltacoverage.gradle.test.assertion.assertSummaryReportExist
+import io.github.surpsg.deltacoverage.report.ReportBound
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.file.shouldBeADirectory
 import io.kotest.matchers.file.shouldBeAFile
@@ -84,15 +86,9 @@ class DeltaCoverageReportsTest {
         assertAllReportsCreated(baseReportDirFile.resolve("full-coverage-report/$view/"))
 
         // AND THEN
-        assertSummaryReport(baseReportDirFile)
-    }
-
-    private fun assertSummaryReport(baseReportDirFile: File) {
-        assertSoftly(baseReportDirFile) {
-            shouldExist()
-            shouldContainFile("test-summary.json")
-            shouldContainFile("aggregated-summary.json")
-        }
+        baseReportDirFile
+            .assertSummaryReportExist(ReportBound.DELTA_REPORT, view, "aggregated")
+            .assertSummaryReportExist(ReportBound.FULL_REPORT, view, "aggregated")
     }
 
     private fun assertAllReportsCreated(baseReportDir: File) {

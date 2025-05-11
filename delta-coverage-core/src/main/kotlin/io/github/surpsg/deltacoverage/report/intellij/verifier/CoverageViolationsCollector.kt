@@ -15,11 +15,11 @@ internal class CoverageViolationsCollector(
 ) : TargetProcessor.Consumer {
 
     private val foundViolations: MutableList<CoverageVerifier.Violation> = mutableListOf()
-    private val collectedCoverageInfo: MutableList<Info> = mutableListOf()
+    private val collectedCoverageInfo: MutableSet<Info> = mutableSetOf()
 
     val violations: List<CoverageVerifier.Violation> = foundViolations
 
-    val coverageInfo: List<Info> = collectedCoverageInfo
+    val coverageInfo: Set<Info> = collectedCoverageInfo
 
     override fun consume(name: String, coverage: Verifier.CollectedCoverage) {
         val counter: Verifier.CollectedCoverage.Counter = rule.coverageEntity.toVerifierCounter()

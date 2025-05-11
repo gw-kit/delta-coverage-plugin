@@ -16,7 +16,7 @@ internal class VerifiableReportVisitor private constructor(
     val verificationResults: List<CoverageSummary.VerificationResult>
         get() = coverageRulesVisitor.verificationResults
 
-    val coverageInfo: List<CoverageSummary.Info>
+    val coverageInfo: Set<CoverageSummary.Info>
         get() = coverageInfoVisitor.coverageSummary
 
     companion object {

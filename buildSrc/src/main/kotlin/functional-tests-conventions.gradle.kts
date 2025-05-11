@@ -13,7 +13,6 @@ testing.suites {
 
     val functionalTest by registering(JvmTestSuite::class) {
         useJUnitJupiter()
-        testType.set(TestSuiteType.FUNCTIONAL_TEST)
 
         sources {
             java {

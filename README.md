@@ -2,9 +2,15 @@
 
 ![GitHub Release](https://img.shields.io/github/v/release/SurpSG/delta-coverage-plugin)
 [![Build](https://github.com/gw-kit/delta-coverage-plugin/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/gw-kit/delta-coverage-plugin/actions/workflows/build.yml)
-[![codecov](https://codecov.io/gh/gw-kit/delta-coverage-plugin/graph/badge.svg?token=69BAXyEhse)](https://codecov.io/gh/gw-kit/delta-coverage-plugin)
 [![GitHub issues](https://img.shields.io/github/issues/SurpSG/delta-coverage-plugin)](https://github.com/SurpSG/delta-coverage-plugin/issues)
 [![GitHub stars](https://img.shields.io/github/stars/SurpSG/delta-coverage-plugin?style=flat-square)](https://github.com/SurpSG/delta-coverage-plugin/stargazers)
+
+`Coverage`
+
+![aggregated.svg](https://raw.githubusercontent.com/gw-kit/coverage-badges/refs/heads/main/delta-coverage-plugin/badges/aggregated.svg)
+![functionalTest.svg](https://raw.githubusercontent.com/gw-kit/coverage-badges/refs/heads/main/delta-coverage-plugin/badges/functionalTest.svg)
+![test.svg](https://raw.githubusercontent.com/gw-kit/coverage-badges/refs/heads/main/delta-coverage-plugin/badges/test.svg)
+
 
 `Delta Coverage` is coverage analyzing tool that computes code coverage of new/modified code based on a
 provided [diff](https://en.wikipedia.org/wiki/Diff#Unified_format).
@@ -17,6 +23,7 @@ Why should I use it?
 * helps to increase total code coverage(especially useful for old legacy projects)
 * reduces time of code review(you don't need to waste your time to track what code is covered)
 
+Table of Contents
 <!-- TOC -->
 * [Delta Coverage gradle plugin](#delta-coverage-gradle-plugin)
   * [Installation](#installation)

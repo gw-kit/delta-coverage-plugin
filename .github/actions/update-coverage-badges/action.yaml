@@ -1,0 +1,41 @@
+name: Update Coverage Badges
+description: "Update coverage badges in the repository."
+
+inputs:
+  badges-repository:
+    description: 'Repository with badges.'
+    required: true
+    default: '${{ github.repository_owner }}/coverage-badges'
+
+  badge-files:
+    description: 'Wildcard pattern that describes badges to upload'
+    required: true
+
+  token:
+    description: 'GitHub token to push the changes.'
+    required: true
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Upload Badges
+      id: upload-file
+      uses: actions/upload-artifact@v4
+      with:
+        name: badges
+        path: ${{ inputs.badge-files }}
+
+    - name: Call Workflow
+      uses: benc-uk/workflow-dispatch@v1
+      with:
+        workflow: update-badges.yaml
+        ref: refs/heads/main
+        token: ${{ inputs.token }}
+        repo: '${{ inputs.badges-repository }}'
+        inputs: |
+          {
+            "target-repo": "${{ github.event.repository.name }}",
+            "badges-artifact-id": "${{ steps.upload-file.outputs.artifact-id }}",
+            "artifacts-source-run-id": "${{ github.run_id }}"
+          }

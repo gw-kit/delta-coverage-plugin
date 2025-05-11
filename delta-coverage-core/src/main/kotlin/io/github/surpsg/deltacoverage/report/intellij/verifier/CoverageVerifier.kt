@@ -21,7 +21,7 @@ internal class CoverageVerifier(
 
     data class VerifiedCoverage(
         val violations: List<Violation>,
-        val info: List<CoverageSummary.Info>,
+        val info: Set<CoverageSummary.Info>,
     )
 
     data class Violation(

@@ -19,19 +19,18 @@ import org.jacoco.report.MultiSourceFileLocator
 
 internal class JacocoDeltaReportGeneratorFacade : DeltaReportGeneratorFacade() {
 
-    override fun generate(reportContext: ReportContext): CoverageSummary {
+    override fun generate(reportContext: ReportContext): Map<ReportBound, CoverageSummary> {
         val analyzableReports: Set<AnalyzableReport> = analyzableReportFactory(reportContext)
 
         val execFileLoader = CoverageLoader.loadExecFiles(reportContext.binaryCoverageFiles)
 
-        val summaries: Map<ReportBound, CoverageSummary> = analyzableReports
+        return analyzableReports
             .asSequence()
             .map { it.reportBound to it }
             .map { (reportBound, analyzableReport) ->
                 reportBound to create(reportContext, execFileLoader, analyzableReport)
             }
             .toMap()
-        return summaries.getValue(ReportBound.DELTA_REPORT)
     }
 
     private fun create(

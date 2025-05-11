@@ -1,5 +1,18 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## 3.4.0
+
+### New features
+- Delta-Coverage now generates summary reports for full-coverage as well.
+  This allows to generate coverage badges.
+  For more details see [delta-coverage-action](https://github.com/gw-kit/delta-coverage-action/blob/main/README.md#coverage-badges).
+
+### Dependency updates
+- Updated JaCoCo dependency to [0.8.13](https://github.com/jacoco/jacoco/releases/tag/v0.8.13).
+- Updated [intellij-coverage](https://github.com/JetBrains/intellij-coverage) dependency to [1.0.766].
+- Updated Gradle to [8.14](https://github.com/gradle/gradle/releases/tag/v8.14.0). 
+
+
 ## 3.3.0
 
 ### Changed

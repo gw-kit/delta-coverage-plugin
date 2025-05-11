@@ -2,7 +2,12 @@ package io.github.surpsg.deltacoverage.config
 
 import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.diff.DiffSource
+import io.github.surpsg.deltacoverage.report.CoverageSummary
+import io.github.surpsg.deltacoverage.report.ReportBound
 import java.io.File
+import java.nio.file.FileSystem
+import java.nio.file.FileSystems
+import java.nio.file.Path
 
 @DslMarker
 internal annotation class DeltaCoverageConfigMarker
@@ -114,6 +119,7 @@ class ReportsConfig private constructor(
     val fullCoverageReport: Boolean,
 ) {
     internal lateinit var view: String
+    lateinit var summaries: Map<ReportBound, Path>
 
     override fun toString(): String = "ReportsConfig(html=$html, xml=$xml, console=$console," +
             " baseReportDir='$baseReportDir', fullCoverageReport=$fullCoverageReport)"
@@ -174,7 +180,7 @@ class DeltaCoverageConfig private constructor(
     val coverageRulesConfig: CoverageRulesConfig,
     val binaryCoverageFiles: Set<File>,
     val classFiles: Set<File>,
-    val sourceFiles: Set<File>
+    val sourceFiles: Set<File>,
 ) {
 
     override fun toString(): String {
@@ -191,11 +197,12 @@ class DeltaCoverageConfig private constructor(
 
     @DeltaCoverageConfigMarker
     class Builder internal constructor() {
+        var fileSystem: FileSystem = FileSystems.getDefault()
         var coverageEngine: CoverageEngine = CoverageEngine.JACOCO
         var viewName: String = "delta-coverage-report"
         var diffSource: DiffSource? = null
         var reportsConfig: ReportsConfig = ReportsConfig {}
-        var coverageRulesConfig: CoverageRulesConfig = CoverageRulesConfig {}
+        var coverageRulesConfig: CoverageRulesConfig = CoverageRulesConfig()
         val binaryCoverageFiles: MutableSet<File> = mutableSetOf()
         val classFiles: MutableSet<File> = mutableSetOf()
         val sourceFiles: MutableSet<File> = mutableSetOf()
@@ -208,12 +215,24 @@ class DeltaCoverageConfig private constructor(
             requireNotNull(diffSource) {
                 "'${::diffSource.name}' is not configured"
             },
-            reportsConfig.apply { view = viewName },
+            finalizedReportsConfig(),
             coverageRulesConfig,
             binaryCoverageFiles.toSet(),
             classFiles.toSet(),
             sourceFiles.toSet()
         )
+
+        private fun finalizedReportsConfig(): ReportsConfig = reportsConfig.apply {
+            view = viewName
+
+            val deltaSummaryFileName = "${viewName}-${SUMMARY_REPORT_FILE_NAME}"
+            val fullSummaryFileName = "full-coverage-${deltaSummaryFileName}"
+            val baseDir = fileSystem.getPath(baseReportDir)
+            summaries = mapOf<ReportBound, Path>(
+                ReportBound.DELTA_REPORT to baseDir.resolve(deltaSummaryFileName),
+                ReportBound.FULL_REPORT to baseDir.resolve(fullSummaryFileName),
+            )
+        }
     }
 
     private fun <T> Iterable<T>.stringifyLongCollection(): String {
@@ -222,6 +241,8 @@ class DeltaCoverageConfig private constructor(
 
     companion object {
         private const val MAX_ITEMS_TO_STRINGIFY = 3
+
+        const val SUMMARY_REPORT_FILE_NAME = "summary.json"
 
         operator fun invoke(customize: Builder.() -> Unit): DeltaCoverageConfig {
             return Builder().apply(customize).build()
