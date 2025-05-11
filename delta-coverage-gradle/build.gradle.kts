@@ -30,9 +30,13 @@ dependencies {
     functionalTestImplementation(testFixtures(project))
     functionalTestImplementation(deps.jgit)
 
-    testFixturesImplementation(project(":delta-coverage-core"))
+    testFixturesApi(project(":delta-coverage-core"))
     testFixturesImplementation(deps.kotestAssertions)
     testFixturesImplementation(deps.junitApi)
     testFixturesImplementation(deps.jgit)
     testFixturesImplementation(deps.mockk)
+}
+
+configurations.all {
+    resolutionStrategy.force(deps.intellijCoverageAgent)
 }

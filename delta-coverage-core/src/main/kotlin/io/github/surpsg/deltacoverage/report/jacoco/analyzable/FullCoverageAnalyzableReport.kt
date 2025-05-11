@@ -19,10 +19,10 @@ internal open class FullCoverageAnalyzableReport(
 
     override fun buildVisitor(): VerifiableReportVisitor {
         return VerifiableReportVisitor.create(
-            ReportBound.FULL_REPORT,
+            reportBound,
             reportVisitors(),
             NoOpCoverageRulesVisitor,
-            CoverageInfoVisitor.NO_OP_VISITOR,
+            CoverageInfoVisitor.create(),
         )
     }
 

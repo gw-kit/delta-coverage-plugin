@@ -21,3 +21,7 @@ dependencies {
 
     testImplementation(deps.jimFs)
 }
+
+configurations.all {
+    resolutionStrategy.force(deps.intellijCoverageAgent)
+}

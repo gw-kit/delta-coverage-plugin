@@ -106,7 +106,7 @@ class CoverageReportFactoryTest {
                 HtmlReportBuilder(
                     REPORT_BOUND,
                     context.deltaCoverageConfig.reportsConfig,
-                    Reporter(reportLoadStrategy.reportLoadStrategy)
+                    Reporter(reportLoadStrategy.reportLoadStrategy, anyViewName)
                 ),
                 EqualByFields.fromFields(
                     HtmlReportBuilder::reportsConfig,
@@ -118,7 +118,7 @@ class CoverageReportFactoryTest {
                 XmlReportBuilder(
                     REPORT_BOUND,
                     context.deltaCoverageConfig.reportsConfig,
-                    Reporter(reportLoadStrategy.reportLoadStrategy)
+                    Reporter(reportLoadStrategy.reportLoadStrategy, anyViewName)
                 ),
                 EqualByFields.fromFields(XmlReportBuilder::reportBound)
             )
@@ -128,7 +128,7 @@ class CoverageReportFactoryTest {
                     REPORT_VIEW,
                     context.deltaCoverageConfig.coverageRulesConfig,
                     REPORT_BOUND,
-                    Reporter(reportLoadStrategy.reportLoadStrategy),
+                    Reporter(reportLoadStrategy.reportLoadStrategy, anyViewName),
                 ),
                 EqualByFields.fromFields(ConsoleReportBuilder::reportBound)
             )
@@ -138,7 +138,7 @@ class CoverageReportFactoryTest {
                     reportBound = REPORT_BOUND,
                     reportView = anyViewName,
                     reportContext = context,
-                    reporter = Reporter(reportLoadStrategy.reportLoadStrategy),
+                    reporter = Reporter(reportLoadStrategy.reportLoadStrategy, anyViewName),
                 ),
                 EqualByFields.fromFields(MarkdownReportBuilder::reportBound)
             )
