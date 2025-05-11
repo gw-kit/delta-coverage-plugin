@@ -27,6 +27,7 @@ jobs:
         with:
           app-id: ${{ secrets.BADGES_APP_ID }}
           private-key: ${{ secrets.BADGES_APP_KEY }}
+          owner: ${{ github.repository_owner }}
 
       - name: Call Workflow
         uses: benc-uk/workflow-dispatch@v1
