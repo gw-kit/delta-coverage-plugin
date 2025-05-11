@@ -5,7 +5,11 @@
 [![GitHub issues](https://img.shields.io/github/issues/SurpSG/delta-coverage-plugin)](https://github.com/SurpSG/delta-coverage-plugin/issues)
 [![GitHub stars](https://img.shields.io/github/stars/SurpSG/delta-coverage-plugin?style=flat-square)](https://github.com/SurpSG/delta-coverage-plugin/stargazers)
 
-![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/SurpSG/43f6a35717133f3efd245b784826e563/raw/dc-aggregated-coverage.json)
+`Coverage`
+
+![aggregated.svg](https://raw.githubusercontent.com/gw-kit/coverage-badges/refs/heads/main/delta-coverage-plugin/badges/aggregated.svg)
+![functionalTest.svg](https://raw.githubusercontent.com/gw-kit/coverage-badges/refs/heads/main/delta-coverage-plugin/badges/functionalTest.svg)
+![test.svg](https://raw.githubusercontent.com/gw-kit/coverage-badges/refs/heads/main/delta-coverage-plugin/badges/test.svg)
 
 
 `Delta Coverage` is coverage analyzing tool that computes code coverage of new/modified code based on a
@@ -19,6 +23,7 @@ Why should I use it?
 * helps to increase total code coverage(especially useful for old legacy projects)
 * reduces time of code review(you don't need to waste your time to track what code is covered)
 
+Table of Contents
 <!-- TOC -->
 * [Delta Coverage gradle plugin](#delta-coverage-gradle-plugin)
   * [Installation](#installation)
