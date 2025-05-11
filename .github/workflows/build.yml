@@ -95,6 +95,7 @@ jobs:
 
       - name: Generate Token
         id: generate-token
+        if: ${{ !cancelled() }}
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.BADGES_APP_ID }}
