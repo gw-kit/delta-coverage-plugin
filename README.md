@@ -14,7 +14,7 @@
 
 `Delta Coverage` is coverage analyzing tool that computes code coverage of new/modified code based on a
 provided [diff](https://en.wikipedia.org/wiki/Diff#Unified_format).
-The diff content can be provided via path to patch file, URL or using embedded git(
+The diff content can be provided via path to patch1 file, URL or using embedded git(
 see [parameters description](#Parameters-description)).
 
 Why should I use it?
@@ -23,6 +23,7 @@ Why should I use it?
 * helps to increase total code coverage(especially useful for old legacy projects)
 * reduces time of code review(you don't need to waste your time to track what code is covered)
 
+Table of Contents
 <!-- TOC -->
 * [Delta Coverage gradle plugin](#delta-coverage-gradle-plugin)
   * [Installation](#installation)
