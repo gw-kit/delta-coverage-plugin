@@ -103,8 +103,7 @@ jobs:
           owner: ${{ github.repository_owner }}
 
       - name: Update Coverage Badges
-        if: ${{ !cancelled() }}
-#        if: ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        if: ${{ !cancelled() && github.event_name == 'push' }}
         uses: ./.github/actions/update-coverage-badges
         with:
           badge-files: ${{ steps.publish-coverage.outputs.badges-dir }}
