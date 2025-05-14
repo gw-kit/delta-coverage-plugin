@@ -61,6 +61,9 @@ internal object DeltaCoverageTaskConfigurer {
         classesFiles.set(
             viewSourcesProvider.map { viewSource -> viewSource.classes }
         )
+        classesRoots.set(
+            viewSourcesProvider.map { viewSource -> viewSource.classesRoots }
+        )
         coverageBinaryFiles.set(
             viewSourcesProvider.map { viewSource -> viewSource.coverageBinaries }
         )
@@ -87,6 +90,7 @@ internal object DeltaCoverageTaskConfigurer {
         viewName = viewName,
         sources = resolveSource(viewName, contextBuilder, SourceType.SOURCES),
         classes = resolveSource(viewName, contextBuilder, SourceType.CLASSES),
+        classesRoots = resolveSource(viewName, contextBuilder, SourceType.CLASSES_ROOTS),
         coverageBinaries = resolveSource(viewName, contextBuilder, SourceType.COVERAGE_BINARIES)
     )
 
@@ -99,6 +103,7 @@ internal object DeltaCoverageTaskConfigurer {
                 viewName = AGGREGATED_REPORT_VIEW_NAME,
                 sources = files(),
                 classes = files(),
+                classesRoots = files(),
                 coverageBinaries = files(),
             )
         }
@@ -125,6 +130,7 @@ internal object DeltaCoverageTaskConfigurer {
         val viewName: String,
         val sources: FileCollection,
         val classes: FileCollection,
+        val classesRoots: FileCollection,
         val coverageBinaries: FileCollection,
     ) {
 
@@ -132,6 +138,7 @@ internal object DeltaCoverageTaskConfigurer {
             viewName = viewName,
             sources = sources + other.sources,
             classes = classes + other.classes,
+            classesRoots = classesRoots + other.classesRoots,
             coverageBinaries = coverageBinaries + other.coverageBinaries,
         )
     }

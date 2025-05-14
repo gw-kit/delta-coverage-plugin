@@ -17,6 +17,7 @@ internal abstract class CacheableLookupSources(
 
     final override fun lookup(sourceType: SourceType): FileCollection {
         return when (sourceType) {
+            SourceType.CLASSES_ROOTS -> cachedSourceSets.allClassesRoots
             SourceType.CLASSES -> cachedSourceSets.allClasses
             SourceType.SOURCES -> cachedSourceSets.allSources
             SourceType.COVERAGE_BINARIES -> cachedCoverageBinaries

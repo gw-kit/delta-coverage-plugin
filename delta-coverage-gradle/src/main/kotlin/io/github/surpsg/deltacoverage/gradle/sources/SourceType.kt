@@ -4,6 +4,7 @@ internal enum class SourceType(
     val sourceConfigurationPath: String,
     private val genericResourceName: String
 ) {
+    CLASSES_ROOTS("<internal>.sourceSets", "source sets"),
     CLASSES("deltaCoverageReport.classesDirs", ".class files"),
     SOURCES("deltaCoverageReport.sources", "sources"),
     COVERAGE_BINARIES(
