@@ -43,6 +43,24 @@ internal class SourcesResolverTest {
     }
 
     @Test
+    fun `should return classes dirs`() {
+        // GIVEN
+        val expectedFile = "classes/java/main"
+        val context: SourcesResolver.Context = testJavaProject().sourceContext(SourceType.CLASSES_ROOTS) {
+            coverage.engine.set(CoverageEngine.JACOCO)
+        }
+
+        // WHEN
+        val resolvedFiles: FileCollection = SourcesResolver.resolve(context)
+
+        // THEN
+        assertSoftly(resolvedFiles) {
+            shouldHaveSize(1)
+            first().path shouldEndWith expectedFile
+        }
+    }
+
+    @Test
     fun `should return delta coverage source code files`() {
         // GIVEN
         val context: SourcesResolver.Context = testJavaProject().sourceContext(SourceType.SOURCES) {

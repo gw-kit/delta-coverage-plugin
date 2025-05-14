@@ -47,6 +47,9 @@ class CoverJetPluginVariantViolationsTest {
                         violationRules failIfCoverageLessThan 1.0
                     }
                 }
+                excludeClasses.value(
+                    listOf("*/noop/exclude/filter/")
+                )
             }
         """.trimIndent()
         )

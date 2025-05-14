@@ -41,6 +41,7 @@ internal class SourceSetsLookup {
         operator fun plus(sourceSets: AutoDetectedSources): AutoDetectedSources = apply {
             allSources.from(sourceSets.allSources)
             allClasses.from(sourceSets.allClasses)
+            allClassesRoots.from(sourceSets.allClassesRoots)
         }
 
         companion object {

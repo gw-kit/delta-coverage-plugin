@@ -81,6 +81,7 @@ class DeltaCoverageConfigTest {
         val expectedBinaries = listOf(File("exec"))
         val expectedSources = listOf(File("sources"))
         val expectedClasses = listOf(File("classes"))
+        val expectedClassesRoots = listOf(File("classes-roots"))
 
         // WHEN
         val actualConfig = DeltaCoverageConfig {
@@ -90,6 +91,7 @@ class DeltaCoverageConfigTest {
             coverageRulesConfig = expectedCoverageRulesConfig
             binaryCoverageFiles += expectedBinaries
             classFiles += expectedClasses
+            classRoots += expectedClassesRoots
             sourceFiles += expectedSources
         }
 
@@ -101,6 +103,7 @@ class DeltaCoverageConfigTest {
             coverageRulesConfig shouldBe expectedCoverageRulesConfig
             binaryCoverageFiles shouldContainExactly expectedBinaries
             classFiles shouldContainExactly expectedClasses
+            classRoots shouldContainExactly expectedClassesRoots
             sourceFiles shouldContainExactly expectedSources
         }
     }

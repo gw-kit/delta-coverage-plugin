@@ -12,6 +12,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
@@ -41,10 +42,11 @@ open class DeltaCoverageTask @Inject constructor(
     @get:InputFiles
     val sourcesFiles: Property<FileCollection> = objectFactory.property(FileCollection::class.java)
 
-    val classesFiles: Property<FileCollection> = objectFactory.property(FileCollection::class.java)
-
     @get:InputFiles
     val classesRoots: Property<FileCollection> = objectFactory.property(FileCollection::class.java)
+
+    @get:Internal
+    val classesFiles: Property<FileCollection> = objectFactory.property(FileCollection::class.java)
 
     @Nested
     val deltaCoverageConfigProperty: Property<GradleDeltaCoverageConfig> = objectFactory.property(
