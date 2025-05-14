@@ -25,6 +25,7 @@ internal class SourceSetsLookup {
             newSourceSets.apply {
                 allSources.from(mainSourceSet.allJava.srcDirs)
                 allClasses.from(mainSourceSet.output)
+                allClassesRoots.from(mainSourceSet.output.classesDirs)
             }
         } else {
             newSourceSets
@@ -33,17 +34,20 @@ internal class SourceSetsLookup {
 
     internal data class AutoDetectedSources(
         val allClasses: ConfigurableFileCollection,
+        val allClassesRoots: ConfigurableFileCollection,
         val allSources: ConfigurableFileCollection,
     ) {
 
         operator fun plus(sourceSets: AutoDetectedSources): AutoDetectedSources = apply {
             allSources.from(sourceSets.allSources)
             allClasses.from(sourceSets.allClasses)
+            allClassesRoots.from(sourceSets.allClassesRoots)
         }
 
         companion object {
 
             fun ObjectFactory.newAutoDetectedSourceSets() = AutoDetectedSources(
+                fileCollection(),
                 fileCollection(),
                 fileCollection(),
             )

@@ -72,6 +72,7 @@ internal object SourcesResolver {
         return when (context.sourceType) {
             SourceType.SOURCES -> context.config.sources
             SourceType.CLASSES -> context.config.classesDirs
+            SourceType.CLASSES_ROOTS -> context.sourcesAutoLookup.lookup(SourceType.CLASSES_ROOTS)
             SourceType.COVERAGE_BINARIES -> context.config.reportViews.getAt(context.viewName).coverageBinaryFiles
         }
     }

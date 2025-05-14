@@ -41,6 +41,7 @@ internal object ConfigMapper {
         deltaCoverageConfig: GradleDeltaCoverageConfig,
         sourcesFiles: Set<File>,
         classesFiles: Set<File>,
+        classesRoots: Set<File>,
         coverageBinaryFiles: Set<File>,
     ) = DeltaCoverageConfig {
         coverageEngine = deltaCoverageConfig.coverage.engine.get().asCoreEngine()
@@ -50,6 +51,7 @@ internal object ConfigMapper {
         binaryCoverageFiles += coverageBinaryFiles
         sourceFiles += sourcesFiles
         classFiles += classesFiles
+        classRoots += classesRoots
 
         reportsConfig = ReportsConfig {
             baseReportDir = reportLocation.absolutePath

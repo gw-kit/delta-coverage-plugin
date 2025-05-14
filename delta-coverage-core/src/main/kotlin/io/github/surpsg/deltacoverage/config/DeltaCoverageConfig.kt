@@ -180,6 +180,7 @@ class DeltaCoverageConfig private constructor(
     val coverageRulesConfig: CoverageRulesConfig,
     val binaryCoverageFiles: Set<File>,
     val classFiles: Set<File>,
+    val classRoots: Set<File>,
     val sourceFiles: Set<File>,
 ) {
 
@@ -205,6 +206,7 @@ class DeltaCoverageConfig private constructor(
         var coverageRulesConfig: CoverageRulesConfig = CoverageRulesConfig()
         val binaryCoverageFiles: MutableSet<File> = mutableSetOf()
         val classFiles: MutableSet<File> = mutableSetOf()
+        val classRoots: MutableSet<File> = mutableSetOf()
         val sourceFiles: MutableSet<File> = mutableSetOf()
 
         fun build(): DeltaCoverageConfig = DeltaCoverageConfig(
@@ -219,6 +221,7 @@ class DeltaCoverageConfig private constructor(
             coverageRulesConfig,
             binaryCoverageFiles.toSet(),
             classFiles.toSet(),
+            classRoots.toSet(),
             sourceFiles.toSet()
         )
 

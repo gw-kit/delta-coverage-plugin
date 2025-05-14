@@ -12,8 +12,8 @@ internal object ReportLoadStrategyFactory {
     fun buildReportLoadStrategies(reportContext: ReportContext): Sequence<NamedReportLoadStrategy> {
         val binaryReports: List<BinaryReport> = buildBinaryReports(reportContext)
         val intellijSourceInputs = IntellijSourceInputs(
-            classesFiles = reportContext.deltaCoverageConfig.classFiles.toList(),
-            sourcesFiles = reportContext.deltaCoverageConfig.sourceFiles.toList()
+            classesFiles = reportContext.deltaCoverageConfig.classRoots.toList(),
+            sourcesFiles = reportContext.deltaCoverageConfig.sourceFiles.toList(),
         )
 
         val buildRawReportLoadStrategy: ReportLoadStrategy =
