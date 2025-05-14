@@ -12,6 +12,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
@@ -42,6 +43,9 @@ open class DeltaCoverageTask @Inject constructor(
     val sourcesFiles: Property<FileCollection> = objectFactory.property(FileCollection::class.java)
 
     @get:InputFiles
+    val classesRoots: Property<FileCollection> = objectFactory.property(FileCollection::class.java)
+
+    @get:Internal
     val classesFiles: Property<FileCollection> = objectFactory.property(FileCollection::class.java)
 
     @Nested
@@ -70,6 +74,7 @@ open class DeltaCoverageTask @Inject constructor(
         val diffSource: DiffSource = obtainDiffSource(outputDir, gradleCoverageConfig)
         val deltaCoverageConfig: DeltaCoverageConfig = buildDeltaCoverageConfig(
             diffSource,
+            classesRoots.get(),
             gradleCoverageConfig,
         )
 
@@ -91,6 +96,7 @@ open class DeltaCoverageTask @Inject constructor(
 
     private fun buildDeltaCoverageConfig(
         diffSource: DiffSource,
+        classesRoots: FileCollection,
         gradleCoverageConfig: GradleDeltaCoverageConfig,
     ): DeltaCoverageConfig {
         val view: String = viewName.get()
@@ -101,6 +107,7 @@ open class DeltaCoverageTask @Inject constructor(
             deltaCoverageConfig = gradleCoverageConfig,
             sourcesFiles = sourcesFiles.get().files,
             classesFiles = classesFiles.get().files,
+            classesRoots = classesRoots.files,
             coverageBinaryFiles = coverageBinaryFiles.get().files,
         )
     }

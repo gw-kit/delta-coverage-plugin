@@ -4,6 +4,7 @@ import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.string.shouldEndWith
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
@@ -22,6 +23,7 @@ internal class SourceSetsLookupTest {
         assertSoftly(actualSources) {
             allSources shouldHaveSize 1
             allClasses shouldHaveSize 2
+            allClassesRoots.files.shouldHaveSize(1).first().toString().shouldEndWith("classes/java/main")
         }
     }
 
