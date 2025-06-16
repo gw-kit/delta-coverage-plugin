@@ -11,6 +11,7 @@ class ReportContext(
     internal val binaryCoverageFiles: Set<File> = deltaCoverageConfig.binaryCoverageFiles.filter(File::exists).toSet()
     internal val classFiles: Set<File> = deltaCoverageConfig.classFiles.filter(File::exists).toSet()
     internal val srcFiles: Set<File> = deltaCoverageConfig.sourceFiles.filter(File::exists).toSet()
+    internal val excludeClasses: Set<String> = deltaCoverageConfig.excludeClasses
 
     internal val codeUpdateInfo: CodeUpdateInfo by lazy {
         val changesMap = ModifiedLinesDiffParser().collectModifiedLines(
