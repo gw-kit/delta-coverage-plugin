@@ -52,6 +52,7 @@ internal object ConfigMapper {
         sourceFiles += sourcesFiles
         classFiles += classesFiles
         classRoots += classesRoots
+        excludeClasses += deltaCoverageConfig.excludeClasses.get().map { ant -> ant.antToRegex() }
 
         reportsConfig = ReportsConfig {
             baseReportDir = reportLocation.absolutePath
