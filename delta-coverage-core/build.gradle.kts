@@ -130,7 +130,7 @@ abstract class CheckSum @Inject constructor(
     }
 }
 
-if (rootProject.hasProperty("ci")) {
+if (rootProject.hasProperty("ci") && false) {
     signing {
         // ~/.gradle/gradle.properties
         val keyId = rootProject.findProperty("signing.keyId")?.toString()
