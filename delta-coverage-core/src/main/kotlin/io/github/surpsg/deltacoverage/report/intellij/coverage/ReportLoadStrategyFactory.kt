@@ -4,9 +4,8 @@ import com.intellij.rt.coverage.data.ProjectData
 import com.intellij.rt.coverage.report.ReportLoadStrategy
 import com.intellij.rt.coverage.report.api.Filters
 import com.intellij.rt.coverage.report.data.BinaryReport
-import com.intellij.rt.coverage.util.ClassNameUtil
-import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportContext
+import io.github.surpsg.deltacoverage.report.ReportBound
 
 internal object ReportLoadStrategyFactory {
 
@@ -14,7 +13,6 @@ internal object ReportLoadStrategyFactory {
         val binaryReports: List<BinaryReport> = buildBinaryReports(reportContext)
         val intellijSourceInputs = IntellijSourceInputs(
             classesFiles = reportContext.deltaCoverageConfig.classRoots.toList(),
-            excludeClasses = reportContext.deltaCoverageConfig.excludeClasses,
             sourcesFiles = reportContext.deltaCoverageConfig.sourceFiles.toList(),
         )
 
@@ -67,15 +65,6 @@ internal object ReportLoadStrategyFactory {
         binaryReports,
         intellijSourceInputs.classesFiles,
         intellijSourceInputs.sourcesFiles,
-        Filters(
-            emptyList(),
-            intellijSourceInputs.excludeClasses.map {
-                ClassNameUtil.convertToFQName(it).toPattern()
-            },
-            emptyList(),
-            emptyList(),
-            emptyList(),
-            emptyList(),
-        )
+        Filters.EMPTY
     )
 }
