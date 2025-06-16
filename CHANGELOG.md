@@ -1,5 +1,11 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## 3.4.1
+
+### Fixed
+- Blank coverage when coverage engin is Intellij and `excludeClasses` property is configured.
+
+
 ## 3.4.0
 
 ### New features
