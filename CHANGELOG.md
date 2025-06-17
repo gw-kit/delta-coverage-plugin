@@ -1,5 +1,11 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## 3.4.2
+
+### Fixed
+- `excludeClasses` should be applied to full coverage report as well when coverage engine is Intellij.
+
+
 ## 3.4.1
 
 ### Fixed
