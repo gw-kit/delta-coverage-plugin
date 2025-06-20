@@ -86,7 +86,7 @@ jobs:
           COMPARE_WITH: ${{ github.base_ref || github.ref_name }}
         run: ${{ env.gradle_cmd }} deltaCoverage
           -PdiffBase="refs/remotes/origin/${COMPARE_WITH}"
-          --continue --no-configuration-cache
+          --continue
 
       - name: Publish Coverage Summary
         id: publish-coverage
