@@ -25,7 +25,9 @@ jobs:
     env:
       GH_USER: ${{ github.actor }}
       GH_TOKEN: ${{ github.token }}
-      gradle_cmd: "./gradlew --parallel --build-cache --console=plain -Pci "
+      gradle_cmd: ./gradlew --parallel -Pci
+        --build-cache --configuration-cache
+        --console=plain
 
     steps:
       - uses: actions/checkout@v4
@@ -44,7 +46,7 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
 
       - name: ⚙️Build & Test
-        run: ${gradle_cmd} build detektMain detektTest --continue
+        run: ${{ env.gradle_cmd }} build detektMain detektTest --continue
 
       - name: Check publish
         id: publish-snapshot
@@ -60,7 +62,7 @@ jobs:
 
       - name: 🏺Publish Snapshot Artifacts
         if: ${{ steps.publish-snapshot.outputs.should-publish == 'true' }}
-        run: ${gradle_cmd} publishAllPublicationsToGhPackagesRepository
+        run: ${{ env.gradle_cmd }} publishAllPublicationsToGhPackagesRepository
           -PsnapshotPrefix='SNAPSHOT.${{ github.run_id }}'
 
       - name: Check Ignore Coverage Failure
@@ -82,7 +84,7 @@ jobs:
         continue-on-error: ${{ steps.ignore-coverage-failure.outputs.result == 'true' }}
         env:
           COMPARE_WITH: ${{ github.base_ref || github.ref_name }}
-        run: ${gradle_cmd} deltaCoverage
+        run: ${{ env.gradle_cmd }} deltaCoverage
           -PdiffBase="refs/remotes/origin/${COMPARE_WITH}"
           --continue
 

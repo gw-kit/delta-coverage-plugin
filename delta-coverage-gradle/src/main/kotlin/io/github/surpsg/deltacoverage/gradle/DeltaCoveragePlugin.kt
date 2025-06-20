@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 open class DeltaCoveragePlugin : Plugin<Project> {
 
+    @Transient
     private val registeredViews: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     override fun apply(project: Project) = with(project) {
