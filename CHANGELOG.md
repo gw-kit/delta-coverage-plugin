@@ -1,5 +1,13 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## 3.4.3
+
+### Fixed
+- Fixed configuration cache issues.
+
+### Dependency updates
+- CoverJet plugin dependency updated to [0.1.2](https://github.com/gw-kit/cover-jet-plugin/releases/tag/0.1.2)
+
 ## 3.4.2
 
 ### Fixed
