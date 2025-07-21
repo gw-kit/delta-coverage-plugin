@@ -6,7 +6,7 @@ import org.gradle.api.plugins.jvm.JvmTestSuite
 
 plugins {
     java
-    kotlin("jvm") version "2.1.20"
+    kotlin("jvm") version "2.2.0"
     id("io.github.gw-kit.delta-coverage")
     `java-test-fixtures`
 }
