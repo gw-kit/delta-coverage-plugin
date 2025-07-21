@@ -7,7 +7,7 @@ csvVer = "5.11"
 jacksonVer = "2.19.2"
 
 junitVer = "5.11.4"
-mockkVer = "1.14.2"
+mockkVer = "1.14.5"
 kotestVer = "5.9.1"
 jimfsVer = "1.3.1"
 
