@@ -3,7 +3,7 @@ intellijCoverageVer = "1.0.768"
 jacocoVer = "0.8.13"
 httpClientVer = "5.4.4"
 jgitVer = "7.3.0.202506031305-r"
-csvVer = "5.11"
+csvVer = "5.11.2"
 jacksonVer = "2.19.2"
 
 junitVer = "5.11.4"
