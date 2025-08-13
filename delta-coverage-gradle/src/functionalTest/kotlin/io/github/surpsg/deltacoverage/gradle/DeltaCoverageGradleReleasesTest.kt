@@ -31,8 +31,8 @@ class DeltaCoverageGradleReleasesTest {
     @ValueSource(
         strings = [
             "7.6.4",
-            "8.10.2",
-            "8.14", // the latest release or release candidate
+            "8.14",
+            "9.1.0-rc-1", // the latest release or release candidate
         ]
     )
     fun `deltaCoverage task should be completed successfully on Gradle release`(
