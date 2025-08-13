@@ -320,7 +320,7 @@ open class ViolationRule @Inject constructor(
 
     @Input
     @Optional
-    val entityCountThreshold: Property<Int?> = objectFactory.property(Int::class.java)
+    val entityCountThreshold: Property<Int> = objectFactory.property(Int::class.java)
 
     override fun toString(): String {
         return "ViolationRule(minCoverageRatio=${minCoverageRatio.get()}, " +
