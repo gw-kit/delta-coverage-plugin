@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+
 plugins {
     kotlin("jvm")
     id("gh-publish-conventions")
@@ -12,6 +14,9 @@ val targetJvmVersion = JavaLanguageVersion.of(17)
 kotlin {
     jvmToolchain {
         languageVersion.set(targetJvmVersion)
+    }
+    compilerOptions {
+        apiVersion = KotlinVersion.KOTLIN_1_9
     }
 }
 
