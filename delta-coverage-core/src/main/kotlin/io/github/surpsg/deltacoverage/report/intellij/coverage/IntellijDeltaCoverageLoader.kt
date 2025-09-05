@@ -42,6 +42,7 @@ internal object IntellijDeltaCoverageLoader {
     ) {
         val copyToProjectData: ProjectData = this
         sourceProjectData.classesCollection.asSequence()
+            .filter { sourceClassData -> sourceClassData.source != null } // well some classes(lambda) without source
             .filter { sourceClassData ->
                 val classFile: ClassFile = classFileFrom(sourceClassData)
                 codeUpdateInfo.isInfoExists(classFile)
@@ -57,48 +58,49 @@ internal object IntellijDeltaCoverageLoader {
             }
     }
 
-    private data class ClassDataCopingContext(
-        val className: String,
-        val sourceProjectData: ProjectData,
-        val copyToProjectData: ProjectData,
-    ) {
-
-        val sourceClassData: ClassData
-            get() = sourceProjectData.getOrCreateClassData(className)
-
-        private val allSourceClassInstructions: Map<String, ClassInstructions>
-            get() = sourceProjectData.instructions
-
-        private val copyToClassData: ClassData
-            get() = copyToProjectData.getOrCreateClassData(className)
-
-        private val copyToClassInstructions: ClassInstructions
-            get() = copyToProjectData.instructions.computeIfAbsent(className) {
-                ClassInstructions()
-            }
-
-        fun copyClassData(): ClassData {
-            val sourceClass: ClassData = sourceClassData
-            copyToClassData.apply {
-                source = sourceClass.source
-                merge(sourceClass)
-            }
-
-            copyClassInstructions()
-
-            return copyToClassData
-        }
-
-        private fun copyClassInstructions() {
-            val className: String = className
-            allSourceClassInstructions[className]?.let { sourceClassInstructions ->
-                copyToClassInstructions.merge(sourceClassInstructions)
-            }
-        }
-    }
-
     private fun classFileFrom(classData: ClassData) = ClassFile(
         sourceFileName = classData.source,
         className = classData.name
     )
+}
+
+// TODO move to file
+internal data class ClassDataCopingContext(
+    val className: String,
+    val sourceProjectData: ProjectData,
+    val copyToProjectData: ProjectData,
+) {
+
+    val sourceClassData: ClassData
+        get() = sourceProjectData.getOrCreateClassData(className)
+
+    private val allSourceClassInstructions: Map<String, ClassInstructions>
+        get() = sourceProjectData.instructions
+
+    private val copyToClassData: ClassData
+        get() = copyToProjectData.getOrCreateClassData(className)
+
+    private val copyToClassInstructions: ClassInstructions
+        get() = copyToProjectData.instructions.computeIfAbsent(className) {
+            ClassInstructions()
+        }
+
+    fun copyClassData(): ClassData {
+        val sourceClass: ClassData = sourceClassData
+        copyToClassData.apply {
+            source = sourceClass.source
+            merge(sourceClass)
+        }
+
+        copyClassInstructions()
+
+        return copyToClassData
+    }
+
+    private fun copyClassInstructions() {
+        val className: String = className
+        allSourceClassInstructions[className]?.let { sourceClassInstructions ->
+            copyToClassInstructions.merge(sourceClassInstructions)
+        }
+    }
 }

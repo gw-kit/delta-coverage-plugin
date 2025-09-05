@@ -4,9 +4,11 @@ import com.intellij.rt.coverage.data.ProjectData
 import com.intellij.rt.coverage.report.ReportLoadStrategy
 import com.intellij.rt.coverage.report.api.Filters
 import com.intellij.rt.coverage.report.data.BinaryReport
-import com.intellij.rt.coverage.util.ClassNameUtil
 import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportContext
+import java.io.File
+import java.util.Deque
+import java.util.LinkedList
 
 internal object ReportLoadStrategyFactory {
 
@@ -14,15 +16,14 @@ internal object ReportLoadStrategyFactory {
         val binaryReports: List<BinaryReport> = buildBinaryReports(reportContext)
         val intellijSourceInputs = IntellijSourceInputs(
             classesFiles = reportContext.deltaCoverageConfig.classRoots.toList(),
-            excludeClasses = reportContext.deltaCoverageConfig.excludeClasses,
-            sourcesFiles = reportContext.deltaCoverageConfig.sourceFiles.toList(),
+            excludeClasses = reportContext.excludeClasses,
+            sourcesFiles = reportContext.srcFiles.toList(),
         )
 
-        val buildRawReportLoadStrategy: ReportLoadStrategy =
-            buildRawReportLoadStrategy(binaryReports, intellijSourceInputs)
-        val data = buildRawReportLoadStrategy.projectData
+        val fullCoverageData: ProjectData = loadFullCoverageData(binaryReports, intellijSourceInputs)
+
         val filterProjectData: ProjectData = IntellijDeltaCoverageLoader.getDeltaProjectData(
-            data,
+            fullCoverageData,
             reportContext.codeUpdateInfo,
         )
 
@@ -35,7 +36,7 @@ internal object ReportLoadStrategyFactory {
         return if (reportContext.deltaCoverageConfig.reportsConfig.fullCoverageReport) {
             deltaReportLoadStrategy + NamedReportLoadStrategy(
                 ReportBound.FULL_REPORT,
-                buildRawReportLoadStrategy,
+                PreloadedCoverageReportLoadStrategy(fullCoverageData, binaryReports, intellijSourceInputs),
             )
         } else {
             deltaReportLoadStrategy
@@ -46,6 +47,52 @@ internal object ReportLoadStrategyFactory {
         return reportContext.deltaCoverageConfig.binaryCoverageFiles.filter { it.exists() }.map { binaryCoverageFile ->
             BinaryReport(binaryCoverageFile, null)
         }
+    }
+
+    // TODO: build a new class
+    private fun loadFullCoverageData(
+        binaryReports: List<BinaryReport>,
+        intellijSourceInputs: IntellijSourceInputs
+    ): ProjectData {
+        val loadStrategy = ReportLoadStrategy.RawReportLoadStrategy(
+            binaryReports,
+            intellijSourceInputs.classesFiles,
+            intellijSourceInputs.sourcesFiles,
+            Filters(
+                emptyList(),
+                emptyList(),
+                emptyList(),
+                emptyList(),
+                emptyList(),
+                emptyList(),
+            )
+        )
+
+        return filterProjectDataByExcludePatterns(
+            intellijSourceInputs,
+            loadStrategy.projectData,
+            intellijSourceInputs.excludeClasses,
+        )
+    }
+
+    private fun filterProjectDataByExcludePatterns(
+        intellijSourceInputs: IntellijSourceInputs,
+        sourceProjectData: ProjectData,
+        excludePatterns: Set<String>
+    ): ProjectData {
+        val filteredData = ProjectData().apply { setInstructionsCoverage(true) }
+        val directoryEntryProcessor = DirectoryEntryProcessor(excludePatterns)
+        intellijSourceInputs.classesFiles.asSequence()
+            .flatMap(directoryEntryProcessor::traverseClasses)
+            .map { jvmClassToKeep ->
+                ClassDataCopingContext(
+                    jvmClassToKeep.className,
+                    sourceProjectData,
+                    filteredData,
+                )
+            }
+            .forEach(ClassDataCopingContext::copyClassData)
+        return filteredData
     }
 
     private class PreloadedCoverageReportLoadStrategy(
@@ -59,23 +106,69 @@ internal object ReportLoadStrategyFactory {
     ) {
         override fun loadProjectData(): ProjectData = coverageData
     }
+}
 
-    private fun buildRawReportLoadStrategy(
-        binaryReports: List<BinaryReport>,
-        intellijSourceInputs: IntellijSourceInputs
-    ): ReportLoadStrategy = ReportLoadStrategy.RawReportLoadStrategy(
-        binaryReports,
-        intellijSourceInputs.classesFiles,
-        intellijSourceInputs.sourcesFiles,
-        Filters(
-            emptyList(),
-            intellijSourceInputs.excludeClasses.map {
-                ClassNameUtil.convertToFQName(it).toPattern()
-            },
-            emptyList(),
-            emptyList(),
-            emptyList(),
-            emptyList(),
-        )
-    )
+data class JvmClass(
+    val className: String,
+    val file: File,
+)
+
+class DirectoryEntryProcessor(excludePatterns: Set<String>) {
+
+    private val excludeRegexes: List<Regex> = excludePatterns.map { it.toRegex() }
+
+    fun traverseClasses(rootClassesDir: File): Sequence<JvmClass> { // TODO: how jacoco resolve className from List<Files> ?
+        if (!shouldInclude(rootClassesDir)) {
+            return emptySequence()
+        }
+
+        return sequence {
+            val traverseQueue: Deque<TraverseCandidate> = LinkedList()
+            traverseQueue += collectEntriesFromDir("", rootClassesDir)
+
+            while (traverseQueue.isNotEmpty()) {
+                val candidate: TraverseCandidate = traverseQueue.pollFirst()!!
+                if (candidate.file.isFile) {
+                    if (shouldExclude(candidate.file)) {
+                        continue
+                    }
+                    val className = candidate.resolveClassName()
+                    yield(JvmClass(className, candidate.file))
+                } else {
+                    traverseQueue += collectEntriesFromDir(candidate.resolvePrefixFromThis(), candidate.file)
+                }
+            }
+        }
+    }
+
+    private fun collectEntriesFromDir(prefix: String, dir: File): Sequence<TraverseCandidate> =
+        (dir.listFiles()?.asSequence() ?: sequenceOf())
+            .filter(::shouldInclude)
+            .sortedWith { file1, file2 ->
+                file1.nameWithoutExtension.compareTo(file2.nameWithoutExtension)
+            }
+            .map { file ->
+                TraverseCandidate(prefix, file)
+            }
+
+    private fun shouldInclude(file: File): Boolean = when {
+        file.isDirectory -> true
+        file.extension == "class" -> true
+        else -> false
+    }
+
+    private fun shouldExclude(file: File): Boolean = excludeRegexes.any {
+        it.matches(file.absolutePath)
+    }
+
+    data class TraverseCandidate(val prefix: String, val file: File) {
+
+        fun resolveClassName(): String = if (prefix.isEmpty()) {
+            file.nameWithoutExtension
+        } else {
+            "$prefix.${file.nameWithoutExtension}"
+        }
+
+        fun resolvePrefixFromThis(): String = resolveClassName()
+    }
 }
