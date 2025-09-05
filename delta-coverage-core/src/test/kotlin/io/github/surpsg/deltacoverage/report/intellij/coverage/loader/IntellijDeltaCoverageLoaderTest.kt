@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.report.intellij.coverage
+package io.github.surpsg.deltacoverage.report.intellij.coverage.loader
 
 import com.intellij.rt.coverage.data.ProjectData
 import io.github.surpsg.deltacoverage.diff.CodeUpdateInfo
