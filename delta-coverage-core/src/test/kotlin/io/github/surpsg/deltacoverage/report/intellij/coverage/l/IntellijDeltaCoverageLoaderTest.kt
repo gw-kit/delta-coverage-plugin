@@ -1,7 +1,8 @@
-package io.github.surpsg.deltacoverage.report.intellij.coverage
+package io.github.surpsg.deltacoverage.report.intellij.coverage.l
 
 import com.intellij.rt.coverage.data.ProjectData
 import io.github.surpsg.deltacoverage.diff.CodeUpdateInfo
+import io.github.surpsg.deltacoverage.report.intellij.coverage.loader.IntellijDeltaCoverageLoader
 import io.kotest.matchers.maps.shouldBeEmpty
 import org.junit.jupiter.api.Test
 

@@ -2,13 +2,11 @@ package io.github.surpsg.deltacoverage.report.intellij.coverage
 
 import com.intellij.rt.coverage.data.ProjectData
 import com.intellij.rt.coverage.report.ReportLoadStrategy
-import com.intellij.rt.coverage.report.api.Filters
 import com.intellij.rt.coverage.report.data.BinaryReport
 import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportContext
-import java.io.File
-import java.util.Deque
-import java.util.LinkedList
+import io.github.surpsg.deltacoverage.report.intellij.coverage.loader.FullCoverageDataLoader
+import io.github.surpsg.deltacoverage.report.intellij.coverage.loader.IntellijDeltaCoverageLoader
 
 internal object ReportLoadStrategyFactory {
 
@@ -20,7 +18,8 @@ internal object ReportLoadStrategyFactory {
             sourcesFiles = reportContext.srcFiles.toList(),
         )
 
-        val fullCoverageData: ProjectData = loadFullCoverageData(binaryReports, intellijSourceInputs)
+        val fullCoverageData: ProjectData = FullCoverageDataLoader()
+            .load(binaryReports, intellijSourceInputs)
 
         val filterProjectData: ProjectData = IntellijDeltaCoverageLoader.getDeltaProjectData(
             fullCoverageData,
@@ -49,52 +48,6 @@ internal object ReportLoadStrategyFactory {
         }
     }
 
-    // TODO: build a new class
-    private fun loadFullCoverageData(
-        binaryReports: List<BinaryReport>,
-        intellijSourceInputs: IntellijSourceInputs
-    ): ProjectData {
-        val loadStrategy = ReportLoadStrategy.RawReportLoadStrategy(
-            binaryReports,
-            intellijSourceInputs.classesFiles,
-            intellijSourceInputs.sourcesFiles,
-            Filters(
-                emptyList(),
-                emptyList(),
-                emptyList(),
-                emptyList(),
-                emptyList(),
-                emptyList(),
-            )
-        )
-
-        return filterProjectDataByExcludePatterns(
-            intellijSourceInputs,
-            loadStrategy.projectData,
-            intellijSourceInputs.excludeClasses,
-        )
-    }
-
-    private fun filterProjectDataByExcludePatterns(
-        intellijSourceInputs: IntellijSourceInputs,
-        sourceProjectData: ProjectData,
-        excludePatterns: Set<String>
-    ): ProjectData {
-        val filteredData = ProjectData().apply { setInstructionsCoverage(true) }
-        val directoryEntryProcessor = DirectoryEntryProcessor(excludePatterns)
-        intellijSourceInputs.classesFiles.asSequence()
-            .flatMap(directoryEntryProcessor::traverseClasses)
-            .map { jvmClassToKeep ->
-                ClassDataCopingContext(
-                    jvmClassToKeep.className,
-                    sourceProjectData,
-                    filteredData,
-                )
-            }
-            .forEach(ClassDataCopingContext::copyClassData)
-        return filteredData
-    }
-
     private class PreloadedCoverageReportLoadStrategy(
         private val coverageData: ProjectData,
         binaryReports: List<BinaryReport>,
@@ -108,67 +61,3 @@ internal object ReportLoadStrategyFactory {
     }
 }
 
-data class JvmClass(
-    val className: String,
-    val file: File,
-)
-
-class DirectoryEntryProcessor(excludePatterns: Set<String>) {
-
-    private val excludeRegexes: List<Regex> = excludePatterns.map { it.toRegex() }
-
-    fun traverseClasses(rootClassesDir: File): Sequence<JvmClass> { // TODO: how jacoco resolve className from List<Files> ?
-        if (!shouldInclude(rootClassesDir)) {
-            return emptySequence()
-        }
-
-        return sequence {
-            val traverseQueue: Deque<TraverseCandidate> = LinkedList()
-            traverseQueue += collectEntriesFromDir("", rootClassesDir)
-
-            while (traverseQueue.isNotEmpty()) {
-                val candidate: TraverseCandidate = traverseQueue.pollFirst()!!
-                if (candidate.file.isFile) {
-                    if (shouldExclude(candidate.file)) {
-                        continue
-                    }
-                    val className = candidate.resolveClassName()
-                    yield(JvmClass(className, candidate.file))
-                } else {
-                    traverseQueue += collectEntriesFromDir(candidate.resolvePrefixFromThis(), candidate.file)
-                }
-            }
-        }
-    }
-
-    private fun collectEntriesFromDir(prefix: String, dir: File): Sequence<TraverseCandidate> =
-        (dir.listFiles()?.asSequence() ?: sequenceOf())
-            .filter(::shouldInclude)
-            .sortedWith { file1, file2 ->
-                file1.nameWithoutExtension.compareTo(file2.nameWithoutExtension)
-            }
-            .map { file ->
-                TraverseCandidate(prefix, file)
-            }
-
-    private fun shouldInclude(file: File): Boolean = when {
-        file.isDirectory -> true
-        file.extension == "class" -> true
-        else -> false
-    }
-
-    private fun shouldExclude(file: File): Boolean = excludeRegexes.any {
-        it.matches(file.absolutePath)
-    }
-
-    data class TraverseCandidate(val prefix: String, val file: File) {
-
-        fun resolveClassName(): String = if (prefix.isEmpty()) {
-            file.nameWithoutExtension
-        } else {
-            "$prefix.${file.nameWithoutExtension}"
-        }
-
-        fun resolvePrefixFromThis(): String = resolveClassName()
-    }
-}
