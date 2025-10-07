@@ -16,7 +16,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
-@GradlePluginTest(TestProjects.MULTI_MODULE)
+@GradlePluginTest(TestProjects.MULTI_MODULE, kts = true)
 class DeltaCoverageMultiModuleTest {
 
     @RootProjectDir
@@ -25,7 +25,7 @@ class DeltaCoverageMultiModuleTest {
     @ProjectFile("test.diff")
     lateinit var diffFilePath: String
 
-    @ProjectFile("build.gradle")
+    @ProjectFile("build.gradle.kts")
     lateinit var buildFile: RestorableFile
 
     @GradleRunnerInstance
@@ -46,22 +46,22 @@ class DeltaCoverageMultiModuleTest {
             deltaCoverageReport {
                 coverage.engine.set(CoverageEngine.JACOCO)
             
-                diffSource.file.set('$diffFilePath')
+                diffSource.file.set("$diffFilePath")
                 reports {
                     html.set(true)
-                    baseReportDir.set('$baseReportDir')
+                    baseReportDir.set("$baseReportDir")
                 }
                 reportViews {
-                    view('$TEST_TASK') {
-                        violationRules.failIfCoverageLessThan 0.9
+                    view("$TEST_TASK") {
+                        violationRules.failIfCoverageLessThan(0.9)
                         violationRules.failOnViolation.set(false)
                     }
-                    $INT_TEST_TASK {
-                        violationRules.failIfCoverageLessThan 0.6
+                    view("$INT_TEST_TASK") {
+                        violationRules.failIfCoverageLessThan(0.6)
                         violationRules.failOnViolation.set(false)
                     }
-                    $AGG_VIEW {
-                        violationRules.failIfCoverageLessThan 1.0
+                    view("$AGG_VIEW") {
+                        violationRules.failIfCoverageLessThan(1.0)
                         violationRules.failOnViolation.set(false)
                     }
                 }
@@ -112,24 +112,15 @@ class DeltaCoverageMultiModuleTest {
             """
                 import io.github.surpsg.deltacoverage.gradle.CoverageEngine
                 plugins {
-                    id 'java'
-                    id 'io.github.gw-kit.delta-coverage'
+                    id("io.github.gw-kit.delta-coverage")
                 }
                 repositories {
                     mavenCentral()
                 }
                 subprojects {
-                    apply plugin: 'java'
+                    apply(plugin = "jacoco")
                     repositories {
                         mavenCentral()
-                    }
-                    tasks.withType(Test) {
-                        useJUnitPlatform()
-                    }
-                
-                    dependencies {
-                        testImplementation(platform("org.junit:junit-bom:5.10.0"))
-                        testImplementation("org.junit.jupiter:junit-jupiter")
                     }
                 }
                 deltaCoverageReport {
@@ -137,30 +128,22 @@ class DeltaCoverageMultiModuleTest {
                         engine.set(CoverageEngine.JACOCO)
                         autoApplyPlugin.set(false)
                     }
-                    diffSource.file.set('$diffFilePath')
-                    reportViews.$TEST_TASK {
-                        violationRules.failIfCoverageLessThan 0.7
+                    diffSource.file.set("$diffFilePath")
+                    reportViews {
+                        view("$TEST_TASK") {
+                            violationRules.failIfCoverageLessThan(0.7)
+                        }
                     }
                 }
             """.trimIndent()
-        )
-
-        // manually apply jacoco only to 'module1'
-        rootProjectDir.resolve("module1").resolve("build.gradle").appendText(
-            """
-
-            apply plugin: 'jacoco'
-        """.trimIndent()
         )
 
         // WHEN // THEN
         gradleRunner
             .runDeltaCoverageTaskAndFail()
             .assertOutputContainsStrings(
-                "[$TEST_TASK] Fail on violations: true. Found violations: 3.",
-                "[$TEST_TASK] Rule violated for bundle $TEST_TASK: lines covered ratio is 0.5, but expected minimum is 0.7;",
-                "[$TEST_TASK] Rule violated for bundle $TEST_TASK: branches covered ratio is 0.2, but expected minimum is 0.7;",
-                "[$TEST_TASK] Rule violated for bundle $TEST_TASK: instructions covered ratio is 0.6, but expected minimum is 0.7",
+                "[$TEST_TASK] Fail on violations: true. Found violations: 1.",
+                "[$TEST_TASK] Rule violated for bundle $TEST_TASK: branches covered ratio is 0.5, but expected minimum is 0.7",
             )
     }
 

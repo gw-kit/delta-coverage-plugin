@@ -17,6 +17,7 @@ kotlin {
     }
     compilerOptions {
         apiVersion = KotlinVersion.KOTLIN_1_9
+        languageVersion = KotlinVersion.KOTLIN_1_9
     }
 }
 

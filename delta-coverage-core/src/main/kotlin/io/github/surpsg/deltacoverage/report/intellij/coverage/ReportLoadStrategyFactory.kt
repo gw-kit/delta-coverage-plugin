@@ -20,9 +20,8 @@ internal object ReportLoadStrategyFactory {
 
         val buildRawReportLoadStrategy: ReportLoadStrategy =
             buildRawReportLoadStrategy(binaryReports, intellijSourceInputs)
-        val data = buildRawReportLoadStrategy.projectData
         val filterProjectData: ProjectData = IntellijDeltaCoverageLoader.getDeltaProjectData(
-            data,
+            buildRawReportLoadStrategy.projectData,
             reportContext.codeUpdateInfo,
         )
 
