@@ -13,7 +13,7 @@ kotestVer = "5.9.1"
 jimfsVer = "1.3.1"
 
 coverJetVer = "0.1.4"
-deltaCoverageVer = "3.4.2-SNAPSHOT.15788024751"
+deltaCoverageVer = "3.4.2"
 
 [libraries]
 # Kotlin
