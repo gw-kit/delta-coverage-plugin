@@ -6,17 +6,18 @@ jgitVer = "7.3.0.202506031305-r"
 csvVer = "5.11.2"
 jacksonVer = "2.19.2"
 
+kotlinVer = "2.2.10"
 junitVer = "5.11.4"
 mockkVer = "1.14.5"
 kotestVer = "5.9.1"
 jimfsVer = "1.3.1"
 
-coverJetVer = "0.1.3"
+coverJetVer = "0.1.4"
 deltaCoverageVer = "3.4.2-SNAPSHOT.15788024751"
 
 [libraries]
 # Kotlin
-kotlinJvm = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version = "2.1.20" }
+kotlinJvm = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVer" }
 
 # Plugins
 pluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "1.3.1" }

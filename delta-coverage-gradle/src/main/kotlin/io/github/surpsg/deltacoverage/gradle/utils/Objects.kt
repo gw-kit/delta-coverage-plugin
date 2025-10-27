@@ -4,7 +4,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 
-internal inline fun <reified T> ObjectFactory.new(): T = newInstance(T::class.java)
+internal inline fun <reified T : Any> ObjectFactory.new(): T = newInstance(T::class.java)
 
 internal fun ObjectFactory.booleanProperty(default: Boolean): Property<Boolean> {
     return property(Boolean::class.javaObjectType).convention(default)
@@ -24,5 +24,5 @@ internal fun ObjectFactory.stringProperty(default: () -> String): Property<Strin
     )
 }
 
-internal inline fun <reified K, reified V> ObjectFactory.map(): MapProperty<K, V> =
+internal inline fun <reified K : Any, reified V : Any> ObjectFactory.map(): MapProperty<K, V> =
     mapProperty(K::class.java, V::class.java)
