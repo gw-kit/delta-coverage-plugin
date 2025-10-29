@@ -14,7 +14,7 @@ internal class FullCoverageDataLoader {
     ): ProjectData {
         val loadStrategy = ReportLoadStrategy.RawReportLoadStrategy(
             binaryReports,
-            intellijSourceInputs.classesFiles,
+            intellijSourceInputs.classesRoots,
             intellijSourceInputs.sourcesFiles,
             Filters(
                 emptyList(),
@@ -29,18 +29,19 @@ internal class FullCoverageDataLoader {
         return filterProjectDataByExcludePatterns(
             intellijSourceInputs,
             loadStrategy.projectData,
-            intellijSourceInputs.excludeClasses,
         )
     }
 
     private fun filterProjectDataByExcludePatterns(
         intellijSourceInputs: IntellijSourceInputs,
         sourceProjectData: ProjectData,
-        excludePatterns: Set<String>
     ): ProjectData {
         val filteredData = ProjectData().apply { setInstructionsCoverage(true) }
-        val classesDirLoader = ClassesDirLoader(excludePatterns)
-        intellijSourceInputs.classesFiles.asSequence()
+        val classesDirLoader = ClassesDirLoader(
+            intellijSourceInputs.allClasses,
+            intellijSourceInputs.excludeClasses,
+        )
+        intellijSourceInputs.classesRoots.asSequence()
             .flatMap(classesDirLoader::traverseClasses)
             .map { jvmClassToKeep ->
                 ClassDataCopingContext(

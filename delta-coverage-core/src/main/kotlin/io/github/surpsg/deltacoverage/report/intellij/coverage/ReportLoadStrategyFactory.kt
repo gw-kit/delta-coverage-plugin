@@ -13,7 +13,8 @@ internal object ReportLoadStrategyFactory {
     fun buildReportLoadStrategies(reportContext: ReportContext): Sequence<NamedReportLoadStrategy> {
         val binaryReports: List<BinaryReport> = buildBinaryReports(reportContext)
         val intellijSourceInputs = IntellijSourceInputs(
-            classesFiles = reportContext.deltaCoverageConfig.classRoots.toList(),
+            allClasses = reportContext.deltaCoverageConfig.classFiles,
+            classesRoots = reportContext.deltaCoverageConfig.classRoots.toList(),
             excludeClasses = reportContext.excludeClasses,
             sourcesFiles = reportContext.srcFiles.toList(),
         )
@@ -54,7 +55,7 @@ internal object ReportLoadStrategyFactory {
         intellijSourceInputs: IntellijSourceInputs
     ) : ReportLoadStrategy(
         binaryReports,
-        intellijSourceInputs.classesFiles,
+        intellijSourceInputs.classesRoots,
         intellijSourceInputs.sourcesFiles,
     ) {
         override fun loadProjectData(): ProjectData = coverageData

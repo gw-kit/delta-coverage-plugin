@@ -1,0 +1,15 @@
+coverageEngine: INTELLIJ
+viewName: demo
+diffSourceFile: /path/to/file.diff
+coverageBinaryFiles:
+  - /path/to/coverage.ic
+classRoots:
+  - /path/to/classes/kotlin/main
+sourceFiles:
+  - /path/to/src/main/kotlin
+reportDir: build/reports/delta-coverage-demo
+reports:
+  html: true
+  console: true
+  markdown: false
+  fullCoverage: true

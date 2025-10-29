@@ -14,7 +14,7 @@ internal class ClassesDirLoader(
         classesToKeep.asSequence().filter { it.isFile }.map { it.absolutePath }.toSet()
 
     fun traverseClasses(rootClassesDir: File): Sequence<JvmClassDesc> {
-        if (!shouldInclude(rootClassesDir)) {
+        if (shouldKeep(rootClassesDir).not()) {
             return emptySequence()
         }
 
@@ -44,7 +44,7 @@ internal class ClassesDirLoader(
 
     private fun collectEntriesFromDir(prefix: String, dir: File): Sequence<TraverseCandidate> =
         (dir.listFiles()?.asSequence().orEmpty())
-            .filter(::shouldInclude)
+            .filter(::shouldKeep)
             .sortedWith { file1, file2 ->
                 file1.nameWithoutExtension.compareTo(file2.nameWithoutExtension)
             }
