@@ -45,4 +45,4 @@ kotestProperty = { module = "io.kotest:kotest-property-jvm", version.ref = "kote
 jimFs = { module = "com.google.jimfs:jimfs", version.ref = "jimfsVer" }
 
 [plugins]
-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.30.0" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.34.0" }
