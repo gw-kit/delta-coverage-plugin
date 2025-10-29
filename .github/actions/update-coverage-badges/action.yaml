@@ -21,7 +21,7 @@ runs:
   steps:
     - name: Upload Badges
       id: upload-file
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: badges
         path: ${{ inputs.badge-files }}
