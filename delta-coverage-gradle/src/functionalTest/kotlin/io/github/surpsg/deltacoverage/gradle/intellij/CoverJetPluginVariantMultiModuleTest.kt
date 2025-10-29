@@ -41,7 +41,7 @@ class CoverJetPluginVariantMultiModuleTest {
     @Test
     fun `should build delta coverage report from multi module project `() {
         // GIVEN
-        val baseReportDir = "build/custom/kover/"
+        val baseReportDir = "build/custom/cover-jet/"
         buildFile.file.appendText(
             """
             configure<DeltaCoverageConfiguration> {
@@ -52,15 +52,15 @@ class CoverJetPluginVariantMultiModuleTest {
                     baseReportDir = "$baseReportDir"
                 }
                 reportViews {
-                    val $TEST_TASK by getting {
+                    view("$TEST_TASK") {
                         violationRules.failIfCoverageLessThan(0.9)
                         violationRules.failOnViolation = false
                     }
-                    val $INT_TEST_TASK by getting {
+                    view("$INT_TEST_TASK") {
                         violationRules.failIfCoverageLessThan(0.6)
                         violationRules.failOnViolation = false
                     }
-                    val $AGG_VIEW by getting {
+                    view("$AGG_VIEW") {
                         violationRules.failIfCoverageLessThan(1.0)
                         violationRules.failOnViolation = false
                     }
