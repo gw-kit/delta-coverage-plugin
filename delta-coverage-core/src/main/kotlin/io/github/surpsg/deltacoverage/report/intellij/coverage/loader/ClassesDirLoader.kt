@@ -1,19 +1,25 @@
 package io.github.surpsg.deltacoverage.report.intellij.coverage.loader
 
-import java.io.File
+import java.nio.file.Path
 import java.util.Deque
 import java.util.LinkedList
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.extension
+import kotlin.io.path.isDirectory
+import kotlin.io.path.isRegularFile
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.nameWithoutExtension
 
 internal class ClassesDirLoader(
-    classesToKeep: Set<File>,
+    classesToKeep: Set<Path>,
     excludePatterns: Set<String>,
 ) {
 
     private val excludeRegexes: List<Regex> = excludePatterns.map { it.toRegex() }
     private val includeClassFilesPaths: Set<String> =
-        classesToKeep.asSequence().filter { it.isFile }.map { it.absolutePath }.toSet()
+        classesToKeep.asSequence().filter { it.isRegularFile() }.map { it.absolutePathString() }.toSet()
 
-    fun traverseClasses(rootClassesDir: File): Sequence<JvmClassDesc> {
+    fun traverseClasses(rootClassesDir: Path): Sequence<JvmClassDesc> {
         if (shouldKeep(rootClassesDir).not()) {
             return emptySequence()
         }
@@ -24,8 +30,9 @@ internal class ClassesDirLoader(
 
             while (traverseQueue.isNotEmpty()) {
                 val candidate: TraverseCandidate = traverseQueue.pollFirst()!!
-                if (candidate.file.isFile) {
-                    yieldClassFile(candidate)
+                if (candidate.file.isRegularFile()) {
+                    val className = candidate.resolveClassName()
+                    yield(JvmClassDesc(className, candidate.file))
                 } else {
                     traverseQueue += collectEntriesFromDir(candidate.resolvePrefixFromThis(), candidate.file)
                 }
@@ -33,38 +40,29 @@ internal class ClassesDirLoader(
         }
     }
 
-    private suspend fun SequenceScope<JvmClassDesc>.yieldClassFile(
-        candidate: TraverseCandidate
-    ) {
-        if (shouldKeep(candidate.file)) {
-            val className = candidate.resolveClassName()
-            yield(JvmClassDesc(className, candidate.file))
-        }
-    }
-
-    private fun collectEntriesFromDir(prefix: String, dir: File): Sequence<TraverseCandidate> =
-        (dir.listFiles()?.asSequence().orEmpty())
+    private fun collectEntriesFromDir(prefix: String, dir: Path): Sequence<TraverseCandidate> =
+        dir.listDirectoryEntries().asSequence()
             .filter(::shouldKeep)
-            .sortedWith { file1, file2 ->
-                file1.nameWithoutExtension.compareTo(file2.nameWithoutExtension)
+            .sortedWith { path1, path2 ->
+                path1.nameWithoutExtension.compareTo(path2.nameWithoutExtension)
             }
-            .map { file ->
-                TraverseCandidate(prefix, file)
+            .map { path ->
+                TraverseCandidate(prefix, path)
             }
 
-    private fun shouldKeep(file: File): Boolean {
-        val excludePredicate: File.() -> Boolean = { excludeRegexes.any { it.matches(absolutePath) } }
-        val includePredicate: File.() -> Boolean = {
-            includeClassFilesPaths.isEmpty() || includeClassFilesPaths.contains(absolutePath)
+    private fun shouldKeep(file: Path): Boolean {
+        val excludePredicate: Path.() -> Boolean = { excludeRegexes.any { it.matches(absolutePathString()) } }
+        val includePredicate: Path.() -> Boolean = {
+            includeClassFilesPaths.isEmpty() || includeClassFilesPaths.contains(absolutePathString())
         }
         return when {
-            file.isDirectory -> !file.excludePredicate()
+            file.isDirectory() -> !file.excludePredicate()
             file.extension == "class" -> file.includePredicate() && !file.excludePredicate()
             else -> false
         }
     }
 
-    data class TraverseCandidate(val prefix: String, val file: File) {
+    private data class TraverseCandidate(val prefix: String, val file: Path) {
 
         fun resolveClassName(): String = if (prefix.isEmpty()) {
             file.nameWithoutExtension

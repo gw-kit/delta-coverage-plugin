@@ -5,6 +5,7 @@ import com.intellij.rt.coverage.report.ReportLoadStrategy
 import com.intellij.rt.coverage.report.api.Filters
 import com.intellij.rt.coverage.report.data.BinaryReport
 import io.github.surpsg.deltacoverage.report.intellij.coverage.IntellijSourceInputs
+import java.nio.file.FileSystems
 
 internal class FullCoverageDataLoader {
 
@@ -42,6 +43,7 @@ internal class FullCoverageDataLoader {
             intellijSourceInputs.excludeClasses,
         )
         intellijSourceInputs.classesRoots.asSequence()
+            .map { it.toPath() }
             .flatMap(classesDirLoader::traverseClasses)
             .map { jvmClassToKeep ->
                 ClassDataCopingContext(
