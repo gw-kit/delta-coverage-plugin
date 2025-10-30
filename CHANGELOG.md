@@ -7,7 +7,7 @@
 
 ### Dependency updates
 - CoverJet plugin dependency updated to [0.1.2](https://github.com/gw-kit/cover-jet-plugin/releases/tag/0.1.2)
-- Updated Gradle to [9.1.0](https://github.com/gradle/gradle/releases/tag/v9.1.0)
+- Updated Gradle to [9.2.0](https://github.com/gradle/gradle/releases/tag/v9.2.0)
 
 
 ## 3.4.2
