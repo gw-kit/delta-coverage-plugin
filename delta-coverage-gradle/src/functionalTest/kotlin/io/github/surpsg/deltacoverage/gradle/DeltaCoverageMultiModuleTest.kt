@@ -6,10 +6,11 @@ import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
 import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
 import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
 import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.file.shouldBeADirectory
 import io.kotest.matchers.file.shouldContainFile
 import io.kotest.matchers.file.shouldExist
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.matchers.nulls.shouldNotBeNull
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
@@ -98,8 +99,11 @@ class DeltaCoverageMultiModuleTest {
                 htmlReportDir.shouldExist()
                 htmlReportDir.shouldBeADirectory()
                 htmlReportDir.shouldContainFile("index.html")
-                assertThat(htmlReportDir.list()).containsExactlyInAnyOrder(
-                    *expectedHtmlReportFiles("com.module1", "com.module2")
+                htmlReportDir.list().shouldNotBeNull().shouldContainExactlyInAnyOrder(
+                    expectedHtmlReportFiles(
+                        "com.module1",
+                        "com.module2",
+                    )
                 )
             }
         }
