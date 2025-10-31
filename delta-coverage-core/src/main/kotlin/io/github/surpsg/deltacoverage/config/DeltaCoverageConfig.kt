@@ -194,6 +194,8 @@ class DeltaCoverageConfig private constructor(
                 ", coverageRulesConfig=$coverageRulesConfig" +
                 ", binaryCoverageFiles=${binaryCoverageFiles.stringifyLongCollection()}" +
                 ", classFiles=${classFiles.stringifyLongCollection()}" +
+                ", classRoots=${classRoots.stringifyLongCollection()}" +
+                ", excludeClasses=${excludeClasses.stringifyLongCollection()}" +
                 ", sourceFiles=${sourceFiles.stringifyLongCollection()}" +
                 ")"
     }

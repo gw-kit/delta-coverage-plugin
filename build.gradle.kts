@@ -8,3 +8,9 @@ dependencies {
         testReportAggregation(this)
     }
 }
+
+deltaCoverageReport {
+    excludeClasses.addAll(
+        "**/deltacoverage/demo/*"
+    )
+}

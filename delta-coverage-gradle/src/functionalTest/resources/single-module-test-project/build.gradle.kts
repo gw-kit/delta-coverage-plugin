@@ -4,7 +4,7 @@ import io.github.surpsg.deltacoverage.gradle.CoverageEntity.*
 
 plugins {
     java
-    kotlin("jvm") version "2.1.20"
+    kotlin("jvm") version "2.2.21"
     id("io.github.gw-kit.delta-coverage")
     // {EXTRA_PLUGINS_PLACEHOLDER}
 }
@@ -18,6 +18,7 @@ tasks.withType<Test> {
 }
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.11.4"))
+    testImplementation(platform("org.junit:junit-bom:5.14.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
