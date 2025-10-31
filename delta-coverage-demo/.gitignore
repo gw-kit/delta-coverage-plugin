@@ -1,0 +1,12 @@
+# Ignore actual config files (only examples should be committed)
+demo.properties
+demo.json
+demo.yaml
+test.diff
+
+# Ignore generated reports
+build/
+
+# Ignore log files
+logs/
+*.log
