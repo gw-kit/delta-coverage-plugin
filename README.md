@@ -41,6 +41,11 @@ Table of Contents
     * [HTML report](#html-report)
     * [Console report](#console-report)
     * [Markdown report](#markdown-report)
+  * [Full Coverage Reports](#full-coverage-reports)
+    * [Enabling Full Coverage Mode](#enabling-full-coverage-mode)
+    * [Report Structure](#report-structure)
+    * [Use Cases](#use-cases)
+    * [Example](#example)
   * [GitHub Integration](#github-integration)
 <!-- TOC -->
 
@@ -219,6 +224,12 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
         console.set(false) // Optional. default `true`
         markdown.set(true) // Optional. default `false`
         reportDir.set("dir/to/store/reports") // Optional. Default 'build/reports/coverage-reports'
+
+        // Optional. default `false`. When enabled, generates both delta coverage and full coverage reports.
+        // Delta coverage: reports only for modified/new code (default behavior)
+        // Full coverage: reports for the entire codebase
+        // Both reports are generated side-by-side for comparison.
+        fullCoverageReport.set(true)
     }
 
     reportViews {
@@ -369,6 +380,105 @@ The report is saved to the file `build/reports/coverage-reports/delta-coverage/t
 | class1       | 75%       | 50%      | 83.33%    |
 | Total        | 🔴 83.33% | 🟢 75%   | 🔴 87.50% |
 | Min expected | 90%       | 75%      | 95%       |
+
+
+## Full Coverage Reports
+
+By default, Delta Coverage generates reports only for modified/new code based on the diff. However, you can enable full coverage reports to generate coverage reports for the entire codebase alongside delta coverage reports.
+
+### Enabling Full Coverage Mode
+
+Add `fullCoverageReport.set(true)` to your reports configuration:
+
+<details open>
+<summary><b>Kotlin</b></summary>
+
+```kotlin
+configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
+    diffSource.file.set("${PATH_TO_DIFF_FILE}")
+
+    reports {
+        html.set(true)
+        fullCoverageReport.set(true)  // Enable full coverage reports
+    }
+
+    reportViews {
+        val test by getting {
+            violationRules.failIfCoverageLessThan(0.9)
+        }
+    }
+}
+```
+
+</details>
+
+<details>
+<summary><b>Groovy</b></summary>
+
+```groovy
+deltaCoverageReport {
+    diffSource.file = file("${PATH_TO_DIFF_FILE}")
+
+    reports {
+        html = true
+        fullCoverageReport.set(true)  // Enable full coverage reports
+    }
+
+    reportViews {
+        test {
+            violationRules.failIfCoverageLessThan 0.9d
+        }
+    }
+}
+```
+
+</details>
+
+### Report Structure
+
+When full coverage mode is enabled, the plugin generates two sets of reports for each view:
+
+1. **Delta Coverage Reports** - Located in `build/reports/coverage-reports/delta-coverage/<view-name>/`
+   - Contains coverage data only for modified/new code
+   - HTML, XML, console, and markdown reports (based on configuration)
+
+2. **Full Coverage Reports** - Located in `build/reports/coverage-reports/full-coverage-report/<view-name>/`
+   - Contains coverage data for the entire codebase
+   - Same report formats as delta coverage
+
+### Use Cases
+
+Full coverage mode is useful when you want to:
+
+- **Compare delta vs. full coverage**: See how new code coverage compares to overall project coverage
+- **Track overall project health**: Monitor total coverage trends while enforcing standards on new code
+- **Generate coverage badges**: Use full coverage data for project-wide coverage badges (see [delta-coverage-action](https://github.com/gw-kit/delta-coverage-action))
+- **Legacy project migration**: Understand full coverage baseline while improving coverage on new changes
+
+### Example
+
+Running deltaCoverage with full coverage enabled:
+
+```shell
+./gradlew test deltaCoverage
+```
+
+This generates:
+```
+build/reports/coverage-reports/
+├── delta-coverage/
+│   └── test/
+│       ├── html/
+│       ├── xml/
+│       └── report.md
+└── full-coverage-report/
+    └── test/
+        ├── html/
+        ├── xml/
+        └── report.md
+```
+
+Both HTML reports can be opened in a browser to compare coverage metrics side-by-side.
 
 
 ## GitHub Integration
