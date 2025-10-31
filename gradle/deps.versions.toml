@@ -7,7 +7,7 @@ csvVer = "5.12.0"
 jacksonVer = "2.20.0"
 
 kotlinVer = "2.2.21"
-junitVer = "5.14.0"
+junitVer = "5.14.1"
 mockkVer = "1.14.6"
 kotestVer = "5.9.1"
 jimfsVer = "1.3.1"
