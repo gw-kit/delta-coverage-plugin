@@ -4,7 +4,7 @@ jacocoVer = "0.8.14"
 httpClientVer = "5.5.1"
 jgitVer = "7.4.0.202509020913-r"
 csvVer = "5.12.0"
-jacksonVer = "2.20.0"
+jacksonVer = "2.20.1"
 
 kotlinVer = "2.2.21"
 junitVer = "5.14.1"

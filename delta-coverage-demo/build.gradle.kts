@@ -6,8 +6,8 @@ plugins {
 dependencies {
     implementation(project(":delta-coverage-core"))
     implementation(deps.jackson)
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.19.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.20.1")
 
     // SLF4J logging
     implementation("org.slf4j:slf4j-api:2.0.17")
