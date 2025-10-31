@@ -12,42 +12,57 @@
 ![test.svg](https://raw.githubusercontent.com/gw-kit/coverage-badges/refs/heads/main/delta-coverage-plugin/badges/test.svg)
 
 
-`Delta Coverage` is coverage analyzing tool that computes code coverage of new/modified code based on a
+`Delta Coverage` is a coverage analyzing tool that computes code coverage of new/modified code based on a
 provided [diff](https://en.wikipedia.org/wiki/Diff#Unified_format).
-The diff content can be provided via path to patch file, URL or using embedded git(
-see [parameters description](#Parameters-description)).
+The diff content can be provided via path to patch file, URL or using embedded git.
 
-Why should I use it?
+## Features
 
-* forces each developer to be responsible for its own code quality(see [deltaCoverage task](#gradle-task-description))
-* helps to increase total code coverage(especially useful for old legacy projects)
-* reduces time of code review(you don't need to waste your time to track what code is covered)
+- ✅ **Two Coverage Engines**: Choose between JaCoCo (standard JVM) or IntelliJ coverage (better for Kotlin)
+- ✅ **Multiple Report Formats**: HTML, XML, Markdown, and Console reports
+- ✅ **Automatic Test Discovery**: Report views are auto-created for all test tasks
+- ✅ **Full Coverage Mode**: Generate baseline full coverage reports alongside delta reports
+- ✅ **Flexible Diff Sources**: Use file, URL, or git to provide the diff
+- ✅ **GitHub Actions Integration**: Post coverage reports directly to PR comments
 
-Table of Contents
-<!-- TOC -->
-* [Delta Coverage gradle plugin](#delta-coverage-gradle-plugin)
-  * [Installation](#installation)
-    * [Compatibility](#compatibility)
-    * [Apply `Delta Coverage` plugin](#apply-delta-coverage-plugin)
-  * [Configuration](#configuration)
-    * [Coverage engine](#coverage-engine)
-    * [Report Views](#report-views)
-      * [Auto-configuration](#auto-configuration)
-    * [Parameters description](#parameters-description)
-  * [Execute](#execute)
-  * [Gradle task description](#gradle-task-description)
-  * [Violations check output example](#violations-check-output-example)
-  * [Delta Coverage report examples](#delta-coverage-report-examples)
-    * [HTML report](#html-report)
-    * [Console report](#console-report)
-    * [Markdown report](#markdown-report)
-  * [Full Coverage Reports](#full-coverage-reports)
-    * [Enabling Full Coverage Mode](#enabling-full-coverage-mode)
-    * [Report Structure](#report-structure)
-    * [Use Cases](#use-cases)
-    * [Example](#example)
-  * [GitHub Integration](#github-integration)
-<!-- TOC -->
+## Why should I use it?
+
+- **Individual Accountability**: Each developer is responsible for their code quality
+- **Improved Coverage**: Incrementally increase total code coverage (especially useful for legacy projects)
+- **Faster Code Reviews**: Automatically track which code is covered, saving review time
+
+## Table of Contents
+
+- [Features](#features)
+- [Why should I use it?](#why-should-i-use-it)
+- [Installation](#installation)
+  - [Compatibility](#compatibility)
+  - [Apply Delta Coverage plugin](#apply-delta-coverage-plugin)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+  - [Coverage engine](#coverage-engine)
+  - [Report Views](#report-views)
+    - [Auto-configuration](#auto-configuration)
+  - [Parameters description](#parameters-description)
+- [Execute](#execute)
+- [Gradle task description](#gradle-task-description)
+- [Violations check output example](#violations-check-output-example)
+- [Delta Coverage report examples](#delta-coverage-report-examples)
+  - [HTML report](#html-report)
+  - [Console report](#console-report)
+  - [Markdown report](#markdown-report)
+- [Full Coverage Reports](#full-coverage-reports)
+  - [Enabling Full Coverage Mode](#enabling-full-coverage-mode)
+  - [Report Structure](#report-structure)
+  - [Use Cases](#use-cases)
+  - [Example](#example)
+- [Common Use Cases](#common-use-cases)
+  - [Enforce 90% Coverage on New Code](#enforce-90-coverage-on-new-code)
+  - [Compare with Develop Branch Before Merging](#compare-with-develop-branch-before-merging)
+  - [Use IntelliJ Coverage for Kotlin Projects](#use-intellij-coverage-for-kotlin-projects)
+  - [Generate Full Coverage Reports for Badges](#generate-full-coverage-reports-for-badges)
+  - [Exclude Generated Code from Coverage](#exclude-generated-code-from-coverage)
+- [GitHub Integration](#github-integration)
 
 ## Installation
 
@@ -67,10 +82,6 @@ Delta Coverage plugin compatibility table:
 
 The plugin should be applied to the **root** project.
 
-<details open>
-
-<summary><b>Kotlin</b></summary>
-
 ```kotlin
 plugins {
     id("io.github.gw-kit.delta-coverage") version "<the-plugin-version>"
@@ -79,30 +90,35 @@ plugins {
 
 The latest release version is ![GitHub Release](https://img.shields.io/github/v/release/SurpSG/delta-coverage-plugin)
 
-</details>
+## Quick Start
 
-<details>
+Get started with Delta Coverage in 3 simple steps:
 
-<summary><b>Groovy</b></summary>
+1. **Apply the plugin** to your root project (see above)
 
-```groovy
-plugins {
-    id "io.github.gw-kit.delta-coverage" version "<the-plugin-version>"
-}
-```
-
-</details>
-
-## Configuration
-
-In the examples below the minimal configuration is shown.
-
-<details open>
-<summary><b>Kotlin</b></summary>
+2. **Configure diff source** - minimal configuration using git:
 
 ```kotlin
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-    diffSource.file.set("${PATH_TO_DIFF_FILE}")
+    diffSource.git.compareWith.set("refs/remotes/origin/main")
+}
+```
+
+3. **Run coverage**:
+
+```shell
+./gradlew test deltaCoverage
+```
+
+The plugin will automatically discover your test tasks, generate HTML reports in `build/reports/coverage-reports/`, and enforce 90% coverage on new code by default.
+
+## Configuration
+
+Here's a minimal configuration example:
+
+```kotlin
+configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
+    diffSource.file.set(PATH_TO_DIFF_FILE)
 
     reportViews {
         val test by getting {
@@ -115,28 +131,6 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
 }
 ```
 
-</details>
-
-<details>
-<summary><b>Groovy</b></summary>
-
-```groovy
-deltaCoverageReport {
-    diffSource.file = file("${PATH_TO_DIFF_FILE}")
-
-    reportViews {
-        test {
-            violationRules.failIfCoverageLessThan 0.9d
-        }
-    }
-    reports {
-        html.set(true)
-    }
-}
-```
-
-</details>
-
 ### Coverage engine
 
 Delta Coverage plugin doesn't collect coverage data itself.
@@ -146,10 +140,8 @@ The plugin supports two coverage engines:
 
 - [JaCoCo](https://github.com/jacoco/jacoco) is standard coverage engine for JVM projects.
 - [Intellij coverage](https://github.com/JetBrains/intellij-coverage) is coverage engine that used by default in
-  Intellij IDE.
-  Intellij coverage could be applied to your Gradle project by applying [CoverJet](https://github.com/gw-kit/cover-jet-plugin) plugin.
-  plugin.
-  Intellij coverage is better choice for **Kotlin** projects.
+  Intellij IDE. Intellij coverage could be applied to your Gradle project by applying the [CoverJet](https://github.com/gw-kit/cover-jet-plugin) plugin.
+  Intellij coverage is a better choice for **Kotlin** projects.
 
 See [Configuration](#configuration) section to configure coverage engine.
 
@@ -164,7 +156,7 @@ So, you can check coverage for different test tasks separately.
 Each view could have its own coverage binary files and violation rules.
 
 Suppose you have a test task `test` and test task `integrationTest` in your project.
-The plugin will automatically register and configures the next views:
+The plugin will automatically register and configure the following views:
 
 - `test` - for task `test`.
 - `integrationTest` - for task `integrationTest`.
@@ -178,33 +170,33 @@ See [Parameters description v2](https://github.com/gw-kit/delta-coverage-plugin/
 
 ```kotlin
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-    // Configures coverage engine. Default is 'JACOCO'.
+    // Coverage engine configuration
     coverage {
-        // Required. Default is 'JACOCO'. Could be set to INTELLIJ engine.
-        engine = CoverageEngine.JACOCO 
-        
-        // Required. Default is 'true'. If 'true' then the corresponding coverage engine plugin is applied to a project and all it's subprojects.
-        autoApplyPlugin = true 
+        // Optional. Default is 'JACOCO'. Can be set to INTELLIJ engine.
+        engine = CoverageEngine.JACOCO
+
+        // Optional. Default is 'true'. Auto-applies the coverage engine plugin to the project and all subprojects.
+        autoApplyPlugin = true
     }
 
-    // Required. Only one of `file`, `url` or git must be specified.
+    // Diff source configuration (Required - one of `file`, `url`, or `git` must be specified)
     diffSource {
-        //  Path to diff file.
+        // Option 1: Path to diff file
         file.set(file("path/to/file.diff"))
 
-        // URL to retrieve diff by.
-        url.set("http://domain.com/file.diff")
+        // Option 2: URL to retrieve diff from
+        url.set("https://domain.com/file.diff")
 
-        // Compares current HEAD and all uncommited with provided branch, revision or tag.
+        // Option 3: Compare with git branch/tag
+        // Compares current HEAD and all uncommitted changes with the provided branch, revision, or tag
         git.compareWith.set("refs/remotes/origin/develop")
-        git.useNativeGit.set(true)
-        // Optional. Default is 'false'. If 'true' then the plugin uses native git to get diff.
+        git.useNativeGit.set(true)  // Optional. Default is 'false'. Uses native git instead of JGit.
     }
 
-    // Required. By default, sources are taken from jacoco plugin(or intellij) if the plugin is applied to a project.
+    // Optional. By default, sources are auto-detected from JaCoCo or IntelliJ plugin.
     sources = files("/path/to/sources")
 
-    // Required. By default, classes are taken from jacoco plugin(or intellij) if the plugin is applied to a project.
+    // Optional. By default, classes are auto-detected from JaCoCo or IntelliJ plugin.
     classesDirs = files("/path/to/compiled/classes")
 
     // Optional. Excludes classes from coverage report by set of patterns .
@@ -390,12 +382,9 @@ By default, Delta Coverage generates reports only for modified/new code based on
 
 Add `fullCoverageReport.set(true)` to your reports configuration:
 
-<details open>
-<summary><b>Kotlin</b></summary>
-
 ```kotlin
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-    diffSource.file.set("${PATH_TO_DIFF_FILE}")
+    diffSource.file.set(PATH_TO_DIFF_FILE)
 
     reports {
         html.set(true)
@@ -409,30 +398,6 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     }
 }
 ```
-
-</details>
-
-<details>
-<summary><b>Groovy</b></summary>
-
-```groovy
-deltaCoverageReport {
-    diffSource.file = file("${PATH_TO_DIFF_FILE}")
-
-    reports {
-        html = true
-        fullCoverageReport.set(true)  // Enable full coverage reports
-    }
-
-    reportViews {
-        test {
-            violationRules.failIfCoverageLessThan 0.9d
-        }
-    }
-}
-```
-
-</details>
 
 ### Report Structure
 
@@ -480,6 +445,76 @@ build/reports/coverage-reports/
 
 Both HTML reports can be opened in a browser to compare coverage metrics side-by-side.
 
+
+## Common Use Cases
+
+### Enforce 90% Coverage on New Code
+
+```kotlin
+configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
+    diffSource.git.compareWith.set("refs/remotes/origin/main")
+
+    reportViews {
+        val test by getting {
+            violationRules.failIfCoverageLessThan(0.9)  // Enforce 90% coverage
+        }
+    }
+}
+```
+
+### Compare with Develop Branch Before Merging
+
+```kotlin
+configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
+    diffSource.git.compareWith.set("refs/remotes/origin/develop")
+
+    reports {
+        html.set(true)
+        markdown.set(true)  // For PR comments
+    }
+}
+```
+
+### Use IntelliJ Coverage for Kotlin Projects
+
+```kotlin
+configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
+    coverage {
+        engine = CoverageEngine.INTELLIJ  // Better for Kotlin
+    }
+
+    diffSource.git.compareWith.set("refs/remotes/origin/main")
+}
+```
+
+### Generate Full Coverage Reports for Badges
+
+```kotlin
+configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
+    diffSource.git.compareWith.set("refs/remotes/origin/main")
+
+    reports {
+        html.set(true)
+        fullCoverageReport.set(true)  // Generate project-wide coverage
+    }
+}
+```
+
+### Exclude Generated Code from Coverage
+
+```kotlin
+configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
+    diffSource.git.compareWith.set("refs/remotes/origin/main")
+
+    excludeClasses.value(
+        listOf(
+            "**/generated/**/*.*",
+            "**/*\$\$*.class",  // Exclude synthetic classes
+            "**/BuildConfig.class"
+        )
+    )
+}
+```
 
 ## GitHub Integration
 
