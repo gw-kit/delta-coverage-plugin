@@ -252,23 +252,27 @@ class ClassesDirLoaderTest {
     }
 
     @Test
-    fun `traverseClasses should combine include and exclude filters`() {
+    fun `traverseClasses should ignore exclude patterns when include list is specified`() {
         // GIVEN
         val packageDir = tempDir.resolve("com/example").createDirectories()
         val includedFile = packageDir.resolve("Included.class").createFile()
-        val excludedFile = packageDir.resolve("Test.class").createFile()
+        val testFile = packageDir.resolve("Test.class").createFile()
         packageDir.resolve("Other.class").createFile()
         val excludePattern = ".*Test\\.class$"
-        val loader = ClassesDirLoader(setOf(includedFile, excludedFile), setOf(excludePattern))
+        val loader = ClassesDirLoader(setOf(includedFile, testFile), setOf(excludePattern))
 
         // WHEN
         val result = loader.traverseClasses(tempDir).toList()
 
         // THEN
+        // When matchClasses is set, exclude patterns are ignored per README.md:240
         result
-            .shouldHaveSize(1)
-            .single()
-            .shouldBeEqual(JvmClassDesc("com.example.Included", includedFile))
+            .shouldHaveSize(2)
+            .map { it.className }
+            .shouldContainExactly(
+                "com.example.Included",
+                "com.example.Test"
+            )
     }
 
     @Test
