@@ -36,6 +36,7 @@ internal class SourceTypeTest {
         "INTELLIJ, '.ic' files",
         "JACOCO, '.exec' files",
         "DELTA_COVERAGE, deltaCoverageReport.reportViews.<view>.binaryCoverageFiles",
+        quoteCharacter = '"'
     )
     fun `should return resource name for binary coverage`(
         sourceProvider: SourcesResolver.Provider,
