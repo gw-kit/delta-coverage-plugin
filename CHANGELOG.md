@@ -1,13 +1,31 @@
 # Delta-Coverage Gradle plugin Changelog
 
-## 3.4.3
+## 3.5.0 (2025-10-31)
+
+### New features
+- Introduced `delta-coverage-demo` module for manual testing and debugging of delta-coverage-core locally.
+- Added support for exclude filters in IntelliJ full coverage reports.
+- Added support for custom class filters via `matchClasses` property in report views.
 
 ### Fixed
 - Fixed configuration cache issues.
+- Fixed full coverage custom view handling when using IntelliJ coverage engine.
+- `excludeClasses` property now correctly applies to full coverage reports when using IntelliJ engine.
+
+### Changed
+- Maven Central publishing support added (#290).
+- Improved IntelliJ coverage data loading with new class loader architecture.
 
 ### Dependency updates
-- CoverJet plugin dependency updated to [0.1.2](https://github.com/gw-kit/cover-jet-plugin/releases/tag/0.1.2)
+- CoverJet plugin dependency updated to [0.1.4](https://github.com/gw-kit/cover-jet-plugin/releases/tag/0.1.4)
 - Updated Gradle to [9.2.0](https://github.com/gradle/gradle/releases/tag/v9.2.0)
+- Updated JaCoCo to [0.8.14](https://github.com/jacoco/jacoco/releases/tag/v0.8.14)
+- Updated intellij-coverage to [1.0.769]
+- Updated JGit to 7.4.0.202509020913-r
+- Updated Jackson to 2.20.0
+- Updated OpenCSV to 5.12.0
+- Updated JUnit to 5.14.0
+- Updated Kotlin to 2.2.21
 
 
 ## 3.4.2
