@@ -26,7 +26,7 @@ class ModifiedLinesDiffParserTest {
     fun `collectModifiedLines should throw when file path cannot be parsed`() {
         // setup
         val diffContent = """
-            +++
+            +++ 
         """.trimIndent().lines()
 
         // run
