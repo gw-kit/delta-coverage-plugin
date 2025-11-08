@@ -69,35 +69,18 @@ Before starting, verify:
    - Wait for task completion
    - Look for: `> Task :delta-coverage-core:publishMavenPublicationToMavenCentralRepository`
 
-2. **Handle errors**
-   - If 401 Unauthorized: Check `mavenCentralUsername` and `mavenCentralPassword` in gradle.properties
-   - If signing fails: Verify GPG credentials
-   - If version exists: Version already published, STOP
-   - If task fails: Report error to user and STOP
-
-3. **Wait for publication**
+2. **Wait for publication**
    - Task should complete successfully
    - Note: Maven Central sync takes ~30 minutes for public availability
 
 ### 4. Publish delta-coverage-gradle to Gradle Plugin Portal
 
-1. **Build and test the Gradle plugin**
-   - Run: `./gradlew :delta-coverage-gradle:build functionalTest`
-   - Ensure all tests pass including functional tests
-   - If tests fail, STOP and report failures
-
-2. **Publish to Gradle Plugin Portal**
+1. **Publish to Gradle Plugin Portal**
    - Run: `./gradlew :delta-coverage-gradle:publishPlugins`
    - Wait for task completion: `> Task :delta-coverage-gradle:publishPlugins`
 
-3. **Handle errors**
-   - If 401 Unauthorized: Check `gradle.publish.key` and `gradle.publish.secret`
-   - If version exists: Version already published, STOP
-   - If task fails: Report error to user and STOP
-
-4. **Wait for publication**
+2. **Wait for publication**
    - Task should complete successfully
-   - Note: Plugin Portal processing takes ~10-15 minutes
 
 ### 5. Create GitHub Release
 
@@ -129,11 +112,6 @@ EOF
      )"
      ```
 
-4. **Verify release created**
-   - Run: `gh release view v<version>`
-   - Or run: `gh release view v<version> --web` to open in browser
-   - Verify release notes are correct
-
 ### 6. Verify publications
 
 1. **Provide verification links to user**
@@ -145,28 +123,6 @@ EOF
    - Maven Central: ~30 minutes for full sync
    - Gradle Plugin Portal: ~10-15 minutes for processing
    - GitHub Release: Available immediately
-
-### 7. Post-publication tasks
-
-1. **Prepare for next development cycle** (optional)
-   - Ask user: "Would you like to prepare for next development cycle?"
-   - If yes:
-     - Ask for next version (e.g., 3.4.4-SNAPSHOT)
-     - Update gradle.properties with next SNAPSHOT version
-     - Create commit: `git commit -am "Prepare for next development iteration"`
-     - Push: `git push origin main`
-
-2. **Create CHANGELOG entry for next version** (optional)
-   - Add new section at top of CHANGELOG.md:
-     ```markdown
-     ## <next-version>
-
-     ### New features
-
-     ### Fixed
-
-     ### Dependency updates
-     ```
 
 ## Success Message
 
@@ -187,14 +143,6 @@ Notes:
 - Plugin Portal processing takes ~10-15 minutes
 - GitHub release is available immediately
 
-Next steps:
-1. Verify publications using the links above (wait for sync times)
-2. Test installation of new version
-3. Announce the release if needed
-
-Would you like to:
-- Prepare for next development cycle (bump to x.y.z+1-SNAPSHOT)?
-- Test the published artifacts?
 ```
 
 ## Important Notes
@@ -221,32 +169,6 @@ git tag v<version>
 git push origin v<version>
 gh release create v<version> --title "Version <version>" --notes "<changelog>"
 ```
-
-## Troubleshooting
-
-### Maven Central Issues
-- **401 Unauthorized**: Check Maven Central credentials in `~/.gradle/gradle.properties`
-- **Signing failed**: Verify GPG key credentials
-- **Version already exists**: Cannot republish - version is immutable
-- **Timeout**: Portal API can be slow - wait and check manually
-
-### Gradle Plugin Portal Issues
-- **401 Unauthorized**: Check `gradle.publish.key` and `gradle.publish.secret`
-- **Invalid plugin ID**: Verify plugin ID matches registered namespace
-- **Version already published**: Cannot republish - version is immutable
-- **Functional tests failed**: Fix tests before publishing
-
-### GitHub Release Issues
-- **Tag already exists**: Delete tag locally and remotely first:
-  ```bash
-  git tag -d v<version>
-  git push origin :refs/tags/v<version>
-  ```
-- **Authentication failed**: Run `gh auth login` to re-authenticate
-- **Release already exists**: Delete release first:
-  ```bash
-  gh release delete v<version> --yes
-  ```
 
 ## Error Handling Rules
 
