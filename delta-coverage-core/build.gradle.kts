@@ -22,5 +22,9 @@ configurations.all {
 
 mavenPublishing {
     publishToMavenCentral(automaticRelease = true)
-    signAllPublications()
+
+    // Only sign publications for Maven Central, not for GitHub Packages snapshots
+    if (!rootProject.hasProperty("snapshotPrefix")) {
+        signAllPublications()
+    }
 }
