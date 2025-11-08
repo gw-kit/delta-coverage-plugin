@@ -51,7 +51,9 @@ internal class ClassesDirLoader(
             }
 
     private fun shouldKeep(file: Path): Boolean {
-        val excludePredicate: Path.() -> Boolean = { excludeRegexes.any { it.matches(absolutePathString()) } }
+        val excludePredicate: Path.() -> Boolean = {
+            includeClassFilesPaths.isEmpty() && excludeRegexes.any { it.matches(absolutePathString()) }
+        }
         val includePredicate: Path.() -> Boolean = {
             includeClassFilesPaths.isEmpty() || includeClassFilesPaths.contains(absolutePathString())
         }
