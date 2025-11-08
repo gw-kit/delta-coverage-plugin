@@ -12,7 +12,6 @@ testing {
         val test by getting(JvmTestSuite::class) {
             useJUnitJupiter()
             dependencies {
-                implementation(libDeps.assertj)
                 implementation(libDeps.mockk)
                 implementation(libDeps.kotestRunnerJunit5)
                 implementation(libDeps.kotestAssertions)

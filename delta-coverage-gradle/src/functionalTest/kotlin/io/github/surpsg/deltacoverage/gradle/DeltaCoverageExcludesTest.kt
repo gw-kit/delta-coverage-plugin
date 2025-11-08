@@ -5,7 +5,9 @@ import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
 import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
 import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
 import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.shouldBe
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -14,7 +16,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 import kotlin.io.path.name
-import kotlin.streams.toList
 
 @GradlePluginTest(TestProjects.EXCLUDE_CLASSES)
 class DeltaCoverageExcludesTest {
@@ -74,10 +75,10 @@ class DeltaCoverageExcludesTest {
         val classReportFiles: List<Path> = findAllFiles(htmlReportDir) { file ->
             file.name.endsWith("Class.html")
         }
-        assertThat(classReportFiles)
-            .hasSize(1).first()
-            .extracting(Path::name)
-            .isEqualTo("CoveredClass.html")
+        assertSoftly(classReportFiles) {
+            shouldHaveSize(1)
+            single().name shouldBe "CoveredClass.html"
+        }
     }
 
     @Test

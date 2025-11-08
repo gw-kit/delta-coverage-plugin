@@ -4,16 +4,16 @@ jacocoVer = "0.8.14"
 httpClientVer = "5.5.1"
 jgitVer = "7.4.0.202509020913-r"
 csvVer = "5.12.0"
-jacksonVer = "2.20.0"
+jacksonVer = "2.20.1"
 
 kotlinVer = "2.2.21"
-junitVer = "5.14.0"
+junitVer = "5.14.1"
 mockkVer = "1.14.6"
 kotestVer = "5.9.1"
 jimfsVer = "1.3.1"
 
 coverJetVer = "0.1.4"
-deltaCoverageVer = "3.4.2"
+deltaCoverageVer = "3.5.0"
 
 [libraries]
 # Kotlin
@@ -38,7 +38,6 @@ jackson = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref 
 # Testing
 junitApi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junitVer" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockkVer" }
-assertj = { module = "org.assertj:assertj-core", version = "3.27.6" }
 kotestRunnerJunit5 = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotestVer" }
 kotestAssertions = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotestVer" }
 kotestProperty = { module = "io.kotest:kotest-property-jvm", version.ref = "kotestVer" }
