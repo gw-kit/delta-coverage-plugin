@@ -19,3 +19,8 @@ dependencies {
 configurations.all {
     resolutionStrategy.force(deps.intellijCoverageAgent)
 }
+
+mavenPublishing {
+    publishToMavenCentral(automaticRelease = true)
+    signAllPublications()
+}

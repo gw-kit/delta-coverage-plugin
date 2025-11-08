@@ -1,218 +1,269 @@
 ---
-description: Publish delta-coverage-core to Maven Central and delta-coverage-gradle to Gradle Plugin Portal
+description: Publish to Maven Central, Gradle Plugin Portal, and create GitHub Release
 ---
 
 # Publish Delta Coverage
 
-You are tasked with publishing Delta Coverage modules:
-- `delta-coverage-core` to Maven Central Portal (using vanniktech gradle-maven-publish-plugin)
-- `delta-coverage-gradle` to Gradle Plugin Portal (using com.gradle.plugin-publish)
+You are tasked with publishing Delta Coverage modules and creating a GitHub release.
+
+This command should be run AFTER:
+- Release branch has been prepared (using `/prepare-release`)
+- Release PR has been merged to `main` branch
+- You are on `main` branch with latest changes
+
+## Prerequisites Verification
+
+Before starting, verify:
+
+1. **Check current branch**
+   - Run: `git branch --show-current`
+   - Must be on `main` branch
+   - If not on main, STOP and inform user
+
+2. **Verify branch is up-to-date**
+   - Run: `git fetch origin && git status`
+   - Must be up-to-date with origin/main
+   - If behind, STOP and ask user to pull latest changes
+
+3. **Read version from gradle.properties**
+   - Read `gradle.properties` to get version
+   - Version should NOT contain SNAPSHOT
+   - If SNAPSHOT found, STOP and inform user
+
+4. **Verify changelog exists**
+   - Read CHANGELOG.md
+   - Must have section for current version
+   - If not found, STOP and inform user
 
 ## Steps to complete:
 
-### 1. Verify and update version
+### 1. Extract changelog for current version
 
-1. **Check current version in gradle.properties**
-   - Read the `version` property from `gradle.properties`
-   - Format should be: `version=x.y.z` (no SNAPSHOT suffix for releases)
+1. **Read CHANGELOG.md**
+   - Extract the section for current version
+   - Format: From `## x.y.z` to the next `## ` heading
+   - Store this content for GitHub release notes
 
-2. **Determine if version update is needed**
-   - Ask the user what version to publish
-   - If publishing a new release, update `gradle.properties` with the new version
-   - Remove any SNAPSHOT suffix if present
+2. **Verify changelog content**
+   - Ensure it's not empty
+   - Should contain meaningful release notes
+   - If empty, ask user to provide content
 
-3. **Verify version consistency**
-   - The version in `gradle.properties` should be the version being published
-   - Check if this version already exists on Maven Central to avoid conflicts
+### 2. Run final verification build
 
-### 2. Run tests and build
+1. **Clean build both modules**
+   - Run: `./gradlew clean build`
+   - This ensures everything builds correctly
+   - If build fails, STOP and report errors
 
-1. **Execute full test suite**
-   - Run: `./gradlew :delta-coverage-core:clean :delta-coverage-core:build`
-   - Ensure all tests pass
+2. **Verify test results**
+   - All tests must pass
+   - Check for any warnings
    - If tests fail, STOP and report failures
 
-2. **Verify build artifacts**
-   - Check that JARs are created: `ls -lh delta-coverage-core/build/libs/`
-   - Should see: main JAR, sources JAR, javadoc JAR
+### 3. Publish delta-coverage-core to Maven Central
 
-### 3. Test publication locally (optional but recommended)
-
-1. **Publish to Maven Local first**
-   - Run: `./gradlew :delta-coverage-core:publishToMavenLocal`
-   - This will test signing and POM generation without actually publishing
-
-2. **Verify local publication**
-   - Check artifacts in: `~/.m2/repository/io/github/gw-kit/delta-coverage-core/<version>/`
-   - Verify all files have `.asc` signatures
-   - Verify POM contains correct metadata
-
-3. **Inspect POM file**
-   - Check: `cat ~/.m2/repository/io/github/gw-kit/delta-coverage-core/<version>/delta-coverage-core-<version>.pom`
-   - Verify developer info, SCM URLs, license, description are correct
-
-### 4. Publish to Maven Central
-
-1. **Choose publication method**
-
-   **Option A: Publish to staging (manual release)**
-   - Run: `./gradlew :delta-coverage-core:publishToMavenCentral`
-   - This creates a staging deployment that requires manual release via Portal UI
-
-   **Option B: Publish and auto-release (recommended for stable releases)**
+1. **Publish and auto-release to Maven Central**
    - Run: `./gradlew :delta-coverage-core:publishAndReleaseToMavenCentral`
-   - This publishes and automatically releases to Maven Central
-
-2. **Wait for publication to complete**
-   - The Gradle task should complete successfully
+   - This publishes to Maven Central and automatically releases
+   - Wait for task completion
    - Look for: `> Task :delta-coverage-core:publishMavenPublicationToMavenCentralRepository`
 
-3. **Verify publication**
-   - If using Option A (staging):
-     - Go to https://central.sonatype.com/
-     - Navigate to your deployments
-     - Review the uploaded artifacts
-     - Click "Publish" to release
+2. **Handle errors**
+   - If 401 Unauthorized: Check `mavenCentralUsername` and `mavenCentralPassword` in gradle.properties
+   - If signing fails: Verify GPG credentials
+   - If version exists: Version already published, STOP
+   - If task fails: Report error to user and STOP
 
-   - If using Option B (auto-release):
-     - Publication happens automatically
-     - No manual action needed in the Portal
+3. **Wait for publication**
+   - Task should complete successfully
+   - Note: Maven Central sync takes ~30 minutes for public availability
 
-### 5. Publish to Gradle Plugin Portal
+### 4. Publish delta-coverage-gradle to Gradle Plugin Portal
 
 1. **Build and test the Gradle plugin**
    - Run: `./gradlew :delta-coverage-gradle:build functionalTest`
    - Ensure all tests pass including functional tests
    - If tests fail, STOP and report failures
 
-2. **Test plugin publication locally (optional)**
-   - Run: `./gradlew :delta-coverage-gradle:publishToMavenLocal`
-   - This tests plugin marker generation and metadata
-
-3. **Publish to Gradle Plugin Portal**
+2. **Publish to Gradle Plugin Portal**
    - Run: `./gradlew :delta-coverage-gradle:publishPlugins`
-   - This publishes the plugin and plugin marker artifacts
    - Wait for task completion: `> Task :delta-coverage-gradle:publishPlugins`
 
-4. **Verify publication on Plugin Portal**
-   - Wait ~10-15 minutes for processing
-   - Visit: https://plugins.gradle.org/plugin/io.github.gw-kit.delta-coverage
-   - Verify the new version appears
-   - Check that plugin metadata is correct (description, tags, etc.)
+3. **Handle errors**
+   - If 401 Unauthorized: Check `gradle.publish.key` and `gradle.publish.secret`
+   - If version exists: Version already published, STOP
+   - If task fails: Report error to user and STOP
 
-### 6. Verify deployments
+4. **Wait for publication**
+   - Task should complete successfully
+   - Note: Plugin Portal processing takes ~10-15 minutes
 
-**Maven Central:**
-1. **Check Maven Central search**
-   - Wait ~30 minutes for sync
-   - Visit: https://central.sonatype.com/artifact/io.github.gw-kit/delta-coverage-core
-   - Verify the new version appears
+### 5. Create GitHub Release
 
-2. **Verify artifact availability**
-   - Try downloading: https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-core/<version>/
-   - Check all artifacts are available: JAR, sources, javadoc, POM, signatures
+1. **Create git tag**
+   - Tag format: `v<version>` (e.g., `v3.4.3`)
+   - Run: `git tag v<version>`
 
-**Gradle Plugin Portal:**
-1. **Check Plugin Portal**
-   - Visit: https://plugins.gradle.org/plugin/io.github.gw-kit.delta-coverage
-   - Verify new version is listed
-   - Check "How to use" section shows correct version
+2. **Push tag to remote**
+   - Run: `git push origin v<version>`
+   - Verify tag was pushed successfully
 
-2. **Test plugin installation**
-   - Create a test project
-   - Add plugin using new version:
-     ```kotlin
-     plugins {
-       id("io.github.gw-kit.delta-coverage") version "<version>"
-     }
+3. **Create GitHub release using gh CLI**
+   - Use the changelog content extracted in step 1
+   - Run: `gh release create v<version> --title "Version <version>" --notes "$(cat <<'EOF'
+<changelog content here>
+EOF
+)"`
+   - Example:
+     ```bash
+     gh release create v3.4.3 --title "Version 3.4.3" --notes "$(cat <<'EOF'
+     ## 3.4.3 (2025-10-31)
+
+     ### Fixed
+     - Fixed configuration cache issues.
+
+     ### Dependency updates
+     - Updated Gradle to 9.2.0
+     EOF
+     )"
      ```
-   - Verify plugin applies successfully
+
+4. **Verify release created**
+   - Run: `gh release view v<version>`
+   - Or run: `gh release view v<version> --web` to open in browser
+   - Verify release notes are correct
+
+### 6. Verify publications
+
+1. **Provide verification links to user**
+   - Maven Central: https://central.sonatype.com/artifact/io.github.gw-kit/delta-coverage-core/<version>
+   - Gradle Plugin Portal: https://plugins.gradle.org/plugin/io.github.gw-kit.delta-coverage
+   - GitHub Release: https://github.com/gw-kit/delta-coverage-plugin/releases/tag/v<version>
+
+2. **Inform about sync times**
+   - Maven Central: ~30 minutes for full sync
+   - Gradle Plugin Portal: ~10-15 minutes for processing
+   - GitHub Release: Available immediately
 
 ### 7. Post-publication tasks
 
-1. **Tag the release in Git** (if this is a release version)
-   - Create tag: `git tag v<version>`
-   - Push tag: `git push origin v<version>`
+1. **Prepare for next development cycle** (optional)
+   - Ask user: "Would you like to prepare for next development cycle?"
+   - If yes:
+     - Ask for next version (e.g., 3.4.4-SNAPSHOT)
+     - Update gradle.properties with next SNAPSHOT version
+     - Create commit: `git commit -am "Prepare for next development iteration"`
+     - Push: `git push origin main`
 
-2. **Update CHANGELOG.md**
-   - Document the published version
-   - Add release date
+2. **Create CHANGELOG entry for next version** (optional)
+   - Add new section at top of CHANGELOG.md:
+     ```markdown
+     ## <next-version>
 
-## Important Notes:
+     ### New features
 
-- **Version**: Never publish the same version twice - both portals don't allow overwrites
-- **Testing**: Always test locally with `publishToMavenLocal` first for both modules
-- **Signing**: All artifacts must be GPG signed for Maven Central (configured in `~/.gradle/gradle.properties`)
-- **Dependencies**: delta-coverage-gradle depends on delta-coverage-core, so publish core first
-- **Publishing order**: Publish core to Maven Central first, then gradle plugin to Plugin Portal
-- **Wait times**:
-  - Maven Central: ~30 minutes for sync
-  - Gradle Plugin Portal: ~10-15 minutes for processing
+     ### Fixed
 
-## Configuration Files:
+     ### Dependency updates
+     ```
 
-**delta-coverage-core:**
-- `delta-coverage-core/gradle.properties` - POM metadata for Maven Central
-- `delta-coverage-core/build.gradle.kts` - vanniktech maven-publish plugin
+## Success Message
 
-**delta-coverage-gradle:**
-- `delta-coverage-gradle/build.gradle.kts` - Gradle plugin definition
-- `buildSrc/src/main/kotlin/gradle-plugin-conventions.gradle.kts` - Plugin publish setup
+After successful publication, display:
 
-**Shared:**
-- `gradle/deps.versions.toml` - Plugin versions
-- `gradle.properties` - Project version (applies to both modules)
+```
+🎉 Publication successful!
 
-## Publishing Tasks Available:
+Version: x.y.z
 
-**Maven Central (delta-coverage-core):**
+Published to:
+✅ Maven Central: https://central.sonatype.com/artifact/io.github.gw-kit/delta-coverage-core/x.y.z
+✅ Gradle Plugin Portal: https://plugins.gradle.org/plugin/io.github.gw-kit.delta-coverage
+✅ GitHub Release: https://github.com/gw-kit/delta-coverage-plugin/releases/tag/vx.y.z
+
+Notes:
+- Maven Central sync takes ~30 minutes
+- Plugin Portal processing takes ~10-15 minutes
+- GitHub release is available immediately
+
+Next steps:
+1. Verify publications using the links above (wait for sync times)
+2. Test installation of new version
+3. Announce the release if needed
+
+Would you like to:
+- Prepare for next development cycle (bump to x.y.z+1-SNAPSHOT)?
+- Test the published artifacts?
+```
+
+## Important Notes
+
+- **Order matters**: Publish core to Maven Central first, then gradle plugin to Plugin Portal, then GitHub release
+- **No retries**: Both Maven Central and Plugin Portal don't allow republishing same version
+- **Signing required**: All Maven Central artifacts must be GPG signed
+- **Credentials**: Ensure gradle.properties has:
+  - `mavenCentralUsername` and `mavenCentralPassword` for Maven Central
+  - `gradle.publish.key` and `gradle.publish.secret` for Plugin Portal
+  - GPG signing credentials: `signingInMemoryKey`, `signingInMemoryKeyId`, `signingInMemoryKeyPassword`
+
+## Publishing Tasks Reference
+
 ```bash
-# Test locally
-./gradlew :delta-coverage-core:publishToMavenLocal
-
-# Publish to staging (manual release)
-./gradlew :delta-coverage-core:publishToMavenCentral
-
-# Publish and auto-release
+# Maven Central (delta-coverage-core)
 ./gradlew :delta-coverage-core:publishAndReleaseToMavenCentral
-```
 
-**Gradle Plugin Portal (delta-coverage-gradle):**
-```bash
-# Test locally
-./gradlew :delta-coverage-gradle:publishToMavenLocal
-
-# Publish to Plugin Portal
+# Gradle Plugin Portal (delta-coverage-gradle)
 ./gradlew :delta-coverage-gradle:publishPlugins
+
+# GitHub Release
+git tag v<version>
+git push origin v<version>
+gh release create v<version> --title "Version <version>" --notes "<changelog>"
 ```
 
-**Both (complete release):**
-```bash
-# Publish both modules in sequence
-./gradlew :delta-coverage-core:publishAndReleaseToMavenCentral && \
-./gradlew :delta-coverage-gradle:publishPlugins
-```
+## Troubleshooting
 
-## Troubleshooting:
+### Maven Central Issues
+- **401 Unauthorized**: Check Maven Central credentials in `~/.gradle/gradle.properties`
+- **Signing failed**: Verify GPG key credentials
+- **Version already exists**: Cannot republish - version is immutable
+- **Timeout**: Portal API can be slow - wait and check manually
 
-**Maven Central:**
-- **401 Unauthorized**: Check `mavenCentralUsername` and `mavenCentralPassword` in gradle.properties
-- **Signing failed**: Verify GPG key credentials (`signingInMemoryKey`, `signingInMemoryKeyId`, `signingInMemoryKeyPassword`)
-- **Version already exists**: Cannot republish - increment version number
-- **Missing signatures**: Ensure `RELEASE_SIGNING_ENABLED=true` in `delta-coverage-core/gradle.properties`
-- **Timeout**: Portal API can be slow - wait and retry
-
-**Gradle Plugin Portal:**
-- **401 Unauthorized**: Check `gradle.publish.key` and `gradle.publish.secret` in gradle.properties
+### Gradle Plugin Portal Issues
+- **401 Unauthorized**: Check `gradle.publish.key` and `gradle.publish.secret`
 - **Invalid plugin ID**: Verify plugin ID matches registered namespace
-- **Version already published**: Cannot republish - increment version number
+- **Version already published**: Cannot republish - version is immutable
 - **Functional tests failed**: Fix tests before publishing
-- **Plugin marker issues**: Check plugin definition in `delta-coverage-gradle/build.gradle.kts`
 
-## Error Handling:
+### GitHub Release Issues
+- **Tag already exists**: Delete tag locally and remotely first:
+  ```bash
+  git tag -d v<version>
+  git push origin :refs/tags/v<version>
+  ```
+- **Authentication failed**: Run `gh auth login` to re-authenticate
+- **Release already exists**: Delete release first:
+  ```bash
+  gh release delete v<version> --yes
+  ```
 
-- If tests fail, STOP and fix issues
-- If signing fails, verify GPG credentials
-- If publication fails with 401, check Maven Central credentials
-- If version conflict, ask user for new version number
-- If unsure about any step, ask the user before proceeding
+## Error Handling Rules
+
+- If ANY step fails, STOP immediately and report to user
+- Do NOT continue to next step if previous step failed
+- If publishing core fails, do NOT publish gradle plugin
+- If publishing gradle plugin fails, do NOT create GitHub release
+- Always inform user of exact error and suggest fix
+
+## Verification Before Publishing
+
+Before running publish tasks, verify:
+- [ ] On `main` branch
+- [ ] Branch is up-to-date with origin/main
+- [ ] Version in gradle.properties has no SNAPSHOT
+- [ ] CHANGELOG.md has section for current version
+- [ ] All tests pass
+- [ ] Maven Central credentials configured
+- [ ] Gradle Plugin Portal credentials configured
+- [ ] GPG signing credentials configured
