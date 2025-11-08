@@ -1,10 +1,10 @@
 # Delta-Coverage Gradle plugin Changelog
 
-## Unreleased
+## 3.5.1
 
 ### Fixed
 - Fixed class filtering logic when `matchClasses` is specified for custom report views.
-  Exclude patterns are now correctly ignored when an include list (`matchClasses`) is provided, 
+  Exclude patterns are now correctly ignored when an include list (`matchClasses`) is provided,
   ensuring only explicitly specified classes are included in coverage reports. 
 
 ## 3.5.0 (2025-10-31)
