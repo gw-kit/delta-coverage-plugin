@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.report.textual
 
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -14,7 +15,6 @@ class RawCoverageDataTest {
         "5, 10, 0.5",
         "5, 20, 0.25",
         "0, 10, 0.0",
-        "0, 0, NaN",
     )
     fun `should return correct ration for branches`(
         covered: Int,
@@ -28,6 +28,18 @@ class RawCoverageDataTest {
 
         // WHEN // THEN
         data.branches.ratio shouldBe expected
+    }
+
+    @Test
+    fun `should return nan when no entities`(
+    ) {
+        // GIVEN
+        val data = RawCoverageData.newBlank {
+            branches(covered = 0, total = 0)
+        }
+
+        // WHEN // THEN
+        data.branches.ratio.isNaN().shouldBeTrue()
     }
 
     @ParameterizedTest
