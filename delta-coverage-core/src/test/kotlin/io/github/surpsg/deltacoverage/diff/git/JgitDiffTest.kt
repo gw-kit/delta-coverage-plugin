@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test
 import java.io.File
 import java.nio.file.Files
 
+@Suppress("LongMethod")
 class JgitDiffTest {
     private lateinit var rootProjectDir: File
 

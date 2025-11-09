@@ -26,6 +26,7 @@ import org.objectweb.asm.tree.TypeInsnNode
 import org.objectweb.asm.tree.VarInsnNode
 import kotlin.reflect.KClass
 
+@Suppress("LongMethod")
 class ModifiedLinesFilterTest {
 
     @Test
