@@ -1,18 +1,20 @@
 package io.github.surpsg.deltacoverage.diff.git
 
-import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import org.eclipse.jgit.lib.CoreConfig
+import org.junit.jupiter.api.Test
 
-class CrlfStrategyTest : StringSpec({
+class CrlfStrategyTest {
 
-    "crlf should be `Auto` when line separator is \\r\\n" {
+    @Test
+    fun `crlf should be Auto when line separator is CRLF`() {
         val crlf = getCrlf("\r\n")
         crlf shouldBe CoreConfig.AutoCRLF.TRUE
     }
 
-    "crlf should be `Input` when line separator is \\n" {
+    @Test
+    fun `crlf should be Input when line separator is LF`() {
         val crlf = getCrlf("\n")
         crlf shouldBe CoreConfig.AutoCRLF.INPUT
     }
-})
+}

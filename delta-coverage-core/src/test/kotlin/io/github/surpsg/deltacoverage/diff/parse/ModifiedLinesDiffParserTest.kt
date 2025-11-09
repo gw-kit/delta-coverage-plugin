@@ -1,16 +1,17 @@
 package io.github.surpsg.deltacoverage.diff.parse
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.startWith
+import org.junit.jupiter.api.Test
 import java.io.File
 
-class ModifiedLinesDiffParserTest : StringSpec({
+class ModifiedLinesDiffParserTest {
 
-    "collectModifiedLines should return empty map on empty list" {
+    @Test
+    fun `collectModifiedLines should return empty map on empty list`() {
         // setup
         val modifiedLinesDiffParser = ModifiedLinesDiffParser()
 
@@ -21,7 +22,8 @@ class ModifiedLinesDiffParserTest : StringSpec({
         collectModifiedLines shouldBe emptyMap()
     }
 
-    "collectModifiedLines should throw when file path cannot be parsed" {
+    @Test
+    fun `collectModifiedLines should throw when file path cannot be parsed`() {
         // setup
         val diffContent = """
             +++ 
@@ -36,7 +38,8 @@ class ModifiedLinesDiffParserTest : StringSpec({
         exception.message should startWith("Couldn't parse file relative path: ")
     }
 
-    "collectModifiedLines should return empty map when diff file has few line breaks" {
+    @Test
+    fun `collectModifiedLines should return empty map when diff file has few line breaks`() {
         // setup
         val lines = listOf("", "")
 
@@ -47,7 +50,8 @@ class ModifiedLinesDiffParserTest : StringSpec({
         collectModifiedLines shouldBe emptyMap()
     }
 
-    "collectModifiedLines should throw when offset cannot be parsed" {
+    @Test
+    fun `collectModifiedLines should throw when offset cannot be parsed`() {
         // setup
         val diffContent = """
             --- path/file
@@ -64,7 +68,8 @@ class ModifiedLinesDiffParserTest : StringSpec({
         exception.message should startWith("Couldn't parse file's range information: ")
     }
 
-    "collectModifiedLines should return modified and added lines used 'git diff' format" {
+    @Test
+    fun `collectModifiedLines should return modified and added lines used 'git diff' format`() {
         // setup
         val modifiedFilePath = "some/file/path.ext"
         val toFileGitDiffFormat = "b/$modifiedFilePath"
@@ -95,7 +100,8 @@ class ModifiedLinesDiffParserTest : StringSpec({
         collectModifiedLines shouldContainExactly expected
     }
 
-    "collectModifiedLines should return modified and added lines when multiple modified files" {
+    @Test
+    fun `collectModifiedLines should return modified and added lines when multiple modified files`() {
         // setup
         val modifiedFile1 = "some/file/path1.ext"
         val modifiedFile3 = "some/file/path3.ext"
@@ -133,7 +139,8 @@ class ModifiedLinesDiffParserTest : StringSpec({
         collectModifiedLines shouldContainExactly expected
     }
 
-    "collectModifiedLines should not skip modified lines when patch file contains empty lines" {
+    @Test
+    fun `collectModifiedLines should not skip modified lines when patch file contains empty lines`() {
         // setup
         val diffFileContent = ModifiedLinesDiffParserTest::class.java.classLoader
             .getResource("testintPatch1.patch")!!.file
@@ -155,7 +162,8 @@ class ModifiedLinesDiffParserTest : StringSpec({
         collectModifiedLines shouldContainExactly mapOf(modifiedFileName to modifiedLines)
     }
 
-    "collectModifiedLines should successfully parse diff of a patch file" {
+    @Test
+    fun `collectModifiedLines should successfully parse diff of a patch file`() {
         // setup
         val filePath = "jacoco-filtering-extension/src/test/resources/testintPatch1.patch"
 
@@ -176,7 +184,7 @@ class ModifiedLinesDiffParserTest : StringSpec({
              @@ -4,10 +4,8 @@
               import org.jacoco.core.internal.analysis.filter.IFilter
               import org.jacoco.core.internal.analysis.filter.IFilterContext
-              
+
         """.trimIndent().lines()
 
         // run
@@ -186,7 +194,8 @@ class ModifiedLinesDiffParserTest : StringSpec({
         collectModifiedLines shouldContainExactly mapOf(filePath to setOf(1, 6, 7))
     }
 
-    "collectModifiedLines should parse quoted paths" {
+    @Test
+    fun `collectModifiedLines should parse quoted paths`() {
         // setup
         val filePath = "b/#1{ }.txt"
 
@@ -207,7 +216,8 @@ class ModifiedLinesDiffParserTest : StringSpec({
         collectModifiedLines shouldContainExactly mapOf(filePath to setOf(2))
     }
 
-    "collectModifiedLines should properly parse when patch adds new line at end of file" {
+    @Test
+    fun `collectModifiedLines should properly parse when patch adds new line at end of file`() {
         // setup
         val fileName = "no-new-line-at-the-end.txt"
         val diffContent = """
@@ -229,4 +239,4 @@ class ModifiedLinesDiffParserTest : StringSpec({
         collectModifiedLines shouldContainExactly mapOf("b/$fileName" to setOf(3, 4))
     }
 
-})
+}
