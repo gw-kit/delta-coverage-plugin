@@ -1,10 +1,10 @@
 package io.github.surpsg.deltacoverage.gradle
 
+import io.github.gwkit.gradleprobe.RestorableFile
+import io.github.gwkit.gradleprobe.junit.GradlePluginTest
+import io.github.gwkit.gradleprobe.junit.GradleRunnerInstance
+import io.github.gwkit.gradleprobe.junit.ProjectFile
 import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.DELTA_COVERAGE_TASK
-import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
-import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
-import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
-import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
 import org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
-@GradlePluginTest(TestProjects.SINGLE_MODULE)
+@GradlePluginTest(TestProjects.SINGLE_MODULE, kts = false)
 class DeltaCoverageConfigurationsTest {
 
     @ProjectFile("test.diff.file")

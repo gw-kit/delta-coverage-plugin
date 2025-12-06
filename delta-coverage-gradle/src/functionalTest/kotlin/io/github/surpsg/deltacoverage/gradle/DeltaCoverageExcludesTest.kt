@@ -1,10 +1,10 @@
 package io.github.surpsg.deltacoverage.gradle
 
-import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
-import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
-import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
-import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
-import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
+import io.github.gwkit.gradleprobe.RestorableFile
+import io.github.gwkit.gradleprobe.junit.GradlePluginTest
+import io.github.gwkit.gradleprobe.junit.GradleRunnerInstance
+import io.github.gwkit.gradleprobe.junit.ProjectFile
+import io.github.gwkit.gradleprobe.junit.RootProjectDir
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -17,7 +17,7 @@ import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 import kotlin.io.path.name
 
-@GradlePluginTest(TestProjects.EXCLUDE_CLASSES)
+@GradlePluginTest(TestProjects.EXCLUDE_CLASSES, kts = false)
 class DeltaCoverageExcludesTest {
 
     @RootProjectDir

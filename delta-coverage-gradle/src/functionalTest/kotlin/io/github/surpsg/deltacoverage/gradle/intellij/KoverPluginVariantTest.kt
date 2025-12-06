@@ -1,17 +1,17 @@
 package io.github.surpsg.deltacoverage.gradle.intellij
 
+import io.github.gwkit.gradleprobe.RestorableFile
+import io.github.gwkit.gradleprobe.junit.GradlePluginTest
+import io.github.gwkit.gradleprobe.junit.GradleRunnerInstance
+import io.github.gwkit.gradleprobe.junit.ProjectFile
 import io.github.surpsg.deltacoverage.gradle.TestProjects
 import io.github.surpsg.deltacoverage.gradle.assertOutputContainsStrings
 import io.github.surpsg.deltacoverage.gradle.runDeltaCoverageTaskAndFail
-import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
-import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
-import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
-import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-@GradlePluginTest(TestProjects.SINGLE_MODULE, kts = true)
+@GradlePluginTest(TestProjects.SINGLE_MODULE)
 class KoverPluginVariantTest {
 
     @ProjectFile("test.diff.file")
