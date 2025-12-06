@@ -17,7 +17,7 @@ import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 import kotlin.io.path.name
 
-@GradlePluginTest(TestProjects.EXCLUDE_CLASSES)
+@GradlePluginTest(TestProjects.EXCLUDE_CLASSES, kts = false)
 class DeltaCoverageExcludesTest {
 
     @RootProjectDir

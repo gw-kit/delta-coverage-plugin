@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
-@GradlePluginTest(TestProjects.SINGLE_MODULE, kts = true)
+@GradlePluginTest(TestProjects.SINGLE_MODULE)
 class CoverJetPluginVariantViolationsTest {
 
     @RootProjectDir
@@ -32,36 +32,6 @@ class CoverJetPluginVariantViolationsTest {
     @BeforeEach
     fun beforeEach() {
         buildFile.restoreOriginContent()
-    }
-
-    @Test
-    fun `troubleshoot`() {
-        // GIVEN
-        buildFile.file.appendText(
-            """
-            configure<DeltaCoverageConfiguration> {
-                coverage.engine = CoverageEngine.INTELLIJ
-                diffSource.file = "$diffFilePath"
-                reportViews {
-                    view("test") {
-                        enabled = false
-                    }
-                    view("custom") {
-                        coverageBinaryFiles = files("build/coverage/test.ic")
-                        matchClasses.add("com/java/**/Class1.*")
-                    }
-                }
-                reports {
-                    html = true
-                    fullCoverageReport.set(true)
-                }
-            }
-        """.trimIndent()
-        )
-
-        // WHEN // THEN
-        gradleRunner
-            .runDeltaCoverageTask(printLogs = true)
     }
 
     @Test

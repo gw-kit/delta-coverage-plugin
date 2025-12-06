@@ -18,7 +18,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
-@GradlePluginTest(resourceProjectDir = TestProjects.MULTI_MODULE, kts = true)
+@GradlePluginTest(resourceProjectDir = TestProjects.MULTI_MODULE)
 class CoverJetPluginVariantMultiModuleTest {
 
     @RootProjectDir

@@ -20,7 +20,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
-@GradlePluginTest(TestProjects.SINGLE_MODULE, kts = true)
+@GradlePluginTest(TestProjects.SINGLE_MODULE)
 class CoverJetPluginVariantReportsTest {
 
     @RootProjectDir

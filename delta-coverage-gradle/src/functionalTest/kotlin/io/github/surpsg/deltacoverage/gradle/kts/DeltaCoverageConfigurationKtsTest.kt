@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@GradlePluginTest(TestProjects.SINGLE_MODULE, kts = true)
+@GradlePluginTest(TestProjects.SINGLE_MODULE)
 class DeltaCoverageConfigurationKtsTest {
 
     @ProjectFile("test.diff.file")

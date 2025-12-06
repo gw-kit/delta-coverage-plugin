@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
-@GradlePluginTest(TestProjects.SINGLE_MODULE)
+@GradlePluginTest(TestProjects.SINGLE_MODULE, kts = false)
 class DeltaCoverageDiffSourcesTest {
 
     @RootProjectDir

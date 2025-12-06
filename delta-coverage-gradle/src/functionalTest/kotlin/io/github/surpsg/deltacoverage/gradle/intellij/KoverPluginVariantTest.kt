@@ -11,7 +11,7 @@ import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-@GradlePluginTest(TestProjects.SINGLE_MODULE, kts = true)
+@GradlePluginTest(TestProjects.SINGLE_MODULE)
 class KoverPluginVariantTest {
 
     @ProjectFile("test.diff.file")

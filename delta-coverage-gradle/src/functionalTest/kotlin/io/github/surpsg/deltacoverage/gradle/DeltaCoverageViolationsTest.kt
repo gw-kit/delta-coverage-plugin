@@ -20,7 +20,7 @@ import org.junit.jupiter.params.provider.CsvSource
 import java.io.File
 import java.nio.file.Paths
 
-@GradlePluginTest(TestProjects.SINGLE_MODULE)
+@GradlePluginTest(TestProjects.SINGLE_MODULE, kts = false)
 class DeltaCoverageViolationsTest {
 
     @RootProjectDir

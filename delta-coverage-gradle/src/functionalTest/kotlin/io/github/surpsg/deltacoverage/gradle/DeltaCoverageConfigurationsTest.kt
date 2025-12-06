@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
-@GradlePluginTest(TestProjects.SINGLE_MODULE)
+@GradlePluginTest(TestProjects.SINGLE_MODULE, kts = false)
 class DeltaCoverageConfigurationsTest {
 
     @ProjectFile("test.diff.file")

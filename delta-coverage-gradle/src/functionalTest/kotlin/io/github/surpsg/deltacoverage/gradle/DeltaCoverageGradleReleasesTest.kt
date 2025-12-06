@@ -5,12 +5,11 @@ import io.github.gwkit.gradleprobe.junit.GradlePluginTest
 import io.github.gwkit.gradleprobe.junit.GradleRunnerInstance
 import io.github.gwkit.gradleprobe.junit.ProjectFile
 import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.TaskOutcome.SUCCESS
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
-@GradlePluginTest(TestProjects.SINGLE_MODULE)
+@GradlePluginTest(TestProjects.SINGLE_MODULE, kts = false)
 class DeltaCoverageGradleReleasesTest {
 
     @ProjectFile("test.diff.file")
