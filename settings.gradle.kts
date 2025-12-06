@@ -17,11 +17,21 @@ dependencyResolutionManagement {
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
+
+        val ghUser = extra.properties["GH_USER"]?.toString() ?: System.getenv("GH_USER")
+        val ghPass = extra.properties["GH_TOKEN"]?.toString() ?: System.getenv("GH_TOKEN")
         maven {
             url = uri("https://maven.pkg.github.com/gw-kit/cover-jet-plugin")
             credentials {
-                username = extra.properties["GH_USER"]?.toString() ?: System.getenv("GH_USER")
-                password = extra.properties["GH_TOKEN"]?.toString() ?: System.getenv("GH_TOKEN")
+                username = ghUser
+                password = ghPass
+            }
+        }
+        maven {
+            url = uri("https://maven.pkg.github.com/gw-kit/gradle-probe")
+            credentials {
+                username = ghUser
+                password = ghPass
             }
         }
     }

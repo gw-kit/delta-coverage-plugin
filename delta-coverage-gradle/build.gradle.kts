@@ -29,6 +29,7 @@ dependencies {
     functionalTestImplementation(project(":delta-coverage-gradle"))
     functionalTestImplementation(testFixtures(project))
     functionalTestImplementation(deps.jgit)
+    functionalTestImplementation(deps.gradleProbe)
 
     testFixturesApi(project(":delta-coverage-core"))
     testFixturesImplementation(deps.kotestAssertions)
