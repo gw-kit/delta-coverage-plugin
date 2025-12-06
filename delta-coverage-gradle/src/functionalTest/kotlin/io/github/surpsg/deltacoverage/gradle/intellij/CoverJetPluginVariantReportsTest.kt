@@ -1,13 +1,13 @@
 package io.github.surpsg.deltacoverage.gradle.intellij
 
+import io.github.gwkit.gradleprobe.RestorableFile
+import io.github.gwkit.gradleprobe.junit.GradlePluginTest
+import io.github.gwkit.gradleprobe.junit.GradleRunnerInstance
+import io.github.gwkit.gradleprobe.junit.ProjectFile
+import io.github.gwkit.gradleprobe.junit.RootProjectDir
 import io.github.surpsg.deltacoverage.gradle.TestProjects
 import io.github.surpsg.deltacoverage.gradle.assertOutputContainsStrings
 import io.github.surpsg.deltacoverage.gradle.runDeltaCoverageTask
-import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
-import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
-import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
-import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
-import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
 import io.github.surpsg.deltacoverage.gradle.test.assertion.assertSummaryReportExist
 import io.github.surpsg.deltacoverage.report.ReportBound
 import io.kotest.assertions.assertSoftly
