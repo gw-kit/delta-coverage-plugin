@@ -34,12 +34,11 @@ class CliReportRunner {
         try {
             facade.generateReports(deltaCoverageConfig)
             logger.info("Reports generated to: {}", config.reports.reportDir)
-        } catch (e: CoverageViolatedException) {
+        } catch (@Suppress("SwallowedException") e: CoverageViolatedException) {
             if (config.violationRules.failOnViolation) {
                 throw CoverageViolationException(e.message ?: "Coverage violations detected")
-            } else {
-                logger.warn("Coverage violations detected but --fail-on-violation not set: {}", e.message)
             }
+            logger.warn("Coverage violations detected but --fail-on-violation not set: {}", e.message)
         }
     }
 

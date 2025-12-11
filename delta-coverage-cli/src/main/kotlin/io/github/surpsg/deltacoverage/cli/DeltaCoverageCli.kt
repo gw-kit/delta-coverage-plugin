@@ -157,7 +157,7 @@ class DeltaCoverageCli : Callable<Int> {
         } catch (e: CoverageViolationException) {
             logger.error("Coverage violation: ${e.message}")
             EXIT_COVERAGE_VIOLATION
-        } catch (e: Exception) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.error("Runtime error: ${e.message}", e)
             EXIT_RUNTIME_ERROR
         }
@@ -233,6 +233,7 @@ class DeltaCoverageCli : Callable<Int> {
 class ConfigurationException(message: String) : RuntimeException(message)
 class CoverageViolationException(message: String) : RuntimeException(message)
 
+@Suppress("SpreadOperator")
 fun main(args: Array<String>) {
     val exitCode = CommandLine(DeltaCoverageCli()).execute(*args)
     exitProcess(exitCode)

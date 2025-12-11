@@ -2,6 +2,7 @@ plugins {
     `jvm-project-conventions`
     application
     alias(deps.plugins.shadow)
+    alias(deps.plugins.mavenPublish)
 }
 
 dependencies {
@@ -26,3 +27,26 @@ tasks.shadowJar {
         attributes["Main-Class"] = "io.github.surpsg.deltacoverage.cli.DeltaCoverageCliKt"
     }
 }
+//
+//// Fix task dependencies for application plugin distribution tasks
+//tasks.named("distTar") {
+//    dependsOn(tasks.shadowJar)
+//}
+//tasks.named("distZip") {
+//    dependsOn(tasks.shadowJar)
+//}
+//tasks.named("startScripts") {
+//    dependsOn(tasks.shadowJar)
+//}
+//tasks.named("startShadowScripts") {
+//    dependsOn(tasks.jar)
+//}
+//
+//mavenPublishing {
+//    publishToMavenCentral(automaticRelease = true)
+//
+//    // Only sign publications for Maven Central, not for GitHub Packages snapshots
+//    if (!rootProject.hasProperty("snapshotPrefix")) {
+//        signAllPublications()
+//    }
+//}
