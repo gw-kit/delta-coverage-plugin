@@ -24,6 +24,7 @@ The diff content can be provided via path to patch file, URL or using embedded g
 - ✅ **Full Coverage Mode**: Generate baseline full coverage reports alongside delta reports
 - ✅ **Flexible Diff Sources**: Use file, URL, or git to provide the diff
 - ✅ **GitHub Actions Integration**: Post coverage reports directly to PR comments
+- ✅ **Standalone CLI**: Run delta coverage without Gradle plugin via command-line tool
 
 ## Why should I use it?
 
@@ -62,6 +63,7 @@ The diff content can be provided via path to patch file, URL or using embedded g
   - [Use IntelliJ Coverage for Kotlin Projects](#use-intellij-coverage-for-kotlin-projects)
   - [Generate Full Coverage Reports for Badges](#generate-full-coverage-reports-for-badges)
   - [Exclude Generated Code from Coverage](#exclude-generated-code-from-coverage)
+- [CLI Tool](#cli-tool)
 - [GitHub Integration](#github-integration)
 
 ## Installation
@@ -515,6 +517,43 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     )
 }
 ```
+
+## CLI Tool
+
+For environments where you cannot use the Gradle plugin (e.g., custom build systems, non-Gradle projects),
+Delta Coverage provides a standalone CLI tool.
+
+### Quick Start
+
+```bash
+# Download the CLI JAR
+curl -L -o delta-coverage-cli.jar \
+  https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.0/delta-coverage-cli-3.6.0.jar
+
+# Generate diff
+git diff origin/main...HEAD > changes.diff
+
+# Run delta coverage
+java -jar delta-coverage-cli.jar \
+  --engine JACOCO \
+  --diff-file changes.diff \
+  --coverage-binary 'build/**/jacoco/*.exec' \
+  --classes 'build/classes/**/main' \
+  --sources src/main/java \
+  --html --console \
+  --min-coverage 0.8 \
+  --fail-on-violation
+```
+
+### Features
+
+- Supports both JaCoCo and IntelliJ coverage engines
+- Glob pattern support for file discovery (e.g., `build/**/jacoco/*.exec`)
+- YAML configuration file support
+- All report formats: HTML, XML, Console, Markdown
+- Coverage violation checks with configurable thresholds
+
+For detailed documentation, see the [CLI README](delta-coverage-cli/README.md).
 
 ## GitHub Integration
 

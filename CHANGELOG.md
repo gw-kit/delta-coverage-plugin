@@ -1,5 +1,17 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## Unreleased
+
+### New features
+- **CLI Tool**: Introduced `delta-coverage-cli` module - a standalone command-line interface for running
+  delta coverage analysis without requiring the Gradle plugin. This is useful for CI/CD pipelines where
+  you cannot inject the Gradle plugin into build scripts. See [CLI README](delta-coverage-cli/README.md) for details.
+  - Supports both JaCoCo and IntelliJ coverage engines
+  - Glob pattern support for file discovery (e.g., `build/**/jacoco/*.exec`)
+  - YAML configuration file support
+  - All report formats: HTML, XML, Console, Markdown
+  - Coverage violation checks with configurable thresholds
+
 ## 3.5.1
 
 ### Fixed

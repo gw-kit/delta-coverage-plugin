@@ -6,6 +6,7 @@ rootProject.name = "delta-coverage-gradle-plugin"
 include("delta-coverage-core")
 include("delta-coverage-gradle")
 include("delta-coverage-demo")
+include("delta-coverage-cli")
 
 dependencyResolutionManagement {
     versionCatalogs {
