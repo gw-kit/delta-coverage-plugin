@@ -37,7 +37,6 @@ object GlobExpander {
         return if (file.isAbsolute) file else File(baseDir, path)
     }
 
-    @Suppress("TooGenericExceptionCaught", "SwallowedException", "ReturnCount")
     private fun findMatchingFiles(pattern: String, baseDir: File): List<File> {
         val basePath = baseDir.toPath().toAbsolutePath().normalize()
         val globPattern = "glob:$pattern"

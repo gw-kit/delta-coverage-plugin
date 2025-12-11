@@ -34,7 +34,7 @@ class CliReportRunner {
         try {
             facade.generateReports(deltaCoverageConfig)
             logger.info("Reports generated to: {}", config.reports.reportDir)
-        } catch (@Suppress("SwallowedException") e: CoverageViolatedException) {
+        } catch (e: CoverageViolatedException) {
             if (config.violationRules.failOnViolation) {
                 throw CoverageViolationException(e.message ?: "Coverage violations detected")
             }
