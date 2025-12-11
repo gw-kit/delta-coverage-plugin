@@ -27,20 +27,20 @@ tasks.shadowJar {
         attributes["Main-Class"] = "io.github.surpsg.deltacoverage.cli.DeltaCoverageCliKt"
     }
 }
-//
-//// Fix task dependencies for application plugin distribution tasks
-//tasks.named("distTar") {
-//    dependsOn(tasks.shadowJar)
-//}
-//tasks.named("distZip") {
-//    dependsOn(tasks.shadowJar)
-//}
-//tasks.named("startScripts") {
-//    dependsOn(tasks.shadowJar)
-//}
-//tasks.named("startShadowScripts") {
-//    dependsOn(tasks.jar)
-//}
+
+// Fix task dependencies for application plugin distribution tasks
+tasks.named("distTar") {
+    dependsOn(tasks.shadowJar)
+}
+tasks.named("distZip") {
+    dependsOn(tasks.shadowJar)
+}
+tasks.named("startScripts") {
+    dependsOn(tasks.shadowJar)
+}
+tasks.named("startShadowScripts") {
+    dependsOn(tasks.jar)
+}
 //
 //mavenPublishing {
 //    publishToMavenCentral(automaticRelease = true)
