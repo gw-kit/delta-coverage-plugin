@@ -36,6 +36,7 @@ dependencies {
     testFixturesImplementation(deps.junitApi)
     testFixturesImplementation(deps.jgit)
     testFixturesImplementation(deps.mockk)
+    testFixturesImplementation(deps.gradleProbe)
 }
 
 configurations.all {
