@@ -8,7 +8,7 @@ jacksonVer = "2.20.1"
 
 kotlinVer = "2.2.21"
 junitVer = "6.0.1"
-mockkVer = "1.14.6"
+mockkVer = "1.14.7"
 kotestVer = "6.0.7"
 jimfsVer = "1.3.1"
 
