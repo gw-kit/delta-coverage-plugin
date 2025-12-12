@@ -44,4 +44,4 @@ kotestAssertions = { module = "io.kotest:kotest-assertions-core-jvm", version.re
 jimFs = { module = "com.google.jimfs:jimfs", version.ref = "jimfsVer" }
 
 [plugins]
-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.34.0" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.35.0" }
