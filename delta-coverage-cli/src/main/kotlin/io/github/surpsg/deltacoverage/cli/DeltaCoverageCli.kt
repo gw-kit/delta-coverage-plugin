@@ -26,7 +26,7 @@ class DeltaCoverageCli : Callable<Int> {
 
     @Option(
         names = ["-c", "--config"],
-        description = ["Path to YAML configuration file"]
+        description = ["Path to configuration file (YAML or JSON)"]
     )
     var configFile: File? = null
 

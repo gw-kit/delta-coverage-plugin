@@ -44,7 +44,7 @@ Usage: delta-coverage [-hvV] [--console] [--fail-on-violation]
 Computes code coverage of new/modified code based on a provided diff.
 
 Options:
-  -c, --config=<configFile>     Path to YAML configuration file
+  -c, --config=<configFile>     Path to configuration file (YAML or JSON)
   -e, --engine=<engine>         Coverage engine: JACOCO or INTELLIJ
   -f, --diff-file=<diffFile>    Path to diff file
       --coverage-binary=<files> Coverage binary files or glob pattern
@@ -79,9 +79,11 @@ java -jar delta-coverage-cli.jar \
   --html --console
 ```
 
-## YAML Configuration File
+## Configuration File
 
-For complex configurations, use a YAML file:
+For complex configurations, use a YAML or JSON file.
+
+### YAML Format
 
 ```yaml
 # delta-coverage.yaml
@@ -110,10 +112,41 @@ violationRules:
   failOnViolation: true
 ```
 
-Run with config file:
+### JSON Format
+
+```json
+{
+  "coverageEngine": "JACOCO",
+  "viewName": "cli-run",
+  "diffSourceFile": "changes.diff",
+  "coverageBinaryFiles": [
+    "build/jacoco/test.exec",
+    "build/**/jacoco/*.exec"
+  ],
+  "classRoots": ["build/classes/java/main"],
+  "sourceFiles": ["src/main/java", "src/main/kotlin"],
+  "excludeClasses": ["**/*Test*"],
+  "reports": {
+    "reportDir": "build/reports/delta-coverage",
+    "html": true,
+    "xml": false,
+    "console": true,
+    "markdown": false,
+    "fullCoverage": false
+  },
+  "violationRules": {
+    "minCoverage": 0.8,
+    "failOnViolation": true
+  }
+}
+```
+
+### Running with Config File
 
 ```bash
 java -jar delta-coverage-cli.jar --config delta-coverage.yaml
+# or
+java -jar delta-coverage-cli.jar --config delta-coverage.json
 ```
 
 Override config file values with CLI arguments:
