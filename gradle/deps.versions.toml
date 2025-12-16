@@ -1,5 +1,5 @@
 [versions]
-intellijCoverageVer = "1.0.769"
+intellijCoverageVer = "1.0.771"
 jacocoVer = "0.8.14"
 httpClientVer = "5.5.1"
 jgitVer = "7.4.0.202509020913-r"
@@ -10,8 +10,8 @@ logbackVer = "1.5.20"
 
 kotlinVer = "2.2.21"
 junitVer = "6.0.1"
-mockkVer = "1.14.6"
-kotestVer = "6.0.4"
+mockkVer = "1.14.7"
+kotestVer = "6.0.7"
 jimfsVer = "1.3.1"
 picocliVer = "4.7.6"
 
@@ -53,4 +53,4 @@ picocli = { module = "info.picocli:picocli", version.ref = "picocliVer" }
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "9.0.0-beta4" }
-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.34.0" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.35.0" }

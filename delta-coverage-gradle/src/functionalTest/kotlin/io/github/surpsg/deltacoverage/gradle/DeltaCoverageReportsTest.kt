@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.gradle
 
 import io.github.gwkit.gradleprobe.RestorableFile
+import io.github.gwkit.gradleprobe.assertion.assertOutputContainsStrings
 import io.github.gwkit.gradleprobe.junit.GradlePluginTest
 import io.github.gwkit.gradleprobe.junit.GradleRunnerInstance
 import io.github.gwkit.gradleprobe.junit.ProjectFile

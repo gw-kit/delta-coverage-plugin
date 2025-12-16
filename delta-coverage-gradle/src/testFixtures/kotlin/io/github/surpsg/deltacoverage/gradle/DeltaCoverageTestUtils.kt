@@ -1,5 +1,7 @@
 package io.github.surpsg.deltacoverage.gradle
 
+import io.github.gwkit.gradleprobe.gradlerunner.runTask
+import io.github.gwkit.gradleprobe.gradlerunner.runTaskAndFail
 import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.DELTA_COVERAGE_TASK
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTaskConfigurer
 import io.kotest.assertions.assertSoftly
