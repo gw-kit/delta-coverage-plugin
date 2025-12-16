@@ -4,6 +4,7 @@ import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply
 import io.github.surpsg.deltacoverage.gradle.reportview.ViewLookup
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTask
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTaskConfigurer
+import io.github.surpsg.deltacoverage.gradle.task.DeltaExplainTask
 import io.github.surpsg.deltacoverage.gradle.task.NativeGitDiffTask
 import io.github.surpsg.deltacoverage.gradle.utils.deltaCoverageConfig
 import org.gradle.api.Plugin
@@ -27,6 +28,8 @@ open class DeltaCoveragePlugin : Plugin<Project> {
             objects,
         )
         CoverageEngineAutoApply().applyEngine(project)
+
+        createDeltaExplainTask()
 
         val deltaTaskForViewConfigurer: (String) -> Unit = deltaTaskForViewConfigurer()
 
@@ -108,9 +111,16 @@ open class DeltaCoveragePlugin : Plugin<Project> {
 
     private fun ReportView.isEnabled(): Boolean = enabled.getOrElse(true)
 
+    private fun Project.createDeltaExplainTask() {
+        tasks.register(DELTA_EXPLAIN_TASK, DeltaExplainTask::class.java) { explainTask ->
+            explainTask.deltaCoverageConfigProperty.set(deltaCoverageConfig)
+        }
+    }
+
     companion object {
         const val DELTA_COVERAGE_REPORT_EXTENSION = "deltaCoverageReport"
         const val DELTA_COVERAGE_TASK = "deltaCoverage"
+        const val DELTA_EXPLAIN_TASK = "deltaExplain"
         const val GIT_DIFF_TASK = "gitDiff"
 
         val DELTA_TASK_DEPENDENCIES = setOf(
