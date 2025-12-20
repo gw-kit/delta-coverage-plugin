@@ -1,9 +1,8 @@
 package io.github.surpsg.deltacoverage.gradle.task
 
+import io.github.surpsg.deltacoverage.config.CoverageEntity
 import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
-import io.github.surpsg.deltacoverage.diff.FileDiffSource
-import io.github.surpsg.deltacoverage.diff.GitDiffSource
-import io.github.surpsg.deltacoverage.diff.UrlDiffSource
+import io.github.surpsg.deltacoverage.config.ViolationRule
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.ReportView
 import io.github.surpsg.deltacoverage.report.ReportGenerator
@@ -59,13 +58,7 @@ internal class ExplainReportGenerator(
     ) {
         appendLine("## Diff Configuration")
         appendLine()
-
-        val sourceType = when (config.diffSource) {
-            is FileDiffSource -> "File"
-            is GitDiffSource -> "git"
-            is UrlDiffSource -> "URL"
-        }
-        appendLine("- Source [$sourceType]: ${config.diffSource.sourceDescription}")
+        appendLine("- Source ${config.diffSource.sourceDescription}")
         appendLine()
     }
 
@@ -102,7 +95,7 @@ internal class ExplainReportGenerator(
     }
 
     private fun StringBuilder.appendView(config: DeltaCoverageConfig) {
-        appendLine("## View Details")
+        appendLine("## '${config.view}' View Details")
         appendLine()
 
         appendLine("| Property | Value |")
@@ -113,11 +106,6 @@ internal class ExplainReportGenerator(
 
         val origin = determineViewOrigin(config.view)
         appendLine("| Origin | $origin |")
-
-        if (config.view != DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME) {
-            appendLine("| Test tasks | ${config.view} |")
-        }
-
         appendLine()
 
         // Projects section
@@ -202,21 +190,19 @@ internal class ExplainReportGenerator(
     private fun StringBuilder.appendViolationRules(
         config: DeltaCoverageConfig,
     ) {
+        appendLine("**Violation Rules:**")
         appendLine()
-        appendLine(
-            """
-            **Violation Rules:**
-            | Metric | Min threshold | Entity count threshold | Enabled |
-            |--------|---------------|------------------------|---------|
-            """
-        )
-
-        config.coverageRulesConfig.entitiesRules.forEach { (entity, rule) ->
-            val minRatio = rule.minCoverageRatio
-            val entityThreshold = rule.entityCountThreshold ?: "-"
-            val isEnabled = minRatio > 0.0
-            appendLine("| ${entity.name.lowercase()} | $minRatio | $entityThreshold | $isEnabled |")
-        }
+        appendLine("| Metric | Min threshold | Entity count threshold | Enabled |")
+        appendLine("|--------|---------------|------------------------|---------|")
+        CoverageEntity.entries
+            .asSequence()
+            .map { it to (config.coverageRulesConfig.entitiesRules[it] ?: ViolationRule.empty(it)) }
+            .forEach { (entity, rule) ->
+                val minRatio = rule.minCoverageRatio
+                val entityThreshold = rule.entityCountThreshold ?: "-"
+                val isEnabled = minRatio > 0.0
+                appendLine("| ${entity.name.lowercase()} | $minRatio | $entityThreshold | $isEnabled |")
+            }
         appendLine()
         appendLine("- Fail on violation: ${config.coverageRulesConfig.failOnViolation}")
         appendLine()

@@ -102,6 +102,10 @@ class ViolationRule private constructor(
 
         operator fun invoke(customize: Builder.() -> Unit): ViolationRule =
             Builder().apply(customize).build()
+
+        fun empty(entity: CoverageEntity) = ViolationRule {
+            coverageEntity = entity
+        }
     }
 }
 

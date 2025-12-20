@@ -62,15 +62,15 @@ class DeltaExplainTaskTest {
 
             val reportFile = rootProjectDir
                 .resolve("build/reports/${DeltaCoverageTask.BASE_COVERAGE_REPORTS_DIR}")
-                .resolve(DeltaCoverageTask.EXPLAIN_DIR)
-                .resolve("test.md")
+                .resolve("test-explain-report.md")
+//            println("file://$reportFile")
             reportFile.shouldExist()
 
             val reportContent = reportFile.readText()
             reportContent shouldContain "# Delta Coverage Explain Report: `test`"
             reportContent shouldContain "## Plugin Configuration"
             reportContent shouldContain "## Diff Configuration"
-            reportContent shouldContain "## View Details"
+            reportContent shouldContain "## 'test' View Details"
         }
     }
 
