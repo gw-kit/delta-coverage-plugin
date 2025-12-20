@@ -1,97 +1,103 @@
 package io.github.surpsg.deltacoverage.gradle.task
 
-import io.github.surpsg.deltacoverage.config.CoverageEntity
-import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
-import io.github.surpsg.deltacoverage.config.ViolationRule
+import io.github.surpsg.deltacoverage.diff.DiffSource
+import io.github.surpsg.deltacoverage.gradle.CoverageEntity
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
+import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin
 import io.github.surpsg.deltacoverage.gradle.ReportView
-import io.github.surpsg.deltacoverage.report.ReportGenerator
+import io.github.surpsg.deltacoverage.gradle.config.ConfigMapper
+import io.github.surpsg.deltacoverage.gradle.task.internal.GradleReportGenerator
+import io.github.surpsg.deltacoverage.gradle.task.internal.ResolvedViewSources
 import org.gradle.api.Project
-import org.gradle.api.tasks.testing.Test
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.File
+import java.lang.invoke.MethodHandles
 
 @Suppress("TooManyFunctions")
-internal class ExplainReportGenerator(
+internal class ViewExplainReportGenerator(
+    private val view: String,
     private val outputDir: File,
     private val gradleConfig: DeltaCoverageConfiguration,
     private val rootProject: Project,
-    private val pluginVersion: String,
     private val resolvedSources: ResolvedViewSources,
-) : ReportGenerator {
+) : GradleReportGenerator {
 
-    private val viewProjectsMap: Map<String, Set<String>> by lazy { buildViewProjectsMap() }
+    override fun generateReport() {
+        val content = generate()
 
-    override fun generateReports(config: DeltaCoverageConfig) {
-        val content = generate(config)
-
-        outputDir.resolve("${config.view}-explain-report.md")
-            .writeText(content)
+        outputDir.resolve("${view}-explain-report.md").apply {
+            writeText(content)
+            println("[Delta Coverage][$view] explain report: file://${this.absolutePath}")
+        }
     }
 
-    private fun generate(config: DeltaCoverageConfig): String = buildString {
+    private fun generate(): String = buildString {
 
-        appendLine("# Delta Coverage Explain Report: `${config.view}`")
+        appendLine("# Delta Coverage Explain Report: `${view}`")
         appendLine()
 
-        appendPluginConfiguration(config)
-        appendDiffConfiguration(config)
-        appendReportsConfiguration(config)
-        appendView(config)
+        appendPluginConfiguration()
+        appendDiffConfiguration()
+        appendReportsConfiguration()
+        appendView()
         appendEnvironment()
     }
 
-    private fun StringBuilder.appendPluginConfiguration(
-        config: DeltaCoverageConfig
-    ) {
+    private fun StringBuilder.appendPluginConfiguration() {
         appendLine("## Plugin Configuration")
         appendLine()
-        appendLine("- Plugin version: $pluginVersion")
-        appendLine("- Coverage engine: ${config.coverageEngine}")
+        appendLine("- Plugin version: ${resolvePluginVersion()}")
+        appendLine("- Coverage engine: ${gradleConfig.coverage.engine.get()}")
         appendLine("- Auto-apply coverage plugin: ${gradleConfig.coverage.autoApplyPlugin.get()}")
-        appendLine("- Reports output directory: ${config.reportsConfig.baseReportDir}/")
+        appendLine("- Reports output directory: ${outputDir}/")
         appendLine()
     }
 
-    private fun StringBuilder.appendDiffConfiguration(
-        config: DeltaCoverageConfig
-    ) {
+    private fun StringBuilder.appendDiffConfiguration() {
+        val diffSource: DiffSource = ConfigMapper.convertToDiffSource(
+            rootProject.projectDir,
+            gradleConfig.diffSource,
+        )
         appendLine("## Diff Configuration")
         appendLine()
-        appendLine("- Source ${config.diffSource.sourceDescription}")
+        appendLine("- Source ${diffSource.sourceDescription}")
         appendLine()
     }
 
-    private fun StringBuilder.appendReportsConfiguration(config: DeltaCoverageConfig) {
+    private fun StringBuilder.appendReportsConfiguration() {
         appendLine("## Reports Configuration")
         appendLine()
         appendLine("| Report Type | Enabled |")
         appendLine("|-------------|---------|")
 
-        appendLine("| html | ${config.reportsConfig.html.enabled} |")
-        appendLine("| xml | ${config.reportsConfig.xml.enabled} |")
-        appendLine("| console | ${config.reportsConfig.console.enabled} |")
-        appendLine("| markdown | ${config.reportsConfig.markdown.enabled} |")
-        appendLine()
-        appendLine("- Full coverage report: ${config.reportsConfig.fullCoverageReport}")
-        appendLine()
+        with(gradleConfig.reportConfiguration) {
+            appendLine("| html | ${html.get()} |")
+            appendLine("| xml | ${xml.get()} |")
+            appendLine("| console | ${console.get()} |")
+            appendLine("| markdown | ${markdown.get()} |")
+            appendLine()
+            appendLine("- Full coverage report: ${fullCoverageReport.get()}")
+            appendLine()
+        }
     }
 
-    private fun StringBuilder.appendView(config: DeltaCoverageConfig) {
-        appendLine("## '${config.view}' View Details")
+    private fun StringBuilder.appendView() {
+        appendLine("## '${view}' View Details")
         appendLine()
 
         appendLine("| Property | Value |")
         appendLine("|----------|-------|")
 
-        val isEnabled = gradleConfig.reportViews.getAt(config.view).enabled.getOrElse(true)
+        val isEnabled = gradleConfig.reportViews.getAt(view).enabled.getOrElse(true)
         appendLine("| Status | ${if (isEnabled) "enabled" else "disabled"} |")
 
-        val origin = determineViewOrigin(config.view)
+        val origin = determineViewOrigin(view)
         appendLine("| Origin | $origin |")
         appendLine()
 
         // Projects section
-        appendViewProjects(config)
+        appendViewProjects()
 
         // Coverage binary files
         appendViewCoverageBinaryFiles()
@@ -103,17 +109,15 @@ internal class ExplainReportGenerator(
         appendViewClassDirectories()
 
         // Violation rules
-        appendViolationRules(config)
+        appendViolationRules()
 
         // Filters
-        appendFilters(config)
+        appendFilters()
     }
 
-    private fun StringBuilder.appendViewProjects(
-        config: DeltaCoverageConfig,
-    ) {
+    private fun StringBuilder.appendViewProjects() {
         appendLine("**Projects with this view:**")
-        gradleConfig.reportViews.getByName(config.view)
+        gradleConfig.reportViews.getByName(view)
             .associatedProjects.get()
             .toSortedSet()
             .forEach { projectPath ->
@@ -170,33 +174,30 @@ internal class ExplainReportGenerator(
         appendLine()
     }
 
-    private fun StringBuilder.appendViolationRules(
-        config: DeltaCoverageConfig,
-    ) {
+    private fun StringBuilder.appendViolationRules() {
         appendLine("**Violation Rules:**")
         appendLine()
         appendLine("| Metric | Min threshold | Entity count threshold | Enabled |")
         appendLine("|--------|---------------|------------------------|---------|")
+        val violationRules = gradleConfig.reportViews.getByName(view).violationRules
         CoverageEntity.entries
             .asSequence()
-            .map { it to (config.coverageRulesConfig.entitiesRules[it] ?: ViolationRule.empty(it)) }
+            .map { entity -> entity to violationRules.rules.getting(entity).get() }
             .forEach { (entity, rule) ->
-                val minRatio = rule.minCoverageRatio
-                val entityThreshold = rule.entityCountThreshold ?: "-"
+                val minRatio = rule.minCoverageRatio.get()
+                val entityThreshold = rule.entityCountThreshold.orNull ?: "-"
                 val isEnabled = minRatio > 0.0
                 appendLine("| ${entity.name.lowercase()} | $minRatio | $entityThreshold | $isEnabled |")
             }
         appendLine()
-        appendLine("- Fail on violation: ${config.coverageRulesConfig.failOnViolation}")
+        appendLine("- Fail on violation: ${violationRules.failOnViolation.get()}")
         appendLine()
     }
 
-    private fun StringBuilder.appendFilters(
-        config: DeltaCoverageConfig,
-    ) {
+    private fun StringBuilder.appendFilters() {
         appendLine("**Filters:**")
 
-        val view: ReportView = gradleConfig.reportViews.getByName(config.view)
+        val view: ReportView = gradleConfig.reportViews.getByName(view)
         val matchClasses = view.matchClasses.get()
         val excludeClasses = gradleConfig.excludeClasses.get()
 
@@ -223,29 +224,6 @@ internal class ExplainReportGenerator(
         appendLine()
     }
 
-    private fun buildViewProjectsMap(): Map<String, MutableSet<String>> {
-        val result = mutableMapOf<String, MutableSet<String>>()
-
-        rootProject.allprojects.forEach { project ->
-            project.tasks.withType(Test::class.java).forEach { testTask ->
-                val taskViewName = testTask.name
-                val projectPath = project.path.ifEmpty { ":" }
-                result.getOrPut(taskViewName) { mutableSetOf() }.add(projectPath)
-            }
-        }
-
-        // Add aggregated view if it exists
-        val aggregatedViewName = DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME
-        if (gradleConfig.reportViews.names.contains(aggregatedViewName)) {
-            val allProjects = result.values.flatten().toSet()
-            if (allProjects.isNotEmpty()) {
-                result[aggregatedViewName] = allProjects.toMutableSet()
-            }
-        }
-
-        return result
-    }
-
     private fun determineViewOrigin(name: String): String = when {
         name == DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME -> "auto-created"
         gradleConfig.reportViews.getAt(name).autoDiscovered.get() == true -> "discovered"
@@ -258,6 +236,11 @@ internal class ExplainReportGenerator(
             bytes < BYTES_IN_MB -> "${bytes / BYTES_IN_KB} KB"
             else -> "${bytes / BYTES_IN_MB} MB"
         }
+    }
+
+    private fun resolvePluginVersion(): String {
+        return DeltaCoveragePlugin::class.java.`package`?.implementationVersion
+            ?: "unknown"
     }
 
     private companion object {

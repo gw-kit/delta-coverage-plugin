@@ -2,8 +2,9 @@ package io.github.surpsg.deltacoverage.gradle.task
 
 import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
 import io.github.surpsg.deltacoverage.diff.DiffSource
-import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin
 import io.github.surpsg.deltacoverage.gradle.config.ConfigMapper
+import io.github.surpsg.deltacoverage.gradle.task.internal.GradleReportGenerator
+import io.github.surpsg.deltacoverage.gradle.task.internal.ResolvedViewSources
 import io.github.surpsg.deltacoverage.gradle.utils.resolveByPath
 import io.github.surpsg.deltacoverage.report.DeltaReportFacadeFactory
 import org.gradle.api.DefaultTask
@@ -77,53 +78,49 @@ open class DeltaCoverageTask @Inject constructor(
         val gradleCoverageConfig: GradleDeltaCoverageConfig = deltaCoverageConfigProperty.get()
         log.info("Delta-Coverage plugin configuration: $gradleCoverageConfig")
 
-        val outputDir: File = getOutputDir()
-        val diffSource: DiffSource = obtainDiffSource(outputDir, gradleCoverageConfig)
-        val deltaCoverageConfig: DeltaCoverageConfig = buildDeltaCoverageConfig(
-            diffSource,
-            classesRoots.get(),
-            gradleCoverageConfig,
-        )
+        sequenceOf(
+            explainReport(),
+            coverageReportsGenerator(),
+        ).forEach(GradleReportGenerator::generateReport)
+    }
 
+    private fun explainReport(): GradleReportGenerator =
         if (explainEnabled.get() || explainOnlyEnabled.get()) {
-            generateExplainReport(outputDir, gradleCoverageConfig, deltaCoverageConfig)
+            ViewExplainReportGenerator(
+                view = viewName.get(),
+                outputDir = getOutputDir(),
+                gradleConfig = deltaCoverageConfigProperty.get(),
+                rootProject = project.rootProject,
+                resolvedSources = ResolvedViewSources(
+                    sources = sourcesFiles.get().files,
+                    classes = classesFiles.get().files,
+                    coverageBinaries = coverageBinaryFiles.get().files,
+                )
+            )
+        } else {
+            GradleReportGenerator.NOOP
         }
+
+    private fun coverageReportsGenerator(): GradleReportGenerator {
         if (explainOnlyEnabled.get()) {
-            return
+            return GradleReportGenerator.NOOP
         }
 
-        DeltaReportFacadeFactory
-            .buildFacade(deltaCoverageConfig.coverageEngine)
-            .generateReports(deltaCoverageConfig)
+        return object : GradleReportGenerator {
+            val gradleCoverageConfig: GradleDeltaCoverageConfig = deltaCoverageConfigProperty.get()
 
-    }
+            val diffSource: DiffSource = obtainDiffSource(getOutputDir(), gradleCoverageConfig)
 
-    private fun generateExplainReport(
-        outputDir: File,
-        gradleConfig: GradleDeltaCoverageConfig,
-        coreConfig: DeltaCoverageConfig,
-    ) {
-        val resolvedSources = ResolvedViewSources(
-            sources = sourcesFiles.get().files,
-            classes = classesFiles.get().files,
-            coverageBinaries = coverageBinaryFiles.get().files,
-        )
+            val deltaCoverageConfig: DeltaCoverageConfig = buildDeltaCoverageConfig(
+                diffSource,
+                classesRoots.get(),
+                gradleCoverageConfig,
+            )
 
-        val reportGenerator = ExplainReportGenerator(
-            outputDir = outputDir,
-            gradleConfig = gradleConfig,
-            rootProject = project.rootProject,
-            pluginVersion = resolvePluginVersion(),
-            resolvedSources = resolvedSources,
-        )
-
-        reportGenerator.generateReports(coreConfig)
-//        logger.lifecycle("Delta Coverage explain report generated: file://${outputFile.absolutePath}")
-    }
-
-    private fun resolvePluginVersion(): String {
-        return DeltaCoveragePlugin::class.java.`package`?.implementationVersion
-            ?: UNKNOWN_VERSION
+            override fun generateReport() = DeltaReportFacadeFactory
+                .buildFacade(deltaCoverageConfig.coverageEngine)
+                .generateReports(deltaCoverageConfig)
+        }
     }
 
     private fun obtainDiffSource(
@@ -159,14 +156,6 @@ open class DeltaCoverageTask @Inject constructor(
         const val BASE_COVERAGE_REPORTS_DIR = "coverage-reports"
         const val EXPLAIN_PROPERTY = "explain"
         const val EXPLAIN_ONLY_PROPERTY = "explainOnly"
-        const val EXPLAIN_DIR = "explain"
-        private const val UNKNOWN_VERSION = "unknown"
         val log: Logger = LoggerFactory.getLogger(DeltaCoverageTask::class.java)
     }
 }
-
-data class ResolvedViewSources(
-    val sources: Set<File>,
-    val classes: Set<File>,
-    val coverageBinaries: Set<File>,
-)
