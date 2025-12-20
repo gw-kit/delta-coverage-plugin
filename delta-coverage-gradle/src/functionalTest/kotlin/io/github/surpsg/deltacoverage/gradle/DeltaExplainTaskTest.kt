@@ -2,18 +2,17 @@ package io.github.surpsg.deltacoverage.gradle
 
 import io.github.gwkit.gradleprobe.RestorableFile
 import io.github.gwkit.gradleprobe.assertion.assertOutputContainsStrings
-import io.github.gwkit.gradleprobe.gradlerunner.runTask
 import io.github.gwkit.gradleprobe.junit.GradlePluginTest
 import io.github.gwkit.gradleprobe.junit.GradleRunnerInstance
 import io.github.gwkit.gradleprobe.junit.ProjectFile
 import io.github.gwkit.gradleprobe.junit.RootProjectDir
-import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.DELTA_EXPLAIN_TASK
+import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.DELTA_COVERAGE_TASK
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTask
-import io.github.surpsg.deltacoverage.gradle.task.DeltaExplainTask
 import io.kotest.assertions.assertSoftly
-import io.kotest.matchers.file.shouldContainFile
 import io.kotest.matchers.file.shouldExist
+import io.kotest.matchers.file.shouldNotExist
 import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.BeforeEach
@@ -41,7 +40,7 @@ class DeltaExplainTaskTest {
     }
 
     @Test
-    fun `deltaExplain task should generate explain report`() {
+    fun `deltaCoverage should generate explain report when explain flag is set`() {
         // GIVEN
         buildFile.file.appendText(
             """
@@ -53,31 +52,91 @@ class DeltaExplainTaskTest {
 
         // WHEN
         val result = gradleRunner
-            .withArguments(DELTA_EXPLAIN_TASK)
+            .withArguments(DELTA_COVERAGE_TASK, "-P${DeltaCoverageTask.EXPLAIN_PROPERTY}")
             .build()
-            .apply {
-                println(output)
-            }
+            .apply { println(output) }
 
         // THEN
         assertSoftly {
-            result.task(":$DELTA_EXPLAIN_TASK")?.outcome shouldBe TaskOutcome.SUCCESS
+            result.task(":${DELTA_COVERAGE_TASK}Test")?.outcome shouldBe TaskOutcome.SUCCESS
 
-            val reportDir = rootProjectDir.resolve("build/reports/${DeltaCoverageTask.BASE_COVERAGE_REPORTS_DIR}")
-            reportDir.shouldExist()
-            reportDir.shouldContainFile(DeltaExplainTask.EXPLAIN_REPORT_FILE_NAME)
+            val reportFile = rootProjectDir
+                .resolve("build/reports/${DeltaCoverageTask.BASE_COVERAGE_REPORTS_DIR}")
+                .resolve(DeltaCoverageTask.EXPLAIN_DIR)
+                .resolve("test.md")
+            reportFile.shouldExist()
 
-            val reportContent = reportDir.resolve(DeltaExplainTask.EXPLAIN_REPORT_FILE_NAME).readText()
-            reportContent shouldContain "# Delta Coverage Explain Report"
+            val reportContent = reportFile.readText()
+            reportContent shouldContain "# Delta Coverage Explain Report: `test`"
             reportContent shouldContain "## Plugin Configuration"
             reportContent shouldContain "## Diff Configuration"
-            reportContent shouldContain "## Views"
-            reportContent shouldContain "### View: `test`"
+            reportContent shouldContain "## View Details"
         }
     }
 
     @Test
-    fun `deltaExplain task should include diff source configuration`() {
+    fun `deltaCoverage should generate only explain report when explainOnly flag is set`() {
+        // GIVEN
+        buildFile.file.appendText(
+            """
+            deltaCoverageReport {
+                diffSource.file.set('$diffFilePath')
+            }
+        """.trimIndent()
+        )
+
+        // WHEN
+        val result = gradleRunner
+            .withArguments(DELTA_COVERAGE_TASK, "-P${DeltaCoverageTask.EXPLAIN_ONLY_PROPERTY}")
+            .build()
+            .apply { println(output) }
+
+        // THEN
+        assertSoftly {
+            result.task(":${DELTA_COVERAGE_TASK}Test")?.outcome shouldBe TaskOutcome.SUCCESS
+
+            // Explain report should exist
+            val reportFile = rootProjectDir
+                .resolve("build/reports/${DeltaCoverageTask.BASE_COVERAGE_REPORTS_DIR}")
+                .resolve(DeltaCoverageTask.EXPLAIN_DIR)
+                .resolve("test.md")
+            reportFile.shouldExist()
+
+            // Coverage report should NOT be generated (no Delta Coverage Stats in output)
+            result.output shouldNotContain "Delta Coverage Stats"
+            result.output shouldContain "Delta Coverage explain report generated:"
+        }
+    }
+
+    @Test
+    fun `deltaCoverage should not generate explain report when explain flag is not set`() {
+        // GIVEN
+        buildFile.file.appendText(
+            """
+            deltaCoverageReport {
+                diffSource.file.set('$diffFilePath')
+            }
+        """.trimIndent()
+        )
+
+        // Clean up explain directory from previous test runs
+        val explainDir = rootProjectDir
+            .resolve("build/reports/${DeltaCoverageTask.BASE_COVERAGE_REPORTS_DIR}")
+            .resolve(DeltaCoverageTask.EXPLAIN_DIR)
+        explainDir.deleteRecursively()
+
+        // WHEN
+        gradleRunner
+            .withArguments(DELTA_COVERAGE_TASK)
+            .build()
+
+        // THEN
+        val reportFile = explainDir.resolve("test.md")
+        reportFile.shouldNotExist()
+    }
+
+    @Test
+    fun `explain report should include diff source configuration`() {
         // GIVEN
         buildFile.file.appendText(
             """
@@ -89,13 +148,14 @@ class DeltaExplainTaskTest {
 
         // WHEN
         gradleRunner
-            .withArguments(DELTA_EXPLAIN_TASK)
+            .withArguments(DELTA_COVERAGE_TASK, "-P${DeltaCoverageTask.EXPLAIN_PROPERTY}")
             .build()
 
         // THEN
         val reportContent = rootProjectDir
             .resolve("build/reports/${DeltaCoverageTask.BASE_COVERAGE_REPORTS_DIR}")
-            .resolve(DeltaExplainTask.EXPLAIN_REPORT_FILE_NAME)
+            .resolve(DeltaCoverageTask.EXPLAIN_DIR)
+            .resolve("test.md")
             .readText()
 
         assertSoftly {
@@ -105,14 +165,13 @@ class DeltaExplainTaskTest {
     }
 
     @Test
-    fun `deltaExplain task should include custom view configuration`() {
+    fun `explain report should include view configuration`() {
         // GIVEN
         buildFile.file.appendText(
             """
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
-                view('customView') {
-                    enabled.set(true)
+                view('test') {
                     matchClasses.set(['**/Custom*'])
                     violationRules {
                         failOnViolation.set(true)
@@ -125,18 +184,21 @@ class DeltaExplainTaskTest {
 
         // WHEN
         gradleRunner
-            .withArguments(DELTA_EXPLAIN_TASK)
+            .withArguments(DELTA_COVERAGE_TASK, "-P${DeltaCoverageTask.EXPLAIN_PROPERTY}")
             .build()
 
         // THEN
-        val reportContent = rootProjectDir
+        val reportFile = rootProjectDir
             .resolve("build/reports/${DeltaCoverageTask.BASE_COVERAGE_REPORTS_DIR}")
-            .resolve(DeltaExplainTask.EXPLAIN_REPORT_FILE_NAME)
-            .readText()
+            .resolve(DeltaCoverageTask.EXPLAIN_DIR)
+            .resolve("test.md")
 
         assertSoftly {
-            reportContent shouldContain "### View: `customView`"
-            reportContent shouldContain "| Origin | manual |"
+            reportFile.shouldExist()
+
+            val reportContent = reportFile.readText()
+            reportContent shouldContain "# Delta Coverage Explain Report: `test`"
+            reportContent shouldContain "| Origin | discovered |"
             reportContent shouldContain "`**/Custom*`"
             reportContent shouldContain "| instruction | 0.8 |"
             reportContent shouldContain "- Fail on violation: true"
@@ -144,7 +206,7 @@ class DeltaExplainTaskTest {
     }
 
     @Test
-    fun `deltaExplain task should include exclude classes configuration`() {
+    fun `explain report should include exclude classes configuration`() {
         // GIVEN
         buildFile.file.appendText(
             """
@@ -157,13 +219,14 @@ class DeltaExplainTaskTest {
 
         // WHEN
         gradleRunner
-            .withArguments(DELTA_EXPLAIN_TASK)
+            .withArguments(DELTA_COVERAGE_TASK, "-P${DeltaCoverageTask.EXPLAIN_PROPERTY}")
             .build()
 
         // THEN
         val reportContent = rootProjectDir
             .resolve("build/reports/${DeltaCoverageTask.BASE_COVERAGE_REPORTS_DIR}")
-            .resolve(DeltaExplainTask.EXPLAIN_REPORT_FILE_NAME)
+            .resolve(DeltaCoverageTask.EXPLAIN_DIR)
+            .resolve("test.md")
             .readText()
 
         assertSoftly {
@@ -173,7 +236,7 @@ class DeltaExplainTaskTest {
     }
 
     @Test
-    fun `deltaExplain task should print report location`() {
+    fun `explain report should print report location`() {
         // GIVEN
         buildFile.file.appendText(
             """
@@ -185,7 +248,7 @@ class DeltaExplainTaskTest {
 
         // WHEN
         val result = gradleRunner
-            .withArguments(DELTA_EXPLAIN_TASK)
+            .withArguments(DELTA_COVERAGE_TASK, "-P${DeltaCoverageTask.EXPLAIN_PROPERTY}")
             .build()
 
         // THEN

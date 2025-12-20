@@ -30,7 +30,7 @@ sealed interface DiffSource {
     }
 }
 
-internal class FileDiffSource(
+class FileDiffSource(
     private val filePath: String
 ) : DiffSource {
 
@@ -50,7 +50,7 @@ internal class FileDiffSource(
     }
 }
 
-internal class UrlDiffSource(
+class UrlDiffSource(
     private val url: String
 ) : DiffSource {
     override val sourceDescription = "URL: $url"
@@ -66,7 +66,7 @@ internal class UrlDiffSource(
     }
 }
 
-internal class GitDiffSource(
+class GitDiffSource(
     private val projectRoot: File,
     private val compareWith: String
 ) : DiffSource {

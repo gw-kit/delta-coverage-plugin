@@ -6,17 +6,17 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.lang.invoke.MethodHandles
 
-abstract class DeltaReportGeneratorFacade {
+abstract class DeltaReportGeneratorFacade : ReportGenerator {
 
     private val log: Logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
 
-    fun generateReports(
+    override fun generateReports(
         config: DeltaCoverageConfig,
     ) {
         log.info("[{}] Run Delta-Coverage with config: {}", config.view, config)
         val coverageSummaries: Map<ReportBound, CoverageSummary> = generate(ReportContext(config))
 
-        coverageSummaries.forEach { reportBound, coverageSummary ->
+        coverageSummaries.forEach { (reportBound, coverageSummary) ->
             CoverageCheckSummary.create(
                 config.reportsConfig.summaries.getValue(reportBound),
                 coverageSummary,
