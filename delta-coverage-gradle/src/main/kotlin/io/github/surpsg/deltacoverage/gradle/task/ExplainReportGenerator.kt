@@ -35,7 +35,6 @@ internal class ExplainReportGenerator(
 
         appendPluginConfiguration(config)
         appendDiffConfiguration(config)
-        appendProjects(config)
         appendReportsConfiguration(config)
         appendView(config)
         appendEnvironment()
@@ -59,23 +58,6 @@ internal class ExplainReportGenerator(
         appendLine("## Diff Configuration")
         appendLine()
         appendLine("- Source ${config.diffSource.sourceDescription}")
-        appendLine()
-    }
-
-    private fun StringBuilder.appendProjects(config: DeltaCoverageConfig) {
-        appendLine("## Projects")
-        appendLine()
-
-        val projects: Set<String> = viewProjectsMap.getOrDefault(config.view, emptySet())
-        if (projects.isNotEmpty()) {
-            projects.sorted().forEach { projectPath ->
-                appendLine("- $projectPath")
-            }
-        } else {
-            rootProject.allprojects.sortedBy { it.path }.forEach { project ->
-                appendLine("- ${project.path.ifEmpty { ":" }}")
-            }
-        }
         appendLine()
     }
 
@@ -131,8 +113,9 @@ internal class ExplainReportGenerator(
         config: DeltaCoverageConfig,
     ) {
         appendLine("**Projects with this view:**")
-        viewProjectsMap.getOrDefault(config.view, emptySet())
-            .sorted()
+        gradleConfig.reportViews.getByName(config.view)
+            .associatedProjects.get()
+            .toSortedSet()
             .forEach { projectPath ->
                 appendLine("- $projectPath")
             }
@@ -263,12 +246,10 @@ internal class ExplainReportGenerator(
         return result
     }
 
-    private fun determineViewOrigin(name: String): String {
-        return when {
-            name == DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME -> "auto-created"
-            viewProjectsMap[name]?.isNotEmpty() == true -> "discovered"
-            else -> "manual"
-        }
+    private fun determineViewOrigin(name: String): String = when {
+        name == DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME -> "auto-created"
+        gradleConfig.reportViews.getAt(name).autoDiscovered.get() == true -> "discovered"
+        else -> "manual"
     }
 
     private fun formatFileSize(bytes: Long): String {
