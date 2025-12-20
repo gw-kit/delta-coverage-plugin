@@ -9,10 +9,7 @@ import io.github.surpsg.deltacoverage.gradle.config.ConfigMapper
 import io.github.surpsg.deltacoverage.gradle.task.internal.GradleReportGenerator
 import io.github.surpsg.deltacoverage.gradle.task.internal.ResolvedViewSources
 import org.gradle.api.Project
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.File
-import java.lang.invoke.MethodHandles
 
 @Suppress("TooManyFunctions")
 internal class ViewExplainReportGenerator(
