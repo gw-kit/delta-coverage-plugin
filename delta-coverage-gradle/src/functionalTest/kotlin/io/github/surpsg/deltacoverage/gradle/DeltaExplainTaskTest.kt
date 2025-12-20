@@ -52,7 +52,7 @@ class DeltaExplainTaskTest {
         // WHEN
         gradleRunner.runDeltaCoverageTask(
             printLogs = true,
-            gradleArgs = arrayOf("-P${DeltaCoverageTask.EXPLAIN_PROPERTY}"),
+            gradleArgs = arrayOf("-P${DeltaCoverageTask.EXPLAIN_ONLY_PROPERTY}"),
         )
 
         // THEN
@@ -60,9 +60,7 @@ class DeltaExplainTaskTest {
             .resolve("build/reports/${DeltaCoverageTask.BASE_COVERAGE_REPORTS_DIR}")
             .resolve("test-explain-report.md")
         assertSoftly(reportFile) {
-            println("file://$reportFile")
             shouldExist()
-
             assertSoftly(reportFile.readText()) {
                 shouldContain("# Delta Coverage Explain Report: `test`")
                 shouldContain("## Plugin Configuration")
