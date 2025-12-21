@@ -1,27 +1,22 @@
-package io.github.surpsg.deltacoverage.gradle
+package io.github.surpsg.deltacoverage.gradle.task
 
 import io.github.gwkit.gradleprobe.RestorableFile
-import io.github.gwkit.gradleprobe.assertion.assertOutputContainsStrings
-import io.github.gwkit.gradleprobe.gradlerunner.runTask
 import io.github.gwkit.gradleprobe.junit.GradlePluginTest
 import io.github.gwkit.gradleprobe.junit.GradleRunnerInstance
 import io.github.gwkit.gradleprobe.junit.ProjectFile
 import io.github.gwkit.gradleprobe.junit.RootProjectDir
-import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.DELTA_COVERAGE_TASK
-import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTask
+import io.github.surpsg.deltacoverage.gradle.TestProjects
+import io.github.surpsg.deltacoverage.gradle.runDeltaCoverageTask
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.file.shouldExist
-import io.kotest.matchers.file.shouldNotExist
 import io.kotest.matchers.string.shouldContain
-import io.kotest.matchers.string.shouldNotContain
 import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
 @GradlePluginTest(TestProjects.SINGLE_MODULE, kts = false)
-class DeltaExplainTaskTest {
+class ExplainReportTest {
 
     @RootProjectDir
     lateinit var rootProjectDir: File
