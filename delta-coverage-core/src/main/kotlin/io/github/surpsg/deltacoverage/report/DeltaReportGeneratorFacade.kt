@@ -6,11 +6,11 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.lang.invoke.MethodHandles
 
-abstract class DeltaReportGeneratorFacade : ReportGenerator {
+abstract class DeltaReportGeneratorFacade {
 
     private val log: Logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
 
-    override fun generateReports(
+    fun generateReports(
         config: DeltaCoverageConfig,
     ) {
         log.info("[{}] Run Delta-Coverage with config: {}", config.view, config)

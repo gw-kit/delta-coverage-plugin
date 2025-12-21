@@ -7,12 +7,12 @@ internal object ViewLookup {
 
     fun lookup(
         project: Project,
-        viewNameConsumer: (Project, String) -> Unit,
+        viewConsumer: (Project, String) -> Unit,
     ) {
         project.allprojects { proj ->
             proj.tasks.withType(Test::class.java) { testTask ->
                 val viewName: String = testTask.name
-                viewNameConsumer(testTask.project, viewName)
+                viewConsumer(testTask.project, viewName)
             }
         }
     }
