@@ -5,6 +5,7 @@ import io.github.surpsg.deltacoverage.diff.DiffSource
 import io.github.surpsg.deltacoverage.gradle.config.ConfigMapper
 import io.github.surpsg.deltacoverage.gradle.task.internal.GradleReportGenerator
 import io.github.surpsg.deltacoverage.gradle.task.internal.ResolvedViewSources
+import io.github.surpsg.deltacoverage.gradle.task.internal.ViewExplainReportGenerator
 import io.github.surpsg.deltacoverage.gradle.utils.resolveByPath
 import io.github.surpsg.deltacoverage.report.DeltaReportFacadeFactory
 import org.gradle.api.DefaultTask

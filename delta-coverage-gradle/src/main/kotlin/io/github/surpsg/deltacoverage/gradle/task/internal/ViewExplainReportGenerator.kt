@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.gradle.task
+package io.github.surpsg.deltacoverage.gradle.task.internal
 
 import io.github.surpsg.deltacoverage.diff.DiffSource
 import io.github.surpsg.deltacoverage.gradle.CoverageEntity
@@ -6,8 +6,7 @@ import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin
 import io.github.surpsg.deltacoverage.gradle.ReportView
 import io.github.surpsg.deltacoverage.gradle.config.ConfigMapper
-import io.github.surpsg.deltacoverage.gradle.task.internal.GradleReportGenerator
-import io.github.surpsg.deltacoverage.gradle.task.internal.ResolvedViewSources
+import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTaskConfigurer
 import org.gradle.api.Project
 import java.io.File
 
@@ -132,7 +131,7 @@ internal class ViewExplainReportGenerator(
             appendLine("|------|------|--------|")
             files.sortedBy { it.absolutePath }.forEach { file ->
                 val exists = file.exists()
-                val size = if (exists) formatFileSize(file.length()) else "-"
+                val size = file.formatFileSize()
                 appendLine("| ${file.absolutePath} | $size | $exists |")
             }
         } else {
@@ -141,32 +140,30 @@ internal class ViewExplainReportGenerator(
         appendLine()
     }
 
-    private fun StringBuilder.appendViewSourceDirectories() {
-        appendLine("**Source Directories:**")
+    private fun StringBuilder.appendViewSourceDirectories() = appendDirectories(
+        title = "Source Directories",
+        files = resolvedSources.sources,
+    ) { it.isFile }
 
-        val dirs = resolvedSources.sources.filter { it.isDirectory }
-        if (dirs.isNotEmpty()) {
-            dirs.sortedBy { it.absolutePath }.forEach { dir ->
-                val fileCount = dir.walkTopDown().filter { it.isFile }.count()
-                appendLine("- ${dir.absolutePath} ($fileCount files)")
-            }
-        } else {
+    private fun StringBuilder.appendViewClassDirectories() = appendDirectories(
+        title = "Class Directories",
+        files = resolvedSources.classes,
+    ) { it.extension == "class" }
+
+    private inline fun StringBuilder.appendDirectories(
+        title: String,
+        files: Collection<File>,
+        crossinline countPredicate: (File) -> Boolean,
+    ) {
+        appendLine("**$title:**")
+        val dirs = files.filter { it.isDirectory }
+        if (dirs.isEmpty()) {
             appendLine("- none resolved")
-        }
-        appendLine()
-    }
-
-    private fun StringBuilder.appendViewClassDirectories() {
-        appendLine("**Class Directories:**")
-
-        val dirs = resolvedSources.classes.filter { it.isDirectory }
-        if (dirs.isNotEmpty()) {
-            dirs.sortedBy { it.absolutePath }.forEach { dir ->
-                val classCount = dir.walkTopDown().filter { it.extension == "class" }.count()
-                appendLine("- ${dir.absolutePath} ($classCount .class files)")
-            }
         } else {
-            appendLine("- none resolved")
+            dirs.sortedBy { it.absolutePath }.forEach { dir ->
+                val count = dir.walkTopDown().count { countPredicate(it) }
+                appendLine("- ${dir.absolutePath} ($count files)")
+            }
         }
         appendLine()
     }
@@ -227,11 +224,14 @@ internal class ViewExplainReportGenerator(
         else -> "manual"
     }
 
-    private fun formatFileSize(bytes: Long): String {
+    private fun File.formatFileSize(): String {
+        if (!exists()) {
+            return "-"
+        }
+        val bytes = length()
         return when {
             bytes < BYTES_IN_KB -> "$bytes B"
-            bytes < BYTES_IN_MB -> "${bytes / BYTES_IN_KB} KB"
-            else -> "${bytes / BYTES_IN_MB} MB"
+            else -> "${bytes / BYTES_IN_KB} KB"
         }
     }
 
@@ -242,6 +242,5 @@ internal class ViewExplainReportGenerator(
 
     private companion object {
         private const val BYTES_IN_KB = 1024L
-        private const val BYTES_IN_MB = 1024L * 1024L
     }
 }
