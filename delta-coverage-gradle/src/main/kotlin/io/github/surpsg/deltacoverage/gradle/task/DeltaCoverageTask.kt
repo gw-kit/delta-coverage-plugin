@@ -157,6 +157,6 @@ open class DeltaCoverageTask @Inject constructor(
         const val BASE_COVERAGE_REPORTS_DIR = "coverage-reports"
         const val EXPLAIN_PROPERTY = "explain"
         const val EXPLAIN_ONLY_PROPERTY = "explainOnly"
-        val log: Logger = LoggerFactory.getLogger(DeltaCoverageTask::class.java)
+        private val log: Logger = LoggerFactory.getLogger(DeltaCoverageTask::class.java)
     }
 }
