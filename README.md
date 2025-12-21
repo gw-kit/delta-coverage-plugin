@@ -24,6 +24,7 @@ The diff content can be provided via path to patch file, URL or using embedded g
 - ✅ **Full Coverage Mode**: Generate baseline full coverage reports alongside delta reports
 - ✅ **Flexible Diff Sources**: Use file, URL, or git to provide the diff
 - ✅ **GitHub Actions Integration**: Post coverage reports directly to PR comments
+- ✅ **Explain Report**: Debug configuration issues with detailed diagnostic reports
 
 ## Why should I use it?
 
@@ -62,6 +63,7 @@ The diff content can be provided via path to patch file, URL or using embedded g
   - [Use IntelliJ Coverage for Kotlin Projects](#use-intellij-coverage-for-kotlin-projects)
   - [Generate Full Coverage Reports for Badges](#generate-full-coverage-reports-for-badges)
   - [Exclude Generated Code from Coverage](#exclude-generated-code-from-coverage)
+- [Explain Report](#explain-report)
 - [GitHub Integration](#github-integration)
 
 ## Installation
@@ -515,6 +517,79 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     )
 }
 ```
+
+## Explain Report
+
+The Explain Report feature helps you debug and troubleshoot your Delta Coverage configuration. 
+It generates a detailed markdown report showing all resolved configuration values, 
+discovered sources, and environment information.
+
+### Running Explain Report
+
+You can run the explain report in two modes:
+
+**Generate explain report alongside coverage reports:**
+```shell
+./gradlew deltaCoverage -Pexplain
+```
+
+**Generate only the explain report (skip coverage analysis):**
+```shell
+./gradlew deltaCoverage -PexplainOnly
+```
+
+### Report Contents
+
+The explain report (`<view-name>-explain-report.md`) is generated in the report output directory and includes:
+
+- **Plugin Configuration**: Version, coverage engine, auto-apply settings
+- **Diff Configuration**: Source type (file/URL/git) and details
+- **Reports Configuration**: Enabled report types and output settings
+- **View Details**:
+  - View status (enabled/disabled) and origin (auto-discovered/manual)
+  - Associated projects
+  - Resolved coverage binary files with sizes
+  - Source directories with file counts
+  - Class directories with class counts
+  - Violation rules configuration
+  - Class filters (include/exclude patterns)
+- **Environment**: Gradle version, Java version and vendor
+
+### Example Output
+
+```
+# Delta Coverage Explain Report: `test`
+
+## Plugin Configuration
+
+- Plugin version: 3.6.0
+- Coverage engine: JACOCO
+- Auto-apply coverage plugin: true
+- Reports output directory: build/reports/coverage-reports/
+
+## Diff Configuration
+
+- Source git: refs/remotes/origin/main
+
+## Reports Configuration
+
+| Report Type | Enabled |
+|-------------|---------|
+| html | true |
+| xml | false |
+| console | true |
+| markdown | false |
+
+...
+```
+
+### Use Cases
+
+- **Debugging**: Verify that coverage binary files are correctly resolved
+- **Troubleshooting**: Check if source and class directories are correctly discovered
+- **Configuration Review**: Confirm violation rules and filters are set as expected
+- **CI/CD Debugging**: Diagnose why coverage reports are missing or incorrect in CI pipelines
+
 
 ## GitHub Integration
 
