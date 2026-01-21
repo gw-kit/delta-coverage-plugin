@@ -30,10 +30,7 @@ open class DeltaCoveragePlugin : Plugin<Project> {
 
         val deltaTaskForViewConfigurer: (String) -> Unit = deltaTaskForViewConfigurer()
 
-        extensions.configure<DeltaCoverageConfiguration>(DELTA_COVERAGE_REPORT_EXTENSION) { config ->
-            // auto-register views from test tasks
-            registerReportViews(config, deltaTaskForViewConfigurer)
-        }
+        autoRegisterReportViews(deltaTaskForViewConfigurer)
 
         afterEvaluate {
             // Register custom views tasks
@@ -57,12 +54,17 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         }
     }
 
-    private fun Project.registerReportViews(
-        config: DeltaCoverageConfiguration,
-        onView: (String) -> Unit,
-    ) = ViewLookup.lookup(this) { viewName: String ->
-        config.reportViews.maybeCreate(viewName)
-        onView(viewName)
+    private fun Project.autoRegisterReportViews(
+        deltaTaskForViewConfigurer: (String) -> Unit,
+    ) = extensions.configure<DeltaCoverageConfiguration>(DELTA_COVERAGE_REPORT_EXTENSION) { config ->
+        // auto-register views from test tasks
+        ViewLookup.lookup(this) { project, viewName: String ->
+            config.reportViews.maybeCreate(viewName).apply {
+                autoDiscovered.set(true)
+                associatedProjects.add(project.path)
+            }
+            deltaTaskForViewConfigurer(viewName)
+        }
     }
 
     private fun Project.deltaTaskForViewConfigurer(): (String) -> Unit {
@@ -79,7 +81,6 @@ open class DeltaCoveragePlugin : Plugin<Project> {
                         deltaTask.dependsOn(nativeGitDiffTask)
                     }
                 }
-                registeredViews += viewName
             }
         }
     }

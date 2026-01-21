@@ -17,7 +17,7 @@ picocliVer = "4.7.6"
 
 coverJetVer = "0.1.4"
 deltaCoverageVer = "3.5.1"
-gradleProbeVer = "0.0.1-SNAPSHOT.19988845441"
+gradleProbeVer = "0.0.2"
 
 [libraries]
 # Kotlin
@@ -29,7 +29,7 @@ deltaCoverage = { module = "io.github.gw-kit:delta-coverage-gradle", version.ref
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.23.8" }
 
 # Project deps
-gradleProbe = { module = "io.github.gwkit.gradleprobe:gradle-probe", version.ref = "gradleProbeVer" }
+gradleProbe = { module = "io.github.gw-kit:gradle-probe", version.ref = "gradleProbeVer" }
 coverJetPlugin = { module = "io.github.gw-kit.cover-jet:io.github.gw-kit.cover-jet.gradle.plugin", version.ref = "coverJetVer" }
 intellijCoverage = { module = "org.jetbrains.intellij.deps:intellij-coverage-reporter", version.ref = "intellijCoverageVer" }
 intellijCoverageAgent = { module = "org.jetbrains.intellij.deps:intellij-coverage-agent", version.ref = "intellijCoverageVer" }
@@ -52,5 +52,5 @@ jimFs = { module = "com.google.jimfs:jimfs", version.ref = "jimfsVer" }
 picocli = { module = "info.picocli:picocli", version.ref = "picocliVer" }
 
 [plugins]
+mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.36.0" }
 shadow = { id = "com.gradleup.shadow", version = "9.0.0-beta4" }
-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.35.0" }

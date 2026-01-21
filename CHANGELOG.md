@@ -12,6 +12,12 @@
   - All report formats: HTML, XML, Console, Markdown
   - Coverage violation checks with configurable thresholds
 
+- Added Explain Report feature for debugging and troubleshooting Delta Coverage configuration.
+  Run `./gradlew deltaCoverage -Pexplain` to generate an explain report alongside coverage reports,
+  or `./gradlew deltaCoverage -PexplainOnly` to generate only the explain report without running coverage analysis.
+  The explain report includes plugin configuration, diff source details, report settings, view configuration,
+  resolved sources/classes, violation rules, and environment information.
+
 ## 3.5.1
 
 ### Fixed
