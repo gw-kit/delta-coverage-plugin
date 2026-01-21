@@ -136,7 +136,7 @@ class DeltaCoverageCli : Callable<Int> {
                 logger.info("Starting delta coverage analysis...")
             }
 
-            val config = buildConfig()
+            val config: CliConfig = buildConfig()
             validateConfig(config)
 
             if (verbose) {

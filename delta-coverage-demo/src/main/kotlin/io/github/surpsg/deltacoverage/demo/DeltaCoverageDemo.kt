@@ -1,13 +1,7 @@
 package io.github.surpsg.deltacoverage.demo
 
-import io.github.surpsg.deltacoverage.cli.config.CliConfig
 import io.github.surpsg.deltacoverage.cli.config.ConfigLoader
-import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
-import io.github.surpsg.deltacoverage.config.DiffSourceConfig
-import io.github.surpsg.deltacoverage.config.ReportConfig
-import io.github.surpsg.deltacoverage.config.ReportsConfig
-import io.github.surpsg.deltacoverage.diff.DiffSource
-import io.github.surpsg.deltacoverage.report.DeltaReportFacadeFactory
+import io.github.surpsg.deltacoverage.cli.report.CliReportRunner
 import org.slf4j.LoggerFactory
 import java.io.File
 
@@ -59,63 +53,12 @@ fun main(args: Array<String>) {
     println("Diff source: ${config.diffSourceFile}")
     println("Working directory: ${File(".").absolutePath}")
 
-    runDeltaCoverage(config)
+    CliReportRunner().run(config)
 
     logger.info("Delta coverage analysis completed successfully")
     println("\nDelta coverage analysis completed successfully!")
     println("Reports generated to: ${config.reports.reportDir}")
 }
-
-private fun runDeltaCoverage(config: CliConfig) {
-    val deltaReportFacade = DeltaReportFacadeFactory.buildFacade(config.coverageEngine!!)
-
-    // Resolve relative paths to absolute paths from current working directory
-    val diffSourceFile = File(config.diffSourceFile!!).absolutePath
-
-    // Build diff source config
-    val diffSourceConfig = DiffSourceConfig {
-        file = diffSourceFile
-    }
-
-    // Determine project root (for git-based diffs)
-    val projectRoot = File(".").absoluteFile
-
-    val deltaCoverageConfig = DeltaCoverageConfig {
-        viewName = config.viewName
-        coverageEngine = config.coverageEngine!!
-        diffSource = DiffSource.buildDiffSource(projectRoot, diffSourceConfig)
-
-        reportsConfig = ReportsConfig {
-            baseReportDir = File(config.reports.reportDir).absolutePath
-
-            html = ReportConfig {
-                enabled = config.reports.html
-            }
-
-            console = ReportConfig {
-                enabled = config.reports.console
-                outputFileName = "console-report.txt"
-            }
-
-            markdown = ReportConfig {
-                enabled = config.reports.markdown
-            }
-
-            fullCoverageReport = config.reports.fullCoverage
-        }
-
-        binaryCoverageFiles += config.coverageBinaryFiles.asFilesPaths()
-        sourceFiles += config.sourceFiles.asFilesPaths()
-
-        classRoots += config.classRoots.asFilesPaths()
-        classFiles += config.classFiles.asFilesPaths()
-        excludeClasses.addAll(config.excludeClasses)
-    }
-
-    deltaReportFacade.generateReports(deltaCoverageConfig)
-}
-
-private fun Iterable<String>.asFilesPaths() = map { File(it).absoluteFile }
 
 private fun printUsageExample() {
     println(
