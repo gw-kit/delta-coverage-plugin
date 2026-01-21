@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     implementation(project(":delta-coverage-core"))
+    implementation(project(":delta-coverage-cli"))
     implementation(deps.jackson)
     implementation(deps.jacksonKotlin)
     implementation(deps.jacksonYaml)

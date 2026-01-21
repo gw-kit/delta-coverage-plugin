@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.github.surpsg.deltacoverage.CoverageEngine
+import io.github.surpsg.deltacoverage.cli.config.CliConfig
 import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
 import io.github.surpsg.deltacoverage.config.DiffSourceConfig
 import io.github.surpsg.deltacoverage.config.ReportConfig
@@ -73,21 +73,21 @@ private fun createYamlMapper(): ObjectMapper {
     return ObjectMapper(YAMLFactory()).registerModule(KotlinModule.Builder().build())
 }
 
-private fun loadConfigFromFile(configFile: File): DemoConfig {
+private fun loadConfigFromFile(configFile: File): CliConfig {
     val mapper = createYamlMapper()
     return mapper.readValue(configFile)
 }
 
-private fun loadConfigFromStream(inputStream: java.io.InputStream): DemoConfig {
+private fun loadConfigFromStream(inputStream: java.io.InputStream): CliConfig {
     val mapper = createYamlMapper()
     return inputStream.use { mapper.readValue(it) }
 }
 
-private fun runDeltaCoverage(config: DemoConfig) {
-    val deltaReportFacade = DeltaReportFacadeFactory.buildFacade(config.coverageEngine)
+private fun runDeltaCoverage(config: CliConfig) {
+    val deltaReportFacade = DeltaReportFacadeFactory.buildFacade(config.coverageEngine!!)
 
     // Resolve relative paths to absolute paths from current working directory
-    val diffSourceFile = File(config.diffSourceFile).absolutePath
+    val diffSourceFile = File(config.diffSourceFile!!).absolutePath
 
     // Build diff source config
     val diffSourceConfig = DiffSourceConfig {
@@ -99,7 +99,7 @@ private fun runDeltaCoverage(config: DemoConfig) {
 
     val deltaCoverageConfig = DeltaCoverageConfig {
         viewName = config.viewName
-        coverageEngine = config.coverageEngine
+        coverageEngine = config.coverageEngine!!
         diffSource = DiffSource.buildDiffSource(projectRoot, diffSourceConfig)
 
         reportsConfig = ReportsConfig {
@@ -126,7 +126,7 @@ private fun runDeltaCoverage(config: DemoConfig) {
 
         classRoots += config.classRoots.asFilesPaths()
         classFiles += config.classFiles.asFilesPaths()
-        config.excludeClasses?.let(excludeClasses::addAll)
+        excludeClasses.addAll(config.excludeClasses)
     }
 
     deltaReportFacade.generateReports(deltaCoverageConfig)
@@ -157,23 +157,3 @@ private fun printUsageExample() {
         |
     """.trimMargin())
 }
-
-data class DemoConfig(
-    val coverageEngine: CoverageEngine,
-    val viewName: String = "demo",
-    val diffSourceFile: String,
-    val reports: ReportsConfigJson,
-    val coverageBinaryFiles: List<String>,
-    val sourceFiles: List<String>,
-    val classRoots: List<String>,
-    val classFiles: List<String>,
-    val excludeClasses: List<String>?,
-)
-
-data class ReportsConfigJson(
-    val reportDir: String = "build/reports/delta-coverage-demo",
-    val html: Boolean = true,
-    val console: Boolean = true,
-    val markdown: Boolean = false,
-    val fullCoverage: Boolean = true
-)
