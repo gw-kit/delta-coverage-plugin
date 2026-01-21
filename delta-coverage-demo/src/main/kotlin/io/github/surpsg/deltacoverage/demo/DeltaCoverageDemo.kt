@@ -1,10 +1,7 @@
 package io.github.surpsg.deltacoverage.demo
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.surpsg.deltacoverage.cli.config.CliConfig
+import io.github.surpsg.deltacoverage.cli.config.ConfigLoader
 import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
 import io.github.surpsg.deltacoverage.config.DiffSourceConfig
 import io.github.surpsg.deltacoverage.config.ReportConfig
@@ -41,7 +38,7 @@ fun main(args: Array<String>) {
         }
         logger.info("Loading config from file: ${configFile.absolutePath}")
         println("Loading config from: ${configFile.absolutePath}")
-        loadConfigFromFile(configFile)
+        ConfigLoader.loadFromFile(configFile)
     } else {
         // Load from classpath resource
         val resourceStream = object {}.javaClass.getResourceAsStream("/demo.yaml")
@@ -51,7 +48,7 @@ fun main(args: Array<String>) {
             return
         }
         logger.info("Loading config from classpath: /demo.yaml")
-        loadConfigFromStream(resourceStream)
+        ConfigLoader.loadFromStream(resourceStream)
     }
 
     logger.info("Configuration loaded successfully")
@@ -67,20 +64,6 @@ fun main(args: Array<String>) {
     logger.info("Delta coverage analysis completed successfully")
     println("\nDelta coverage analysis completed successfully!")
     println("Reports generated to: ${config.reports.reportDir}")
-}
-
-private fun createYamlMapper(): ObjectMapper {
-    return ObjectMapper(YAMLFactory()).registerModule(KotlinModule.Builder().build())
-}
-
-private fun loadConfigFromFile(configFile: File): CliConfig {
-    val mapper = createYamlMapper()
-    return mapper.readValue(configFile)
-}
-
-private fun loadConfigFromStream(inputStream: java.io.InputStream): CliConfig {
-    val mapper = createYamlMapper()
-    return inputStream.use { mapper.readValue(it) }
 }
 
 private fun runDeltaCoverage(config: CliConfig) {
@@ -135,7 +118,8 @@ private fun runDeltaCoverage(config: CliConfig) {
 private fun Iterable<String>.asFilesPaths() = map { File(it).absoluteFile }
 
 private fun printUsageExample() {
-    println("""
+    println(
+        """
         |
         |Example demo.yaml file:
         |
@@ -155,5 +139,6 @@ private fun printUsageExample() {
         |  markdown: false
         |  fullCoverage: true
         |
-    """.trimMargin())
+    """.trimMargin()
+    )
 }
