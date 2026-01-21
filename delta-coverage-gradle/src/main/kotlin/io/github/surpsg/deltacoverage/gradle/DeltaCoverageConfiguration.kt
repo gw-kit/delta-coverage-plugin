@@ -95,6 +95,13 @@ open class ReportView @Inject constructor(
     @Input
     val enabled: Property<Boolean> = objectFactory.property(Boolean::class.javaObjectType)
 
+    @Internal
+    internal val autoDiscovered: Property<Boolean> = objectFactory.property(Boolean::class.javaObjectType)
+        .convention(false)
+
+    @Internal
+    internal val associatedProjects: ListProperty<String> = objectFactory.listProperty(String::class.java)
+
     @Optional
     @InputFiles
     var coverageBinaryFiles: FileCollection? = null

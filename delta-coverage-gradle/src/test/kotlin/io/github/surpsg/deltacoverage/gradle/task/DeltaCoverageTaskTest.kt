@@ -5,7 +5,9 @@ import io.github.surpsg.deltacoverage.gradle.unittest.applyDeltaCoveragePlugin
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.file.shouldExist
+import io.kotest.matchers.file.shouldNotExist
 import org.gradle.api.internal.project.ProjectInternal
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
@@ -56,6 +58,74 @@ class DeltaCoverageTaskTest {
                 val actualSummaryFile = project.layout.buildDirectory.file(summaryFile).get().asFile
                 actualSummaryFile.shouldExist()
             }
+        }
+    }
+
+    @Nested
+    inner class ExplainReportTest {
+
+        @Test
+        fun `should generate explain report when explainEnabled is true`() {
+            // GIVEN
+            val project: ProjectInternal = testJavaProject {
+                applyDeltaCoveragePlugin()
+
+                val diffFile = tempDir.resolve("diff.patch").apply { createNewFile() }
+
+                extensions.configure(DeltaCoverageConfiguration::class.java) { config ->
+                    config.diffSource.file.set(diffFile.absolutePath)
+                    config.reportViews.getByName("test").coverageBinaryFiles = files("any")
+                }
+            }
+
+            val testTask = project.tasks.withType(DeltaCoverageTask::class.java)
+                .first { it.viewName.get() == "test" }
+            testTask.explainEnabled.set(true)
+
+            // WHEN
+            testTask.executeAction()
+
+            // THEN
+            val explainReportFile = project.layout.buildDirectory
+                .file("reports/coverage-reports/test-explain-report.md")
+                .get().asFile
+
+            explainReportFile.shouldExist()
+        }
+
+        @Test
+        fun `should generate explain report when explainOnlyEnabled is true`() {
+            // GIVEN
+            val project: ProjectInternal = testJavaProject {
+                applyDeltaCoveragePlugin()
+
+                val diffFile = tempDir.resolve("diff.patch").apply { createNewFile() }
+
+                extensions.configure(DeltaCoverageConfiguration::class.java) { config ->
+                    config.diffSource.file.set(diffFile.absolutePath)
+                    config.reportViews.getByName("test").coverageBinaryFiles = files("any")
+                }
+            }
+
+            val testTask = project.tasks.withType(DeltaCoverageTask::class.java)
+                .first { it.viewName.get() == "test" }
+            testTask.explainOnlyEnabled.set(true)
+            testTask.getOutputDir().mkdirs()
+
+            // WHEN
+            testTask.executeAction()
+
+            // THEN
+            val explainReportFile = project.layout.buildDirectory
+                .file("reports/coverage-reports/test-explain-report.md")
+                .get().asFile
+
+            explainReportFile.shouldExist()
+
+            val summaryFile = project.layout.buildDirectory
+                .file("reports/coverage-reports/test-summary.json")
+                .get().asFile
+            summaryFile.shouldNotExist()
         }
     }
 }
