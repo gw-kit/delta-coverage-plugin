@@ -6,7 +6,7 @@ jgitVer = "7.5.0.202512021534-r"
 csvVer = "5.12.0"
 jacksonVer = "2.21.0"
 
-kotlinVer = "2.2.21"
+kotlinVer = "2.3.0"
 junitVer = "6.0.2"
 mockkVer = "1.14.7"
 kotestVer = "6.1.0"
