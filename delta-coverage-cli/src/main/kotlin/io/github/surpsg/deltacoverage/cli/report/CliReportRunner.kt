@@ -42,22 +42,22 @@ class CliReportRunner {
     }
 
     private fun expandGlobPatterns(config: CliConfig): CliConfig {
-        val baseDir = File(".")
+        val globExpander = GlobExpander()
 
-        val expandedCoverageBinaries = GlobExpander.expandGlobs(config.coverageBinaryFiles, baseDir)
-        val expandedClassRoots = GlobExpander.expandGlobs(config.classRoots, baseDir)
-        val expandedClassFiles = GlobExpander.expandGlobs(config.classFiles, baseDir)
-        val expandedSourceFiles = GlobExpander.expandGlobs(config.sourceFiles, baseDir)
+        val expandedCoverageBinaries = globExpander.expandGlobs(config.coverageBinaryFiles)
+        val expandedClassRoots = globExpander.expandGlobs(config.classRoots)
+        val expandedClassFiles = globExpander.expandGlobs(config.classFiles)
+        val expandedSourceFiles = globExpander.expandGlobs(config.sourceFiles)
 
         logger.debug("Expanded coverage binaries: {} -> {}", config.coverageBinaryFiles, expandedCoverageBinaries)
         logger.debug("Expanded class roots: {} -> {}", config.classRoots, expandedClassRoots)
         logger.debug("Expanded source files: {} -> {}", config.sourceFiles, expandedSourceFiles)
 
         return config.copy(
-            coverageBinaryFiles = expandedCoverageBinaries.map { it.absolutePath },
-            classRoots = expandedClassRoots.map { it.absolutePath },
-            classFiles = expandedClassFiles.map { it.absolutePath },
-            sourceFiles = expandedSourceFiles.map { it.absolutePath }
+            coverageBinaryFiles = expandedCoverageBinaries.map { it.toAbsolutePath().toString() },
+            classRoots = expandedClassRoots.map { it.toAbsolutePath().toString() },
+            classFiles = expandedClassFiles.map { it.toAbsolutePath().toString() },
+            sourceFiles = expandedSourceFiles.map { it.toAbsolutePath().toString() }
         )
     }
 

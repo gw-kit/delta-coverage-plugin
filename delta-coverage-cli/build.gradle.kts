@@ -13,6 +13,8 @@ dependencies {
 
     implementation(deps.slf4j)
     implementation(deps.logback)
+
+    testImplementation(deps.jimFs)
 }
 
 tasks {

@@ -1,6 +1,6 @@
 package io.github.surpsg.deltacoverage.cli.config
 
-import java.io.File
+import java.nio.file.FileSystem
 import java.nio.file.FileSystems
 import java.nio.file.FileVisitResult
 import java.nio.file.Files
@@ -9,64 +9,64 @@ import java.nio.file.PathMatcher
 import java.nio.file.SimpleFileVisitor
 import java.nio.file.attribute.BasicFileAttributes
 
-object GlobExpander {
+class GlobExpander(
+    private val fileSystem: FileSystem = FileSystems.getDefault(),
+    private val baseDir: Path = fileSystem.getPath(".").toAbsolutePath().normalize()
+) {
 
-    private const val GLOB_CHARS = "*?[{"
-
-    fun expandGlobs(patterns: List<String>, baseDir: File = File(".")): List<File> {
-        return patterns.flatMap { pattern -> expandGlob(pattern, baseDir) }.distinct()
+    fun expandGlobs(patterns: List<String>): List<Path> {
+        return patterns.flatMap { pattern -> expandGlob(pattern) }.distinct()
     }
 
-    fun expandGlob(pattern: String, baseDir: File = File(".")): List<File> {
+    fun expandGlob(pattern: String): List<Path> {
         val normalizedPattern = pattern.trim()
 
         if (!containsGlobPattern(normalizedPattern)) {
-            val file = resolveFile(normalizedPattern, baseDir)
-            return if (file.exists()) listOf(file) else emptyList()
+            val path = resolvePath(normalizedPattern)
+            return if (Files.exists(path)) listOf(path) else emptyList()
         }
 
-        return findMatchingFiles(normalizedPattern, baseDir)
+        return findMatchingFiles(normalizedPattern)
     }
 
     private fun containsGlobPattern(pattern: String): Boolean {
         return pattern.any { it in GLOB_CHARS }
     }
 
-    private fun resolveFile(path: String, baseDir: File): File {
-        val file = File(path)
-        return if (file.isAbsolute) file else File(baseDir, path)
+    private fun resolvePath(pathString: String): Path {
+        val path = fileSystem.getPath(pathString)
+        return if (path.isAbsolute) path else baseDir.resolve(path)
     }
 
-    private fun findMatchingFiles(pattern: String, baseDir: File): List<File> {
-        val basePath = baseDir.toPath().toAbsolutePath().normalize()
+    private fun findMatchingFiles(pattern: String): List<Path> {
         val globPattern = "glob:$pattern"
 
         val matcher: PathMatcher = try {
-            FileSystems.getDefault().getPathMatcher(globPattern)
+            fileSystem.getPathMatcher(globPattern)
         } catch (e: IllegalArgumentException) {
             return emptyList()
         }
 
-        val matchingFiles = mutableListOf<File>()
+        val matchingFiles = mutableListOf<Path>()
 
-        val startPath = findStartPath(pattern, basePath)
+        val startPath = findStartPath(pattern)
         if (!Files.exists(startPath)) {
             return emptyList()
         }
 
         Files.walkFileTree(startPath, object : SimpleFileVisitor<Path>() {
             override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
-                val relativePath = basePath.relativize(file)
+                val relativePath = baseDir.relativize(file)
                 if (matcher.matches(relativePath)) {
-                    matchingFiles.add(file.toFile())
+                    matchingFiles.add(file)
                 }
                 return FileVisitResult.CONTINUE
             }
 
             override fun preVisitDirectory(dir: Path, attrs: BasicFileAttributes): FileVisitResult {
-                val relativePath = basePath.relativize(dir)
+                val relativePath = baseDir.relativize(dir)
                 if (matcher.matches(relativePath)) {
-                    matchingFiles.add(dir.toFile())
+                    matchingFiles.add(dir)
                 }
                 return FileVisitResult.CONTINUE
             }
@@ -79,18 +79,22 @@ object GlobExpander {
         return matchingFiles
     }
 
-    private fun findStartPath(pattern: String, basePath: Path): Path {
+    private fun findStartPath(pattern: String): Path {
         val parts = pattern.split("/", "\\")
         val staticParts = parts.takeWhile { !containsGlobPattern(it) }
 
         return if (staticParts.isEmpty()) {
-            basePath
+            baseDir
         } else {
-            var path = basePath
+            var path = baseDir
             for (part in staticParts) {
                 path = path.resolve(part)
             }
-            if (Files.exists(path)) path else basePath
+            if (Files.exists(path)) path else baseDir
         }
+    }
+
+    private companion object {
+        const val GLOB_CHARS = "*?[{"
     }
 }
