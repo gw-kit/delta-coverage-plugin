@@ -8,7 +8,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import java.io.File
 import java.io.InputStream
 
-object ConfigLoader {
+internal object ConfigLoader {
 
     fun loadFromFile(configFile: File): CliConfig {
         require(configFile.exists()) { "Configuration file not found: ${configFile.absolutePath}" }

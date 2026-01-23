@@ -9,7 +9,7 @@ import java.nio.file.PathMatcher
 import java.nio.file.SimpleFileVisitor
 import java.nio.file.attribute.BasicFileAttributes
 
-class GlobExpander(
+internal class GlobExpander(
     private val fileSystem: FileSystem = FileSystems.getDefault(),
     private val baseDir: Path = fileSystem.getPath(".").toAbsolutePath().normalize()
 ) {

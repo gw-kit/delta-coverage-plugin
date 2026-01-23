@@ -2,9 +2,7 @@ package io.github.surpsg.deltacoverage.cli
 
 import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.cli.config.CliConfig
-import io.github.surpsg.deltacoverage.cli.config.ConfigLoader
-import io.github.surpsg.deltacoverage.cli.config.ReportsCliConfig
-import io.github.surpsg.deltacoverage.cli.config.ViolationRulesConfig
+import io.github.surpsg.deltacoverage.cli.config.CliConfigBuilder
 import io.github.surpsg.deltacoverage.cli.report.CliReportRunner
 import org.slf4j.LoggerFactory
 import picocli.CommandLine
@@ -22,7 +20,7 @@ private val logger = LoggerFactory.getLogger("DeltaCoverageCli")
     version = ["delta-coverage-cli 3.6.0"],
     description = ["Computes code coverage of new/modified code based on a provided diff."]
 )
-class DeltaCoverageCli : Callable<Int> {
+internal class DeltaCoverageCli : Callable<Int> {
 
     @Option(
         names = ["-c", "--config"],
@@ -124,74 +122,37 @@ class DeltaCoverageCli : Callable<Int> {
     )
     var viewName: String? = null
 
-    override fun call(): Int {
-        return try {
-            val config: CliConfig = buildConfig()
-            validateConfig(config)
-
-            CliReportRunner().run(config)
-
-            EXIT_SUCCESS
-        } catch (e: ConfigurationException) {
-            logger.error("Configuration error: ${e.message}")
-            EXIT_CONFIG_ERROR
-        } catch (e: CoverageViolationException) {
-            logger.error("Coverage violation: ${e.message}")
-            EXIT_COVERAGE_VIOLATION
-        } catch (e: Exception) {
-            logger.error("Runtime error: ${e.message}", e)
-            EXIT_RUNTIME_ERROR
+    override fun call(): Int = try {
+        val config: CliConfig = CliConfigBuilder.build(this).apply {
+            validateConfig()
         }
+        CliReportRunner().run(config)
+
+        EXIT_SUCCESS
+    } catch (e: ConfigurationException) {
+        logger.error("Configuration error: ${e.message}")
+        EXIT_CONFIG_ERROR
+    } catch (e: CoverageViolationException) {
+        logger.error("Coverage violation: ${e.message}")
+        EXIT_COVERAGE_VIOLATION
+    } catch (e: Exception) {
+        logger.error("Runtime error: ${e.message}", e)
+        EXIT_RUNTIME_ERROR
     }
 
-    private fun buildConfig(): CliConfig {
-        val baseConfig = configFile?.let { ConfigLoader.loadFromFile(it) } ?: CliConfig()
-
-        return baseConfig.copy(
-            coverageEngine = engine ?: baseConfig.coverageEngine,
-            viewName = viewName ?: baseConfig.viewName,
-            diffSourceFile = diffFile ?: baseConfig.diffSourceFile,
-            coverageBinaryFiles = coverageBinaryFiles.ifEmpty { baseConfig.coverageBinaryFiles },
-            classRoots = classRoots.ifEmpty { baseConfig.classRoots },
-            sourceFiles = sourceFiles.ifEmpty { baseConfig.sourceFiles },
-            excludeClasses = excludeClasses.ifEmpty { baseConfig.excludeClasses },
-            reports = buildReportsConfig(baseConfig.reports),
-            violationRules = buildViolationRules(baseConfig.violationRules)
-        )
-    }
-
-    private fun buildReportsConfig(base: ReportsCliConfig): ReportsCliConfig {
-        val hasReportFlags = html || xml || console || markdown
-        return base.copy(
-            reportDir = reportDir ?: base.reportDir,
-            html = if (hasReportFlags) html else base.html,
-            xml = if (hasReportFlags) xml else base.xml,
-            console = if (hasReportFlags) console else base.console,
-            markdown = if (hasReportFlags) markdown else base.markdown,
-            fullCoverage = if (fullCoverage) true else base.fullCoverage
-        )
-    }
-
-    private fun buildViolationRules(base: ViolationRulesConfig): ViolationRulesConfig {
-        return base.copy(
-            minCoverage = minCoverage ?: base.minCoverage,
-            failOnViolation = if (failOnViolation) true else base.failOnViolation
-        )
-    }
-
-    private fun validateConfig(config: CliConfig) {
+    private fun CliConfig.validateConfig() {
         val errors = mutableListOf<String>()
 
-        if (config.diffSourceFile.isNullOrBlank()) {
+        if (diffSourceFile.isNullOrBlank()) {
             errors += "Diff file is required (--diff-file)"
         }
-        if (config.coverageBinaryFiles.isEmpty()) {
+        if (coverageBinaryFiles.isEmpty()) {
             errors += "Coverage binary files are required (--coverage-binary)"
         }
-        if (config.classRoots.isEmpty()) {
+        if (classRoots.isEmpty()) {
             errors += "Class directories are required (--classes)"
         }
-        if (config.sourceFiles.isEmpty()) {
+        if (sourceFiles.isEmpty()) {
             errors += "Source directories are required (--sources)"
         }
 
@@ -208,8 +169,8 @@ class DeltaCoverageCli : Callable<Int> {
     }
 }
 
-class ConfigurationException(message: String) : RuntimeException(message)
-class CoverageViolationException(message: String) : RuntimeException(message)
+internal class ConfigurationException(message: String) : RuntimeException(message)
+internal class CoverageViolationException(message: String) : RuntimeException(message)
 
 fun main(args: Array<String>) {
     val exitCode = CommandLine(DeltaCoverageCli()).execute(*args)
