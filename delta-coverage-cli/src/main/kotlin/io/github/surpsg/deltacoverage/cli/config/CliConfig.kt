@@ -3,7 +3,7 @@ package io.github.surpsg.deltacoverage.cli.config
 import io.github.surpsg.deltacoverage.CoverageEngine
 
 data class CliConfig(
-    val coverageEngine: CoverageEngine? = null,
+    val coverageEngine: CoverageEngine = CoverageEngine.JACOCO,
     val viewName: String = "cli",
     val diffSourceFile: String? = null,
     val coverageBinaryFiles: List<String> = emptyList(),

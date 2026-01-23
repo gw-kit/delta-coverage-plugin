@@ -21,7 +21,7 @@ class CliReportRunner {
     private val logger = LoggerFactory.getLogger(CliReportRunner::class.java)
 
     fun run(config: CliConfig) {
-        val expandedConfig = expandGlobPatterns(config)
+        val expandedConfig: CliConfig = expandGlobPatterns(config)
         val deltaCoverageConfig = buildDeltaCoverageConfig(expandedConfig)
 
         logger.info("Running delta coverage analysis...")
@@ -29,9 +29,8 @@ class CliReportRunner {
         logger.debug("Class roots: {}", deltaCoverageConfig.classRoots)
         logger.debug("Source files: {}", deltaCoverageConfig.sourceFiles)
 
-        val facade = DeltaReportFacadeFactory.buildFacade(deltaCoverageConfig.coverageEngine)
-
         try {
+            val facade = DeltaReportFacadeFactory.buildFacade(deltaCoverageConfig.coverageEngine)
             facade.generateReports(deltaCoverageConfig)
             logger.info("Reports generated to: {}", config.reports.reportDir)
         } catch (e: CoverageViolatedException) {

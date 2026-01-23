@@ -124,31 +124,12 @@ class DeltaCoverageCli : Callable<Int> {
     )
     var viewName: String? = null
 
-    @Option(
-        names = ["-v", "--verbose"],
-        description = ["Enable verbose output"]
-    )
-    var verbose: Boolean = false
-
     override fun call(): Int {
         return try {
-            if (verbose) {
-                logger.info("Starting delta coverage analysis...")
-            }
-
             val config: CliConfig = buildConfig()
             validateConfig(config)
 
-            if (verbose) {
-                logger.info("Configuration: engine=${config.coverageEngine}, diffFile=${config.diffSourceFile}")
-            }
-
-            val runner = CliReportRunner()
-            runner.run(config)
-
-            if (verbose) {
-                logger.info("Delta coverage analysis completed successfully")
-            }
+            CliReportRunner().run(config)
 
             EXIT_SUCCESS
         } catch (e: ConfigurationException) {
@@ -201,9 +182,6 @@ class DeltaCoverageCli : Callable<Int> {
     private fun validateConfig(config: CliConfig) {
         val errors = mutableListOf<String>()
 
-        if (config.coverageEngine == null) {
-            errors += "Coverage engine is required (--engine JACOCO or --engine INTELLIJ)"
-        }
         if (config.diffSourceFile.isNullOrBlank()) {
             errors += "Diff file is required (--diff-file)"
         }

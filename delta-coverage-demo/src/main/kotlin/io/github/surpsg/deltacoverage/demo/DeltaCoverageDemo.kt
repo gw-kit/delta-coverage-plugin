@@ -23,16 +23,16 @@ fun main(args: Array<String>) {
     val config = if (args.isNotEmpty()) {
         // Load from file path argument
         val configFile = File(args[0])
-        if (!configFile.exists()) {
+        if (configFile.exists()) {
+            logger.info("Loading config from file: ${configFile.absolutePath}")
+            println("Loading config from: ${configFile.absolutePath}")
+            ConfigLoader.loadFromFile(configFile)
+        } else {
             logger.error("Config file not found: ${configFile.absolutePath}")
             println("Config file not found: ${configFile.absolutePath}")
             println("Please create a config file with the required YAML structure.")
-            printUsageExample()
             return
         }
-        logger.info("Loading config from file: ${configFile.absolutePath}")
-        println("Loading config from: ${configFile.absolutePath}")
-        ConfigLoader.loadFromFile(configFile)
     } else {
         // Load from classpath resource
         val resourceStream = object {}.javaClass.getResourceAsStream("/demo.yaml")
@@ -58,30 +58,4 @@ fun main(args: Array<String>) {
     logger.info("Delta coverage analysis completed successfully")
     println("\nDelta coverage analysis completed successfully!")
     println("Reports generated to: ${config.reports.reportDir}")
-}
-
-private fun printUsageExample() {
-    println(
-        """
-        |
-        |Example demo.yaml file:
-        |
-        |coverageEngine: INTELLIJ
-        |viewName: demo
-        |diffSourceFile: /path/to/file.diff
-        |coverageBinaryFiles:
-        |  - /path/to/coverage.ic
-        |classRoots:
-        |  - /path/to/classes/kotlin/main
-        |sourceFiles:
-        |  - /path/to/src/main/kotlin
-        |reportDir: build/reports/delta-coverage-demo
-        |reports:
-        |  html: true
-        |  console: true
-        |  markdown: false
-        |  fullCoverage: true
-        |
-    """.trimMargin()
-    )
 }
