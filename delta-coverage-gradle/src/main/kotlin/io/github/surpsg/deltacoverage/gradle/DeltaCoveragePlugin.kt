@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.gradle
 
 import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply
+import io.github.surpsg.deltacoverage.gradle.dsl.view.dependsOn
 import io.github.surpsg.deltacoverage.gradle.reportview.ViewLookup
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTask
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTaskConfigurer
@@ -8,7 +9,6 @@ import io.github.surpsg.deltacoverage.gradle.task.NativeGitDiffTask
 import io.github.surpsg.deltacoverage.gradle.utils.deltaCoverageConfig
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.TaskProvider
 import org.slf4j.Logger
@@ -68,7 +68,7 @@ open class DeltaCoveragePlugin : Plugin<Project> {
     }
 
     private fun Project.deltaTaskForViewConfigurer(): (String) -> Unit {
-        val deltaCoverageLifecycleTask: Task = project.tasks.create(DELTA_COVERAGE_TASK)
+        val deltaCoverageLifecycleTask = project.tasks.register(DELTA_COVERAGE_TASK)
         val nativeGitDiffTask: TaskProvider<NativeGitDiffTask> = createNativeGitDiffTask()
 
         return { viewName: String ->
@@ -88,9 +88,9 @@ open class DeltaCoveragePlugin : Plugin<Project> {
     private fun Project.createDeltaCoverageViewTask(
         viewName: String,
         config: DeltaCoverageConfiguration,
-    ): DeltaCoverageTask {
+    ): TaskProvider<DeltaCoverageTask> {
         val taskName: String = DELTA_COVERAGE_TASK + viewName.capitalize()
-        return project.tasks.create(taskName, DeltaCoverageTask::class.java) { deltaCoverageTask ->
+        return project.tasks.register(taskName, DeltaCoverageTask::class.java) { deltaCoverageTask ->
             DeltaCoverageTaskConfigurer.configure(viewName, config, deltaCoverageTask)
             deltaCoverageTask.onlyIf {
                 config.reportViews.getByName(viewName).isEnabled()

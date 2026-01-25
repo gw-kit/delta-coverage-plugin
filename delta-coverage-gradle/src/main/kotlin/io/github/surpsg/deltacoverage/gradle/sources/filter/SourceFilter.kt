@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.gradle.sources.filter
 
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
+import io.github.surpsg.deltacoverage.gradle.ReportView
 import io.github.surpsg.deltacoverage.gradle.sources.SourceType
 import io.github.surpsg.deltacoverage.gradle.sources.SourcesResolver
 import org.gradle.api.file.FileCollection
@@ -27,21 +28,22 @@ internal fun interface SourceFilter {
         private fun buildClassesFilter(
             viewName: String,
             config: DeltaCoverageConfiguration,
-        ): SourceFilter {
-            val includeFilter: SourceFilter = if (config.reportViews.names.contains(viewName)) {
-                config.reportViews.getByName(viewName).matchClasses.get()
-                    .filter { it.isNotBlank() }
-                    .takeIf { it.isNotEmpty() }
-                    ?.let { AntSourceIncludeFilter(it) }
-                    ?: NOOP_FILTER
-            } else {
-                NOOP_FILTER
-            }
-            return if (includeFilter == NOOP_FILTER) {
-                AntSourceExcludeFilter(config.excludeClasses.get())
-            } else {
-                includeFilter
-            }
+        ) = CompositeFilter().apply {
+            val view: ReportView = config.reportViews.getByName(viewName)
+
+            // Get include patterns from view
+            view.includeClasses.get()
+                .filter { it.isNotBlank() }
+                .takeIf { it.isNotEmpty() }
+                ?.let(::AntSourceIncludeFilter)
+                ?.let(::addFilter)
+
+            // Get exclude patterns: global + view-level
+            (config.excludeClasses.get() + view.excludeClasses.get())
+                .filter { it.isNotBlank() }
+                .takeIf { it.isNotEmpty() }
+                ?.let(::AntSourceIncludeFilter)
+                ?.let(::addFilter)
         }
     }
 
@@ -50,4 +52,22 @@ internal fun interface SourceFilter {
         val provider: SourcesResolver.Provider,
         val sourceType: SourceType
     )
+
+    /**
+     * A composite filter that applies multiple filters in sequence.
+     */
+    private class CompositeFilter : SourceFilter {
+
+        private val filters: MutableList<SourceFilter> = mutableListOf(NOOP_FILTER)
+
+        override fun filter(inputSource: InputSource): FileCollection =
+            filters.fold(inputSource.originSources) { acc, filter ->
+                filter.filter(inputSource.copy(originSources = acc))
+            }
+
+        fun addFilter(filter: SourceFilter): CompositeFilter {
+            filters += filter
+            return this
+        }
+    }
 }
