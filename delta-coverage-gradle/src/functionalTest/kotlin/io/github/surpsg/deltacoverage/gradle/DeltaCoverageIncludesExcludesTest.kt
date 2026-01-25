@@ -19,7 +19,7 @@ import java.nio.file.attribute.BasicFileAttributes
 import kotlin.io.path.name
 
 @GradlePluginTest(TestProjects.EXCLUDE_CLASSES, kts = false)
-class DeltaCoverageExcludesTest {
+class DeltaCoverageIncludesExcludesTest {
 
     @RootProjectDir
     lateinit var rootProjectDir: File
@@ -48,15 +48,56 @@ class DeltaCoverageExcludesTest {
             deltaCoverageReport {
                 diffSource.file.set('$diffFilePath')
                
+                excludeClasses.value([
+                    '**/excludes/sub/**/*.*'
+                ])
+                
                view('test') {
+                   excludeClasses.value([
+                        '**/CoveredClass${dollarSign}UncoveredNestedClass.*',
+                        '**/excludes/**/UncoveredClass.*', 
+                    ])
                     violationRules.failIfCoverageLessThan 1.0
                }
                 
-                excludeClasses.value([
-                    '**/CoveredClass${dollarSign}UncoveredNestedClass.*',
-                    '**/excludes/**/UncoveredClass.*', 
-                    '**/excludes/sub/**/*.*'
-                ])
+                reports {
+                    html.set(true)
+                }
+            }
+        """.trimIndent()
+        )
+
+        // run // assert
+        gradleRunner
+            .runDeltaCoverageTask()
+            .assertOutputContainsStrings("[test] Fail on violations: true. Found violations: 0")
+
+        // and assert
+        val htmlReportDir: Path = rootProjectDir.toPath()
+            .resolve("build/reports/coverage-reports/delta-coverage/test/html/")
+        val classReportFiles: List<Path> = findAllFiles(htmlReportDir) { file ->
+            file.name.endsWith("Class.html")
+        }
+        assertSoftly(classReportFiles) {
+            shouldHaveSize(1)
+            single().name shouldBe "CoveredClass.html"
+        }
+    }
+
+    @Test
+    fun `delta-coverage should not fail when included only covered classes`() {
+        // setup
+        buildFile.file.appendText(
+            """
+            deltaCoverageReport {
+                diffSource.file.set('$diffFilePath')
+               
+               view('test') {
+                   includeClasses.value([
+                        '**/CoveredClass.*', 
+                    ])
+                    violationRules.failIfCoverageLessThan 1.0
+               }
                 
                 reports {
                     html.set(true)

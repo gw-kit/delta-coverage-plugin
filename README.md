@@ -244,9 +244,15 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
             coverageBinaryFiles = files("/path/to/jacoco/exec/file.exec")
 
             // Optional. Specifies classes to include for the analysis.
-            // If set then excludeClasses patterns are ignored.
-            matchClasses.value(
+            // If set then only classes matching these patterns are included.
+            includeClasses.value(
               listOf("**/com/*/classes/to/include/Class*")
+            )
+
+            // Optional. Additional classes to exclude from coverage report for this view.
+            // These patterns are combined with global excludeClasses.
+            excludeClasses.value(
+              listOf("**/generated/**/*.*")
             )
 
             // If violation rules are not configured, then no violations will be checked.

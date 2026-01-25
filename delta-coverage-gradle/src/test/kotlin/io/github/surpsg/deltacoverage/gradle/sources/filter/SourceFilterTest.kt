@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.gradle.sources.filter
 
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
+import io.github.surpsg.deltacoverage.gradle.dsl.view.view
 import io.github.surpsg.deltacoverage.gradle.sources.SourceType
 import io.github.surpsg.deltacoverage.gradle.sources.SourcesResolver
 import io.github.surpsg.deltacoverage.gradle.unittest.applyDeltaCoveragePlugin
@@ -28,8 +29,8 @@ class SourceFilterTest {
         val proj = testJavaProject {
             applyDeltaCoveragePlugin()
             extensions.configure(DeltaCoverageConfiguration::class.java) { config ->
-                config.view(viewName) {
-                    it.matchClasses.add(includePattern)
+                config.reportViews.view(viewName) {
+                    it.includeClasses.add(includePattern)
                 }
             }
         }
@@ -65,10 +66,11 @@ class SourceFilterTest {
     }
 
     @ParameterizedTest
-    @MethodSource("noOpFilterTest")
-    fun `should build no op filter`(
+    @MethodSource("includeExcludeTestParameters")
+    fun `should properly resolve files to be kept after filtering`(
         viewName: String,
         includePatterns: List<String>,
+        excludePatterns: List<String>,
     ) {
         // GIVEN
         val expectedFiles = listOf(
@@ -78,8 +80,9 @@ class SourceFilterTest {
         val proj = testJavaProject {
             applyDeltaCoveragePlugin()
             extensions.configure(DeltaCoverageConfiguration::class.java) { config ->
-                config.view("noOpFilterTest") {
-                    it.matchClasses.addAll(includePatterns)
+                config.reportViews.view(viewName) {
+                    it.includeClasses.addAll(includePatterns)
+                    it.excludeClasses.addAll(excludePatterns)
                 }
             }
         }
@@ -112,13 +115,12 @@ class SourceFilterTest {
 
     private companion object {
         @JvmStatic
-        fun noOpFilterTest() = listOf(
-            arguments("noOpFilterTest", listOf<String>()),
-            arguments("noOpFilterTest", listOf("")),
+        fun includeExcludeTestParameters() = listOf(
+            arguments("noOpFilterTest", emptyList<String>(), emptyList<String>()),
+            arguments("noOpFilterTest", listOf(""), listOf("")),
 
-            arguments("unknownView", listOf("**/UnknownFiles*")),
-            arguments("unknownView", listOf<String>()),
-            arguments("unknownView", listOf("")),
+            arguments("excludeUnknownFilesView", emptyList<String>(), listOf("**/UnknownFiles*")),
+            arguments("includeKnownFiles", listOf("**/ShouldBeKept*.*"), emptyList<String>()),
         )
     }
 }
