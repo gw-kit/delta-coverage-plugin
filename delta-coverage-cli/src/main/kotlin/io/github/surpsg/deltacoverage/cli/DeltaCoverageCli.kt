@@ -14,6 +14,11 @@ import kotlin.system.exitProcess
 
 private val logger = LoggerFactory.getLogger("DeltaCoverageCli")
 
+fun main(args: Array<String>) {
+    val exitCode = CommandLine(DeltaCoverageCli()).execute(*args)
+    exitProcess(exitCode)
+}
+
 @Command(
     name = "delta-coverage",
     mixinStandardHelpOptions = true,
@@ -170,9 +175,5 @@ internal class DeltaCoverageCli : Callable<Int> {
 }
 
 internal class ConfigurationException(message: String) : RuntimeException(message)
-internal class CoverageViolationException(message: String) : RuntimeException(message)
 
-fun main(args: Array<String>) {
-    val exitCode = CommandLine(DeltaCoverageCli()).execute(*args)
-    exitProcess(exitCode)
-}
+internal class CoverageViolationException(message: String) : RuntimeException(message)

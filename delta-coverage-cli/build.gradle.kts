@@ -2,7 +2,12 @@ plugins {
     `jvm-project-conventions`
     alias(deps.plugins.shadow)
     alias(deps.plugins.mavenPublish)
+//    application
 }
+
+//application {
+//    mainClass.set("io.github.surpsg.deltacoverage.cli.DeltaCoverageCliKt")
+//}
 
 dependencies {
     implementation(project(":delta-coverage-core"))
