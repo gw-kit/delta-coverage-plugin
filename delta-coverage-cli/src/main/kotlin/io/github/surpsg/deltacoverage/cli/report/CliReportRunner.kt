@@ -4,11 +4,12 @@ import io.github.surpsg.deltacoverage.cli.CoverageViolationException
 import io.github.surpsg.deltacoverage.cli.config.CliConfig
 import io.github.surpsg.deltacoverage.exception.CoverageViolatedException
 import io.github.surpsg.deltacoverage.report.DeltaReportFacadeFactory
+import io.github.surpsg.deltacoverage.report.FacadeFactory
 import org.slf4j.LoggerFactory
 
-internal class CliReportRunner {
-
-    private val logger = LoggerFactory.getLogger(CliReportRunner::class.java)
+internal class CliReportRunner(
+    private val facadeFactory: FacadeFactory = DeltaReportFacadeFactory
+) {
 
     fun run(config: CliConfig) {
         val deltaCoverageConfig = config.toCoreConfig()
@@ -19,7 +20,7 @@ internal class CliReportRunner {
         logger.debug("Source files: {}", deltaCoverageConfig.sourceFiles)
 
         try {
-            val facade = DeltaReportFacadeFactory.buildFacade(deltaCoverageConfig.coverageEngine)
+            val facade = facadeFactory.buildFacade(deltaCoverageConfig.coverageEngine)
             facade.generateReports(deltaCoverageConfig)
             logger.info("Reports generated to: {}", config.reports.reportDir)
         } catch (e: CoverageViolatedException) {
@@ -28,5 +29,9 @@ internal class CliReportRunner {
             }
             logger.warn("Coverage violations detected but --fail-on-violation not set: {}", e.message)
         }
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(CliReportRunner::class.java)
     }
 }
