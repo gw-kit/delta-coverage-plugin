@@ -1,5 +1,6 @@
 plugins {
     `jvm-project-conventions`
+    `functional-tests-conventions`
     alias(deps.plugins.shadow)
     alias(deps.plugins.mavenPublish)
 }
@@ -15,6 +16,8 @@ dependencies {
     implementation(deps.logback)
 
     testImplementation(deps.jimFs)
+
+    functionalTestImplementation(deps.kotestAssertions)
 }
 
 tasks {
@@ -28,6 +31,14 @@ tasks {
         manifest {
             attributes["Main-Class"] = "io.github.surpsg.deltacoverage.cli.DeltaCoverageCliKt"
         }
+    }
+
+    functionalTest {
+        inputs.files(shadowJar)
+        systemProperty(
+            "cli.jar.path",
+            shadowJar.get().archiveFile.get().asFile.absolutePath,
+        )
     }
 }
 
