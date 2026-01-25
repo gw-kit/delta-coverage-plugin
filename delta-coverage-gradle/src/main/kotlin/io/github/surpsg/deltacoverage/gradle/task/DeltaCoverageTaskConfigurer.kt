@@ -27,13 +27,13 @@ internal object DeltaCoverageTaskConfigurer {
         applySourcesInputs(view, deltaCoverageConfig)
     }
 
-    private fun DeltaCoverageTask.configureDependencies() = project.afterEvaluate {
+    private fun DeltaCoverageTask.configureDependencies() {
         val deltaCoverageTask: DeltaCoverageTask = this
-        project.getAllTasks(true).values.asSequence()
-            .flatMap { tasks -> tasks.asSequence() }
-            .forEach { task ->
+        project.allprojects { proj ->
+            proj.tasks.configureEach { task ->
                 deltaCoverageTask.configureDependencyOn(task)
             }
+        }
     }
 
     private fun DeltaCoverageTask.configureDependencyOn(task: Task) = when {
