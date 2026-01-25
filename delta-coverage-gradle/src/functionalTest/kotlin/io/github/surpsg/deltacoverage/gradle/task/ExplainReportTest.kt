@@ -46,7 +46,6 @@ class ExplainReportTest {
 
         // WHEN
         gradleRunner.runDeltaCoverageTask(
-            printLogs = true,
             gradleArgs = arrayOf("-P${DeltaCoverageTask.EXPLAIN_ONLY_PROPERTY}"),
         )
 

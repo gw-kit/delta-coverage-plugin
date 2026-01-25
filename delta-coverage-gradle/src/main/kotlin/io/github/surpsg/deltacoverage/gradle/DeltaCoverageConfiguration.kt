@@ -50,6 +50,7 @@ open class DeltaCoverageConfiguration @Inject constructor(
     @Nested
     val reportConfiguration: ReportsConfiguration = ReportsConfiguration(objectFactory)
 
+    @Internal
     val reportViews: NamedDomainObjectContainer<ReportView> =
         objectFactory.domainObjectContainer(ReportView::class.java) { name ->
             objectFactory.newInstance(ReportView::class.java, name, objectFactory)

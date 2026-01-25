@@ -1,6 +1,7 @@
 package io.github.surpsg.deltacoverage.gradle.sources
 
 import io.github.surpsg.deltacoverage.gradle.CoverageEngine
+import io.github.surpsg.deltacoverage.gradle.dsl.view.view
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldThrow
@@ -27,7 +28,7 @@ internal class SourcesResolverTest {
         // GIVEN
         val expectedFile = "expected/path/$sourceType"
         val project = testJavaProject()
-        val context: SourcesResolver.Context = testJavaProject().sourceContext(sourceType) {
+        val context: SourcesResolver.Context = project.sourceContext(sourceType) {
             coverage.engine.set(CoverageEngine.JACOCO)
             deltaConfigSetter(this, project.files(expectedFile))
         }
@@ -166,7 +167,10 @@ internal class SourcesResolverTest {
             return listOf<Arguments>(
                 arguments(
                     SourceType.CLASSES,
-                    { config: DeltaConfig, files: FileCollection -> config.classesDirs = files },
+                    { config: DeltaConfig, files: FileCollection ->
+                        config.reportViews.view(VIEW_NAME)
+                        config.classesDirs = files
+                    },
                 ),
 
                 arguments(

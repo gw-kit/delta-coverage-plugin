@@ -33,18 +33,19 @@ internal fun interface SourceFilter {
 
             // Get include patterns from view
             view.includeClasses.get()
-                .filter { it.isNotBlank() }
-                .takeIf { it.isNotEmpty() }
+                .nonEmptyOrNull()
                 ?.let(::AntSourceIncludeFilter)
                 ?.let(::addFilter)
 
             // Get exclude patterns: global + view-level
             (config.excludeClasses.get() + view.excludeClasses.get())
-                .filter { it.isNotBlank() }
-                .takeIf { it.isNotEmpty() }
-                ?.let(::AntSourceIncludeFilter)
+                .nonEmptyOrNull()
+                ?.let(::AntSourceExcludeFilter)
                 ?.let(::addFilter)
         }
+
+        private fun List<String>.nonEmptyOrNull() =
+            filter { it.isNotBlank() }.takeIf { it.isNotEmpty() }
     }
 
     data class InputSource(
