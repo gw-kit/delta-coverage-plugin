@@ -75,12 +75,9 @@ open class DeltaCoveragePlugin : Plugin<Project> {
             if (registeredViews.add(viewName)) {
                 val config: DeltaCoverageConfiguration = deltaCoverageConfig
                 val deltaTask = createDeltaCoverageViewTask(viewName, config)
+                deltaTask.dependsOn(nativeGitDiffTask)
+
                 deltaCoverageLifecycleTask.dependsOn(deltaTask)
-                afterEvaluate {
-                    if (config.diffSource.git.useNativeGit.get()) {
-                        deltaTask.dependsOn(nativeGitDiffTask)
-                    }
-                }
             }
         }
     }
@@ -100,6 +97,8 @@ open class DeltaCoveragePlugin : Plugin<Project> {
 
     private fun Project.createNativeGitDiffTask(): TaskProvider<NativeGitDiffTask> {
         return tasks.register(GIT_DIFF_TASK, NativeGitDiffTask::class.java) { gitDiffTask ->
+            gitDiffTask.enabled = project.deltaCoverageConfig.diffSource.git.useNativeGit.get()
+
             val diffSource = deltaCoverageConfig.diffSource
             gitDiffTask.targetBranch.set(diffSource.git.diffBase)
 
