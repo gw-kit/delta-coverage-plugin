@@ -71,7 +71,7 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
-            const ignoreByLabel = ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }};
+            const ignoreByLabel = ${{ contains(github.event.pull_request.labels.*.name, 'suppress-coverage') }};
             const ignoreByEvent = ${{ github.event_name == 'push' }};
             const resolution = ignoreByLabel || ignoreByEvent;
             core.setOutput('result', resolution);
