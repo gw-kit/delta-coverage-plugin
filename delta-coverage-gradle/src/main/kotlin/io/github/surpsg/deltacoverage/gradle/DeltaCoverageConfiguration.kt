@@ -75,7 +75,10 @@ open class DeltaCoverageConfiguration @Inject constructor(
      * @param name The name of the view.
      * @param action The configuration action.
      */
-    @Deprecated("")
+    @Deprecated(
+        message = "Use reportViews.view(name, action) instead",
+        replaceWith = ReplaceWith("reportViews.view(name, action)")
+    )
     fun view(name: String, action: Action<in ReportView>) {
         reportViews.maybeCreate(name)
         reportViews.named(name, action)
