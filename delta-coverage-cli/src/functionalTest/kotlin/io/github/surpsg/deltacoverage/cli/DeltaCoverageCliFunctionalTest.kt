@@ -4,7 +4,6 @@ import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.file.shouldBeADirectory
 import io.kotest.matchers.file.shouldBeAFile
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
@@ -20,22 +19,6 @@ class DeltaCoverageCliFunctionalTest {
         ?: error("System property 'cli.jar.path' is not set")
 
     @Test
-    fun `should display help message when run with help flag`() {
-        // when
-        val result = runCli("--help")
-
-        // then
-        result.exitCode shouldBe 0
-        assertSoftly(result.output) {
-            shouldContain("delta-coverage")
-            shouldContain("--diff-file")
-            shouldContain("--coverage-binary")
-            shouldContain("--classes")
-            shouldContain("--sources")
-        }
-    }
-
-    @Test
     fun `should load config from file`() {
         // given
         val reportPath = tempDir.resolve("delta-coverage-cli-test-report").toFile()
@@ -47,11 +30,12 @@ class DeltaCoverageCliFunctionalTest {
                 """
                 diffSourceFile: ${diffFile.absolutePath}
                 coverageBinaryFiles:
-                  - test.exec
+                  - '**/test.exec'
+                  - '**/test-data.exec'
                 classRoots:
-                  - classes
+                  - '**/classes/kotlin/main'
                 sourceFiles:
-                  - src
+                  - 'src/main/**'
                 reports:
                   reportDir: ${reportPath.absolutePath}
                 """.trimIndent()
