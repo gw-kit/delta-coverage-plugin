@@ -1,6 +1,8 @@
 package io.github.surpsg.deltacoverage.cli
 
 import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.file.shouldBeADirectory
+import io.kotest.matchers.file.shouldBeAFile
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Test
@@ -36,25 +38,35 @@ class DeltaCoverageCliFunctionalTest {
     @Test
     fun `should load config from file`() {
         // given
-        val configFile = tempDir.resolve("config.yaml").toFile()
-        configFile.writeText(
-            """
-            diffSourceFile: test.diff
-            coverageBinaryFiles:
-              - test.exec
-            classRoots:
-              - classes
-            sourceFiles:
-              - src
-            """.trimIndent()
-        )
+        val reportPath = tempDir.resolve("delta-coverage-cli-test-report").toFile()
+        val diffFile = tempDir.resolve("test.diff").toFile().apply {
+            writeText("")
+        }
+        val configFile = tempDir.resolve("config.yaml").toFile().apply {
+            writeText(
+                """
+                diffSourceFile: ${diffFile.absolutePath}
+                coverageBinaryFiles:
+                  - test.exec
+                classRoots:
+                  - classes
+                sourceFiles:
+                  - src
+                reports:
+                  reportDir: ${reportPath.absolutePath}
+                """.trimIndent()
+            )
+        }
 
         // when
         val result = runCli("--config", configFile.absolutePath)
 
         // then
-        result.exitCode shouldBe 3
-        result.output shouldContain "Runtime error"
+        result.exitCode shouldBe 0
+        assertSoftly(reportPath) {
+            shouldBeADirectory()
+            resolve("cli-summary.json").shouldBeAFile()
+        }
     }
 
     private fun runCli(
