@@ -18,6 +18,10 @@
   The explain report includes plugin configuration, diff source details, report settings, view configuration,
   resolved sources/classes, violation rules, and environment information.
 
+### Fixed
+- Fixed eager task evaluation during plugin configuration phase.
+  Properties like `useNativeGit` are now evaluated lazily improving compatibility with Gradle's configuration cache.
+
 ## 3.5.1
 
 ### Fixed
