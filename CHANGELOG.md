@@ -24,6 +24,9 @@
 - Fixed eager task evaluation during plugin configuration phase.
   Properties like `useNativeGit` are now evaluated lazily improving compatibility with Gradle's configuration cache.
 
+### Dependency updates
+- Updated Gradle to [9.3.0](https://github.com/gradle/gradle/releases/tag/v9.3.0).
+
 ## 3.5.1
 
 ### Fixed
