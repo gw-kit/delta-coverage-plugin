@@ -1,6 +1,6 @@
 # Delta-Coverage Gradle plugin Changelog
 
-## Unreleased
+## 3.6.0
 
 ### New features
 - **CLI Tool**: Introduced `delta-coverage-cli` module - a standalone command-line interface for running
