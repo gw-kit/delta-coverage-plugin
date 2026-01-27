@@ -1,5 +1,32 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## 3.6.0
+
+### New features
+- **CLI Tool**: Introduced `delta-coverage-cli` module - a standalone command-line interface for running
+  delta coverage analysis without requiring the Gradle plugin. This is useful for CI/CD pipelines where
+  you cannot inject the Gradle plugin into build scripts. See [CLI README](delta-coverage-cli/README.md) for details.
+  - Supports both JaCoCo and IntelliJ coverage engines
+  - Glob pattern support for file discovery (e.g., `build/**/jacoco/*.exec`)
+  - YAML configuration file support
+  - All report formats: HTML, XML, Console, Markdown
+  - Coverage violation checks with configurable thresholds
+
+- Added Explain Report feature for debugging and troubleshooting Delta Coverage configuration.
+
+- **Per-view include/exclude class filters**: Added `includeClasses` and `excludeClasses` properties to report views.
+  This allows configuring class filters at the view level in addition to global `excludeClasses`.
+
+### Deprecated
+- `matchClasses` property in `ReportView` is deprecated. Use `includeClasses` instead.
+
+### Fixed
+- Fixed eager task evaluation during plugin configuration phase.
+  Properties like `useNativeGit` are now evaluated lazily improving compatibility with Gradle's configuration cache.
+
+### Dependency updates
+- Updated Gradle to [9.3.0](https://github.com/gradle/gradle/releases/tag/v9.3.0).
+
 ## 3.5.1
 
 ### Fixed

@@ -1,0 +1,157 @@
+package io.github.surpsg.deltacoverage.gradle
+
+import io.github.gwkit.gradleprobe.RestorableFile
+import io.github.gwkit.gradleprobe.assertion.assertOutputContainsStrings
+import io.github.gwkit.gradleprobe.junit.GradlePluginTest
+import io.github.gwkit.gradleprobe.junit.GradleRunnerInstance
+import io.github.gwkit.gradleprobe.junit.ProjectFile
+import io.github.gwkit.gradleprobe.junit.RootProjectDir
+import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.shouldBe
+import org.gradle.testkit.runner.GradleRunner
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.attribute.BasicFileAttributes
+import kotlin.io.path.name
+
+@GradlePluginTest(TestProjects.EXCLUDE_CLASSES, kts = false)
+class DeltaCoverageIncludesExcludesTest {
+
+    @RootProjectDir
+    lateinit var rootProjectDir: File
+
+    @ProjectFile("test.diff.file")
+    lateinit var diffFilePath: String
+
+    @ProjectFile("build.gradle")
+    lateinit var buildFile: RestorableFile
+
+    @GradleRunnerInstance
+    lateinit var gradleRunner: GradleRunner
+
+    @BeforeEach
+    fun beforeEach() {
+        buildFile.restoreOriginContent()
+    }
+
+    @Test
+    fun `delta-coverage should not fail when all not covered classes are excluded`() {
+        // setup
+        val dollarSign = '$'
+        buildFile.file.appendText(
+            """
+
+            deltaCoverageReport {
+                diffSource.file.set('$diffFilePath')
+               
+                excludeClasses.value([
+                    '**/excludes/sub/**/*.*'
+                ])
+                
+               view('test') {
+                   excludeClasses.value([
+                        '**/CoveredClass${dollarSign}UncoveredNestedClass.*',
+                        '**/excludes/**/UncoveredClass.*', 
+                    ])
+                    violationRules.failIfCoverageLessThan 1.0
+               }
+                
+                reports {
+                    html.set(true)
+                }
+            }
+        """.trimIndent()
+        )
+
+        // run // assert
+        gradleRunner
+            .runDeltaCoverageTask()
+            .assertOutputContainsStrings("[test] Fail on violations: true. Found violations: 0")
+
+        // and assert
+        val htmlReportDir: Path = rootProjectDir.toPath()
+            .resolve("build/reports/coverage-reports/delta-coverage/test/html/")
+        val classReportFiles: List<Path> = findAllFiles(htmlReportDir) { file ->
+            file.name.endsWith("Class.html")
+        }
+        assertSoftly(classReportFiles) {
+            shouldHaveSize(1)
+            single().name shouldBe "CoveredClass.html"
+        }
+    }
+
+    @Test
+    fun `delta-coverage should not fail when included only covered classes`() {
+        // setup
+        buildFile.file.appendText(
+            """
+            deltaCoverageReport {
+                diffSource.file.set('$diffFilePath')
+               
+               view('test') {
+                   includeClasses.value([
+                        '**/CoveredClass.*', 
+                    ])
+                    violationRules.failIfCoverageLessThan 1.0
+               }
+                
+                reports {
+                    html.set(true)
+                }
+            }
+        """.trimIndent()
+        )
+
+        // run // assert
+        gradleRunner
+            .runDeltaCoverageTask()
+            .assertOutputContainsStrings("[test] Fail on violations: true. Found violations: 0")
+
+        // and assert
+        val htmlReportDir: Path = rootProjectDir.toPath()
+            .resolve("build/reports/coverage-reports/delta-coverage/test/html/")
+        val classReportFiles: List<Path> = findAllFiles(htmlReportDir) { file ->
+            file.name.endsWith("Class.html")
+        }
+        assertSoftly(classReportFiles) {
+            shouldHaveSize(1)
+            single().name shouldBe "CoveredClass.html"
+        }
+    }
+
+    @Test
+    fun `delta-coverage should fail when not covered classes are not excluded`() {
+        // setup
+        buildFile.file.appendText(
+            """
+
+            deltaCoverageReport {
+                diffSource.file.set('$diffFilePath')
+               
+               view('test') {
+                   violationRules.failIfCoverageLessThan 1.0
+               }
+                
+                excludeClasses.value([])
+            }
+        """.trimIndent()
+        )
+
+        // run // assert
+        gradleRunner
+            .runDeltaCoverageTaskAndFail()
+            .assertOutputContainsStrings("[test] Fail on violations: true. Found violations: 2")
+    }
+
+    private fun findAllFiles(rootDir: Path, fileFilter: (Path) -> Boolean): List<Path> {
+        return Files.find(
+            rootDir,
+            Int.MAX_VALUE,
+            { filePath: Path, _: BasicFileAttributes -> fileFilter(filePath) }
+        ).toList()
+    }
+}

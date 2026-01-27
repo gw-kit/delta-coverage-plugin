@@ -1,20 +1,20 @@
 package io.github.surpsg.deltacoverage.gradle.intellij
 
+import io.github.gwkit.gradleprobe.RestorableFile
+import io.github.gwkit.gradleprobe.assertion.assertOutputContainsStrings
+import io.github.gwkit.gradleprobe.junit.GradlePluginTest
+import io.github.gwkit.gradleprobe.junit.GradleRunnerInstance
+import io.github.gwkit.gradleprobe.junit.ProjectFile
+import io.github.gwkit.gradleprobe.junit.RootProjectDir
 import io.github.surpsg.deltacoverage.gradle.TestProjects
-import io.github.surpsg.deltacoverage.gradle.assertOutputContainsStrings
 import io.github.surpsg.deltacoverage.gradle.runDeltaCoverageTask
 import io.github.surpsg.deltacoverage.gradle.runDeltaCoverageTaskAndFail
-import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
-import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
-import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
-import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
-import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
-@GradlePluginTest(TestProjects.SINGLE_MODULE, kts = true)
+@GradlePluginTest(TestProjects.SINGLE_MODULE)
 class CoverJetPluginVariantViolationsTest {
 
     @RootProjectDir
@@ -32,36 +32,6 @@ class CoverJetPluginVariantViolationsTest {
     @BeforeEach
     fun beforeEach() {
         buildFile.restoreOriginContent()
-    }
-
-    @Test
-    fun `troubleshoot`() {
-        // GIVEN
-        buildFile.file.appendText(
-            """
-            configure<DeltaCoverageConfiguration> {
-                coverage.engine = CoverageEngine.INTELLIJ
-                diffSource.file = "$diffFilePath"
-                reportViews {
-                    view("test") {
-                        enabled = false
-                    }
-                    view("custom") {
-                        coverageBinaryFiles = files("build/coverage/test.ic")
-                        matchClasses.add("com/java/**/Class1.*")
-                    }
-                }
-                reports {
-                    html = true
-                    fullCoverageReport.set(true)
-                }
-            }
-        """.trimIndent()
-        )
-
-        // WHEN // THEN
-        gradleRunner
-            .runDeltaCoverageTask(printLogs = true)
     }
 
     @Test

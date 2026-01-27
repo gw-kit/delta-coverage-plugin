@@ -24,9 +24,7 @@ testing.suites {
             implementation(project())
 
             implementation(libDeps.mockk)
-            implementation(libDeps.kotestRunnerJunit5)
             implementation(libDeps.kotestAssertions)
-            implementation(libDeps.kotestProperty)
         }
 
         targets.all {

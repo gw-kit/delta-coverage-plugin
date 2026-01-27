@@ -24,6 +24,8 @@ The diff content can be provided via path to patch file, URL or using embedded g
 - ✅ **Full Coverage Mode**: Generate baseline full coverage reports alongside delta reports
 - ✅ **Flexible Diff Sources**: Use file, URL, or git to provide the diff
 - ✅ **GitHub Actions Integration**: Post coverage reports directly to PR comments
+- ✅ **Explain Report**: Debug configuration issues with detailed diagnostic reports
+- ✅ **Standalone CLI**: Run delta coverage without Gradle plugin via command-line tool
 
 ## Why should I use it?
 
@@ -62,6 +64,8 @@ The diff content can be provided via path to patch file, URL or using embedded g
   - [Use IntelliJ Coverage for Kotlin Projects](#use-intellij-coverage-for-kotlin-projects)
   - [Generate Full Coverage Reports for Badges](#generate-full-coverage-reports-for-badges)
   - [Exclude Generated Code from Coverage](#exclude-generated-code-from-coverage)
+- [Explain Report](#explain-report)
+- [CLI Tool](#cli-tool)
 - [GitHub Integration](#github-integration)
 
 ## Installation
@@ -72,7 +76,7 @@ Delta Coverage plugin compatibility table:
 
 | Delta Coverage plugin | Gradle                 | min JVM |
 |-----------------------|------------------------|---------|
-| **3.+**               | **7.6.4** - **9.2.+**  | 17      |
+| **3.+**               | **7.6.4** - **9.3.+**  | 17      |
 | **2.5.+**             | **6.7.1** - **8.10.2** | 11      |
 | **2.0.+** - **2.4.0** | **5.6** - **8.9.+**    | 11      |
 | **1.3.+**             | **5.1** - **8.4.+**    | 11      |
@@ -240,9 +244,15 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
             coverageBinaryFiles = files("/path/to/jacoco/exec/file.exec")
 
             // Optional. Specifies classes to include for the analysis.
-            // If set then excludeClasses patterns are ignored.
-            matchClasses.value(
+            // If set then only classes matching these patterns are included.
+            includeClasses.value(
               listOf("**/com/*/classes/to/include/Class*")
+            )
+
+            // Optional. Additional classes to exclude from coverage report for this view.
+            // These patterns are combined with global excludeClasses.
+            excludeClasses.value(
+              listOf("**/generated/**/*.*")
             )
 
             // If violation rules are not configured, then no violations will be checked.
@@ -515,6 +525,116 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
     )
 }
 ```
+
+## Explain Report
+
+The Explain Report feature helps you debug and troubleshoot your Delta Coverage configuration. 
+It generates a detailed markdown report showing all resolved configuration values, 
+discovered sources, and environment information.
+
+### Running Explain Report
+
+You can run the explain report in two modes:
+
+**Generate explain report alongside coverage reports:**
+```shell
+./gradlew deltaCoverage -Pexplain
+```
+
+**Generate only the explain report (skip coverage analysis):**
+```shell
+./gradlew deltaCoverage -PexplainOnly
+```
+
+### Report Contents
+
+The explain report (`<view-name>-explain-report.md`) is generated in the report output directory and includes:
+
+- **Plugin Configuration**: Version, coverage engine, auto-apply settings
+- **Diff Configuration**: Source type (file/URL/git) and details
+- **Reports Configuration**: Enabled report types and output settings
+- **View Details**:
+  - View status (enabled/disabled) and origin (auto-discovered/manual)
+  - Associated projects
+  - Resolved coverage binary files with sizes
+  - Source directories with file counts
+  - Class directories with class counts
+  - Violation rules configuration
+  - Class filters (include/exclude patterns)
+- **Environment**: Gradle version, Java version and vendor
+
+### Example Output
+
+```
+# Delta Coverage Explain Report: `test`
+
+## Plugin Configuration
+
+- Plugin version: 3.6.0
+- Coverage engine: JACOCO
+- Auto-apply coverage plugin: true
+- Reports output directory: build/reports/coverage-reports/
+
+## Diff Configuration
+
+- Source git: refs/remotes/origin/main
+
+## Reports Configuration
+
+| Report Type | Enabled |
+|-------------|---------|
+| html | true |
+| xml | false |
+| console | true |
+| markdown | false |
+
+...
+```
+
+### Use Cases
+
+- **Debugging**: Verify that coverage binary files are correctly resolved
+- **Troubleshooting**: Check if source and class directories are correctly discovered
+- **Configuration Review**: Confirm violation rules and filters are set as expected
+- **CI/CD Debugging**: Diagnose why coverage reports are missing or incorrect in CI pipelines
+
+
+## CLI Tool
+
+For environments where you cannot use the Gradle plugin (e.g., custom build systems, non-Gradle projects),
+Delta Coverage provides a standalone CLI tool.
+
+### Quick Start
+
+```bash
+# Download the CLI JAR
+curl -L -o delta-coverage-cli.jar \
+  https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.0/delta-coverage-cli-3.6.0.jar
+
+# Generate diff
+git diff origin/main...HEAD > changes.diff
+
+# Run delta coverage
+java -jar delta-coverage-cli.jar \
+  --engine JACOCO \
+  --diff-file changes.diff \
+  --coverage-binary 'build/**/jacoco/*.exec' \
+  --classes 'build/classes/**/main' \
+  --sources src/main/java \
+  --html --console \
+  --min-coverage 0.8 \
+  --fail-on-violation
+```
+
+### Features
+
+- Supports both JaCoCo and IntelliJ coverage engines
+- Glob pattern support for file discovery (e.g., `build/**/jacoco/*.exec`)
+- YAML configuration file support
+- All report formats: HTML, XML, Console, Markdown
+- Coverage violation checks with configurable thresholds
+
+For detailed documentation, see the [CLI README](delta-coverage-cli/README.md).
 
 ## GitHub Integration
 

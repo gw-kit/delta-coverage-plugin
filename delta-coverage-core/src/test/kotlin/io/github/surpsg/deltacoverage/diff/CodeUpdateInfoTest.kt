@@ -1,74 +1,89 @@
 package io.github.surpsg.deltacoverage.diff
 
 import io.github.surpsg.deltacoverage.diff.parse.ClassFile
-import io.kotest.core.spec.style.StringSpec
-import io.kotest.data.blocking.forAll
-import io.kotest.data.row
 import io.kotest.matchers.shouldBe
-import io.kotest.property.checkAll
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.MethodSource
+import org.junit.jupiter.params.provider.ValueSource
 
-class ClassModificationsTest : StringSpec({
+class ClassModificationsTest {
 
-    "isLineModified should return true or false depends on line is modified or not" {
-        forAll(
-            row(true, 1, setOf(1, 2, 3)),
-            row(false, 1, setOf()),
-            row(false, 0, setOf(1, 2)),
-            row(false, -1, setOf(1, 2)),
-            row(false, 3, setOf(1, 2))
-        ) { isModified, line, lines ->
-            // setup
-            val classModifications = ClassModifications(lines)
+    @ParameterizedTest
+    @MethodSource("lineIsModifiedTestCases")
+    fun `isLineModified should return true when line is modified`(line: Int, modifiedLines: Set<Int>) {
+        // setup
+        val classModifications = ClassModifications(modifiedLines)
 
-            // assert
-            classModifications.isLineModified(line) shouldBe isModified
-        }
-    }
-})
-
-class CodeUpdateInfoTest : StringSpec({
-
-    "getClassModifications should return empty ClassModifications when no such info" {
-        checkAll<Int>(10) { lineNumber ->
-            // setup
-            val codeUpdateInfo = CodeUpdateInfo(
-                mapOf("com/package/Class.java" to setOf(12))
-            )
-
-            // run
-            val classModifications = codeUpdateInfo.getClassModifications(
-                ClassFile("UnknownClass.java", "com/package/UnknownClass")
-            )
-
-            // assert
-            classModifications.isLineModified(lineNumber) shouldBe false
-        }
+        // assert
+        classModifications.isLineModified(line) shouldBe true
     }
 
+    @ParameterizedTest
+    @MethodSource("lineIsNotModifiedTestCases")
+    fun `isLineModified should return false when line is not modified`(line: Int, modifiedLines: Set<Int>) {
+        // setup
+        val classModifications = ClassModifications(modifiedLines)
 
-    "isInfoExists should return true when modifications info exists for class" {
-        forAll(
-            row(setOf(1, 2, 3)),
-            row(setOf(1, 2))
-        ) { set ->
-            // setup
-            val codeUpdateInfo = CodeUpdateInfo(
-                mapOf("module/src/main/java/com/package/Class.java" to set)
-            )
-
-            // run
-            val infoExists = codeUpdateInfo.isInfoExists(
-                ClassFile("Class.java", "com/package/Class")
-            )
-
-            // assert
-            infoExists shouldBe true
-        }
+        // assert
+        classModifications.isLineModified(line) shouldBe false
     }
 
-    "getClassModifications should return modifications for class when there is similar class name exists" {
+    companion object {
+        @JvmStatic
+        fun lineIsModifiedTestCases() = listOf(
+            arguments(1, setOf(1, 2, 3))
+        )
+
+        @JvmStatic
+        fun lineIsNotModifiedTestCases() = listOf(
+            arguments(1, setOf<Int>()),
+            arguments(0, setOf(1, 2)),
+            arguments(-1, setOf(1, 2)),
+            arguments(3, setOf(1, 2))
+        )
+    }
+}
+
+class CodeUpdateInfoTest {
+
+    @ParameterizedTest
+    @ValueSource(ints = [1, 5, 10, 15, 20, 25, 30, 100, 200, -1])
+    fun `getClassModifications should return empty ClassModifications when no such info`(lineNumber: Int) {
+        // setup
+        val codeUpdateInfo = CodeUpdateInfo(
+            mapOf("com/package/Class.java" to setOf(12))
+        )
+
+        // run
+        val classModifications = codeUpdateInfo.getClassModifications(
+            ClassFile("UnknownClass.java", "com/package/UnknownClass")
+        )
+
+        // assert
+        classModifications.isLineModified(lineNumber) shouldBe false
+    }
+
+    @Test
+    fun `isInfoExists should return true when modifications info exists for class`() {
+        // setup
+        val codeUpdateInfo = CodeUpdateInfo(
+            mapOf("module/src/main/java/com/package/Class.java" to setOf(1, 2, 3))
+        )
+
+        // run
+        val infoExists = codeUpdateInfo.isInfoExists(
+            ClassFile("Class.java", "com/package/Class")
+        )
+
+        // assert
+        infoExists shouldBe true
+    }
+
+    @Test
+    fun `getClassModifications should return modifications for class when there is similar class name exists`() {
         // setup
         val expectedLineNumber = 1
         val requestedLineNumber1 = 2
@@ -92,24 +107,33 @@ class CodeUpdateInfoTest : StringSpec({
         modifications.isLineModified(1) shouldBe true
     }
 
-    "isInfoExists should return false when modifications info doesn't exist for class" {
-        forAll(
-            row(
+    @Test
+    fun `isInfoExists should return false when modifications info doesn't exist for class`() {
+        data class TestCase(
+            val classSourceFile: String,
+            val classNameToCheck: String,
+            val mapOfModifiedLines: Map<String, Set<Int>>
+        )
+
+        val testCases = listOf(
+            TestCase(
                 "OtherClass.java",
                 "com/package/OtherClass",
                 mapOf("src/java/com/package/Class.java" to setOf(1, 2, 3))
             ),
-            row(
+            TestCase(
                 "Class.java",
                 "com/package/Class",
                 mapOf("src/java/com/package/Class.java" to setOf())
             ),
-            row(
+            TestCase(
                 "Class.java",
                 "com/package/Class",
                 mapOf()
             )
-        ) { classSourceFile, classNameToCheck, mapOfModifiedLines ->
+        )
+
+        testCases.forEach { (classSourceFile, classNameToCheck, mapOfModifiedLines) ->
             // setup
             val codeUpdateInfo = CodeUpdateInfo(mapOfModifiedLines)
 
@@ -122,8 +146,6 @@ class CodeUpdateInfoTest : StringSpec({
             infoExists shouldBe false
         }
     }
-
-}) {
 
     @ParameterizedTest
     @CsvSource(

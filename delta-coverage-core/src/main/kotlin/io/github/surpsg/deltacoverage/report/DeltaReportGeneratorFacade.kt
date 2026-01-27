@@ -16,7 +16,7 @@ abstract class DeltaReportGeneratorFacade {
         log.info("[{}] Run Delta-Coverage with config: {}", config.view, config)
         val coverageSummaries: Map<ReportBound, CoverageSummary> = generate(ReportContext(config))
 
-        coverageSummaries.forEach { reportBound, coverageSummary ->
+        coverageSummaries.forEach { (reportBound, coverageSummary) ->
             CoverageCheckSummary.create(
                 config.reportsConfig.summaries.getValue(reportBound),
                 coverageSummary,

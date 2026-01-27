@@ -1,15 +1,15 @@
 package io.github.surpsg.deltacoverage.report.jacoco.filters
 
 import io.github.surpsg.deltacoverage.diff.CodeUpdateInfo
-import io.kotest.core.spec.style.StringSpec
-import io.kotest.data.forAll
-import io.kotest.data.row
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass
 import io.mockk.verify
 import org.jacoco.core.internal.analysis.filter.IFilterContext
 import org.jacoco.core.internal.analysis.filter.IFilterOutput
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.FieldInsnNode
 import org.objectweb.asm.tree.FrameNode
@@ -24,13 +24,13 @@ import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.MethodNode
 import org.objectweb.asm.tree.TypeInsnNode
 import org.objectweb.asm.tree.VarInsnNode
-import org.slf4j.Logger
-import org.slf4j.helpers.NOPLogger
 import kotlin.reflect.KClass
 
-class ModifiedLinesFilterTest : StringSpec({
+@Suppress("LongMethod")
+class ModifiedLinesFilterTest {
 
-    "filter should ignore all non-modified lines" {
+    @Test
+    fun `filter should ignore all non-modified lines`() {
         // setup
         val classPackage = "com/delta"
         val classFileName = "Class.java"
@@ -147,56 +147,58 @@ class ModifiedLinesFilterTest : StringSpec({
         }
     }
 
-    "filter should correctly fetch class modifications" {
-        forAll(
-            row("com/wa/ModClass"),
-            row("com/wa/ModClass\$InnerClass"),
-            row("com/wa/ModClass\$InnerClass\$Lambda"),
-            row("com/wa/ClassNameDoesNotMatchSourceFile")
-        ) { contextClassName ->
-            // setup
-            val modifiedFilePath = "module/src/main/kotlin/com/wa/ModClass.kt"
-            val classFileName = "ModClass.kt"
-            val classUpdateInfo = CodeUpdateInfo(
-                mapOf(modifiedFilePath to setOf(2))
-            )
-            val context = mockk<IFilterContext> {
-                every { className } returns contextClassName
-                every { sourceFileName } returns classFileName
-            }
+    @ParameterizedTest
+    @ValueSource(
+        strings = [
+            "com/wa/ModClass",
+            "com/wa/ModClass\$InnerClass",
+            "com/wa/ModClass\$InnerClass\$Lambda",
+            "com/wa/ClassNameDoesNotMatchSourceFile"
+        ]
+    )
+    fun `filter should correctly fetch class modifications`(contextClassName: String) {
+        // setup
+        val modifiedFilePath = "module/src/main/kotlin/com/wa/ModClass.kt"
+        val classFileName = "ModClass.kt"
+        val classUpdateInfo = CodeUpdateInfo(
+            mapOf(modifiedFilePath to setOf(2))
+        )
+        val context = mockk<IFilterContext> {
+            every { className } returns contextClassName
+            every { sourceFileName } returns classFileName
+        }
 
-            val modifiedLine: Set<AbstractInsnNode> = lineNode(2)
-            val instructionsToIgnore: Set<AbstractInsnNode> = lineNode(1)
+        val modifiedLine: Set<AbstractInsnNode> = lineNode(2)
+        val instructionsToIgnore: Set<AbstractInsnNode> = lineNode(1)
 
-            val instructionsList = InsnList().apply {
-                instructionsToIgnore.union(modifiedLine).forEach(::add)
-            }
+        val instructionsList = InsnList().apply {
+            instructionsToIgnore.union(modifiedLine).forEach(::add)
+        }
 
-            val methodNode = MethodNode().apply {
-                name = "testMethod"
-                instructions = instructionsList
-            }
+        val methodNode = MethodNode().apply {
+            name = "testMethod"
+            instructions = instructionsList
+        }
 
-            val output = mockk<IFilterOutput>(relaxed = true)
+        val output = mockk<IFilterOutput>(relaxed = true)
 
-            // run
-            ModifiedLinesFilter(classUpdateInfo).filter(
-                methodNode,
-                context,
-                output
-            )
+        // run
+        ModifiedLinesFilter(classUpdateInfo).filter(
+            methodNode,
+            context,
+            output
+        )
 
-            // assert
-            verify(exactly = 1) {
-                output.ignore(instructionsToIgnore.first(), instructionsToIgnore.last())
-            }
+        // assert
+        verify(exactly = 1) {
+            output.ignore(instructionsToIgnore.first(), instructionsToIgnore.last())
+        }
 
-            verify(exactly = 0) {
-                output.ignore(modifiedLine.first(), modifiedLine.last())
-            }
+        verify(exactly = 0) {
+            output.ignore(modifiedLine.first(), modifiedLine.last())
         }
     }
-})
+}
 
 private fun lineNode(
     line: Int,

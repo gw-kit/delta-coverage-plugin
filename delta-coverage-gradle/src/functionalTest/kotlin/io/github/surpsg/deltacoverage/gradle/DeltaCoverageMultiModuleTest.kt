@@ -1,10 +1,11 @@
 package io.github.surpsg.deltacoverage.gradle
 
-import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
-import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
-import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
-import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
-import io.github.surpsg.deltacoverage.gradle.test.RootProjectDir
+import io.github.gwkit.gradleprobe.RestorableFile
+import io.github.gwkit.gradleprobe.assertion.assertOutputContainsStrings
+import io.github.gwkit.gradleprobe.junit.GradlePluginTest
+import io.github.gwkit.gradleprobe.junit.GradleRunnerInstance
+import io.github.gwkit.gradleprobe.junit.ProjectFile
+import io.github.gwkit.gradleprobe.junit.RootProjectDir
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.file.shouldBeADirectory
@@ -17,7 +18,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
-@GradlePluginTest(TestProjects.MULTI_MODULE, kts = true)
+@GradlePluginTest(TestProjects.MULTI_MODULE)
 class DeltaCoverageMultiModuleTest {
 
     @RootProjectDir

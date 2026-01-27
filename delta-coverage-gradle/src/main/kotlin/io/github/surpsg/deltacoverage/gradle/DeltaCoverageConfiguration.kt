@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle
 
+import io.github.surpsg.deltacoverage.gradle.dsl.view.view
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTaskConfigurer
 import io.github.surpsg.deltacoverage.gradle.utils.booleanProperty
 import io.github.surpsg.deltacoverage.gradle.utils.doubleProperty
@@ -53,7 +54,9 @@ open class DeltaCoverageConfiguration @Inject constructor(
     val reportViews: NamedDomainObjectContainer<ReportView> =
         objectFactory.domainObjectContainer(ReportView::class.java) { name ->
             objectFactory.newInstance(ReportView::class.java, name, objectFactory)
-        }.apply { maybeCreate(DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME) }
+        }.apply {
+            view(DeltaCoverageTaskConfigurer.AGGREGATED_REPORT_VIEW_NAME)
+        }
 
     fun coverage(action: Action<in Coverage>): Unit = action.execute(coverage)
 
@@ -72,6 +75,10 @@ open class DeltaCoverageConfiguration @Inject constructor(
      * @param name The name of the view.
      * @param action The configuration action.
      */
+    @Deprecated(
+        message = "Use reportViews.view(name, action) instead",
+        replaceWith = ReplaceWith("reportViews.view(name, action)")
+    )
     fun view(name: String, action: Action<in ReportView>) {
         reportViews.maybeCreate(name)
         reportViews.named(name, action)
@@ -95,6 +102,13 @@ open class ReportView @Inject constructor(
     @Input
     val enabled: Property<Boolean> = objectFactory.property(Boolean::class.javaObjectType)
 
+    @Internal
+    internal val autoDiscovered: Property<Boolean> = objectFactory.property(Boolean::class.javaObjectType)
+        .convention(false)
+
+    @Internal
+    internal val associatedProjects: ListProperty<String> = objectFactory.listProperty(String::class.java)
+
     @Optional
     @InputFiles
     var coverageBinaryFiles: FileCollection? = null
@@ -102,10 +116,30 @@ open class ReportView @Inject constructor(
     @Nested
     val violationRules: ViolationRules = objectFactory.new<ViolationRules>()
 
+    /**
+     * Ant patterns for classes to include in coverage reports.
+     */
     @Input
-    val matchClasses: ListProperty<String> = objectFactory
+    val includeClasses: ListProperty<String> = objectFactory
         .listProperty(String::class.javaObjectType)
         .convention(emptyList())
+
+    /**
+     * Ant patterns for classes to exclude from coverage reports.
+     * These patterns are applied in addition to global [DeltaCoverageConfiguration.excludeClasses].
+     */
+    @Input
+    val excludeClasses: ListProperty<String> = objectFactory
+        .listProperty(String::class.javaObjectType)
+        .convention(emptyList())
+
+    /**
+     * @deprecated Use [includeClasses] instead.
+     */
+    @Deprecated("Use includeClasses instead", ReplaceWith("includeClasses"))
+    @get:Input
+    val matchClasses: ListProperty<String>
+        get() = includeClasses
 
     fun violationRules(action: Action<in ViolationRules>) {
         action.execute(violationRules)
@@ -113,7 +147,10 @@ open class ReportView @Inject constructor(
 
     override fun toString(): String {
         return "View(" +
+                "name='$name', " +
                 "coverageBinaryFiles=$coverageBinaryFiles, " +
+                "includeClasses=${includeClasses.get()}, " +
+                "excludeClasses=${excludeClasses.get()}, " +
                 "violationRules=$violationRules)"
     }
 

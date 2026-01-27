@@ -1,5 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle
 
+import io.github.surpsg.deltacoverage.gradle.dsl.view.view
 import io.github.surpsg.deltacoverage.gradle.unittest.applyDeltaCoveragePlugin
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.assertions.assertSoftly
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.Test
 class DeltaCoverageConfigurationTest {
 
     @Test
-    fun `view should add reportView`() {
+    fun `deprecated view should add reportView`() {
         // GIVEN
         val project: ProjectInternal = testJavaProject {
             applyDeltaCoveragePlugin()
@@ -22,6 +23,22 @@ class DeltaCoverageConfigurationTest {
 
         // WHEN
         config.view(customView) {}
+
+        // THEN
+        config.reportViews.findByName(customView).shouldNotBeNull()
+    }
+
+    @Test
+    fun `view should add reportView`() {
+        // GIVEN
+        val project: ProjectInternal = testJavaProject {
+            applyDeltaCoveragePlugin()
+        }
+        val config: DeltaCoverageConfiguration = project.extensions.getByType(DeltaCoverageConfiguration::class.java)
+        val customView = "customView"
+
+        // WHEN
+        config.reportViews.view(customView)
 
         // THEN
         config.reportViews.getByName(customView).shouldNotBeNull()
@@ -36,7 +53,7 @@ class DeltaCoverageConfigurationTest {
         val project: ProjectInternal = testJavaProject {
             applyDeltaCoveragePlugin()
             extensions.configure(DeltaCoverageConfiguration::class.java) { config ->
-                config.view(customView) { view ->
+                config.reportViews.view(customView) { view ->
                     view.violationRules.failIfCoverageLessThan(0.0)
                 }
             }
@@ -44,7 +61,7 @@ class DeltaCoverageConfigurationTest {
         val config: DeltaCoverageConfiguration = project.extensions.getByType(DeltaCoverageConfiguration::class.java)
 
         // WHEN
-        config.view(customView) { view ->
+        config.reportViews.view(customView) { view ->
             view.violationRules.failIfCoverageLessThan(expectedMinCoverage)
         }
 

@@ -1,16 +1,15 @@
 package io.github.surpsg.deltacoverage.gradle
 
-import io.github.surpsg.deltacoverage.gradle.test.GradlePluginTest
-import io.github.surpsg.deltacoverage.gradle.test.GradleRunnerInstance
-import io.github.surpsg.deltacoverage.gradle.test.ProjectFile
-import io.github.surpsg.deltacoverage.gradle.test.RestorableFile
+import io.github.gwkit.gradleprobe.RestorableFile
+import io.github.gwkit.gradleprobe.junit.GradlePluginTest
+import io.github.gwkit.gradleprobe.junit.GradleRunnerInstance
+import io.github.gwkit.gradleprobe.junit.ProjectFile
 import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.TaskOutcome.SUCCESS
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
-@GradlePluginTest(TestProjects.SINGLE_MODULE)
+@GradlePluginTest(TestProjects.SINGLE_MODULE, kts = false)
 class DeltaCoverageGradleReleasesTest {
 
     @ProjectFile("test.diff.file")
@@ -32,8 +31,8 @@ class DeltaCoverageGradleReleasesTest {
         strings = [
             "7.6.4",  // minimum supported version
             "7.6.6",  // latest 7.x
-            "8.14.3", // latest 8.x
-            "9.2.0",  // latest stable version
+            "8.14.4", // latest 8.x
+            "9.3.0",  // latest stable version
         ]
     )
     fun `deltaCoverage task should be completed successfully on Gradle release`(

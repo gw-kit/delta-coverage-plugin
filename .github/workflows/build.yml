@@ -30,7 +30,7 @@ jobs:
         --console=plain
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -71,7 +71,7 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
-            const ignoreByLabel = ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }};
+            const ignoreByLabel = ${{ contains(github.event.pull_request.labels.*.name, 'suppress-coverage') }};
             const ignoreByEvent = ${{ github.event_name == 'push' }};
             const resolution = ignoreByLabel || ignoreByEvent;
             core.setOutput('result', resolution);
@@ -112,7 +112,7 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
 
       - name: 📊Add Test Results to PR
-        uses: EnricoMi/publish-unit-test-result-action@v2.21.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.22.0
         if: ${{ !cancelled() }}
         continue-on-error: true
         with:

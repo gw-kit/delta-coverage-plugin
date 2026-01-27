@@ -11,11 +11,11 @@ import io.github.surpsg.deltacoverage.report.ReportBound
 import io.github.surpsg.deltacoverage.report.ReportContext
 import io.github.surpsg.deltacoverage.report.intellij.coverage.NamedReportLoadStrategy
 import io.kotest.assertions.assertSoftly
-import io.kotest.equals.Equality
-import io.kotest.equals.EqualityResult
+import io.kotest.assertions.equals.Equality
+import io.kotest.assertions.equals.EqualityResult
+import io.kotest.assertions.equals.SimpleEqualityResult
+import io.kotest.assertions.equals.SimpleEqualityResultDetail
 import io.kotest.equals.ReflectionUsingFieldsEquality
-import io.kotest.equals.SimpleEqualityResult
-import io.kotest.equals.SimpleEqualityResultDetail
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.sequences.shouldBeEmpty

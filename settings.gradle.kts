@@ -3,9 +3,11 @@ plugins {
 }
 
 rootProject.name = "delta-coverage-gradle-plugin"
-include("delta-coverage-core")
-include("delta-coverage-gradle")
-include("delta-coverage-demo")
+include(
+    "delta-coverage-cli",
+    "delta-coverage-core",
+    "delta-coverage-gradle",
+)
 
 dependencyResolutionManagement {
     versionCatalogs {
@@ -17,11 +19,21 @@ dependencyResolutionManagement {
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
+
+        val ghUser = extra.properties["GH_USER"]?.toString() ?: System.getenv("GH_USER")
+        val ghPass = extra.properties["GH_TOKEN"]?.toString() ?: System.getenv("GH_TOKEN")
         maven {
             url = uri("https://maven.pkg.github.com/gw-kit/cover-jet-plugin")
             credentials {
-                username = extra.properties["GH_USER"]?.toString() ?: System.getenv("GH_USER")
-                password = extra.properties["GH_TOKEN"]?.toString() ?: System.getenv("GH_TOKEN")
+                username = ghUser
+                password = ghPass
+            }
+        }
+        maven {
+            url = uri("https://maven.pkg.github.com/gw-kit/gradle-probe")
+            credentials {
+                username = ghUser
+                password = ghPass
             }
         }
     }
