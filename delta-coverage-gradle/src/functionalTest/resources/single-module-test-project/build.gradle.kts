@@ -1,6 +1,7 @@
 import io.github.surpsg.deltacoverage.gradle.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.CoverageEntity.*
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java
@@ -15,6 +16,11 @@ repositories {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+
+    testLogging {
+        events(TestLogEvent.SKIPPED, TestLogEvent.FAILED, TestLogEvent.PASSED)
+        showStandardStreams = true
+    }
 }
 
 dependencies {

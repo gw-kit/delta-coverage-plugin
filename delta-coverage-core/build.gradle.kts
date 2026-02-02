@@ -12,6 +12,7 @@ dependencies {
     implementation(deps.httpClient)
     implementation(deps.openCsv)
     implementation(deps.jackson)
+    implementation(deps.jacksonKotlin)
 
     testImplementation(deps.jimFs)
 }
