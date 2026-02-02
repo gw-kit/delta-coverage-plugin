@@ -2,7 +2,7 @@ package io.github.surpsg.deltacoverage.gradle
 
 import io.github.surpsg.deltacoverage.gradle.autoapply.CoverageEngineAutoApply
 import io.github.surpsg.deltacoverage.gradle.reportview.ViewLookup
-import io.github.surpsg.deltacoverage.gradle.sampling.TestMappingIntegration
+import io.github.surpsg.deltacoverage.gradle.test.sampling.TestMappingIntegration
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTask
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTaskConfigurer
 import io.github.surpsg.deltacoverage.gradle.task.NativeGitDiffTask

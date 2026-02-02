@@ -1,7 +1,7 @@
 package io.github.surpsg.deltacoverage.gradle
 
 import io.github.surpsg.deltacoverage.gradle.dsl.view.view
-import io.github.surpsg.deltacoverage.gradle.sampling.TestMappingConfiguration
+import io.github.surpsg.deltacoverage.gradle.test.sampling.TestMappingConfiguration
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTaskConfigurer
 import io.github.surpsg.deltacoverage.gradle.utils.booleanProperty
 import io.github.surpsg.deltacoverage.gradle.utils.doubleProperty

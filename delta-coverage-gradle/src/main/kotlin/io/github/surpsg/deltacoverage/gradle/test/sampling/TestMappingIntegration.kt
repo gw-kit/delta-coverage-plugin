@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.gradle.sampling
+package io.github.surpsg.deltacoverage.gradle.test.sampling
 
 import io.github.surpsg.deltacoverage.gradle.task.TestMappingAnalysisTask
 import io.github.surpsg.deltacoverage.gradle.utils.deltaCoverageConfig
@@ -75,15 +75,6 @@ internal object TestMappingIntegration {
                 }
             }
         }
-
-        // Make deltaCoverage tasks finalized by analysis task
-        project.afterEvaluate {
-            if (config.enabled.get()) {
-                project.tasks.matching { it.name.startsWith("deltaCoverage") }.all { deltaCoverageTask ->
-                    deltaCoverageTask.finalizedBy(analyzeTask)
-                }
-            }
-        }
     }
 
     private fun configureTestTask(testTask: Test) {
@@ -111,6 +102,6 @@ internal object TestMappingIntegration {
     private fun createJfcConfigFile(jfcFile: File) {
         jfcFile.parentFile?.mkdirs()
         jfcFile.writeText(JFC_CONFIG)
-        log.debug("Created JFC config file: ${jfcFile.absolutePath}")
+        log.debug("Created JFC config file: {}", jfcFile.absolutePath)
     }
 }

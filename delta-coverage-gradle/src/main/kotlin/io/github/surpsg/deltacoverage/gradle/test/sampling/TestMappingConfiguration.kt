@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.gradle.sampling
+package io.github.surpsg.deltacoverage.gradle.test.sampling
 
 import io.github.surpsg.deltacoverage.gradle.utils.booleanProperty
 import org.gradle.api.model.ObjectFactory
