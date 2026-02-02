@@ -10,7 +10,6 @@ public class Class1Test {
 
     @Test
     public void coveredShouldReturn1() {
-        System.out.println(12222222);
         int covered = class1.covered(true);
         assertEquals(1, covered);
     }
