@@ -1,5 +1,7 @@
 package io.github.surpsg.deltacoverage.gradle.task
 
+import jdk.jfr.consumer.RecordedEvent
+import jdk.jfr.consumer.RecordedFrame
 import jdk.jfr.consumer.RecordedStackTrace
 import jdk.jfr.consumer.RecordingFile
 import org.gradle.api.DefaultTask
@@ -33,8 +35,7 @@ abstract class TestMappingAnalysisTask : DefaultTask() {
             logger.lifecycle(it)
         }
 
-        val matchedCount = analyzeJfrFiles(testClasses)
-        logger.lifecycle("Matched stacktraces containing test classes: $matchedCount")
+        analyzeJfrFiles(testClasses)
     }
 
     private fun loadTestClasses(): Set<String> {
@@ -45,32 +46,57 @@ abstract class TestMappingAnalysisTask : DefaultTask() {
             .toSet()
     }
 
-    private fun analyzeJfrFiles(testClasses: Set<String>): Int {
-        var count = 0
+    private fun analyzeJfrFiles(testClasses: Set<String>) {
         jfrFiles.files
             .filter { it.exists() }
             .forEach { jfrFile ->
                 logger.info("Analyzing JFR file: ${jfrFile.absolutePath}")
-                try {
+                val associations: Map<String, Set<String>> = try {
                     RecordingFile.readAllEvents(jfrFile.toPath())
+                        .asSequence()
                         .filter { it.eventType.name == "jdk.ExecutionSample" }
-                        .forEach { event ->
-                            val stackTrace = event.stackTrace
-                            if (stackTrace != null && containsTestClass(stackTrace, testClasses)) {
-                                count++
+                        .flatMap { event: RecordedEvent ->
+                            resolveTestToMethodMapping(testClasses, event.stackTrace).entries.asSequence()
+                        }
+                        .fold(mutableMapOf()) { aggMap, entry ->
+                            aggMap.merge(entry.key, entry.value) { prev, current ->
+                                prev + current
                             }
+                            aggMap
                         }
                 } catch (e: Exception) {
                     logger.warn("Failed to read JFR file ${jfrFile.absolutePath}: ${e.message}")
+                    emptyMap()
+                }
+
+                associations.forEach { (test, classes) ->
+                    println("Test: ${test} (number=${classes.size})")
+                    classes.forEach {
+                        println("\t$it")
+                    }
+                    println("===============")
                 }
             }
-        return count
     }
 
-    private fun containsTestClass(stackTrace: RecordedStackTrace, testClasses: Set<String>): Boolean {
-        return stackTrace.frames.any { frame ->
-            val className = frame.method.type.name
-            testClasses.any { testClass -> className.contains(testClass) }
-        }
+    private fun resolveTestToMethodMapping(
+        testClasses: Set<String>,
+        stackTrace: RecordedStackTrace,
+    ): Map<String, Set<String>> {
+        val frames: Sequence<RecordedFrame> = stackTrace.frames.reversed().asSequence()
+        return testClasses
+            .associateWith { testClass ->
+                frames
+                    .dropWhile { frame -> !frame.method.type.name.contains(testClass) }
+                    .filter { frame -> !frame.method.type.name.contains(testClass) }
+                    .take(MAX_CALL_DEPS)
+                    .mapIndexed { index, frame -> "[Depth=${index + 1}] ${frame.method.type.name}#${frame.method.name}:${frame.lineNumber}" }
+                    .toSet()
+            }
+            .filterValues { it.isNotEmpty() }
+    }
+
+    private companion object {
+        private const val MAX_CALL_DEPS = 2
     }
 }

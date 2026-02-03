@@ -65,8 +65,6 @@ class TestMappingFunctionalTest {
         testEventsFiles.first().readText() shouldContain "Class1Test"
 
         // Check analysis task output
-        result.output shouldContain "Matched stacktraces"
-
         println(result.output)
     }
 }
