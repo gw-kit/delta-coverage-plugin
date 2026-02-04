@@ -3,7 +3,10 @@ package com.java.test;
 public class Class1 {
 
     public int covered(boolean arg) {
-        if(arg) {
+        for (int i = 0; i < 100; i++) {
+            System.out.println(i);
+        }
+        if (arg) {
             return 1;
         }
         return 0;

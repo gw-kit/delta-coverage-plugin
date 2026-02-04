@@ -17,6 +17,7 @@ internal object TestMappingIntegration {
     private const val JFR_FILENAME = "recording.jfr"
     private const val JFC_FILENAME = "stacktrace-sampling.jfc"
     private const val TEST_EVENTS_FILENAME = "test-events.txt"
+    private const val OUTPUT_FILENAME = "test-mapping.json"
 
     /**
      * JFC configuration optimized for stack trace sampling.
@@ -57,6 +58,9 @@ internal object TestMappingIntegration {
         ) { task ->
             task.group = "verification"
             task.description = "Analyzes JFR recordings to map tests to code"
+            task.outputFile.set(
+                project.layout.buildDirectory.file("reports/delta-coverage/$OUTPUT_FILENAME")
+            )
         }
 
         // Configure test tasks in root project only (POC simplification)

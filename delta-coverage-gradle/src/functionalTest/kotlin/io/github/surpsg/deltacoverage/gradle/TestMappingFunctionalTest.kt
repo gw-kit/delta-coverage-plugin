@@ -6,7 +6,12 @@ import io.github.gwkit.gradleprobe.junit.GradlePluginTest
 import io.github.gwkit.gradleprobe.junit.GradleRunnerInstance
 import io.github.gwkit.gradleprobe.junit.ProjectFile
 import io.github.gwkit.gradleprobe.junit.RootProjectDir
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
@@ -48,7 +53,7 @@ class TestMappingFunctionalTest {
         )
 
         // WHEN
-        val result = gradleRunner.runTask("test", "analyzeTestMapping")
+        gradleRunner.runTask("test", "analyzeTestMapping")
 
         // THEN
         // Check JFR file exists
@@ -64,7 +69,27 @@ class TestMappingFunctionalTest {
         testEventsFiles.shouldNotBeEmpty()
         testEventsFiles.first().readText() shouldContain "Class1Test"
 
-        // Check analysis task output
-        println(result.output)
+        // Check JSON report file
+        val jsonFile = rootProjectDir.resolve("build/reports/delta-coverage/test-mapping.json")
+        jsonFile.exists() shouldBe true
+
+        println(jsonFile.readText())
+
+        val report: Map<String, Any> = jacksonObjectMapper().readValue(jsonFile)
+        report["version"] shouldBe 1
+        report["generatedAt"] shouldNotBe null
+
+        @Suppress("UNCHECKED_CAST")
+        val summary = report["summary"] as Map<String, Any>
+        summary["totalTests"] shouldBe 1
+        (summary["totalMethods"] as Int) shouldBeGreaterThan 0
+        (summary["totalSamples"] as Int) shouldBeGreaterThan 0
+
+        @Suppress("UNCHECKED_CAST")
+        val mappings = report["mappings"] as Map<String, Any>
+        mappings.keys.shouldNotBeEmpty()
+
+        // Verify output contains Class1 (the production code)
+        mappings.keys.any { it.contains("Class1") } shouldBe true
     }
 }
