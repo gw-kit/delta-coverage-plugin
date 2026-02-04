@@ -1,10 +1,13 @@
 package io.github.surpsg.deltacoverage.gradle.test.sampling
 
+import jdk.jfr.consumer.RecordedFrame
+import jdk.jfr.consumer.RecordedMethod
 import jdk.jfr.consumer.RecordedStackTrace
 import jdk.jfr.consumer.RecordingFile
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.lang.reflect.Modifier
 import java.time.Instant
 
 /**
@@ -60,20 +63,25 @@ internal class JfrTestMappingAnalyzer(
             val testFrameIndex = frames.indexOfFirst { it.method.type.name.contains(testClass) }
             if (testFrameIndex == -1) continue
 
-            val testFrame = frames[testFrameIndex]
+            val testFrame: RecordedFrame = frames[testFrameIndex]
+
             val testId = "${testFrame.method.type.name}#${testFrame.method.name}"
 
             // Process frames after the test frame (called by the test)
             frames.drop(testFrameIndex + 1)
                 .take(config.maxCallDepth)
+                .filter { frame -> !Modifier.isPrivate(frame.method.modifiers) }
                 .filter { frame ->
                     val className = frame.method.type.name
                     !isExcludedPackage(className) && matchesIncludePattern(className)
                 }
                 .forEachIndexed { index, frame ->
+                    val method: RecordedMethod = frame.method
                     val methodKey = MethodKey(
-                        className = frame.method.type.name,
-                        methodName = frame.method.name,
+                        className = method.type.name,
+                        methodName = method.name,
+                        descriptor = method.descriptor,
+                        modifiers = method.modifiers,
                         lineNumber = frame.lineNumber
                     )
                     val depth = index + 1
@@ -93,7 +101,8 @@ internal class JfrTestMappingAnalyzer(
     }
 
     private fun isExcludedPackage(className: String): Boolean {
-        return EXCLUDED_PACKAGES.any { className.startsWith(it) }
+        return EXCLUDED_PACKAGES.any { className.startsWith(it) } ||
+            config.excludePackages.any { className.startsWith(it) }
     }
 
     private fun matchesIncludePattern(className: String): Boolean {
@@ -109,7 +118,10 @@ internal class JfrTestMappingAnalyzer(
             .groupBy { it.key.className }
             .mapValues { (_, entries) ->
                 entries.associate { (methodKey, testHits) ->
-                    methodKey.methodName to MethodMapping(
+                    val methodWithSignature = "${methodKey.methodName}${descriptorToSignature(methodKey.descriptor)}"
+                    methodWithSignature to MethodMapping(
+                        signature = descriptorToSignature(methodKey.descriptor),
+                        visibility = modifiersToVisibility(methodKey.modifiers),
                         lineNumber = methodKey.lineNumber,
                         totalHits = testHits.values.sumOf { it.samples },
                         tests = testHits.values
@@ -128,8 +140,9 @@ internal class JfrTestMappingAnalyzer(
         // Build hot methods list
         val hotMethods = methodMappings.entries
             .map { (methodKey, testHits) ->
+                val methodWithSignature = "${methodKey.methodName}${descriptorToSignature(methodKey.descriptor)}"
                 HotMethod(
-                    method = "${methodKey.className}#${methodKey.methodName}",
+                    method = "${methodKey.className}#$methodWithSignature",
                     totalHits = testHits.values.sumOf { it.samples },
                     testCount = testHits.size
                 )
@@ -153,6 +166,8 @@ internal class JfrTestMappingAnalyzer(
     private data class MethodKey(
         val className: String,
         val methodName: String,
+        val descriptor: String,
+        val modifiers: Int,
         val lineNumber: Int
     )
 
@@ -177,6 +192,79 @@ internal class JfrTestMappingAnalyzer(
             "org.opentest4j",
             "worker.org.gradle"
         )
+
+        /**
+         * Converts JVM modifiers to visibility string.
+         */
+        fun modifiersToVisibility(modifiers: Int): String = when {
+            Modifier.isPublic(modifiers) -> "public"
+            Modifier.isPrivate(modifiers) -> "private"
+            Modifier.isProtected(modifiers) -> "protected"
+            else -> "package-private"
+        }
+
+        /**
+         * Converts JVM method descriptor to human-readable signature.
+         * Example: "(II)I" -> "(int, int)"
+         * Example: "(Ljava/lang/String;I)V" -> "(String, int)"
+         */
+        fun descriptorToSignature(descriptor: String): String {
+            val params = parseDescriptorParams(descriptor)
+            return "(${params.joinToString(", ")})"
+        }
+
+        private fun parseDescriptorParams(descriptor: String): List<String> {
+            if (!descriptor.startsWith("(")) return emptyList()
+
+            val params = mutableListOf<String>()
+            var i = 1 // skip opening '('
+
+            while (i < descriptor.length && descriptor[i] != ')') {
+                val (type, newIndex) = parseType(descriptor, i)
+                params.add(type)
+                i = newIndex
+            }
+            return params
+        }
+
+        private fun parseType(descriptor: String, startIndex: Int): Pair<String, Int> {
+            var i = startIndex
+            var arrayDepth = 0
+
+            // Count array dimensions
+            while (i < descriptor.length && descriptor[i] == '[') {
+                arrayDepth++
+                i++
+            }
+
+            val (baseType, nextIndex) = when (descriptor[i]) {
+                'B' -> "byte" to i + 1
+                'C' -> "char" to i + 1
+                'D' -> "double" to i + 1
+                'F' -> "float" to i + 1
+                'I' -> "int" to i + 1
+                'J' -> "long" to i + 1
+                'S' -> "short" to i + 1
+                'Z' -> "boolean" to i + 1
+                'V' -> "void" to i + 1
+                'L' -> {
+                    // Object type: Ljava/lang/String;
+                    val semicolonIndex = descriptor.indexOf(';', i)
+                    val fullClassName = descriptor.substring(i + 1, semicolonIndex).replace('/', '.')
+                    val simpleName = fullClassName.substringAfterLast('.')
+                    simpleName to semicolonIndex + 1
+                }
+                else -> "?" to i + 1
+            }
+
+            val typeName = if (arrayDepth > 0) {
+                baseType + "[]".repeat(arrayDepth)
+            } else {
+                baseType
+            }
+
+            return typeName to nextIndex
+        }
     }
 }
 
@@ -186,7 +274,8 @@ internal class JfrTestMappingAnalyzer(
 data class AnalyzerConfig(
     val maxCallDepth: Int = 20,
     val topHotMethodsCount: Int = 20,
-    val includePackages: List<String> = emptyList()
+    val includePackages: List<String> = emptyList(),
+    val excludePackages: List<String> = emptyList()
 )
 
 /**
@@ -210,6 +299,8 @@ data class TestMappingReport(
         "mappings" to mappings.mapValues { (_, methods) ->
             methods.mapValues { (_, mapping) ->
                 mapOf(
+                    "signature" to mapping.signature,
+                    "visibility" to mapping.visibility,
                     "lineNumber" to mapping.lineNumber,
                     "totalHits" to mapping.totalHits,
                     "tests" to mapping.tests.map { test ->
@@ -239,6 +330,8 @@ data class ReportSummary(
 )
 
 data class MethodMapping(
+    val signature: String,
+    val visibility: String,
     val lineNumber: Int,
     val totalHits: Int,
     val tests: List<TestReference>

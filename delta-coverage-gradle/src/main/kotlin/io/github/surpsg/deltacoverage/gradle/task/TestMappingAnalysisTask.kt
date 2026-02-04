@@ -33,6 +33,10 @@ abstract class TestMappingAnalysisTask : DefaultTask() {
     @get:Optional
     abstract val includePackages: ListProperty<String>
 
+    @get:Input
+    @get:Optional
+    abstract val excludePackages: ListProperty<String>
+
     @TaskAction
     fun analyze() {
         val testClasses = loadTestClasses()
@@ -43,7 +47,8 @@ abstract class TestMappingAnalysisTask : DefaultTask() {
         }
 
         val config = AnalyzerConfig(
-            includePackages = includePackages.getOrElse(emptyList())
+            includePackages = includePackages.getOrElse(emptyList()),
+            excludePackages = excludePackages.getOrElse(emptyList())
         )
         val analyzer = JfrTestMappingAnalyzer(config)
         val report = analyzer.analyze(jfrFiles.files, testClasses)

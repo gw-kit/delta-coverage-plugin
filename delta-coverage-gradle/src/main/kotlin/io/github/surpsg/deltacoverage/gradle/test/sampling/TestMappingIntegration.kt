@@ -61,6 +61,8 @@ internal object TestMappingIntegration {
             task.outputFile.set(
                 project.layout.buildDirectory.file("reports/delta-coverage/$OUTPUT_FILENAME")
             )
+            task.includePackages.set(config.includePackages)
+            task.excludePackages.set(config.excludePackages)
         }
 
         // Configure test tasks in root project only (POC simplification)

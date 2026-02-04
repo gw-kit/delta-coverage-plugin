@@ -47,6 +47,7 @@ class TestMappingFunctionalTest {
                 diffSource.file.set('$diffFilePath')
                 testMapping {
                     enabled = true
+                    includePackages = ['com.java.test']
                 }
             }
         """.trimIndent()
