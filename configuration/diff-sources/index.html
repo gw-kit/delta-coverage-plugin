@@ -667,6 +667,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diff Sources
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -683,6 +701,108 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#git-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Git (Recommended)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Git (Recommended)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-git-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Git References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#native-git-vs-jgit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Native Git vs JGit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        URL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-diff-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging Diff Issues
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1311,6 +1431,97 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#git-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Git (Recommended)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Git (Recommended)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-git-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Git References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#native-git-vs-jgit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Native Git vs JGit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        URL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-diff-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging Diff Issues
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1330,10 +1541,104 @@
 
 
 <h1 id="diff-sources">Diff Sources<a class="headerlink" href="#diff-sources" title="Permanent link">&para;</a></h1>
-<div class="admonition info">
-<p class="admonition-title">Coming soon</p>
-<p>This page is under construction. See the <a href="../../getting-started/quick-start/">Quick Start</a> guide for basic diff source configuration.</p>
+<p>Delta Coverage needs to know what code changed. You can provide a diff via git, file, or URL.</p>
+<h2 id="git-recommended">Git (Recommended)<a class="headerlink" href="#git-recommended" title="Permanent link">&para;</a></h2>
+<p>Compare your current branch against another branch, tag, or commit:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Kotlin DSL</label><label for="__tabbed_1_2">Groovy DSL</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">configure</span><span class="o">&lt;</span><span class="n">io</span><span class="p">.</span><span class="na">github</span><span class="p">.</span><span class="na">surpsg</span><span class="p">.</span><span class="na">deltacoverage</span><span class="p">.</span><span class="na">gradle</span><span class="p">.</span><span class="na">DeltaCoverageConfiguration</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="n">diffSource</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">        </span><span class="n">git</span><span class="p">.</span><span class="na">compareWith</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;refs/remotes/origin/main&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">}</span>
+</code></pre></div>
 </div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">deltaCoverageReport</span><span class="w"> </span><span class="o">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="n">diffSource</span><span class="w"> </span><span class="o">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">        </span><span class="n">git</span><span class="o">.</span><span class="na">compareWith</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;refs/remotes/origin/main&#39;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="o">}</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="o">}</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<h3 id="common-git-references">Common Git References<a class="headerlink" href="#common-git-references" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Reference</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>refs/remotes/origin/main</code></td>
+<td>Compare with remote main branch</td>
+</tr>
+<tr>
+<td><code>refs/remotes/origin/develop</code></td>
+<td>Compare with remote develop branch</td>
+</tr>
+<tr>
+<td><code>refs/heads/main</code></td>
+<td>Compare with local main branch</td>
+</tr>
+<tr>
+<td><code>HEAD~5</code></td>
+<td>Compare with 5 commits ago</td>
+</tr>
+<tr>
+<td><code>v1.0.0</code></td>
+<td>Compare with a tag</td>
+</tr>
+</tbody>
+</table>
+<h3 id="native-git-vs-jgit">Native Git vs JGit<a class="headerlink" href="#native-git-vs-jgit" title="Permanent link">&para;</a></h3>
+<p>By default, the plugin uses JGit (pure Java). To use native git instead:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">diffSource</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="n">git</span><span class="p">.</span><span class="na">compareWith</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;refs/remotes/origin/main&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="n">git</span><span class="p">.</span><span class="na">useNativeGit</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="p">}</span>
+</code></pre></div>
+<p>Use native git if:</p>
+<ul>
+<li>You have a very large repository</li>
+<li>JGit has compatibility issues with your setup</li>
+<li>You need specific git configuration</li>
+</ul>
+<h2 id="file">File<a class="headerlink" href="#file" title="Permanent link">&para;</a></h2>
+<p>Provide a diff file in unified diff format:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">configure</span><span class="o">&lt;</span><span class="n">io</span><span class="p">.</span><span class="na">github</span><span class="p">.</span><span class="na">surpsg</span><span class="p">.</span><span class="na">deltacoverage</span><span class="p">.</span><span class="na">gradle</span><span class="p">.</span><span class="na">DeltaCoverageConfiguration</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="n">diffSource</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">        </span><span class="n">file</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">file</span><span class="p">(</span><span class="s">&quot;path/to/changes.diff&quot;</span><span class="p">))</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="p">}</span>
+</code></pre></div>
+<p>Generate a diff file with git:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git<span class="w"> </span>diff<span class="w"> </span>origin/main...HEAD<span class="w"> </span>&gt;<span class="w"> </span>changes.diff
+</code></pre></div>
+<h2 id="url">URL<a class="headerlink" href="#url" title="Permanent link">&para;</a></h2>
+<p>Fetch a diff from a URL:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">configure</span><span class="o">&lt;</span><span class="n">io</span><span class="p">.</span><span class="na">github</span><span class="p">.</span><span class="na">surpsg</span><span class="p">.</span><span class="na">deltacoverage</span><span class="p">.</span><span class="na">gradle</span><span class="p">.</span><span class="na">DeltaCoverageConfiguration</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="n">diffSource</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">        </span><span class="n">url</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;https://github.com/owner/repo/compare/main...feature.diff&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="p">}</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">GitHub diff URLs</p>
+<p>GitHub provides diff URLs in the format: <code>https://github.com/{owner}/{repo}/compare/{base}...{head}.diff</code></p>
+</div>
+<h2 id="priority">Priority<a class="headerlink" href="#priority" title="Permanent link">&para;</a></h2>
+<p>If multiple sources are configured, priority is: <strong>git &gt; file &gt; url</strong></p>
+<p>Only one source is used per run.</p>
+<h2 id="debugging-diff-issues">Debugging Diff Issues<a class="headerlink" href="#debugging-diff-issues" title="Permanent link">&para;</a></h2>
+<p>If coverage reports are empty, the diff might not match your source files. Use the explain report to debug:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>./gradlew<span class="w"> </span>deltaCoverage<span class="w"> </span>-PexplainOnly
+</code></pre></div>
+<p>This generates a diagnostic report showing exactly what the plugin detected.</p>
 
 
 
