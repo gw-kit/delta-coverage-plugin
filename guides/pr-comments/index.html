@@ -1042,13 +1042,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#comment-appearance" class="md-nav__link">
+  <a href="#how-it-works" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Comment Appearance
+        How It Works
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="How It Works">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pr-comment-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PR Comment Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1488,13 +1505,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#comment-appearance" class="md-nav__link">
+  <a href="#how-it-works" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Comment Appearance
+        How It Works
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="How It Works">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pr-comment-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PR Comment Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1606,44 +1640,67 @@
 <a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">        </span><span class="nt">with</span><span class="p">:</span>
 <a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">          </span><span class="nt">report-path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">build/reports/coverage-reports/delta-coverage/test/report.md</span>
 </code></pre></div>
-<h2 id="comment-appearance">Comment Appearance<a class="headerlink" href="#comment-appearance" title="Permanent link">&para;</a></h2>
-<p>The action posts a comment like this:</p>
-<table>
-<thead>
-<tr>
-<th>Class</th>
-<th>Lines</th>
-<th>Branches</th>
-<th>Instr.</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>MyClass</td>
-<td>85.71%</td>
-<td>75%</td>
-<td>88.24%</td>
-</tr>
-<tr>
-<td>Service</td>
-<td>92.31%</td>
-<td>100%</td>
-<td>94.12%</td>
+<h2 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
+<p>The action:</p>
+<ol>
+<li>Posts coverage results to <strong>GitHub Check Runs</strong> with detailed reports</li>
+<li>Adds a <strong>summary comment</strong> to the PR with links to check runs and progress bars</li>
+</ol>
+<h3 id="pr-comment-example">PR Comment Example<a class="headerlink" href="#pr-comment-example" title="Permanent link">&para;</a></h3>
+<h4>📈 Δelta Coverage Check</h4>
+
+<table><tbody><tr><th>Check</th>
+<th>Expected</th>
+<th>Entity</th>
+<th>Actual</th></tr><tr>
+<td rowspan=3>🔴 <a href="https://github.com/gw-kit/delta-coverage-plugin/runs/61413672079">Aggregated</a></td>
+<td>🎯 91% 🎯</td>
+<td><span title="The Java bytecode instructions executed during testing">INSTRUCTION</span></td>
+<td><img src="https://progress-bar.xyz/89/?progress_color=C4625A" alt="89%" /></td>
 </tr>
 <tr>
-<td><strong>Total</strong></td>
-<td>🟢 88.89%</td>
-<td>🟢 83.33%</td>
-<td>🟢 91%</td>
+<td>🎯 90% 🎯</td>
+<td><span title="The branches in conditional statements like if, switch, or loops that are executed.">BRANCH</span></td>
+<td><img src="https://progress-bar.xyz/72/?progress_color=C4625A" alt="72%" /></td>
 </tr>
 <tr>
-<td>Min expected</td>
-<td>80%</td>
-<td>70%</td>
-<td>80%</td>
+<td>🎯 91% 🎯</td>
+<td><span title="The source code lines covered by the tests.">LINE</span></td>
+<td><img src="https://progress-bar.xyz/91/?progress_color=7AB56D" alt="91%" /></td>
 </tr>
-</tbody>
-</table>
+<tr>
+<td rowspan=3>🟢 <a href="https://github.com/gw-kit/delta-coverage-plugin/runs/61413672241">FunctionalTest</a></td>
+<td>🎯 60% 🎯</td>
+<td><span title="The Java bytecode instructions executed during testing">INSTRUCTION</span></td>
+<td><img src="https://progress-bar.xyz/82/?progress_color=7AB56D" alt="82%" /></td>
+</tr>
+<tr>
+<td>🎯 50% 🎯</td>
+<td><span title="The branches in conditional statements like if, switch, or loops that are executed.">BRANCH</span></td>
+<td><img src="https://progress-bar.xyz/51/?progress_color=7AB56D" alt="51%" /></td>
+</tr>
+<tr>
+<td>🎯 60% 🎯</td>
+<td><span title="The source code lines covered by the tests.">LINE</span></td>
+<td><img src="https://progress-bar.xyz/82/?progress_color=7AB56D" alt="82%" /></td>
+</tr>
+<tr>
+<td rowspan=3>🔴 <a href="https://github.com/gw-kit/delta-coverage-plugin/runs/61413672401">Test</a></td>
+<td rowspan=3>🎯 90% 🎯</td>
+<td><span title="The Java bytecode instructions executed during testing">INSTRUCTION</span></td>
+<td><img src="https://progress-bar.xyz/85/?progress_color=C4625A" alt="85%" /></td>
+</tr>
+<tr>
+<td><span title="The branches in conditional statements like if, switch, or loops that are executed.">BRANCH</span></td>
+<td><img src="https://progress-bar.xyz/56/?progress_color=C4625A" alt="56%" /></td>
+</tr>
+<tr>
+<td><span title="The source code lines covered by the tests.">LINE</span></td>
+<td><img src="https://progress-bar.xyz/86/?progress_color=C4625A" alt="86%" /></td>
+</tr>
+</tbody></table>
+
+<p>Each check name links to the detailed GitHub Check Run with the full coverage report.</p>
 <h2 id="multiple-views">Multiple Views<a class="headerlink" href="#multiple-views" title="Permanent link">&para;</a></h2>
 <p>Post comments for multiple views (e.g., unit and integration tests):</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Post unit test coverage</span>
