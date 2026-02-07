@@ -1972,6 +1972,7 @@
 <h3 id="why-does-it-fail-in-ci-but-pass-locally">Why does it fail in CI but pass locally?<a class="headerlink" href="#why-does-it-fail-in-ci-but-pass-locally" title="Permanent link">&para;</a></h3>
 <p>Common causes:</p>
 <ol>
+<li><strong>Stale coverage data</strong> — Run <code>./gradlew clean test deltaCoverage</code>. Coverage data is appended to existing files, so old data may not reflect current code/test state</li>
 <li><strong>Different base branches</strong> — CI might compare with <code>main</code>, local with <code>develop</code></li>
 <li><strong>Shallow clone</strong> — Ensure <code>fetch-depth: 0</code> in your checkout action</li>
 <li><strong>Stricter thresholds</strong> — Check if CI has different configuration</li>
