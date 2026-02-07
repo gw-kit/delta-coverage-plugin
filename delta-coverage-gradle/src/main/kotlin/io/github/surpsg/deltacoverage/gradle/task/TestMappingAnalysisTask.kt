@@ -2,7 +2,9 @@ package io.github.surpsg.deltacoverage.gradle.task
 
 import groovy.json.JsonOutput
 import io.github.surpsg.deltacoverage.gradle.test.sampling.AnalyzerConfig
+import io.github.surpsg.deltacoverage.gradle.test.sampling.ConsoleTestMappingReporter
 import io.github.surpsg.deltacoverage.gradle.test.sampling.JfrTestMappingAnalyzer
+import io.github.surpsg.deltacoverage.gradle.test.sampling.TestMappingReport
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
@@ -64,15 +66,15 @@ abstract class TestMappingAnalysisTask : DefaultTask() {
             .toSet()
     }
 
-    private fun writeReport(report: io.github.surpsg.deltacoverage.gradle.test.sampling.TestMappingReport) {
+    private fun writeReport(report: TestMappingReport) {
         val file = outputFile.get().asFile
         file.parentFile?.mkdirs()
         file.writeText(JsonOutput.prettyPrint(JsonOutput.toJson(report.toMap())))
 
-        logger.lifecycle("Test mapping analysis complete:")
-        logger.lifecycle("  Total tests: ${report.summary.totalTests}")
-        logger.lifecycle("  Total methods: ${report.summary.totalMethods}")
-        logger.lifecycle("  Total samples: ${report.summary.totalSamples}")
-        logger.lifecycle("  Output: ${file.absolutePath}")
+        // Print console report
+        val consoleReport = ConsoleTestMappingReporter.render(report)
+        logger.lifecycle(consoleReport)
+
+        logger.lifecycle("JSON report: file://${file.absolutePath}")
     }
 }

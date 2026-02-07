@@ -156,7 +156,8 @@ internal class JfrTestMappingAnalyzer(
             summary = ReportSummary(
                 totalTests = testClasses.size,
                 totalMethods = methodMappings.size,
-                totalSamples = result.totalSamples
+                totalSamples = result.totalSamples,
+                maxCallDepth = config.maxCallDepth
             ),
             mappings = mappings,
             hotMethods = hotMethods
@@ -294,7 +295,8 @@ data class TestMappingReport(
         "summary" to mapOf(
             "totalTests" to summary.totalTests,
             "totalMethods" to summary.totalMethods,
-            "totalSamples" to summary.totalSamples
+            "totalSamples" to summary.totalSamples,
+            "maxCallDepth" to summary.maxCallDepth
         ),
         "mappings" to mappings.mapValues { (_, methods) ->
             methods.mapValues { (_, mapping) ->
@@ -326,7 +328,8 @@ data class TestMappingReport(
 data class ReportSummary(
     val totalTests: Int,
     val totalMethods: Int,
-    val totalSamples: Int
+    val totalSamples: Int,
+    val maxCallDepth: Int
 )
 
 data class MethodMapping(

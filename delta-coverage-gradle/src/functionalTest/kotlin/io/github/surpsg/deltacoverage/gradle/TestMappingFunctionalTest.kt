@@ -18,7 +18,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
-@GradlePluginTest(TestProjects.SINGLE_MODULE, kts = false)
+@GradlePluginTest(TestProjects.SINGLE_MODULE)
 class TestMappingFunctionalTest {
 
     @RootProjectDir
@@ -27,7 +27,7 @@ class TestMappingFunctionalTest {
     @ProjectFile("test.diff.file")
     lateinit var diffFilePath: String
 
-    @ProjectFile("build.gradle")
+    @ProjectFile("build.gradle.kts")
     lateinit var buildFile: RestorableFile
 
     @GradleRunnerInstance
@@ -44,10 +44,10 @@ class TestMappingFunctionalTest {
         buildFile.file.appendText(
             """
             deltaCoverageReport {
-                diffSource.file.set('$diffFilePath')
+                diffSource.file.set("$diffFilePath")
                 testMapping {
                     enabled = true
-                    includePackages = ['com.java.test']
+                    includePackages.add("com.java.test")
                 }
             }
         """.trimIndent()
@@ -73,8 +73,6 @@ class TestMappingFunctionalTest {
         // Check JSON report file
         val jsonFile = rootProjectDir.resolve("build/reports/delta-coverage/test-mapping.json")
         jsonFile.exists() shouldBe true
-
-        println(jsonFile.readText())
 
         val report: Map<String, Any> = jacksonObjectMapper().readValue(jsonFile)
         report["version"] shouldBe 1
