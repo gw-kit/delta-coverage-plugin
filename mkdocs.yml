@@ -1,0 +1,89 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+
+site_name: Delta Coverage
+site_url: https://gw-kit.github.io/delta-coverage-plugin
+site_description: Code coverage tool for new/modified code based on git diff
+repo_url: https://github.com/gw-kit/delta-coverage-plugin
+repo_name: gw-kit/delta-coverage-plugin
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: green
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: green
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.tabs
+    - navigation.top
+    - content.code.copy
+    - content.code.select
+    - search.suggest
+    - search.highlight
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - def_list
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quick-start.md
+      - Migration: getting-started/migration.md
+  - Configuration:
+      - Diff Sources: configuration/diff-sources.md
+      - Coverage Engines: configuration/coverage-engines.md
+      - Report Views: configuration/report-views.md
+      - Violation Rules: configuration/violation-rules.md
+      - Reports: configuration/reports.md
+      - Exclude Classes: configuration/exclude-classes.md
+  - Guides:
+      - Local Development: guides/local-development.md
+      - CI Integration: guides/ci-integration.md
+      - PR Comments: guides/pr-comments.md
+      - Kotlin Projects: guides/kotlin-projects.md
+      - Multi-Module: guides/multi-module.md
+      - Testing Pyramid: guides/testing-pyramid.md
+  - Comparison: comparison/vs-sonarqube.md
+  - Recipes:
+      - Enforce 90% Coverage: recipes/enforce-90-percent.md
+      - Legacy Projects: recipes/legacy-projects.md
+      - Coverage Badges: recipes/coverage-badges.md
+  - Reference:
+      - CLI Tool: reference/cli.md
+  - FAQ: faq.md
+  - Changelog: changelog.md
+
+extra:
+  analytics:
+    provider: google
+    property: G-8KP29CCNM5
+  version:
+    provider: mike
+    default: stable
