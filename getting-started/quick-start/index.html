@@ -344,6 +344,26 @@
   
   
   
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/cli.md" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
     <li class="md-tabs__item">
       <a href="../../faq/" class="md-tabs__link">
         
@@ -612,10 +632,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-1-apply-the-plugin" class="md-nav__link">
+  <a href="#step-1-install" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1: Apply the Plugin
+        Step 1: Install
       
     </span>
   </a>
@@ -1357,6 +1377,95 @@
   
   
   
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cli.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Tool
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../faq/" class="md-nav__link">
         
@@ -1443,10 +1552,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-1-apply-the-plugin" class="md-nav__link">
+  <a href="#step-1-install" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1: Apply the Plugin
+        Step 1: Install
       
     </span>
   </a>
@@ -1531,75 +1640,152 @@
 <h1 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h1>
 <p>Get Delta Coverage running in 3 steps.</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Kotlin DSL</label><label for="__tabbed_1_2">Groovy DSL</label><label for="__tabbed_1_3">CLI</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
 <ul>
 <li>Gradle 7.6.4 or newer</li>
 <li>JVM 17 or newer</li>
 <li>A git repository with tests</li>
 </ul>
-<h2 id="step-1-apply-the-plugin">Step 1: Apply the Plugin<a class="headerlink" href="#step-1-apply-the-plugin" title="Permanent link">&para;</a></h2>
-<p>Add the Delta Coverage plugin to your root project's <code>build.gradle.kts</code>:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Kotlin DSL</label><label for="__tabbed_1_2">Groovy DSL</label></div>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>Gradle 7.6.4 or newer</li>
+<li>JVM 17 or newer</li>
+<li>A git repository with tests</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>JVM 17 or newer</li>
+<li>Coverage binary files (e.g., <code>.exec</code> from JaCoCo)</li>
+<li>Compiled class files</li>
+<li>A diff file (unified diff format)</li>
+</ul>
+</div>
+</div>
+</div>
+<h2 id="step-1-install">Step 1: Install<a class="headerlink" href="#step-1-install" title="Permanent link">&para;</a></h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Kotlin DSL</label><label for="__tabbed_2_2">Groovy DSL</label><label for="__tabbed_2_3">CLI</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
+<p>Add the Delta Coverage plugin to your root project's <code>build.gradle.kts</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">plugins</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="n">id</span><span class="p">(</span><span class="s">&quot;io.github.gw-kit.delta-coverage&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="s">&quot;3.6.0&quot;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">}</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
+<p>Add the Delta Coverage plugin to your root project's <code>build.gradle</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">plugins</span><span class="w"> </span><span class="o">{</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="s1">&#39;io.github.gw-kit.delta-coverage&#39;</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="s1">&#39;3.6.0&#39;</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="o">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Download the CLI JAR:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span>-L<span class="w"> </span>-o<span class="w"> </span>delta-coverage-cli.jar<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.0/delta-coverage-cli-3.6.0.jar
 </code></pre></div>
 </div>
 </div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Root project only</p>
-<p>The plugin must be applied to the root project. It automatically discovers all subprojects with tests.</p>
+<p>The Gradle plugin must be applied to the root project. It automatically discovers all subprojects with tests.</p>
 </div>
 <h2 id="step-2-configure-diff-source">Step 2: Configure Diff Source<a class="headerlink" href="#step-2-configure-diff-source" title="Permanent link">&para;</a></h2>
-<p>Tell the plugin what to compare against. The most common setup compares with your main branch:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Kotlin DSL</label><label for="__tabbed_2_2">Groovy DSL</label></div>
+<p>Tell Delta Coverage what to compare against. The most common setup compares with your main branch:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Kotlin DSL</label><label for="__tabbed_3_2">Groovy DSL</label><label for="__tabbed_3_3">CLI</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">configure</span><span class="o">&lt;</span><span class="n">io</span><span class="p">.</span><span class="na">github</span><span class="p">.</span><span class="na">surpsg</span><span class="p">.</span><span class="na">deltacoverage</span><span class="p">.</span><span class="na">gradle</span><span class="p">.</span><span class="na">DeltaCoverageConfiguration</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="n">diffSource</span><span class="p">.</span><span class="na">git</span><span class="p">.</span><span class="na">compareWith</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;refs/remotes/origin/main&quot;</span><span class="p">)</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">configure</span><span class="o">&lt;</span><span class="n">io</span><span class="p">.</span><span class="na">github</span><span class="p">.</span><span class="na">surpsg</span><span class="p">.</span><span class="na">deltacoverage</span><span class="p">.</span><span class="na">gradle</span><span class="p">.</span><span class="na">DeltaCoverageConfiguration</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="n">diffSource</span><span class="p">.</span><span class="na">git</span><span class="p">.</span><span class="na">compareWith</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="s">&quot;refs/remotes/origin/main&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="p">}</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">deltaCoverageReport</span><span class="w"> </span><span class="o">{</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="n">diffSource</span><span class="o">.</span><span class="na">git</span><span class="o">.</span><span class="na">compareWith</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;refs/remotes/origin/main&#39;</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="o">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">deltaCoverageReport</span><span class="w"> </span><span class="o">{</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="n">diffSource</span><span class="o">.</span><span class="na">git</span><span class="o">.</span><span class="na">compareWith</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;refs/remotes/origin/main&#39;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="o">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Generate a diff file from git:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>git<span class="w"> </span>diff<span class="w"> </span>origin/main...HEAD<span class="w"> </span>&gt;<span class="w"> </span>changes.diff
 </code></pre></div>
 </div>
 </div>
 </div>
 <h2 id="step-3-run-coverage">Step 3: Run Coverage<a class="headerlink" href="#step-3-run-coverage" title="Permanent link">&para;</a></h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:3"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Kotlin DSL</label><label for="__tabbed_4_2">Groovy DSL</label><label for="__tabbed_4_3">CLI</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
 <p>Run your tests and generate the delta coverage report:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>./gradlew<span class="w"> </span><span class="nb">test</span><span class="w"> </span>deltaCoverage
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>./gradlew<span class="w"> </span><span class="nb">test</span><span class="w"> </span>deltaCoverage
 </code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Run your tests and generate the delta coverage report:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>./gradlew<span class="w"> </span><span class="nb">test</span><span class="w"> </span>deltaCoverage
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Run the CLI with your coverage data:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>java<span class="w"> </span>-jar<span class="w"> </span>delta-coverage-cli.jar<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span>--engine<span class="w"> </span>JACOCO<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span>--diff-file<span class="w"> </span>changes.diff<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span>--coverage-binary<span class="w"> </span>build/jacoco/test.exec<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span>--classes<span class="w"> </span>build/classes/java/main<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span>--sources<span class="w"> </span>src/main/java<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span>--html<span class="w"> </span>--console
+</code></pre></div>
+</div>
+</div>
+</div>
 <h2 id="expected-output">Expected Output<a class="headerlink" href="#expected-output" title="Permanent link">&para;</a></h2>
 <p>The console will show a coverage summary:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>+----------------------+----------+----------+--------+
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>| [test] Delta Coverage Stats                         |
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>+----------------------+----------+----------+--------+
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>| Class                | Lines    | Branches | Instr. |
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>+----------------------+----------+----------+--------|
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>| com.example.MyClass  | 85.71%   | 75%      | 88.24% |
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>+----------------------+----------+----------+--------+
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>| Total                | 85.71%   | 75%      | 88.24% |
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>+----------------------+----------+----------+--------+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>+----------------------+----------+----------+--------+
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>| [test] Delta Coverage Stats                         |
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>+----------------------+----------+----------+--------+
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>| Class                | Lines    | Branches | Instr. |
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>+----------------------+----------+----------+--------|
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>| com.example.MyClass  | 85.71%   | 75%      | 88.24% |
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>+----------------------+----------+----------+--------+
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>| Total                | 85.71%   | 75%      | 88.24% |
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>+----------------------+----------+----------+--------+
 </code></pre></div>
 <p>HTML reports are generated in <code>build/reports/coverage-reports/delta-coverage/</code>.</p>
 <h2 id="what-just-happened">What Just Happened?<a class="headerlink" href="#what-just-happened" title="Permanent link">&para;</a></h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:3"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><input id="__tabbed_5_3" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">Kotlin DSL</label><label for="__tabbed_5_2">Groovy DSL</label><label for="__tabbed_5_3">CLI</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
 <ol>
 <li><strong>Test Discovery</strong> — The plugin found your test tasks automatically</li>
 <li><strong>Coverage Collection</strong> — JaCoCo collected coverage data during tests</li>
 <li><strong>Diff Analysis</strong> — Git diff was computed against <code>origin/main</code></li>
 <li><strong>Filtered Report</strong> — Coverage was filtered to show only changed lines</li>
 </ol>
+</div>
+<div class="tabbed-block">
+<ol>
+<li><strong>Test Discovery</strong> — The plugin found your test tasks automatically</li>
+<li><strong>Coverage Collection</strong> — JaCoCo collected coverage data during tests</li>
+<li><strong>Diff Analysis</strong> — Git diff was computed against <code>origin/main</code></li>
+<li><strong>Filtered Report</strong> — Coverage was filtered to show only changed lines</li>
+</ol>
+</div>
+<div class="tabbed-block">
+<ol>
+<li><strong>Diff Parsing</strong> — The CLI read your diff file to identify changed lines</li>
+<li><strong>Coverage Loading</strong> — Coverage binary files were loaded and analyzed</li>
+<li><strong>Class Matching</strong> — Changed files were matched to compiled class files</li>
+<li><strong>Filtered Report</strong> — Coverage was filtered to show only changed lines</li>
+</ol>
+</div>
+</div>
+</div>
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../configuration/violation-rules/">Configure violation rules</a> to enforce coverage thresholds</li>

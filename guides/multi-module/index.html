@@ -344,6 +344,26 @@
   
   
   
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/cli.md" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
     <li class="md-tabs__item">
       <a href="../../faq/" class="md-tabs__link">
         
@@ -1120,10 +1140,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#per-module-coverage" class="md-nav__link">
+  <a href="#running-coverage-tasks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Per-Module Coverage
+        Running Coverage Tasks
       
     </span>
   </a>
@@ -1176,10 +1196,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#aggregated-view-is-empty" class="md-nav__link">
+  <a href="#aggregated-view-is-missing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Aggregated view is empty
+        Aggregated view is missing
       
     </span>
   </a>
@@ -1187,10 +1207,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#different-thresholds-per-module" class="md-nav__link">
+  <a href="#different-thresholds-for-different-code" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Different thresholds per module
+        Different thresholds for different code
       
     </span>
   </a>
@@ -1424,6 +1444,95 @@
   
   
   
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cli.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Tool
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../faq/" class="md-nav__link">
         
@@ -1560,10 +1669,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#per-module-coverage" class="md-nav__link">
+  <a href="#running-coverage-tasks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Per-Module Coverage
+        Running Coverage Tasks
       
     </span>
   </a>
@@ -1616,10 +1725,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#aggregated-view-is-empty" class="md-nav__link">
+  <a href="#aggregated-view-is-missing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Aggregated view is empty
+        Aggregated view is missing
       
     </span>
   </a>
@@ -1627,10 +1736,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#different-thresholds-per-module" class="md-nav__link">
+  <a href="#different-thresholds-for-different-code" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Different thresholds per module
+        Different thresholds for different code
       
     </span>
   </a>
@@ -1703,7 +1812,7 @@
 <p>The plugin should only be applied to the root project. It automatically handles subprojects.</p>
 </div>
 <h2 id="aggregated-view">Aggregated View<a class="headerlink" href="#aggregated-view" title="Permanent link">&para;</a></h2>
-<p>When you have multiple modules with tests, the plugin creates an <code>aggregated</code> view that combines coverage from all modules:</p>
+<p>When the plugin discovers 2+ views, it creates an <code>aggregated</code> view that combines coverage data from all views across all modules:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>./gradlew<span class="w"> </span>deltaCoverageAggregated
 </code></pre></div>
 <p>This produces a single report showing coverage across the entire project.</p>
@@ -1714,8 +1823,7 @@
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="p">}</span>
 </code></pre></div>
-<h2 id="per-module-coverage">Per-Module Coverage<a class="headerlink" href="#per-module-coverage" title="Permanent link">&para;</a></h2>
-<p>Run coverage for individual modules:</p>
+<h2 id="running-coverage-tasks">Running Coverage Tasks<a class="headerlink" href="#running-coverage-tasks" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Run all views</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>./gradlew<span class="w"> </span>deltaCoverage
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
@@ -1764,10 +1872,10 @@
 <li>Check that JaCoCo/CoverJet is applied (auto-applied by default)</li>
 <li>Run with <code>-PexplainOnly</code> to see discovered modules</li>
 </ol>
-<h3 id="aggregated-view-is-empty">Aggregated view is empty<a class="headerlink" href="#aggregated-view-is-empty" title="Permanent link">&para;</a></h3>
-<p>The aggregated view only appears when 2+ views exist. If you only have <code>test</code> tasks, check that multiple modules have tests.</p>
-<h3 id="different-thresholds-per-module">Different thresholds per module<a class="headerlink" href="#different-thresholds-per-module" title="Permanent link">&para;</a></h3>
-<p>Use view-specific configuration with class filters:</p>
+<h3 id="aggregated-view-is-missing">Aggregated view is missing<a class="headerlink" href="#aggregated-view-is-missing" title="Permanent link">&para;</a></h3>
+<p>The aggregated view is only created when 2+ views exist. If all modules only have the <code>test</code> task, there is a single view — declare custom views to get aggregation.</p>
+<h3 id="different-thresholds-for-different-code">Different thresholds for different code<a class="headerlink" href="#different-thresholds-for-different-code" title="Permanent link">&para;</a></h3>
+<p>Declare custom views with class filters:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">reportViews</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="n">view</span><span class="p">(</span><span class="s">&quot;coreTests&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">        </span><span class="n">includeClasses</span><span class="p">.</span><span class="na">value</span><span class="p">(</span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;**/core/**/*.class&quot;</span><span class="p">))</span>
