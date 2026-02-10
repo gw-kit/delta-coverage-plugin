@@ -91,7 +91,7 @@ jobs:
       - name: Publish Coverage Summary
         id: publish-coverage
         if: ${{ !cancelled() }}
-        uses: gw-kit/delta-coverage-action@v1
+        uses: gw-kit/delta-coverage-action@feature/fix-install-dependencies
         with:
           suppress-check-failures: ${{ steps.ignore-coverage-failure.outputs.result }}
 
@@ -105,7 +105,7 @@ jobs:
           owner: ${{ github.repository_owner }}
 
       - name: Update Coverage Badges
-        if: ${{ !cancelled() && github.event_name == 'push' }}
+        if: ${{ !cancelled() }}
         uses: ./.github/actions/update-coverage-badges
         with:
           badge-files: ${{ steps.publish-coverage.outputs.badges-dir }}
