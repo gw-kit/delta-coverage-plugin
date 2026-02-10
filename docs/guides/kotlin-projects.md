@@ -24,7 +24,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
         engine = CoverageEngine.INTELLIJ
     }
 
-    diffSource.git.compareWith.set("refs/remotes/origin/main")
+    diffSource.git.compareWith("refs/remotes/origin/main")
 }
 ```
 

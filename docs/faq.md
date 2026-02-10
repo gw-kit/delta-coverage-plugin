@@ -45,7 +45,7 @@ Debug with:
 ### How do I compare with a different branch?
 
 ```kotlin
-diffSource.git.compareWith.set("refs/remotes/origin/develop")
+diffSource.git.compareWith("refs/remotes/origin/develop")
 ```
 
 Or via command line:

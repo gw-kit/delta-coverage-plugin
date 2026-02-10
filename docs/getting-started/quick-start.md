@@ -65,7 +65,7 @@ Tell Delta Coverage what to compare against. The most common setup compares with
 
     ```kotlin
     configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-        diffSource.git.compareWith.set("refs/remotes/origin/main")
+        diffSource.git.compareWith("refs/remotes/origin/main")
     }
     ```
 
@@ -73,7 +73,7 @@ Tell Delta Coverage what to compare against. The most common setup compares with
 
     ```groovy
     deltaCoverageReport {
-        diffSource.git.compareWith = 'refs/remotes/origin/main'
+        diffSource.git.compareWith('refs/remotes/origin/main')
     }
     ```
 

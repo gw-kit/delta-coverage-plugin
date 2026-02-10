@@ -242,7 +242,7 @@ FAILURE: Build failed with an exception.
 
     ```kotlin
     configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-        diffSource.git.compareWith.set("refs/remotes/origin/main")
+        diffSource.git.compareWith("refs/remotes/origin/main")
 
         reportViews {
             val test by getting {
@@ -269,7 +269,7 @@ FAILURE: Build failed with an exception.
 
     ```groovy
     deltaCoverageReport {
-        diffSource.git.compareWith = 'refs/remotes/origin/main'
+        diffSource.git.compareWith('refs/remotes/origin/main')
 
         reportViews {
             test {

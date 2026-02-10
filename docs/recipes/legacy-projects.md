@@ -20,7 +20,7 @@ Delta Coverage enforces standards only on **new and modified code**. Legacy code
 
 ```kotlin
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-    diffSource.git.compareWith.set("refs/remotes/origin/main")
+    diffSource.git.compareWith("refs/remotes/origin/main")
 
     reports {
         html.set(true)

@@ -8,7 +8,7 @@ Post Delta Coverage reports directly to pull request comments using the [delta-c
 
 ```kotlin
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-    diffSource.git.compareWith.set("refs/remotes/origin/main")
+    diffSource.git.compareWith("refs/remotes/origin/main")
 
     reports {
         markdown.set(true)
