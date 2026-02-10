@@ -380,7 +380,7 @@ val diffBase = providers.gradleProperty("diffBase")
     .orElse("refs/remotes/origin/main")
 
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-    diffSource.git.compareWith.set(diffBase)
+    diffSource.git.compareWith(diffBase)
 }
 ```
 

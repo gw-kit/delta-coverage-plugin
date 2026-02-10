@@ -19,7 +19,7 @@ Configure for fast local feedback:
 
 ```kotlin
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-    diffSource.git.compareWith.set("refs/remotes/origin/main")
+    diffSource.git.compareWith("refs/remotes/origin/main")
 
     reports {
         console.set(true)

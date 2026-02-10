@@ -38,7 +38,7 @@ Delta Coverage is a tool that computes code coverage of new/modified code based 
 
     ```kotlin
     configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-        diffSource.git.compareWith.set("refs/remotes/origin/main")
+        diffSource.git.compareWith("refs/remotes/origin/main")
     }
     ```
 
@@ -62,7 +62,7 @@ Delta Coverage is a tool that computes code coverage of new/modified code based 
 
     ```groovy
     deltaCoverageReport {
-        diffSource.git.compareWith = 'refs/remotes/origin/main'
+        diffSource.git.compareWith('refs/remotes/origin/main')
     }
     ```
 

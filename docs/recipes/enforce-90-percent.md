@@ -10,7 +10,7 @@ plugins {
 }
 
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-    diffSource.git.compareWith.set("refs/remotes/origin/main")
+    diffSource.git.compareWith("refs/remotes/origin/main")
 
     reportViews {
         val test by getting {
@@ -24,7 +24,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
 
 ```kotlin
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-    diffSource.git.compareWith.set("refs/remotes/origin/main")
+    diffSource.git.compareWith("refs/remotes/origin/main")
 
     reports {
         html.set(true)
@@ -42,7 +42,7 @@ configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
 
 ```kotlin
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-    diffSource.git.compareWith.set("refs/remotes/origin/main")
+    diffSource.git.compareWith("refs/remotes/origin/main")
 
     excludeClasses.value(
         listOf(
@@ -65,7 +65,7 @@ Branches are often harder to cover. Use a lower threshold with entity count:
 
 ```kotlin
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-    diffSource.git.compareWith.set("refs/remotes/origin/main")
+    diffSource.git.compareWith("refs/remotes/origin/main")
 
     reportViews {
         val test by getting {

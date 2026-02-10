@@ -5,6 +5,6 @@
   ],
   "automerge": true,
   "baseBranchPatterns": [
-    "develop"
+    "main"
   ]
 }

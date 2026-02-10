@@ -11,7 +11,7 @@ Compare your current branch against another branch, tag, or commit:
     ```kotlin
     configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
         diffSource {
-            git.compareWith.set("refs/remotes/origin/main")
+            git.compareWith("refs/remotes/origin/main")
         }
     }
     ```
@@ -21,7 +21,7 @@ Compare your current branch against another branch, tag, or commit:
     ```groovy
     deltaCoverageReport {
         diffSource {
-            git.compareWith = 'refs/remotes/origin/main'
+            git.compareWith('refs/remotes/origin/main')
         }
     }
     ```
@@ -58,7 +58,7 @@ By default, the plugin uses JGit (pure Java). To use native git instead:
 
 ```kotlin
 diffSource {
-    git.compareWith.set("refs/remotes/origin/main")
+    git.compareWith("refs/remotes/origin/main")
     git.useNativeGit.set(true)
 }
 ```

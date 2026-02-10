@@ -148,7 +148,7 @@ When `includeClasses` is set, only matching classes are analyzed.
 
     ```kotlin
     configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {
-        diffSource.git.compareWith.set("refs/remotes/origin/main")
+        diffSource.git.compareWith("refs/remotes/origin/main")
 
         // Global exclusions
         excludeClasses.value(
@@ -183,7 +183,7 @@ When `includeClasses` is set, only matching classes are analyzed.
 
     ```groovy
     deltaCoverageReport {
-        diffSource.git.compareWith = 'refs/remotes/origin/main'
+        diffSource.git.compareWith('refs/remotes/origin/main')
 
         excludeClasses = [
             '**/generated/**/*.*',

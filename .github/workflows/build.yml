@@ -4,7 +4,6 @@ on:
   workflow_call:
   push:
     branches:
-      - 'develop'
       - 'main'
       - 'release/**'
   pull_request:
@@ -43,20 +42,20 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
-          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
       - name: ⚙️Build & Test
         run: ${{ env.gradle_cmd }} build detektMain detektTest --continue
 
-      - name: Check publish
+      - name: Check Publish
         id: publish-snapshot
         uses: actions/github-script@v8
         with:
           script: |
             const hasLabel = ${{ contains(github.event.pull_request.labels.*.name, 'publish-snapshot-artifacts') }};
             const isPushEvent = ${{ github.event_name == 'push' }};
-            const isDevelopBranch = ${{ github.ref == 'refs/heads/develop' }};
-            const shouldPublish = hasLabel || (isPushEvent && isDevelopBranch);
+            const isMainBranch = ${{ github.ref == 'refs/heads/main' }};
+            const shouldPublish = hasLabel || (isPushEvent && isMainBranch);
             core.setOutput('should-publish', `${shouldPublish}`);
             core.notice(`shouldPublish: ${shouldPublish}`);
 
