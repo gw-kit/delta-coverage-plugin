@@ -1,4 +1,4 @@
-name: Build
+name: 🔨 Build
 
 on:
   workflow_call:
@@ -13,6 +13,7 @@ on:
 jobs:
 
   build-and-check:
+    name: 🔨 Build And Check
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -33,21 +34,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK
+      - name: ☕ Set Up JDK
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Gradle
+      - name: 🐘 Setup Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
-      - name: ⚙️Build & Test
+      - name: ⚙️ Build & Test
         run: ${{ env.gradle_cmd }} build detektMain detektTest --continue
 
-      - name: Check Publish
+      - name: 🔍 Check Publish
         id: publish-snapshot
         uses: actions/github-script@v8
         with:
@@ -59,12 +60,12 @@ jobs:
             core.setOutput('should-publish', `${shouldPublish}`);
             core.notice(`shouldPublish: ${shouldPublish}`);
 
-      - name: 🏺Publish Snapshot Artifacts
+      - name: 🏺 Publish Snapshot Artifacts
         if: ${{ steps.publish-snapshot.outputs.should-publish == 'true' }}
         run: ${{ env.gradle_cmd }} publishAllPublicationsToGhPackagesRepository
           -PsnapshotPrefix='SNAPSHOT.${{ github.run_id }}'
 
-      - name: Check Ignore Coverage Failure
+      - name: 🔍 Check Ignore Coverage Failure
         id: ignore-coverage-failure
         if: ${{ cancelled() }}
         uses: actions/github-script@v8
@@ -78,7 +79,7 @@ jobs:
               core.notice(`Coverage failure is ignored by: label=${ignoreByLabel}, event=${ignoreByEvent}`);
             }
 
-      - name: 📈Run Delta Coverage check
+      - name: 📈 Run Delta Coverage Check
         if: ${{ !cancelled() }}
         continue-on-error: ${{ steps.ignore-coverage-failure.outputs.result == 'true' }}
         env:
@@ -87,14 +88,14 @@ jobs:
           -PdiffBase="refs/remotes/origin/${COMPARE_WITH}"
           --continue
 
-      - name: Publish Coverage Summary
+      - name: 📊 Publish Coverage Summary
         id: publish-coverage
         if: ${{ !cancelled() }}
         uses: gw-kit/delta-coverage-action@v1
         with:
           suppress-check-failures: ${{ steps.ignore-coverage-failure.outputs.result }}
 
-      - name: Generate Token
+      - name: 🔑 Generate Token
         id: generate-token
         if: ${{ !cancelled() }}
         uses: actions/create-github-app-token@v2
@@ -103,14 +104,14 @@ jobs:
           private-key: ${{ secrets.BADGES_APP_KEY }}
           owner: ${{ github.repository_owner }}
 
-      - name: Update Coverage Badges
+      - name: 🏅 Update Coverage Badges
         if: ${{ !cancelled() && github.event_name == 'push' }}
         uses: ./.github/actions/update-coverage-badges
         with:
           badge-files: ${{ steps.publish-coverage.outputs.badges-dir }}
           token: ${{ steps.generate-token.outputs.token }}
 
-      - name: 📊Add Test Results to PR
+      - name: 📊 Add Test Results To PR
         uses: EnricoMi/publish-unit-test-result-action@v2.22.0
         if: ${{ !cancelled() }}
         continue-on-error: true

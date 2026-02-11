@@ -1,4 +1,4 @@
-name: Deploy Docs
+name: 📚 Deploy Docs
 run-name: Update Pages
 
 on:
@@ -21,25 +21,27 @@ permissions:
 
 jobs:
   deploy:
+    name: 📚 Deploy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install Dependencies
+      - name: 📦 Install Dependencies
         run: pip install -r requirements.txt
 
-      - name: Configure Git
+      - name: ⚙️ Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Deploy docs
+      - name: 🚀 Deploy Docs
         run: |
           VERSION="${{ github.event.inputs.version }}"
           if [ -z "$VERSION" ]; then
