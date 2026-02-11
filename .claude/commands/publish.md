@@ -1,15 +1,14 @@
 ---
-description: Publish to Maven Central, Gradle Plugin Portal, and create GitHub Release
+description: Trigger the 🚀 Release workflow to publish and create a GitHub Release
 ---
 
 # Publish Delta Coverage
 
-You are tasked with publishing Delta Coverage modules and creating a GitHub release.
+You are tasked with triggering the 🚀 Release workflow to publish a Delta Coverage module and create a GitHub Release.
 
 This command should be run AFTER:
 - Release branch has been prepared (using `/prepare-release`)
-- Release PR has been merged to `main` branch
-- You are on `main` branch with latest changes
+- You are on a release branch (`release/<module>/<version>`)
 
 ## Prerequisites Verification
 
@@ -17,175 +16,126 @@ Before starting, verify:
 
 1. **Check current branch**
    - Run: `git branch --show-current`
-   - Must be on `main` branch
-   - If not on main, STOP and inform user
+   - Must be on a `release/<module>/<version>` branch (e.g., `release/delta-coverage-gradle/3.2.0`)
+   - If not on a release branch, STOP and inform user
 
-2. **Verify branch is up-to-date**
+2. **Parse branch name**
+   - Extract module and version from branch name
+   - Branch format: `release/<module>/<version>`
+   - Example: `release/delta-coverage-gradle/3.2.0` → module=`delta-coverage-gradle`, version=`3.2.0`
+
+3. **Verify branch is pushed to remote**
    - Run: `git fetch origin && git status`
-   - Must be up-to-date with origin/main
-   - If behind, STOP and ask user to pull latest changes
+   - Must be up-to-date with remote tracking branch
+   - If not pushed, push to remote first: `git push -u origin <branch-name>`
 
-3. **Read version from gradle.properties**
+4. **Read version from gradle.properties**
    - Read `gradle.properties` to get version
    - Version should NOT contain SNAPSHOT
    - If SNAPSHOT found, STOP and inform user
 
-4. **Verify changelog exists**
+5. **Verify changelog exists**
    - Read CHANGELOG.md
    - Must have section for current version
    - If not found, STOP and inform user
 
 ## Steps to complete:
 
-### 1. Extract changelog for current version
+### 1. Trigger the 🚀 Release workflow
 
-1. **Read CHANGELOG.md**
-   - Extract the section for current version
-   - Format: From `## x.y.z` to the next `## ` heading
-   - Store this content for GitHub release notes
-
-2. **Verify changelog content**
-   - Ensure it's not empty
-   - Should contain meaningful release notes
-   - If empty, ask user to provide content
-
-### 2. Run final verification build
-
-1. **Clean build both modules**
-   - Run: `./gradlew clean build`
-   - This ensures everything builds correctly
-   - If build fails, STOP and report errors
-
-2. **Verify test results**
-   - All tests must pass
-   - Check for any warnings
-   - If tests fail, STOP and report failures
-
-### 3. Publish delta-coverage-core to Maven Central
-
-1. **Publish and auto-release to Maven Central**
-   - Run: `./gradlew :delta-coverage-core:publishAndReleaseToMavenCentral`
-   - This publishes to Maven Central and automatically releases
-   - Wait for task completion
-   - Look for: `> Task :delta-coverage-core:publishMavenPublicationToMavenCentralRepository`
-
-2. **Wait for publication**
-   - Task should complete successfully
-   - Note: Maven Central sync takes ~30 minutes for public availability
-
-### 4. Publish delta-coverage-gradle to Gradle Plugin Portal
-
-1. **Publish to Gradle Plugin Portal**
-   - Run: `./gradlew :delta-coverage-gradle:publishPlugins`
-   - Wait for task completion: `> Task :delta-coverage-gradle:publishPlugins`
-
-2. **Wait for publication**
-   - Task should complete successfully
-
-### 5. Create GitHub Release
-
-1. **Create git tag**
-   - Tag format: `v<version>` (e.g., `v3.4.3`)
-   - Run: `git tag v<version>`
-
-2. **Push tag to remote**
-   - Run: `git push origin v<version>`
-   - Verify tag was pushed successfully
-
-3. **Create GitHub release using gh CLI**
-   - Use the changelog content extracted in step 1
-   - Run: `gh release create v<version> --title "Version <version>" --notes "$(cat <<'EOF'
-<changelog content here>
-EOF
-)"`
+1. **Dispatch the workflow**
+   - Run: `gh workflow run release.yml --ref <branch-name> -f module=<module>`
    - Example:
      ```bash
-     gh release create v3.4.3 --title "Version 3.4.3" --notes "$(cat <<'EOF'
-     ## 3.4.3 (2025-10-31)
-
-     ### Fixed
-     - Fixed configuration cache issues.
-
-     ### Dependency updates
-     - Updated Gradle to 9.2.0
-     EOF
-     )"
+     gh workflow run release.yml --ref release/delta-coverage-gradle/3.2.0 -f module=delta-coverage-gradle
      ```
 
-### 6. Verify publications
+2. **Confirm workflow was triggered**
+   - If the command succeeds, the workflow has been queued
 
-1. **Provide verification links to user**
-   - Maven Central: https://central.sonatype.com/artifact/io.github.gw-kit/delta-coverage-core/<version>
-   - Gradle Plugin Portal: https://plugins.gradle.org/plugin/io.github.gw-kit.delta-coverage
-   - GitHub Release: https://github.com/gw-kit/delta-coverage-plugin/releases/tag/v<version>
+### 2. Monitor workflow execution
 
-2. **Inform about sync times**
+1. **Get the workflow run ID**
+   - Wait a few seconds for the run to appear
+   - Run: `sleep 5 && gh run list --workflow=release.yml --limit=1 --json databaseId,status,headBranch --jq '.[0]'`
+   - Verify it matches the current branch
+
+2. **Watch the workflow**
+   - Run: `gh run watch <run-id>`
+   - This streams live status updates until the workflow completes
+   - If the workflow fails, STOP and report the failure
+
+### 3. Verify the release
+
+1. **Check the GitHub Release was created**
+   - Run: `gh release view <module>/<version>`
+   - Example: `gh release view delta-coverage-gradle/3.2.0`
+   - If the release exists, publishing was successful
+
+2. **Provide verification links to user**
+   - GitHub Release: `https://github.com/gw-kit/delta-coverage-plugin/releases/tag/<module>/<version>`
+   - For `delta-coverage-gradle`: Gradle Plugin Portal at `https://plugins.gradle.org/plugin/io.github.gw-kit.delta-coverage`
+   - For other modules: Maven Central at `https://central.sonatype.com/artifact/io.github.gw-kit/<module>/<version>`
+
+3. **Inform about sync times**
    - Maven Central: ~30 minutes for full sync
    - Gradle Plugin Portal: ~10-15 minutes for processing
    - GitHub Release: Available immediately
+
+### 4. Clean up
+
+1. **Delete the release branch**
+   - Ask user if they want to delete the release branch
+   - Run: `git push origin --delete <branch-name>`
+   - Run: `git checkout main && git pull`
 
 ## Success Message
 
 After successful publication, display:
 
 ```
-🎉 Publication successful!
+🎉 Release triggered successfully!
 
-Version: x.y.z
+Module: <module>
+Version: <version>
+Tag: <module>/<version>
 
-Published to:
-✅ Maven Central: https://central.sonatype.com/artifact/io.github.gw-kit/delta-coverage-core/x.y.z
-✅ Gradle Plugin Portal: https://plugins.gradle.org/plugin/io.github.gw-kit.delta-coverage
-✅ GitHub Release: https://github.com/gw-kit/delta-coverage-plugin/releases/tag/vx.y.z
+The 🚀 Release workflow has:
+✅ Built and tested the project
+✅ Published the artifact
+✅ Created tag: <module>/<version>
+✅ Created GitHub Release
+
+Verification:
+- GitHub Release: https://github.com/gw-kit/delta-coverage-plugin/releases/tag/<module>/<version>
 
 Notes:
 - Maven Central sync takes ~30 minutes
 - Plugin Portal processing takes ~10-15 minutes
 - GitHub release is available immediately
-
 ```
 
 ## Important Notes
 
-- **Order matters**: Publish core to Maven Central first, then gradle plugin to Plugin Portal, then GitHub release
-- **No retries**: Both Maven Central and Plugin Portal don't allow republishing same version
-- **Signing required**: All Maven Central artifacts must be GPG signed
-- **Credentials**: Ensure gradle.properties has:
-  - `mavenCentralUsername` and `mavenCentralPassword` for Maven Central
-  - `gradle.publish.key` and `gradle.publish.secret` for Plugin Portal
-  - GPG signing credentials: `signingInMemoryKey`, `signingInMemoryKeyId`, `signingInMemoryKeyPassword`
-
-## Publishing Tasks Reference
-
-```bash
-# Maven Central (delta-coverage-core)
-./gradlew :delta-coverage-core:publishAndReleaseToMavenCentral
-
-# Gradle Plugin Portal (delta-coverage-gradle)
-./gradlew :delta-coverage-gradle:publishPlugins
-
-# GitHub Release
-git tag v<version>
-git push origin v<version>
-gh release create v<version> --title "Version <version>" --notes "<changelog>"
-```
+- **No local credentials needed**: Publishing is handled entirely by the CI workflow using repository secrets
+- **No local Gradle publish commands**: Everything runs in CI
+- **No manual tag creation**: The workflow creates and pushes the tag automatically
+- **No manual GitHub Release**: The workflow creates it automatically with generated notes
+- **Branch validation**: The workflow validates that the branch name matches the selected module
+- **Idempotent tags**: If the tag already exists, the workflow will fail — do not re-run for the same version
 
 ## Error Handling Rules
 
-- If ANY step fails, STOP immediately and report to user
-- Do NOT continue to next step if previous step failed
-- If publishing core fails, do NOT publish gradle plugin
-- If publishing gradle plugin fails, do NOT create GitHub release
-- Always inform user of exact error and suggest fix
+- If the workflow fails, check the logs: `gh run view <run-id> --log-failed`
+- If branch validation fails, verify you are on the correct `release/<module>/<version>` branch
+- If publishing fails, check that repository secrets are configured
+- Do NOT attempt to publish manually — all publishing goes through the workflow
 
 ## Verification Before Publishing
 
-Before running publish tasks, verify:
-- [ ] On `main` branch
-- [ ] Branch is up-to-date with origin/main
+Before triggering the workflow, verify:
+- [ ] On a `release/<module>/<version>` branch
+- [ ] Branch is pushed to remote
 - [ ] Version in gradle.properties has no SNAPSHOT
 - [ ] CHANGELOG.md has section for current version
-- [ ] All tests pass
-- [ ] Maven Central credentials configured
-- [ ] Gradle Plugin Portal credentials configured
-- [ ] GPG signing credentials configured
+- [ ] All commits have been auto-merged to `main`
