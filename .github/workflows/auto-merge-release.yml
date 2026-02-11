@@ -1,0 +1,55 @@
+name: 🔀 Auto-Merge Release To Main
+
+on:
+  push:
+    branches:
+      - 'release/**'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+
+  auto-merge:
+    name: 🔀 Auto-Merge
+    runs-on: ubuntu-latest
+    environment:
+      name: auto-merge
+      url: ${{ steps.create-pr.outputs.url }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: ⚙️ Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: 🔀 Merge To Main
+        id: merge
+        run: |
+          git fetch origin main
+          git checkout main
+          if git merge --no-ff "${{ github.ref_name }}" -m "Auto-merge ${{ github.ref_name }} to main"; then
+            git push origin main
+          else
+            echo "conflict=true" >> $GITHUB_OUTPUT
+            git merge --abort
+          fi
+
+      - name: ⚠️ Create PR On Conflict
+        id: create-pr
+        if: ${{ steps.merge.outputs.conflict == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "::error::Auto-merge failed due to merge conflicts. Creating a pull request instead."
+          url=$(gh pr create \
+            --base main \
+            --head "${{ github.ref_name }}" \
+            --title "Auto-merge ${{ github.ref_name }} to main" \
+            --body "Automatic merge of \`${{ github.ref_name }}\` to \`main\` failed due to merge conflicts. Please resolve manually.")
+          echo "url=$url" >> $GITHUB_OUTPUT
