@@ -1596,10 +1596,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-tag-the-release" class="md-nav__link">
+  <a href="#3-publish-the-release" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Tag the release
+        3. Publish the release
       
     </span>
   </a>
@@ -1761,7 +1761,7 @@
 <ul>
 <li><strong><code>main</code></strong> — The default branch. Always in a buildable, testable state. Snapshot artifacts are published from every push.</li>
 <li><strong>Feature branches</strong> — Short-lived branches for developing new features or fixes. Merged to <code>main</code> via pull request.</li>
-<li><strong>Release branches</strong> — Per-module branches for preparing a release. Named <code>release/&lt;module&gt;/&lt;version&gt;</code> (e.g., <code>release/delta-coverage/3.2.0</code>).</li>
+<li><strong>Release branches</strong> — Per-module branches for preparing a release. Named <code>release/&lt;module&gt;/&lt;version&gt;</code> (e.g., <code>release/delta-coverage-gradle/3.2.0</code>).</li>
 </ul>
 <h3 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>main ●──●──●──●──────●──●──●──●
@@ -1802,7 +1802,7 @@
 <h4 id="1-create-a-release-branch">1. Create a release branch<a class="headerlink" href="#1-create-a-release-branch" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>checkout<span class="w"> </span>main
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>git<span class="w"> </span>pull
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>release/delta-coverage/3.2.0
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>release/delta-coverage-gradle/3.2.0
 </code></pre></div>
 <h4 id="2-prepare-the-release">2. Prepare the release<a class="headerlink" href="#2-prepare-the-release" title="Permanent link">&para;</a></h4>
 <p>On the release branch, make release-specific changes:</p>
@@ -1817,19 +1817,27 @@
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>release         ●───────●────────●
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>                changelog  docs    ← tag here
 </code></pre></div>
-<h4 id="3-tag-the-release">3. Tag the release<a class="headerlink" href="#3-tag-the-release" title="Permanent link">&para;</a></h4>
-<p>When the release branch is ready, tag the <strong>last commit on the release branch</strong>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>git<span class="w"> </span>tag<span class="w"> </span>delta-coverage/3.2.0
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>delta-coverage/3.2.0
-</code></pre></div>
-<p>CI detects the tag push, builds the artifact from that exact commit, and publishes it.</p>
+<h4 id="3-publish-the-release">3. Publish the release<a class="headerlink" href="#3-publish-the-release" title="Permanent link">&para;</a></h4>
+<p>When the release branch is ready, trigger the <strong>🚀 Release</strong> workflow from the GitHub Actions UI:</p>
+<ol>
+<li>Go to <strong>Actions → 🚀 Release → Run workflow</strong>.</li>
+<li>Select the release branch (<code>release/delta-coverage-gradle/3.2.0</code>).</li>
+<li>Choose the module to release from the dropdown.</li>
+</ol>
+<p>The workflow validates that the branch name matches the selected module, then:</p>
+<ul>
+<li>Builds and tests the project.</li>
+<li>Publishes the artifact (Gradle Plugin Portal for <code>delta-coverage-gradle</code>, Maven Central for other modules).</li>
+<li>Creates and pushes a tag (<code>&lt;module&gt;/&lt;version&gt;</code>).</li>
+<li>Creates a GitHub Release with auto-generated notes.</li>
+</ul>
 <blockquote>
 <p><strong>Why tag the release branch, not main?</strong>
 The tag points to precisely what was published. Main may contain newer commits from other modules that shouldn't be part of this release. The tagged commit is immutable and verifiable.</p>
 </blockquote>
 <h4 id="4-clean-up">4. Clean up<a class="headerlink" href="#4-clean-up" title="Permanent link">&para;</a></h4>
-<p>After the tag is pushed and CI has published successfully, delete the release branch:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>--delete<span class="w"> </span>release/delta-coverage/3.2.0
+<p>After the release workflow succeeds, delete the release branch:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>--delete<span class="w"> </span>release/delta-coverage-gradle/3.2.0
 </code></pre></div>
 <h3 id="release-checklist">Release Checklist<a class="headerlink" href="#release-checklist" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1838,10 +1846,8 @@ The tag points to precisely what was published. Main may contain newer commits f
 <li>[ ] Changelog updated</li>
 <li>[ ] Documentation updated</li>
 <li>[ ] All commits auto-merged to <code>main</code></li>
-<li>[ ] Release branch tagged</li>
-<li>[ ] CI published successfully</li>
+<li>[ ] 🚀 Release workflow triggered and succeeded (tag + publish + GitHub Release are automatic)</li>
 <li>[ ] Release branch deleted</li>
-<li>[ ] GitHub Release created (optional)</li>
 </ul>
 <h2 id="cicd">CI/CD<a class="headerlink" href="#cicd" title="Permanent link">&para;</a></h2>
 <table>
@@ -1865,13 +1871,13 @@ The tag points to precisely what was published. Main may contain newer commits f
 <td>Build, test. Auto-merge to <code>main</code>.</td>
 </tr>
 <tr>
-<td>Tag push (<code>&lt;module&gt;/&lt;version&gt;</code>)</td>
-<td>Build, test, publish release artifact.</td>
+<td>🚀 Release workflow (manual)</td>
+<td>Build, test, publish artifact, create tag &amp; GitHub Release.</td>
 </tr>
 </tbody>
 </table>
 <h3 id="auto-merge-conflicts">Auto-Merge Conflicts<a class="headerlink" href="#auto-merge-conflicts" title="Permanent link">&para;</a></h3>
-<p>If an auto-merge from a release branch to <code>main</code> fails due to conflicts, CI will fail. Resolve by rebasing the release branch on <code>main</code> and pushing again.</p>
+<p>If an auto-merge from a release branch to <code>main</code> fails due to conflicts, CI automatically creates a pull request for manual resolution.</p>
 <h2 id="questions">Questions?<a class="headerlink" href="#questions" title="Permanent link">&para;</a></h2>
 <p>Open an issue or start a discussion in the repository. We're happy to help!</p>
 
