@@ -8,8 +8,8 @@ You are tasked with preparing a release branch for Delta Coverage. This command 
 
 ## Prerequisites
 
-- You should be on a release branch (e.g., `release/3.4.3` or similar)
-- Changes should NOT be pushed to main yet
+- You should be on a release branch (e.g., `release/delta-coverage-gradle/3.4.3`)
+- Branch format: `release/<module>/<version>`
 - This prepares the release for review before actual publishing
 
 ## Steps to complete:
@@ -18,29 +18,29 @@ You are tasked with preparing a release branch for Delta Coverage. This command 
 
 1. **Check current branch**
    - Run: `git branch --show-current`
-   - Branch name MUST start with `release/`
+   - Branch name MUST match format `release/<module>/<version>`
    - Examples of valid branch names:
-     - `release/3.4.3`
-     - `release/3.5.0`
-     - `release/4.0.0-beta1`
+     - `release/delta-coverage-gradle/3.4.3`
+     - `release/delta-coverage-core/3.5.0`
+     - `release/delta-coverage-cli/1.0.0`
 
-2. **If branch is NOT a release branch**
+2. **If branch is NOT a valid release branch**
    - STOP immediately
    - Display error message:
      ```
-     ❌ Error: This command can only be run on a release/ branch.
+     ❌ Error: This command can only be run on a release/<module>/<version> branch.
 
      Current branch: <branch-name>
 
      To prepare a release:
-     1. Create a release branch: git checkout -b release/x.y.z
+     1. Create a release branch: git checkout -b release/<module>/x.y.z
      2. Run /prepare-release again
      ```
    - Do NOT proceed with any other steps
 
 3. **If branch is valid**
    - Continue to next step
-   - Extract version from branch name if possible (e.g., `release/3.4.3` → `3.4.3`)
+   - Extract module and version from branch name (e.g., `release/delta-coverage-gradle/3.4.3` → module=`delta-coverage-gradle`, version=`3.4.3`)
    - Use this as suggestion for release version
 
 ### 1. Determine the release version
@@ -130,12 +130,14 @@ After completing the above steps, inform the user:
 ```
 ✅ Release branch prepared successfully!
 
+Module: <module>
 Version: x.y.z
 
 Next steps:
 1. Review the changes: git show
-2. Push to remote: git push origin <branch-name>
-3. Create a PR to main branch for review
+2. Push to remote: git push -u origin <branch-name>
+   (auto-merge workflow will sync changes to main)
+3. Run /publish to trigger the 🚀 Release workflow
 
 Files changed:
 - gradle.properties: version updated to x.y.z
@@ -143,16 +145,16 @@ Files changed:
 
 Would you like me to:
 - Push the branch to remote?
-- Create a PR to main branch?
+- Run /publish to trigger the release?
 ```
 
 ## Important Notes
 
 - **DO NOT** publish anything to Maven Central or Gradle Plugin Portal
-- **DO NOT** create git tags (tags are created during `/publish`)
-- **DO NOT** create GitHub releases (done during `/publish`)
+- **DO NOT** create git tags (tags are created by the 🚀 Release workflow)
+- **DO NOT** create GitHub releases (done by the 🚀 Release workflow)
 - This command only prepares the release for review
-- Actual publishing happens after merge to main using `/publish` command
+- Actual publishing happens via the `/publish` command, which triggers the 🚀 Release workflow from the release branch
 
 ## Verification Checklist
 
@@ -175,7 +177,7 @@ Before finishing, verify:
 
 ```bash
 # 1. Create release branch
-git checkout -b release/3.4.3
+git checkout -b release/delta-coverage-gradle/3.4.3
 
 # 2. Run this command
 /prepare-release
@@ -183,7 +185,9 @@ git checkout -b release/3.4.3
 # 3. Review changes
 git show
 
-# 4. Push and create PR
-git push origin release/3.4.3
-gh pr create --base main --title "Release 3.4.3" --body "Prepare release 3.4.3"
+# 4. Push to remote (auto-merge workflow will sync to main)
+git push -u origin release/delta-coverage-gradle/3.4.3
+
+# 5. Trigger the release
+/publish
 ```

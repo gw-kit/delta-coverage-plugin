@@ -1,16 +1,18 @@
-name: Close inactive issues
+name: 🧹 Close Inactive Issues
 on:
   schedule:
     - cron: "30 1 * * *"
 
 jobs:
   close-issues:
+    name: 🧹 Close Stale Issues
     runs-on: ubuntu-latest
     permissions:
       issues: write
       pull-requests: write
     steps:
-      - uses: actions/stale@v10
+      - name: 🧹 Mark And Close Stale Issues
+        uses: actions/stale@v10
         with:
           days-before-issue-stale: 30
           days-before-issue-close: 14
