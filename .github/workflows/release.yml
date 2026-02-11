@@ -1,52 +1,116 @@
-name: Release plugin
+name: 🚀 Release
 
 on:
   workflow_dispatch:
+    inputs:
+      module:
+        description: 'Module to release'
+        required: true
+        type: choice
+        options:
+          - delta-coverage-gradle
+          - delta-coverage-cli
+          - delta-coverage-core
 
 jobs:
 
-  create-release:
+  build:
+    name: 🔨 Build
+    uses: ./.github/workflows/build.yml
+
+  publish:
+    name: 📤 Publish
+    needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    environment:
+      name: release
+      url: ${{ steps.gh-release.outputs.url }}
+
+    env:
+      GH_USER: ${{ github.actor }}
+      GH_TOKEN: ${{ github.token }}
+      gradle_cmd: ./gradlew --parallel -Pci
+        --build-cache --configuration-cache
+        --console=plain
+
     steps:
+      - name: ✅ Validate Branch And Parse Version
+        id: release
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const branch = context.ref.replace('refs/heads/', '');
+            const module = '${{ inputs.module }}';
 
-      - name: Clone project
-        uses: actions/checkout@v6
+            const match = branch.match(/^release\/([^/]+)\/(\d+\.\d+\.\d+.*)$/);
+            if (!match) {
+              core.setFailed(`Branch '${branch}' does not match expected format 'release/<module>/<version>'`);
+              return;
+            }
 
-      - name: Set up JDK 11
+            const [, branchModule, version] = match;
+            if (branchModule !== module) {
+              core.setFailed(`Selected module '${module}' does not match branch module '${branchModule}'`);
+              return;
+            }
+
+            core.setOutput('version', version);
+            core.setOutput('module', module);
+            core.setOutput('tag', `${module}/${version}`);
+            core.info(`Publishing ${module} v${version}`);
+
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+
+      - name: ☕ Set Up JDK
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+      - name: 🐘 Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: 🎯 Resolve Publish Target
+        id: publish-target
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const module = '${{ steps.release.outputs.module }}';
+            const isGradle = module.endsWith('-gradle');
+            core.setOutput('is-gradle-portal-publish', `${isGradle}`);
+            core.setOutput('is-maven-central-publish', `${!isGradle}`);
+            core.setOutput('module-path', module);
 
-      - name: Build artifacts
-        run: ./gradlew assemble
+      - name: 🐘 Publish To Gradle Plugin Portal
+        if: ${{ steps.publish-target.outputs.is-gradle-portal-publish == 'true' }}
+        run: ${{ env.gradle_cmd }} -p ${{ steps.publish-target.outputs.module-path }} publishPlugins
+          -Pgradle.publish.key=${{ secrets.GRADLE_PUBLISH_KEY }}
+          -Pgradle.publish.secret=${{ secrets.GRADLE_PUBLISH_SECRET }}
 
-      - name: Get version
-        id: release_version
+      - name: 📦 Publish To Maven Central
+        if: ${{ steps.publish-target.outputs.is-maven-central-publish == 'true' }}
+        run: ${{ env.gradle_cmd }} -p ${{ steps.publish-target.outputs.module-path }} publishToMavenCentral
+          -PmavenCentralUsername=${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          -PmavenCentralPassword=${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          -Psigning.gnupg.keyId=${{ secrets.SIGNING_KEY_ID }}
+          -Psigning.gnupg.passphrase=${{ secrets.SIGNING_PASSPHRASE }}
+
+      - name: 🏷️ Create And Push Tag
         run: |
-          echo "version=$(grep 'version=' gradle.properties | cut -d '=' -f 2)" >> $GITHUB_OUTPUT
+          git tag "${{ steps.release.outputs.tag }}"
+          git push origin "${{ steps.release.outputs.tag }}"
 
-      - name: Create Github release
-        uses: marvinpinto/action-automatic-releases@latest
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ steps.release_version.outputs.version }}
-          prerelease: true
-          title: "Release ${{ steps.release_version.outputs.version }}"
-
-      - name: Publish plugin
-        run: ./gradlew publishPlugins -Pgradle.publish.key=${{ secrets.GRADLE_PUBLISH_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PUBLISH_SECRET }}
-
-      - name: Create PR main to develop
-        uses: repo-sync/pull-request@v2
-        with:
-          source_branch: 'main'
-          destination_branch: 'develop'
-          pr_title: 'Merge main to develop'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: 🎉 Create GitHub Release
+        id: gh-release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          url=$(gh release create "${{ steps.release.outputs.tag }}" \
+            --title "${{ steps.release.outputs.module }} ${{ steps.release.outputs.version }}" \
+            --generate-notes)
+          echo "url=$url" >> $GITHUB_OUTPUT
