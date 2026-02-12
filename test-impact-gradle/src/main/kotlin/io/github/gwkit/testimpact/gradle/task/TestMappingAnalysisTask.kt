@@ -1,10 +1,10 @@
-package io.github.surpsg.deltacoverage.gradle.task
+package io.github.gwkit.testimpact.gradle.task
 
 import groovy.json.JsonOutput
-import io.github.surpsg.deltacoverage.gradle.test.sampling.AnalyzerConfig
-import io.github.surpsg.deltacoverage.gradle.test.sampling.ConsoleTestMappingReporter
-import io.github.surpsg.deltacoverage.gradle.test.sampling.JfrTestMappingAnalyzer
-import io.github.surpsg.deltacoverage.gradle.test.sampling.TestMappingReport
+import io.github.gwkit.testimpact.gradle.sampling.testmapping.analysis.AnalyzerConfig
+import io.github.gwkit.testimpact.gradle.sampling.testmapping.analysis.JfrTestMappingAnalyzer
+import io.github.gwkit.testimpact.gradle.sampling.testmapping.analysis.TestMappingReport
+import io.github.gwkit.testimpact.gradle.sampling.testmapping.report.ConsoleTestMappingReporter
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
@@ -41,30 +41,27 @@ abstract class TestMappingAnalysisTask : DefaultTask() {
 
     @TaskAction
     fun analyze() {
-        val testClasses = loadTestClasses()
+        val testClasses: Set<String> = loadTestClasses()
         if (testClasses.isEmpty()) {
             logger.lifecycle("No test classes found in test-events files")
         } else {
-            logger.lifecycle("Loaded ${testClasses.size} test classes")
+            logger.lifecycle("Loaded {} test classes", testClasses.size)
         }
 
         val config = AnalyzerConfig(
             includePackages = includePackages.getOrElse(emptyList()),
             excludePackages = excludePackages.getOrElse(emptyList())
         )
-        val analyzer = JfrTestMappingAnalyzer(config)
-        val report = analyzer.analyze(jfrFiles.files, testClasses)
+        val report: TestMappingReport = JfrTestMappingAnalyzer(config).analyze(jfrFiles.files, testClasses)
 
         writeReport(report)
     }
 
-    private fun loadTestClasses(): Set<String> {
-        return testEventsFiles.files
-            .filter { it.exists() }
-            .flatMap { it.readLines() }
-            .filter { it.isNotBlank() }
-            .toSet()
-    }
+    private fun loadTestClasses(): Set<String> = testEventsFiles.files
+        .filter { it.exists() }
+        .flatMap { it.readLines() }
+        .filter { it.isNotBlank() }
+        .toSet()
 
     private fun writeReport(report: TestMappingReport) {
         val file = outputFile.get().asFile
@@ -75,6 +72,6 @@ abstract class TestMappingAnalysisTask : DefaultTask() {
         val consoleReport = ConsoleTestMappingReporter.render(report)
         logger.lifecycle(consoleReport)
 
-        logger.lifecycle("JSON report: file://${file.absolutePath}")
+        logger.lifecycle("JSON report: file://{}", file.absolutePath)
     }
 }

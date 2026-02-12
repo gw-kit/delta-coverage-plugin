@@ -1,4 +1,9 @@
-package io.github.surpsg.deltacoverage.gradle.test.sampling
+package io.github.gwkit.testimpact.gradle.sampling.testmapping.report
+
+import io.github.gwkit.testimpact.gradle.sampling.testmapping.analysis.HotMethod
+import io.github.gwkit.testimpact.gradle.sampling.testmapping.analysis.MethodMapping
+import io.github.gwkit.testimpact.gradle.sampling.testmapping.analysis.ReportSummary
+import io.github.gwkit.testimpact.gradle.sampling.testmapping.analysis.TestMappingReport
 
 /**
  * Renders test mapping report to console with human-readable formatting.
@@ -7,6 +12,7 @@ internal object ConsoleTestMappingReporter {
 
     private const val LINE_WIDTH = 80
     private const val TOP_METHODS_COUNT = 10
+    private const val VISIBILITY_ABBREVIATION_LENGTH = 3
 
     fun render(report: TestMappingReport): String = buildString {
         appendLine()
@@ -57,7 +63,7 @@ internal object ConsoleTestMappingReporter {
             .sortedBy { it.key }
             .forEach { (className, methods) ->
                 appendLine()
-                appendLine("   ${formatClassName(className)}")
+                appendLine("   $className")
 
                 methods.entries
                     .sortedByDescending { it.value.totalHits }
@@ -68,7 +74,7 @@ internal object ConsoleTestMappingReporter {
     }
 
     private fun StringBuilder.appendMethodMapping(methodName: String, mapping: MethodMapping) {
-        val visibility = mapping.visibility.take(3) // pub/pri/pro/pac
+        val visibility = mapping.visibility.take(VISIBILITY_ABBREVIATION_LENGTH)
         val hitsInfo = "${mapping.totalHits} hits"
         val testsCount = "${mapping.tests.size} tests"
 
@@ -82,13 +88,6 @@ internal object ConsoleTestMappingReporter {
                 val samples = "${test.samples} samples"
                 appendLine("         ├─ $testName ($depth, $samples)")
             }
-    }
-
-    private fun formatClassName(className: String): String {
-        return className.substringAfterLast('.')
-            .let { "[$it]" }
-            .let { "$className".replace(className.substringAfterLast('.'), it) }
-            .let { className }
     }
 
     private fun formatMethodName(fullMethod: String): String {

@@ -1,7 +1,6 @@
 package io.github.surpsg.deltacoverage.gradle
 
 import io.github.surpsg.deltacoverage.gradle.dsl.view.view
-import io.github.surpsg.deltacoverage.gradle.test.sampling.TestMappingConfiguration
 import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTaskConfigurer
 import io.github.surpsg.deltacoverage.gradle.utils.booleanProperty
 import io.github.surpsg.deltacoverage.gradle.utils.doubleProperty
@@ -51,9 +50,6 @@ open class DeltaCoverageConfiguration @Inject constructor(
     @Nested
     val reportConfiguration: ReportsConfiguration = ReportsConfiguration(objectFactory)
 
-    @Nested
-    val testMapping: TestMappingConfiguration = objectFactory.new<TestMappingConfiguration>()
-
     @Internal
     val reportViews: NamedDomainObjectContainer<ReportView> =
         objectFactory.domainObjectContainer(ReportView::class.java) { name ->
@@ -70,10 +66,6 @@ open class DeltaCoverageConfiguration @Inject constructor(
 
     fun diffSource(action: Action<in DiffSourceConfiguration>) {
         action.execute(diffSource)
-    }
-
-    fun testMapping(action: Action<in TestMappingConfiguration>) {
-        action.execute(testMapping)
     }
 
     /**

@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.gradle.test.sampling
+package io.github.gwkit.testimpact.gradle.test.listener
 
 import org.gradle.api.tasks.testing.TestDescriptor
 import org.gradle.api.tasks.testing.TestListener

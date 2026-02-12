@@ -1,6 +1,6 @@
-package io.github.surpsg.deltacoverage.gradle.test.sampling
+package io.github.gwkit.testimpact.gradle.config
 
-import io.github.surpsg.deltacoverage.gradle.utils.booleanProperty
+import io.github.gwkit.testimpact.gradle.utils.booleanProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -12,16 +12,14 @@ import javax.inject.Inject
  *
  * Example usage:
  * ```kotlin
- * deltaCoverageReport {
- *     testMapping {
- *         enabled = true
- *         includePackages.set(listOf("com.example"))
- *         excludePackages.addAll("org.springframework", "com.fasterxml")
- *     }
+ * testImpact {
+ *     enabled = true
+ *     includePackages.set(listOf("com.example"))
+ *     excludePackages.addAll("org.springframework", "com.fasterxml")
  * }
  * ```
  */
-open class TestMappingConfiguration @Inject constructor(
+open class TestImpactConfiguration @Inject constructor(
     objectFactory: ObjectFactory,
 ) {
     /**

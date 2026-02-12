@@ -13,11 +13,4 @@ deltaCoverageReport {
     excludeClasses.addAll(
         "**/deltacoverage/demo/*"
     )
-    testMapping {
-        enabled = true
-        sampling {
-            intervalMs = 1
-            maxDepth = 50
-        }
-    }
 }

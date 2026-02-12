@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.gradle.test.sampling
+package io.github.gwkit.testimpact.gradle.sampling.testmapping.analysis
 
 import jdk.jfr.consumer.RecordedFrame
 import jdk.jfr.consumer.RecordedMethod
@@ -34,7 +34,7 @@ internal class JfrTestMappingAnalyzer(
         jfrFiles
             .filter { it.exists() }
             .forEach { jfrFile ->
-                log.info("Analyzing JFR file: ${jfrFile.absolutePath}")
+                log.info("Analyzing JFR file: {}", jfrFile.absolutePath)
                 try {
                     RecordingFile.readAllEvents(jfrFile.toPath())
                         .asSequence()
@@ -44,8 +44,8 @@ internal class JfrTestMappingAnalyzer(
                             totalSamples++
                             processStackTrace(stackTrace, testClasses, methodMappings)
                         }
-                } catch (e: Exception) {
-                    log.warn("Failed to read JFR file ${jfrFile.absolutePath}: ${e.message}")
+                } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                    log.warn("Failed to read JFR file {}: {}", jfrFile.absolutePath, e.message)
                 }
             }
 
@@ -228,6 +228,7 @@ internal class JfrTestMappingAnalyzer(
             return params
         }
 
+        @Suppress("CyclomaticComplexMethod")
         private fun parseType(descriptor: String, startIndex: Int): Pair<String, Int> {
             var i = startIndex
             var arrayDepth = 0

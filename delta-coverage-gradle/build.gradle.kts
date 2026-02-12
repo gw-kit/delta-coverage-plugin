@@ -4,7 +4,7 @@ plugins {
 }
 
 gradlePlugin {
-    website.set("https://github.com/SurpSG/delta-coverage")
+    website.set("https://gw-kit.github.io/delta-coverage-plugin")
     vcsUrl.set("https://github.com/SurpSG/delta-coverage.git")
 
     plugins {

@@ -1,4 +1,4 @@
-package io.github.surpsg.deltacoverage.gradle
+package io.github.gwkit.testimpact.gradle
 
 import io.github.gwkit.gradleprobe.RestorableFile
 import io.github.gwkit.gradleprobe.gradlerunner.runTask
@@ -18,14 +18,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
-@GradlePluginTest(TestProjects.SINGLE_MODULE)
+@GradlePluginTest("single-module-test-project")
 class TestMappingFunctionalTest {
 
     @RootProjectDir
     lateinit var rootProjectDir: File
-
-    @ProjectFile("test.diff.file")
-    lateinit var diffFilePath: String
 
     @ProjectFile("build.gradle.kts")
     lateinit var buildFile: RestorableFile
@@ -33,28 +30,23 @@ class TestMappingFunctionalTest {
     @GradleRunnerInstance
     lateinit var gradleRunner: GradleRunner
 
-    @BeforeEach
-    fun beforeEach() {
-        buildFile.restoreOriginContent()
-    }
-
     @Test
     fun `test mapping should create JFR recording and test events files`() {
         // GIVEN
         buildFile.file.appendText(
             """
-            deltaCoverageReport {
-                diffSource.file.set("$diffFilePath")
-                testMapping {
-                    enabled = true
-                    includePackages.add("com.java.test")
-                }
+            testImpact {
+                enabled = true
+                includePackages.add("com.java.test")
             }
         """.trimIndent()
         )
 
         // WHEN
         gradleRunner.runTask("test", "analyzeTestMapping")
+            .apply {
+                println(output)
+            }
 
         // THEN
         // Check JFR file exists
@@ -71,7 +63,7 @@ class TestMappingFunctionalTest {
         testEventsFiles.first().readText() shouldContain "Class1Test"
 
         // Check JSON report file
-        val jsonFile = rootProjectDir.resolve("build/reports/delta-coverage/test-mapping.json")
+        val jsonFile = rootProjectDir.resolve("build/reports/test-impact/test-mapping.json")
         jsonFile.exists() shouldBe true
 
         val report: Map<String, Any> = jacksonObjectMapper().readValue(jsonFile)

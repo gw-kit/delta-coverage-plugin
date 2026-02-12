@@ -7,6 +7,7 @@ include(
     "delta-coverage-cli",
     "delta-coverage-core",
     "delta-coverage-gradle",
+    "test-impact-gradle",
 )
 
 dependencyResolutionManagement {
