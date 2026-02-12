@@ -28,10 +28,8 @@ open class TestImpactPlugin : Plugin<Project> {
             task.onlyIf {
                 config.enabled.get()
             }
-            task.group = "verification"
-            task.description = "Analyzes JFR recordings to map tests to code"
             task.outputFile.set(
-                project.layout.buildDirectory.file("reports/test-impact/$OUTPUT_FILENAME")
+                project.layout.projectDirectory.file(config.reportOutputLocation)
             )
             task.includePackages.set(config.includePackages)
             task.excludePackages.set(config.excludePackages)
@@ -95,7 +93,6 @@ open class TestImpactPlugin : Plugin<Project> {
         private const val JFR_FILENAME = "recording.jfr"
         private const val JFC_FILENAME = "stacktrace-sampling.jfc"
         private const val TEST_EVENTS_FILENAME = "test-events.txt"
-        private const val OUTPUT_FILENAME = "test-mapping.json"
 
         private val log = LoggerFactory.getLogger(TestImpactPlugin::class.java)
 

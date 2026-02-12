@@ -14,11 +14,19 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import javax.inject.Inject
 
 /**
  * Task that analyzes JFR recordings and generates test-to-code mapping report.
  */
-abstract class TestMappingAnalysisTask : DefaultTask() {
+abstract class TestMappingAnalysisTask @Inject constructor(
+
+): DefaultTask() {
+
+    init {
+        group = "verification"
+        description = "Analyzes JFR recordings to map tests to code"
+    }
 
     @get:InputFiles
     @get:Optional

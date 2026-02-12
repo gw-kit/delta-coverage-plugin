@@ -46,4 +46,8 @@ open class TestImpactConfiguration @Inject constructor(
     @Input
     val excludePackages: ListProperty<String> = objectFactory.listProperty(String::class.java)
         .convention(emptyList())
+
+    @Input
+    val reportOutputLocation: Property<String> = objectFactory.property(String::class.java)
+        .convention("build/reports/test-impact/test-mapping.json")
 }
