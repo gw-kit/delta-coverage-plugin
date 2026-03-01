@@ -1,23 +1,23 @@
 package io.github.gwkit.testimpact.gradle
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.gwkit.gradleprobe.RestorableFile
 import io.github.gwkit.gradleprobe.gradlerunner.runTask
 import io.github.gwkit.gradleprobe.junit.GradlePluginTest
 import io.github.gwkit.gradleprobe.junit.GradleRunnerInstance
 import io.github.gwkit.gradleprobe.junit.ProjectFile
 import io.github.gwkit.gradleprobe.junit.RootProjectDir
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
+@Suppress("UNCHECKED_CAST")
 @GradlePluginTest("single-module-test-project")
 class TestMappingFunctionalTest {
 
@@ -70,13 +70,12 @@ class TestMappingFunctionalTest {
         report["version"] shouldBe 1
         report["generatedAt"] shouldNotBe null
 
-        @Suppress("UNCHECKED_CAST")
+
         val summary = report["summary"] as Map<String, Any>
         summary["totalTests"] shouldBe 1
         (summary["totalMethods"] as Int) shouldBeGreaterThan 0
         (summary["totalSamples"] as Int) shouldBeGreaterThan 0
 
-        @Suppress("UNCHECKED_CAST")
         val mappings = report["mappings"] as Map<String, Any>
         mappings.keys.shouldNotBeEmpty()
 
