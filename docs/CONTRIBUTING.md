@@ -34,7 +34,7 @@ The project follows a trunk-based development model.
 
 - **`main`** — The default branch. Always in a buildable, testable state. Snapshot artifacts are published from every push.
 - **Feature branches** — Short-lived branches for developing new features or fixes. Merged to `main` via pull request.
-- **Release branches** — Per-module branches for preparing a release. Named `release/<module>/<version>` (e.g., `release/delta-coverage/3.2.0`).
+- **Release branches** — Per-module branches for preparing a release. Named `release/<module>/<version>` (e.g., `release/delta-coverage-gradle/3.2.0`).
 
 ### Workflow
 
@@ -92,7 +92,7 @@ Snapshot artifacts are published automatically on every push to `main`. Only mod
 ```bash
 git checkout main
 git pull
-git checkout -b release/delta-coverage/3.2.0
+git checkout -b release/delta-coverage-gradle/3.2.0
 ```
 
 #### 2. Prepare the release
@@ -112,26 +112,30 @@ release         ●───────●────────●
                 changelog  docs    ← tag here
 ```
 
-#### 3. Tag the release
+#### 3. Publish the release
 
-When the release branch is ready, tag the **last commit on the release branch**:
+When the release branch is ready, trigger the **🚀 Release** workflow from the GitHub Actions UI:
 
-```bash
-git tag delta-coverage/3.2.0
-git push origin delta-coverage/3.2.0
-```
+1. Go to **Actions → 🚀 Release → Run workflow**.
+2. Select the release branch (`release/delta-coverage-gradle/3.2.0`).
+3. Choose the module to release from the dropdown.
 
-CI detects the tag push, builds the artifact from that exact commit, and publishes it.
+The workflow validates that the branch name matches the selected module, then:
+
+- Builds and tests the project.
+- Publishes the artifact (Gradle Plugin Portal for `delta-coverage-gradle`, Maven Central for other modules).
+- Creates and pushes a tag (`<module>/<version>`).
+- Creates a GitHub Release with auto-generated notes.
 
 > **Why tag the release branch, not main?**
 > The tag points to precisely what was published. Main may contain newer commits from other modules that shouldn't be part of this release. The tagged commit is immutable and verifiable.
 
 #### 4. Clean up
 
-After the tag is pushed and CI has published successfully, delete the release branch:
+After the release workflow succeeds, delete the release branch:
 
 ```bash
-git push origin --delete release/delta-coverage/3.2.0
+git push origin --delete release/delta-coverage-gradle/3.2.0
 ```
 
 ### Release Checklist
@@ -141,10 +145,8 @@ git push origin --delete release/delta-coverage/3.2.0
 - [ ] Changelog updated
 - [ ] Documentation updated
 - [ ] All commits auto-merged to `main`
-- [ ] Release branch tagged
-- [ ] CI published successfully
+- [ ] 🚀 Release workflow triggered and succeeded (tag + publish + GitHub Release are automatic)
 - [ ] Release branch deleted
-- [ ] GitHub Release created (optional)
 
 ## CI/CD
 
@@ -153,11 +155,11 @@ git push origin --delete release/delta-coverage/3.2.0
 | Push to `main` | Build, test all modules. Publish snapshots for changed modules. |
 | Pull request | Build, test affected modules. |
 | Push to `release/*` | Build, test. Auto-merge to `main`. |
-| Tag push (`<module>/<version>`) | Build, test, publish release artifact. |
+| 🚀 Release workflow (manual) | Build, test, publish artifact, create tag & GitHub Release. |
 
 ### Auto-Merge Conflicts
 
-If an auto-merge from a release branch to `main` fails due to conflicts, CI will fail. Resolve by rebasing the release branch on `main` and pushing again.
+If an auto-merge from a release branch to `main` fails due to conflicts, CI automatically creates a pull request for manual resolution.
 
 ## Questions?
 
