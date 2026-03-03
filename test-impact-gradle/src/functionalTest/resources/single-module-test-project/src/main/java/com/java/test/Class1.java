@@ -3,7 +3,7 @@ package com.java.test;
 public class Class1 {
 
     public int covered(boolean arg) {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1000; i++) {
             System.out.println(i);
         }
         if (arg) {

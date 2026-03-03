@@ -28,11 +28,14 @@ open class TestImpactPlugin : Plugin<Project> {
             task.onlyIf {
                 config.enabled.get()
             }
-            task.outputFile.set(
-                project.layout.projectDirectory.file(config.reportOutputLocation)
+            task.outputDirectory.set(
+                project.layout.projectDirectory.dir(config.reportOutputDir)
             )
             task.includePackages.set(config.includePackages)
             task.excludePackages.set(config.excludePackages)
+            task.jsonEnabled.set(config.reports.json)
+            task.htmlEnabled.set(config.reports.html)
+            task.flamegraphEnabled.set(config.reports.flamegraph)
         }
 
         val generateJfcTask: TaskProvider<GenerateJfcConfigTask> = project.registerGenerateJfcTask(config)

@@ -1,23 +1,24 @@
 package io.github.gwkit.testimpact.gradle.task
 
-import groovy.json.JsonOutput
 import io.github.gwkit.testimpact.gradle.sampling.testmapping.analysis.AnalyzerConfig
 import io.github.gwkit.testimpact.gradle.sampling.testmapping.analysis.JfrTestMappingAnalyzer
 import io.github.gwkit.testimpact.gradle.sampling.testmapping.analysis.TestMappingReport
 import io.github.gwkit.testimpact.gradle.sampling.testmapping.report.ConsoleTestMappingReporter
+import io.github.gwkit.testimpact.gradle.sampling.testmapping.report.ReportWriter
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 /**
- * Task that analyzes JFR recordings and generates test-to-code mapping report.
+ * Task that analyzes JFR recordings and generates test-to-code mapping reports.
  */
 abstract class TestMappingAnalysisTask @Inject constructor(
 
@@ -36,8 +37,8 @@ abstract class TestMappingAnalysisTask @Inject constructor(
     @get:Optional
     abstract val testEventsFiles: ConfigurableFileCollection
 
-    @get:OutputFile
-    abstract val outputFile: RegularFileProperty
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
 
     @get:Input
     @get:Optional
@@ -46,6 +47,15 @@ abstract class TestMappingAnalysisTask @Inject constructor(
     @get:Input
     @get:Optional
     abstract val excludePackages: ListProperty<String>
+
+    @get:Input
+    abstract val jsonEnabled: Property<Boolean>
+
+    @get:Input
+    abstract val htmlEnabled: Property<Boolean>
+
+    @get:Input
+    abstract val flamegraphEnabled: Property<Boolean>
 
     @TaskAction
     fun analyze() {
@@ -62,7 +72,7 @@ abstract class TestMappingAnalysisTask @Inject constructor(
         )
         val report: TestMappingReport = JfrTestMappingAnalyzer(config).analyze(jfrFiles.files, testClasses)
 
-        writeReport(report)
+        writeReports(report)
     }
 
     private fun loadTestClasses(): Set<String> = testEventsFiles.files
@@ -71,15 +81,22 @@ abstract class TestMappingAnalysisTask @Inject constructor(
         .filter { it.isNotBlank() }
         .toSet()
 
-    private fun writeReport(report: TestMappingReport) {
-        val file = outputFile.get().asFile
-        file.parentFile?.mkdirs()
-        file.writeText(JsonOutput.prettyPrint(JsonOutput.toJson(report.toMap())))
+    private fun writeReports(report: TestMappingReport) {
+        val outputDir = outputDirectory.get().asFile
 
-        // Print console report
+        val writer = ReportWriter(
+            outputDir = outputDir,
+            jsonEnabled = jsonEnabled.get(),
+            htmlEnabled = htmlEnabled.get(),
+            flamegraphEnabled = flamegraphEnabled.get(),
+        )
+
+        val generatedFiles = writer.write(report, jfrFiles.files)
+        generatedFiles.forEach { file ->
+            logger.lifecycle("Report: file://{}", file.absolutePath)
+        }
+
         val consoleReport = ConsoleTestMappingReporter.render(report)
         logger.lifecycle(consoleReport)
-
-        logger.lifecycle("JSON report: file://{}", file.absolutePath)
     }
 }

@@ -14,6 +14,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import org.gradle.testkit.runner.GradleRunner
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
@@ -29,6 +30,12 @@ class TestMappingFunctionalTest {
 
     @GradleRunnerInstance
     lateinit var gradleRunner: GradleRunner
+
+    @BeforeEach
+    fun beforeEach() {
+        buildFile.restoreOriginContent()
+        rootProjectDir.resolve("build/reports/test-impact").deleteRecursively()
+    }
 
     @Test
     fun `test mapping should create JFR recording and test events files`() {
@@ -81,5 +88,35 @@ class TestMappingFunctionalTest {
 
         // Verify output contains Class1 (the production code)
         mappings.keys.any { it.contains("Class1") } shouldBe true
+    }
+
+    @Test
+    fun `all report types should be created when all enabled`() {
+        // GIVEN
+        buildFile.file.appendText(
+            """
+            testImpact {
+                enabled = true
+                includePackages.add("com.java.test")
+                reports {
+                    json.set(true)
+                    html.set(true)
+                    flamegraph.set(true)
+                }
+            }
+        """.trimIndent()
+        )
+
+        // WHEN
+        gradleRunner.runTask("test", "analyzeTestMapping")
+            .apply {
+                println(output)
+            }
+
+        // THEN
+        val reportDir = rootProjectDir.resolve("build/reports/test-impact")
+        reportDir.resolve("test-mapping.json").exists() shouldBe true
+        reportDir.resolve("test-mapping.html").exists() shouldBe true
+        reportDir.resolve("flamegraph.html").exists() shouldBe true
     }
 }

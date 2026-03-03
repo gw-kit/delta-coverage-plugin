@@ -1,10 +1,13 @@
 package io.github.gwkit.testimpact.gradle.config
 
 import io.github.gwkit.testimpact.gradle.utils.booleanProperty
+import io.github.gwkit.testimpact.gradle.utils.new
+import org.gradle.api.Action
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Nested
 import javax.inject.Inject
 
 /**
@@ -16,6 +19,11 @@ import javax.inject.Inject
  *     enabled = true
  *     includePackages.set(listOf("com.example"))
  *     excludePackages.addAll("org.springframework", "com.fasterxml")
+ *     reports {
+ *         json.set(true)
+ *         html.set(true)
+ *         flamegraph.set(true)
+ *     }
  * }
  * ```
  */
@@ -47,7 +55,20 @@ open class TestImpactConfiguration @Inject constructor(
     val excludePackages: ListProperty<String> = objectFactory.listProperty(String::class.java)
         .convention(emptyList())
 
+    /**
+     * Output directory for all reports.
+     * Defaults to "build/reports/test-impact".
+     */
     @Input
-    val reportOutputLocation: Property<String> = objectFactory.property(String::class.java)
-        .convention("build/reports/test-impact/test-mapping.json")
+    val reportOutputDir: Property<String> = objectFactory.property(String::class.java)
+        .convention("build/reports/test-impact")
+
+    /** Report type toggles. */
+    @Nested
+    val reports: ReportConfiguration = objectFactory.new()
+
+    /** Configures report type toggles. */
+    fun reports(action: Action<ReportConfiguration>) {
+        action.execute(reports)
+    }
 }
