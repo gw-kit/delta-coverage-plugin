@@ -15,39 +15,48 @@ import java.io.File
 open class TestImpactPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-        val config = project.extensions.create(
+        val config: TestImpactConfiguration = project.extensions.create(
             EXTENSION_NAME,
             TestImpactConfiguration::class.java,
             project.objects,
         )
 
-        val analyzeTask: TaskProvider<TestMappingAnalysisTask> = project.tasks.register(
-            ANALYZE_TASK_NAME,
-            TestMappingAnalysisTask::class.java
-        ) { task ->
-            task.onlyIf {
-                config.enabled.get()
-            }
-            task.outputDirectory.set(
-                project.layout.projectDirectory.dir(config.reportOutputDir)
-            )
-            task.includePackages.set(config.includePackages)
-            task.excludePackages.set(config.excludePackages)
-            task.htmlEnabled.set(config.reports.html)
-            task.flamegraphEnabled.set(config.reports.flamegraph)
-        }
+        project.configureAllTestTasks(config)
+    }
 
+    private fun Project.configureAllTestTasks(
+        config: TestImpactConfiguration,
+    ) {
         val generateJfcTask: TaskProvider<GenerateJfcConfigTask> = project.registerGenerateJfcTask(config)
-
-        project.tasks.withType(Test::class.java).configureEach { testTask ->
-            testTask.configureTestTask(config, generateJfcTask)
-            with(analyzeTask.get()) {
-                val jfrFile: File = testTask.temporaryDir.resolve(JFR_FILENAME)
-                jfrFiles.from(jfrFile)
-                testEventsFiles.from(testTask.temporaryDir.resolve(TEST_EVENTS_FILENAME))
-                mustRunAfter(testTask)
+        project.allprojects { proj ->
+            val analyzeTask: TaskProvider<TestMappingAnalysisTask> = proj.registerAnalyzeTask(config)
+            proj.tasks.withType(Test::class.java).configureEach { testTask ->
+                val jfrOutputs: TestImpactOutputs = testTask.applyStackTracesCollecting(config, generateJfcTask)
+                with(analyzeTask.get()) {
+                    jfrFiles.from(jfrOutputs.jfrData)
+                    testEventsFiles.from(jfrOutputs.testEventsFile)
+                    mustRunAfter(testTask)
+                }
             }
         }
+    }
+
+    private fun Project.registerAnalyzeTask(
+        config: TestImpactConfiguration,
+    ): TaskProvider<TestMappingAnalysisTask> = tasks.register(
+        ANALYZE_TASK_NAME,
+        TestMappingAnalysisTask::class.java
+    ) { task ->
+        task.onlyIf {
+            config.enabled.get()
+        }
+        task.outputDirectory.set(
+            project.layout.projectDirectory.dir(config.reportOutputDir)
+        )
+        task.includePackages.set(config.includePackages)
+        task.excludePackages.set(config.excludePackages)
+        task.htmlEnabled.set(config.reports.html)
+        task.flamegraphEnabled.set(config.reports.flamegraph)
     }
 
     private fun Project.registerGenerateJfcTask(
@@ -60,24 +69,33 @@ open class TestImpactPlugin : Plugin<Project> {
         }
     }
 
-    private fun Test.configureTestTask(
+    private fun Test.applyStackTracesCollecting(
         config: TestImpactConfiguration,
         generateJfcTask: TaskProvider<GenerateJfcConfigTask>,
-    ) {
+    ): TestImpactOutputs {
+        val additionalTaskOutputs = TestImpactOutputs(
+            testEventsFile = temporaryDir.resolve("${name}-$TEST_EVENTS_FILENAME"),
+            jfrData = temporaryDir.resolve("${name}-$JFR_FILENAME"),
+        )
         inputs.files(generateJfcTask)
-
-        val jfrFile = temporaryDir.resolve(JFR_FILENAME)
-        val testEventsFile = temporaryDir.resolve(TEST_EVENTS_FILENAME)
-
-        jvmArgumentProviders.add(
-            JfrCommandLineProvider(
-                config.enabled,
-                generateJfcTask.flatMap { it.jfcFile }.map { it.asFile },
-                jfrFile
-            )
+        outputs.files(
+            additionalTaskOutputs.jfrData,
+            additionalTaskOutputs.testEventsFile,
         )
 
-        addTestListener(TestEventsCollector(testEventsFile))
+        if (config.enabled.get()) {
+            addTestListener(TestEventsCollector(additionalTaskOutputs.testEventsFile))
+
+            jvmArgumentProviders.add(
+                JfrCommandLineProvider(
+                    config.enabled,
+                    generateJfcTask.flatMap { it.jfcFile }.map { it.asFile },
+                    additionalTaskOutputs.jfrData
+                )
+            )
+        }
+
+        return additionalTaskOutputs
     }
 
     private class JfrCommandLineProvider(
@@ -96,6 +114,11 @@ open class TestImpactPlugin : Plugin<Project> {
             emptyList()
         }
     }
+
+    private data class TestImpactOutputs(
+        val testEventsFile: File,
+        val jfrData: File,
+    )
 
     companion object {
         const val EXTENSION_NAME = "testImpact"

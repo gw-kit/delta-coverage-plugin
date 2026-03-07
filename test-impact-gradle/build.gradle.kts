@@ -24,6 +24,9 @@ dependencies {
     // async-profiler JFR-to-flamegraph converter
     implementation(deps.jfrConverter)
 
+    // Unit tests
+    testImplementation(testFixtures(project(":delta-coverage-gradle")))
+
     // Functional tests
     functionalTestImplementation(deps.jacksonKotlin)
     functionalTestImplementation(deps.gradleProbe)
