@@ -1,13 +1,9 @@
-import io.github.surpsg.deltacoverage.gradle.CoverageEngine
-import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
-import io.github.surpsg.deltacoverage.gradle.CoverageEntity.*
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java
     kotlin("jvm") version "2.3.0"
-    id("io.github.gw-kit.delta-coverage")
-    // {EXTRA_PLUGINS_PLACEHOLDER}
+    id("io.github.gw-kit.test-impact")
 }
 
 repositories {

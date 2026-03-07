@@ -1,0 +1,99 @@
+package io.github.gwkit.testimpact.gradle.config
+
+import io.github.gwkit.testimpact.gradle.utils.booleanProperty
+import io.github.gwkit.testimpact.gradle.utils.new
+import org.gradle.api.Action
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Nested
+import javax.inject.Inject
+
+/**
+ * Configuration for test-to-code mapping via JFR stack sampling.
+ *
+ * Example usage:
+ * ```kotlin
+ * testImpact {
+ *     enabled = true
+ *     includePackages.set(listOf("com.example"))
+ *     excludePackages.addAll("org.springframework", "com.fasterxml")
+ *     reports {
+ *         json.set(true)
+ *         html.set(true)
+ *         flamegraph.set(true)
+ *     }
+ * }
+ * ```
+ */
+open class TestImpactConfiguration @Inject constructor(
+    objectFactory: ObjectFactory,
+) {
+    /**
+     * Enables or disables test-to-code mapping.
+     * Defaults to false.
+     */
+    @Input
+    val enabled: Property<Boolean> = objectFactory.booleanProperty(false)
+
+    /**
+     * Package prefixes to include in the mapping.
+     * If empty, all packages are included (except those in excludePackages).
+     * Example: ["com.example", "org.mycompany"]
+     */
+    @Input
+    val includePackages: ListProperty<String> = objectFactory.listProperty(String::class.java)
+        .convention(emptyList())
+
+    /**
+     * Additional package prefixes to exclude from the mapping.
+     * These are added to the default excludes (JUnit, Gradle, JDK internals).
+     * Example: ["org.springframework", "com.fasterxml"]
+     */
+    @Input
+    val excludePackages: ListProperty<String> = objectFactory.listProperty(String::class.java)
+        .convention(emptyList())
+
+    /**
+     * Output directory for all reports.
+     * Defaults to "build/reports/test-impact".
+     */
+    @Input
+    val reportOutputDir: Property<String> = objectFactory.property(String::class.java)
+        .convention("build/reports/test-impact")
+
+    /** Report type toggles. */
+    @Nested
+    val reports: ReportConfiguration = objectFactory.new()
+
+    /** Configures report type toggles. */
+    fun reports(action: Action<ReportConfiguration>) {
+        action.execute(reports)
+    }
+}
+
+/**
+ * Configuration for test-impact report types.
+ *
+ * Example usage:
+ * ```kotlin
+ * testImpact {
+ *     reports {
+ *         html.set(false)                    // default: true
+ *         flamegraph.set(true)              // default: false (d3-flame-graph)
+ *     }
+ * }
+ * ```
+ */
+open class ReportConfiguration @Inject constructor(
+    objectFactory: ObjectFactory,
+) {
+    /** Enable interactive HTML report output. Defaults to false. */
+    @Input
+    val html: Property<Boolean> = objectFactory.booleanProperty(false)
+
+    /** Enable flamegraph HTML report output (d3-flame-graph). Defaults to false. */
+    @Input
+    val flamegraph: Property<Boolean> = objectFactory.booleanProperty(false)
+}

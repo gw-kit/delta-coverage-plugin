@@ -4,7 +4,7 @@ plugins {
 }
 
 gradlePlugin {
-    website.set("https://github.com/SurpSG/delta-coverage")
+    website.set("https://gw-kit.github.io/delta-coverage-plugin")
     vcsUrl.set("https://github.com/SurpSG/delta-coverage.git")
 
     plugins {
@@ -22,7 +22,7 @@ dependencies {
     implementation(project(":delta-coverage-core"))
     implementation(deps.coverJetPlugin)
 
-    testImplementation(gradleApi()) // required to add this dependency explicitly after applying shadowJar plugin
+    testImplementation(gradleApi())
     testImplementation(deps.jimFs)
     testRuntimeOnly(deps.kotlinJvm)
 
@@ -30,6 +30,7 @@ dependencies {
     functionalTestImplementation(testFixtures(project))
     functionalTestImplementation(deps.jgit)
     functionalTestImplementation(deps.gradleProbe)
+    functionalTestImplementation(deps.jacksonKotlin)
 
     testFixturesApi(project(":delta-coverage-core"))
     testFixturesImplementation(deps.kotestAssertions)
