@@ -72,3 +72,28 @@ open class TestImpactConfiguration @Inject constructor(
         action.execute(reports)
     }
 }
+
+/**
+ * Configuration for test-impact report types.
+ *
+ * Example usage:
+ * ```kotlin
+ * testImpact {
+ *     reports {
+ *         html.set(false)                    // default: true
+ *         flamegraph.set(true)              // default: false (d3-flame-graph)
+ *     }
+ * }
+ * ```
+ */
+open class ReportConfiguration @Inject constructor(
+    objectFactory: ObjectFactory,
+) {
+    /** Enable interactive HTML report output. Defaults to false. */
+    @Input
+    val html: Property<Boolean> = objectFactory.booleanProperty(false)
+
+    /** Enable flamegraph HTML report output (d3-flame-graph). Defaults to false. */
+    @Input
+    val flamegraph: Property<Boolean> = objectFactory.booleanProperty(false)
+}

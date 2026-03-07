@@ -283,7 +283,7 @@ data class AnalyzerConfig(
 /**
  * Complete test mapping report.
  */
-data class TestMappingReport(
+internal data class TestMappingReport(
     val version: Int,
     val generatedAt: String,
     val summary: ReportSummary,
@@ -326,14 +326,14 @@ data class TestMappingReport(
     )
 }
 
-data class ReportSummary(
+internal data class ReportSummary(
     val totalTests: Int,
     val totalMethods: Int,
     val totalSamples: Int,
     val maxCallDepth: Int
 )
 
-data class MethodMapping(
+internal data class MethodMapping(
     val signature: String,
     val visibility: String,
     val lineNumber: Int,

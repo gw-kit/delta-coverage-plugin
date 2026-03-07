@@ -119,4 +119,36 @@ class TestMappingFunctionalTest {
         reportDir.resolve("test-mapping.html").exists() shouldBe true
         reportDir.resolve("flamegraph.html").exists() shouldBe true
     }
+
+    @Test
+    fun `flamegraph should be created when enabled`() {
+        // GIVEN
+        buildFile.file.appendText(
+            """
+            testImpact {
+                enabled = true
+                includePackages.add("com.java.test")
+                reports {
+                    json.set(false)
+                    flamegraph.set(true)
+                }
+            }
+        """.trimIndent()
+        )
+
+        // WHEN
+        gradleRunner.runTask("test", "analyzeTestMapping")
+            .apply {
+                println(output)
+            }
+
+        // THEN
+        val reportDir = rootProjectDir.resolve("build/reports/test-impact")
+        val flamegraphFile = reportDir.resolve("flamegraph.html")
+        flamegraphFile.exists() shouldBe true
+
+        val content = flamegraphFile.readText()
+        content shouldContain "canvas"
+        content shouldContain "async-profiler"
+    }
 }

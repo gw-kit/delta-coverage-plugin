@@ -3,7 +3,7 @@ package io.github.gwkit.testimpact.gradle.task
 import io.github.gwkit.testimpact.gradle.sampling.testmapping.analysis.AnalyzerConfig
 import io.github.gwkit.testimpact.gradle.sampling.testmapping.analysis.JfrTestMappingAnalyzer
 import io.github.gwkit.testimpact.gradle.sampling.testmapping.analysis.TestMappingReport
-import io.github.gwkit.testimpact.gradle.sampling.testmapping.report.ConsoleTestMappingReporter
+import io.github.gwkit.testimpact.gradle.sampling.testmapping.report.ReportConfig
 import io.github.gwkit.testimpact.gradle.sampling.testmapping.report.ReportWriter
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
@@ -15,14 +15,11 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import javax.inject.Inject
 
 /**
  * Task that analyzes JFR recordings and generates test-to-code mapping reports.
  */
-abstract class TestMappingAnalysisTask @Inject constructor(
-
-): DefaultTask() {
+abstract class TestMappingAnalysisTask : DefaultTask() {
 
     init {
         group = "verification"
@@ -49,9 +46,6 @@ abstract class TestMappingAnalysisTask @Inject constructor(
     abstract val excludePackages: ListProperty<String>
 
     @get:Input
-    abstract val jsonEnabled: Property<Boolean>
-
-    @get:Input
     abstract val htmlEnabled: Property<Boolean>
 
     @get:Input
@@ -72,7 +66,7 @@ abstract class TestMappingAnalysisTask @Inject constructor(
         )
         val report: TestMappingReport = JfrTestMappingAnalyzer(config).analyze(jfrFiles.files, testClasses)
 
-        writeReports(report)
+        writeReports(report, testClasses)
     }
 
     private fun loadTestClasses(): Set<String> = testEventsFiles.files
@@ -81,22 +75,19 @@ abstract class TestMappingAnalysisTask @Inject constructor(
         .filter { it.isNotBlank() }
         .toSet()
 
-    private fun writeReports(report: TestMappingReport) {
+    private fun writeReports(report: TestMappingReport, testClasses: Set<String>) {
         val outputDir = outputDirectory.get().asFile
 
-        val writer = ReportWriter(
+        val reportConfig = ReportConfig(
             outputDir = outputDir,
-            jsonEnabled = jsonEnabled.get(),
-            htmlEnabled = htmlEnabled.get(),
-            flamegraphEnabled = flamegraphEnabled.get(),
+            html = htmlEnabled.get(),
+            flamegraph = flamegraphEnabled.get(),
         )
+        val writer = ReportWriter(reportConfig)
 
-        val generatedFiles = writer.write(report, jfrFiles.files)
+        val generatedFiles = writer.write(report, jfrFiles.files, testClasses)
         generatedFiles.forEach { file ->
             logger.lifecycle("Report: file://{}", file.absolutePath)
         }
-
-        val consoleReport = ConsoleTestMappingReporter.render(report)
-        logger.lifecycle(consoleReport)
     }
 }

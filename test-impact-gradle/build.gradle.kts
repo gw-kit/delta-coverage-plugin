@@ -21,6 +21,9 @@ dependencies {
     implementation(deps.jackson)
     implementation(deps.jacksonKotlin)
 
+    // async-profiler JFR-to-flamegraph converter
+    implementation(deps.jfrConverter)
+
     // Functional tests
     functionalTestImplementation(deps.jacksonKotlin)
     functionalTestImplementation(deps.gradleProbe)
