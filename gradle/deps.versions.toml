@@ -24,7 +24,7 @@ gradleProbeVer = "0.0.2"
 kotlinJvm = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVer" }
 
 # Plugins
-pluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "2.0.0" }
+pluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "2.1.1" }
 deltaCoverage = { module = "io.github.gw-kit:delta-coverage-gradle", version.ref = "deltaCoverageVer" }
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.23.8" }
 
