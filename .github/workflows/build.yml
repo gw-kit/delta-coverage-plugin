@@ -50,7 +50,7 @@ jobs:
 
       - name: 🔍 Check Publish
         id: publish-snapshot
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const hasLabel = ${{ contains(github.event.pull_request.labels.*.name, 'publish-snapshot-artifacts') }};
@@ -68,7 +68,7 @@ jobs:
       - name: 🔍 Check Ignore Coverage Failure
         id: ignore-coverage-failure
         if: ${{ cancelled() }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const ignoreByLabel = ${{ contains(github.event.pull_request.labels.*.name, 'suppress-coverage') }};
