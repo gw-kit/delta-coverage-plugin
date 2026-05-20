@@ -8,7 +8,7 @@ jacksonVer = "2.21.0"
 slf4jVer = "2.0.17"
 logbackVer = "1.5.22"
 
-kotlinVer = "2.3.0"
+kotlinVer = "2.3.21"
 junitVer = "6.0.2"
 mockkVer = "1.14.7"
 kotestVer = "6.1.1"
