@@ -4,7 +4,7 @@ import io.github.surpsg.deltacoverage.gradle.CoverageEntity.*
 
 plugins {
     java
-    kotlin("jvm") version "2.3.0"
+    kotlin("jvm") version "2.3.21"
     id("io.github.gw-kit.delta-coverage")
     // {EXTRA_PLUGINS_PLACEHOLDER}
 }

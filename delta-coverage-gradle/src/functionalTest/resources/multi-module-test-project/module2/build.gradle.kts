@@ -1,6 +1,6 @@
 plugins {
     java
-    kotlin("jvm") version "2.3.0"
+    kotlin("jvm") version "2.3.21"
     `jvm-test-suite`
 }
 
