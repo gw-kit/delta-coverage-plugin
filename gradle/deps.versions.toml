@@ -10,7 +10,7 @@ logbackVer = "1.5.33"
 
 kotlinVer = "2.3.21"
 junitVer = "6.1.0"
-mockkVer = "1.14.9"
+mockkVer = "1.14.11"
 kotestVer = "6.1.1"
 jimfsVer = "1.3.1"
 picocliVer = "4.7.7"
