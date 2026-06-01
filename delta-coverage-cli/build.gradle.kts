@@ -42,6 +42,14 @@ tasks {
     }
 }
 
+mavenPublishing {
+    publishToMavenCentral(automaticRelease = true)
+
+    if (!rootProject.hasProperty("snapshotPrefix")) {
+        signAllPublications()
+    }
+}
+
 detekt {
     ignoreFailures = true
 }
