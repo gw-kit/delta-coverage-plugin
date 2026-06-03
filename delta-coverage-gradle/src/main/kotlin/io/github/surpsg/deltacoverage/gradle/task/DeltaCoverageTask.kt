@@ -12,18 +12,23 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import javax.inject.Inject
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration as GradleDeltaCoverageConfig
 
+@DisableCachingByDefault
 open class DeltaCoverageTask @Inject constructor(
     objectFactory: ObjectFactory,
 ) : DefaultTask() {
@@ -38,12 +43,15 @@ open class DeltaCoverageTask @Inject constructor(
     val viewName: Property<String> = objectFactory.property(String::class.java)
 
     @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     val coverageBinaryFiles: Property<FileCollection> = objectFactory.property(FileCollection::class.java)
 
     @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     val sourcesFiles: Property<FileCollection> = objectFactory.property(FileCollection::class.java)
 
     @get:InputFiles
+    @get:Classpath
     val classesRoots: Property<FileCollection> = objectFactory.property(FileCollection::class.java)
 
     @get:Internal

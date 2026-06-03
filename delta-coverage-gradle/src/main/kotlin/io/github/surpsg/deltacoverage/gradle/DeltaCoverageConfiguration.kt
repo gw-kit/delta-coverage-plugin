@@ -16,11 +16,14 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import java.nio.file.Paths
 import javax.inject.Inject
 
@@ -33,10 +36,12 @@ open class DeltaCoverageConfiguration @Inject constructor(
 
     @Optional
     @InputFiles
+    @Classpath
     var classesDirs: FileCollection? = null
 
     @Optional
     @InputFiles
+    @PathSensitive(PathSensitivity.RELATIVE)
     var sources: FileCollection? = null
 
     @Input
