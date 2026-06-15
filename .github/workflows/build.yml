@@ -112,7 +112,7 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
 
       - name: 📊 Add Test Results To PR
-        uses: EnricoMi/publish-unit-test-result-action@v2.23.0
+        uses: EnricoMi/publish-unit-test-result-action@v2.24.0
         if: ${{ !cancelled() }}
         continue-on-error: true
         with:
