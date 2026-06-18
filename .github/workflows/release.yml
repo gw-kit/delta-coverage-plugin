@@ -62,7 +62,7 @@ jobs:
             core.setOutput('tag', `${module}/${version}`);
             core.info(`Publishing ${module} v${version}`);
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.ref }}
 
