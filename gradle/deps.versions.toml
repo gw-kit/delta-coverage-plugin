@@ -52,5 +52,5 @@ jimFs = { module = "com.google.jimfs:jimfs", version.ref = "jimfsVer" }
 picocli = { module = "info.picocli:picocli", version.ref = "picocliVer" }
 
 [plugins]
-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.36.0" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.37.0" }
 shadow = { id = "com.gradleup.shadow", version = "9.4.2" }
