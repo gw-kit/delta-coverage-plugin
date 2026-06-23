@@ -6,7 +6,7 @@ jgitVer = "7.7.0.202606012155-r"
 csvVer = "5.12.0"
 jacksonVer = "2.22.0"
 slf4jVer = "2.0.18"
-logbackVer = "1.5.34"
+logbackVer = "1.5.35"
 
 kotlinVer = "2.3.21"
 junitVer = "6.1.0"
