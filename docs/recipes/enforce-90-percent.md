@@ -6,7 +6,7 @@ Copy-paste configuration to enforce 90% coverage on all new code.
 
 ```kotlin
 plugins {
-    id("io.github.gw-kit.delta-coverage") version "3.6.0"
+    id("io.github.gw-kit.delta-coverage") version "3.6.1"
 }
 
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {

@@ -31,7 +31,7 @@ Get Delta Coverage running in 3 steps.
 
     ```kotlin
     plugins {
-        id("io.github.gw-kit.delta-coverage") version "3.6.0"
+        id("io.github.gw-kit.delta-coverage") version "3.6.1"
     }
     ```
 
@@ -41,7 +41,7 @@ Get Delta Coverage running in 3 steps.
 
     ```groovy
     plugins {
-        id 'io.github.gw-kit.delta-coverage' version '3.6.0'
+        id 'io.github.gw-kit.delta-coverage' version '3.6.1'
     }
     ```
 
@@ -51,7 +51,7 @@ Get Delta Coverage running in 3 steps.
 
     ```bash
     curl -L -o delta-coverage-cli.jar \
-      https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.0/delta-coverage-cli-3.6.0.jar
+      https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.1/delta-coverage-cli-3.6.1.jar
     ```
 
 !!! note "Root project only"
