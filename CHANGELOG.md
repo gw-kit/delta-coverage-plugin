@@ -1,5 +1,11 @@
 # Delta-Coverage Gradle plugin Changelog
 
+## 3.6.1
+
+### Fixed
+- Fixed task dependencies of delta coverage tasks. Delta coverage tasks now correctly depend on the `classes` task 
+  so compiled classes are available before coverage is computed.
+
 ## 3.6.0
 
 ### New features
