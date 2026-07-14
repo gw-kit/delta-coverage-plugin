@@ -4,9 +4,13 @@ import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
 import io.github.surpsg.deltacoverage.gradle.unittest.applyDeltaCoveragePlugin
 import io.github.surpsg.deltacoverage.gradle.unittest.testJavaProject
 import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.file.shouldExist
 import io.kotest.matchers.file.shouldNotExist
+import org.gradle.api.Task
 import org.gradle.api.internal.project.ProjectInternal
+import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.provider.Provider
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
@@ -59,6 +63,38 @@ class DeltaCoverageTaskTest {
                 actualSummaryFile.shouldExist()
             }
         }
+    }
+
+    @Test
+    fun `delta coverage task should depend on classes`() {
+        // GIVEN
+        val project: ProjectInternal = testJavaProject {
+            applyDeltaCoveragePlugin()
+
+            val diffFile = tempDir.resolve("111").apply {
+                createNewFile()
+            }
+
+            extensions.configure(DeltaCoverageConfiguration::class.java) { config ->
+                with(config) {
+                    diffSource { source ->
+                        source.file.set(diffFile.absolutePath)
+                    }
+                }
+            }
+        }
+
+        // WHEN
+        val deltaCoverageTasks = project.tasks.withType(DeltaCoverageTask::class.java).toList()
+
+        // THEN
+        println(deltaCoverageTasks)
+        val dependsOnTasks: List<String?> = deltaCoverageTasks
+            .flatMap { it.dependsOn }
+            .filterIsInstance<Provider<out Task>>()
+            .map { it.get().name }
+
+        dependsOnTasks shouldContain JavaPlugin.CLASSES_TASK_NAME
     }
 
     @Nested
