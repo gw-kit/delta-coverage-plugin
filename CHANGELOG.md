@@ -6,6 +6,16 @@
 - Fixed task dependencies of delta coverage tasks. Delta coverage tasks now correctly depend on the `classes` task 
   so compiled classes are available before coverage is computed.
 
+### Dependency updates
+- Updated Gradle to [9.6.1](https://github.com/gradle/gradle/releases/tag/v9.6.1).
+- Updated JaCoCo to [0.8.15](https://github.com/jacoco/jacoco/releases/tag/v0.8.15).
+- Updated [intellij-coverage](https://github.com/JetBrains/intellij-coverage) dependency to [1.0.777].
+- Updated [JGit](https://github.com/eclipse-jgit/jgit) to 7.7.0.
+- Updated Jackson to [2.22.1](https://github.com/FasterXML/jackson/releases/tag/jackson-2.22.1).
+- Updated Apache HttpClient5 to [5.6.2](https://github.com/apache/httpcomponents-client/releases/tag/rel%2Fv5.6.2).
+- Updated [picocli](https://github.com/remkop/picocli) to 4.7.7.
+- Updated Kotlin to [2.4.0](https://github.com/JetBrains/kotlin/releases/tag/v2.4.0).
+
 ## 3.6.0
 
 ### New features

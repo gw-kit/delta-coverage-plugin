@@ -30,7 +30,7 @@ Apply the plugin to the **root project only**:
 ```kotlin
 // root build.gradle.kts
 plugins {
-    id("io.github.gw-kit.delta-coverage") version "3.6.0"
+    id("io.github.gw-kit.delta-coverage") version "3.6.1"
 }
 
 configure<io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration> {

@@ -61,7 +61,7 @@ Run Delta Coverage in your CI pipeline to enforce coverage on every pull request
           - name: Download Delta Coverage CLI
             run: |
               curl -L -o delta-coverage-cli.jar \
-                https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.0/delta-coverage-cli-3.6.0.jar
+                https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.1/delta-coverage-cli-3.6.1.jar
 
           - name: Run Delta Coverage
             run: |
@@ -139,7 +139,7 @@ See [PR Comments](pr-comments.md) for detailed setup.
         - git diff origin/main...HEAD > changes.diff
         - |
           curl -L -o delta-coverage-cli.jar \
-            https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.0/delta-coverage-cli-3.6.0.jar
+            https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.1/delta-coverage-cli-3.6.1.jar
         - |
           java -jar delta-coverage-cli.jar \
             --engine JACOCO \
@@ -214,7 +214,7 @@ coverage: '/Total.*?(\d+(?:\.\d+)?)%/'
                     sh 'git diff origin/main...HEAD > changes.diff'
                     sh '''
                         curl -L -o delta-coverage-cli.jar \
-                          https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.0/delta-coverage-cli-3.6.0.jar
+                          https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.1/delta-coverage-cli-3.6.1.jar
                     '''
                     sh '''
                         java -jar delta-coverage-cli.jar \
@@ -284,7 +284,7 @@ coverage: '/Total.*?(\d+(?:\.\d+)?)%/'
               name: Run Delta Coverage
               command: |
                 curl -L -o delta-coverage-cli.jar \
-                  https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.0/delta-coverage-cli-3.6.0.jar
+                  https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.1/delta-coverage-cli-3.6.1.jar
                 java -jar delta-coverage-cli.jar \
                   --engine JACOCO \
                   --diff-file changes.diff \
@@ -348,7 +348,7 @@ coverage: '/Total.*?(\d+(?:\.\d+)?)%/'
 
       - script: |
           curl -L -o delta-coverage-cli.jar \
-            https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.0/delta-coverage-cli-3.6.0.jar
+            https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.1/delta-coverage-cli-3.6.1.jar
           java -jar delta-coverage-cli.jar \
             --engine JACOCO \
             --diff-file changes.diff \
