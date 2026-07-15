@@ -10,14 +10,14 @@ plugins {
     id("basic-coverage-conventions")
 }
 
-val targetJvmVersion = JavaLanguageVersion.of(17)
+val targetJvmVersion = JavaLanguageVersion.of(21)
 kotlin {
     jvmToolchain {
         languageVersion.set(targetJvmVersion)
     }
     compilerOptions {
-        apiVersion = KotlinVersion.KOTLIN_1_9
-        languageVersion = KotlinVersion.KOTLIN_1_9
+        apiVersion = KotlinVersion.KOTLIN_2_0
+        languageVersion = KotlinVersion.KOTLIN_2_0
     }
 }
 
