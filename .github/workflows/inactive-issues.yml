@@ -12,7 +12,7 @@ jobs:
       pull-requests: write
     steps:
       - name: 🧹 Mark And Close Stale Issues
-        uses: actions/stale@v10
+        uses: actions/stale@v11
         with:
           days-before-issue-stale: 30
           days-before-issue-close: 14
