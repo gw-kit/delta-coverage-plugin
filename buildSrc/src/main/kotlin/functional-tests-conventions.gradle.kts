@@ -11,7 +11,7 @@ plugins {
 
 testing.suites {
 
-    val functionalTest by registering(JvmTestSuite::class) {
+    register<JvmTestSuite>("functionalTest") {
         useJUnitJupiter()
 
         sources {

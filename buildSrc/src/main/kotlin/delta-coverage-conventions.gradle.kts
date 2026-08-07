@@ -9,7 +9,7 @@ deltaCoverageReport {
     coverage.engine = CoverageEngine.INTELLIJ
 
     diffSource.byGit {
-        diffBase = project.properties["diffBase"]?.toString() ?: "refs/remotes/origin/main"
+        diffBase = project.findProperty("diffBase")?.toString() ?: "refs/remotes/origin/main"
         useNativeGit = true
     }
 
