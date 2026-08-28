@@ -4,6 +4,7 @@
 [![Build](https://github.com/gw-kit/delta-coverage-plugin/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/gw-kit/delta-coverage-plugin/actions/workflows/build.yml)
 [![GitHub issues](https://img.shields.io/github/issues/SurpSG/delta-coverage-plugin)](https://github.com/SurpSG/delta-coverage-plugin/issues)
 [![GitHub stars](https://img.shields.io/github/stars/SurpSG/delta-coverage-plugin?style=flat-square)](https://github.com/SurpSG/delta-coverage-plugin/stargazers)
+![Downloads](https://api.scarf.sh/v2/packages/Gw-kit/528be3eb-4416-4607-9f45-fc78ea326b4d/downloads-badge)
 
 ![aggregated](https://raw.githubusercontent.com/gw-kit/coverage-badges/refs/heads/main/delta-coverage-plugin/badges/aggregated.svg)
 ![functionalTest](https://raw.githubusercontent.com/gw-kit/coverage-badges/refs/heads/main/delta-coverage-plugin/badges/functionalTest.svg)
