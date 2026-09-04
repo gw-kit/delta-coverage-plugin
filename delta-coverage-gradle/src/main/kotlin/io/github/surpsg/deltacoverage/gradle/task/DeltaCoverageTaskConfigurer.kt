@@ -2,13 +2,13 @@ package io.github.surpsg.deltacoverage.gradle.task
 
 import io.github.gwkit.coverjet.gradle.task.CovAgentProperties
 import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration
-import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.DELTA_TASK_DEPENDENCIES
 import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin.Companion.log
 import io.github.surpsg.deltacoverage.gradle.sources.SourceType
 import io.github.surpsg.deltacoverage.gradle.sources.SourcesResolver
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.testing.Test
 
@@ -16,38 +16,34 @@ internal object DeltaCoverageTaskConfigurer {
 
     const val AGGREGATED_REPORT_VIEW_NAME = "aggregated"
 
+    private val MUST_RUN_AFTER_DEPS: List<Class<out Task>> = listOf(
+        Test::class.java,
+        CovAgentProperties::class.java,
+    )
+
     fun configure(
         view: String,
         deltaCoverageConfig: DeltaCoverageConfiguration,
         deltaCoverageTask: DeltaCoverageTask,
     ) = with(deltaCoverageTask) {
+        log.info("Configuring {}...", deltaCoverageTask)
         viewName.set(view)
         deltaCoverageConfigProperty.set(deltaCoverageConfig)
         configureDependencies()
         applySourcesInputs(view, deltaCoverageConfig)
     }
 
-    private fun DeltaCoverageTask.configureDependencies() {
+    private fun DeltaCoverageTask.configureDependencies() = project.allprojects { proj ->
+        val projectTasks = proj.tasks
         val deltaCoverageTask: DeltaCoverageTask = this
-        project.allprojects { proj ->
-            proj.tasks.configureEach { task ->
-                deltaCoverageTask.configureDependencyOn(task)
+        proj.pluginManager.withPlugin("java") {
+            deltaCoverageTask.dependsOn(projectTasks.named(JavaPlugin.CLASSES_TASK_NAME))
+            log.info("Configured task {} to depends on {}", deltaCoverageTask, JavaPlugin.CLASSES_TASK_NAME)
+            MUST_RUN_AFTER_DEPS.forEach { taskType ->
+                deltaCoverageTask.mustRunAfter(projectTasks.withType(taskType))
             }
+            log.info("Configured task {} to must run after: {}", deltaCoverageTask, MUST_RUN_AFTER_DEPS)
         }
-    }
-
-    private fun DeltaCoverageTask.configureDependencyOn(task: Task) = when {
-        task.name in DELTA_TASK_DEPENDENCIES -> {
-            log.info("Configuring {} to depend on {}", this, task)
-            dependsOn(task)
-        }
-
-        task is Test || task is CovAgentProperties -> {
-            log.info("Configuring {} to run after {}", this, task)
-            mustRunAfter(task)
-        }
-
-        else -> this
     }
 
     private fun DeltaCoverageTask.applySourcesInputs(

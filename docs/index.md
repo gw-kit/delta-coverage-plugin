@@ -30,7 +30,7 @@ Delta Coverage is a tool that computes code coverage of new/modified code based 
 
     ```kotlin
     plugins {
-        id("io.github.gw-kit.delta-coverage") version "3.6.0"
+        id("io.github.gw-kit.delta-coverage") version "3.6.1"
     }
     ```
 
@@ -54,7 +54,7 @@ Delta Coverage is a tool that computes code coverage of new/modified code based 
 
     ```groovy
     plugins {
-        id 'io.github.gw-kit.delta-coverage' version '3.6.0'
+        id 'io.github.gw-kit.delta-coverage' version '3.6.1'
     }
     ```
 
@@ -78,7 +78,7 @@ Delta Coverage is a tool that computes code coverage of new/modified code based 
 
     ```bash
     curl -L -o delta-coverage-cli.jar \
-      https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.0/delta-coverage-cli-3.6.0.jar
+      https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.1/delta-coverage-cli-3.6.1.jar
     ```
 
     **2. Generate a diff**

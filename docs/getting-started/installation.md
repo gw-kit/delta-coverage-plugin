@@ -6,7 +6,7 @@
 
     | Requirement | Version |
     |-------------|---------|
-    | Gradle | 7.6.4+ |
+    | Gradle | 7.6.4 – 9.6.1 |
     | JVM | 17+ |
 
 === "CLI"
@@ -19,7 +19,7 @@
 
 | Delta Coverage | Gradle | Min JVM |
 |----------------|--------|---------|
-| **3.x** | 7.6.4+ | 17 |
+| **3.x** | 7.6.4 – 9.6.1 | 17 |
 | **2.5.x** | 6.7.1 - 8.10.2 | 11 |
 | **2.0 - 2.4** | 5.6 - 8.9.x | 11 |
 | **1.3.x** | 5.1 - 8.4.x | 11 |
@@ -32,7 +32,7 @@
 
     ```kotlin
     plugins {
-        id("io.github.gw-kit.delta-coverage") version "3.6.0"
+        id("io.github.gw-kit.delta-coverage") version "3.6.1"
     }
     ```
 
@@ -42,7 +42,7 @@
 
     ```groovy
     plugins {
-        id 'io.github.gw-kit.delta-coverage' version '3.6.0'
+        id 'io.github.gw-kit.delta-coverage' version '3.6.1'
     }
     ```
 
@@ -52,7 +52,7 @@
 
     ```bash
     curl -L -o delta-coverage-cli.jar \
-      https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.0/delta-coverage-cli-3.6.0.jar
+      https://repo1.maven.org/maven2/io/github/gw-kit/delta-coverage-cli/3.6.1/delta-coverage-cli-3.6.1.jar
     ```
 
 !!! warning "Root project only"

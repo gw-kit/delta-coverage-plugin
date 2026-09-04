@@ -9,7 +9,6 @@ import io.github.surpsg.deltacoverage.gradle.utils.deltaCoverageConfig
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.TaskProvider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -113,9 +112,6 @@ open class DeltaCoveragePlugin : Plugin<Project> {
         const val DELTA_COVERAGE_TASK = "deltaCoverage"
         const val GIT_DIFF_TASK = "gitDiff"
 
-        val DELTA_TASK_DEPENDENCIES = setOf(
-            JavaPlugin.CLASSES_TASK_NAME,
-        )
         val log: Logger = LoggerFactory.getLogger(DeltaCoveragePlugin::class.java)
     }
 }

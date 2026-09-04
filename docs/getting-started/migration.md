@@ -18,7 +18,7 @@ The plugin ID changed from `io.github.surpsg.delta-coverage` to `io.github.gw-ki
 
     ```kotlin
     plugins {
-        id("io.github.gw-kit.delta-coverage") version "3.6.0"
+        id("io.github.gw-kit.delta-coverage") version "3.6.1"
     }
     ```
 
