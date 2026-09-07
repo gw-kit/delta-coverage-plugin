@@ -6,19 +6,19 @@ Get Delta Coverage running in 3 steps.
 
 === "Kotlin DSL"
 
-    - Gradle 7.6.4 or newer
-    - JVM 17 or newer
+    - Gradle 8.14 or newer
+    - JVM 21 or newer
     - A git repository with tests
 
 === "Groovy DSL"
 
-    - Gradle 7.6.4 or newer
-    - JVM 17 or newer
+    - Gradle 8.14 or newer
+    - JVM 21 or newer
     - A git repository with tests
 
 === "CLI"
 
-    - JVM 17 or newer
+    - JVM 21 or newer
     - Coverage binary files (e.g., `.exec` from JaCoCo)
     - Compiled class files
     - A diff file (unified diff format)

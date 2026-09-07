@@ -29,10 +29,9 @@ class DeltaCoverageGradleReleasesTest {
     @ParameterizedTest
     @ValueSource(
         strings = [
-            "7.6.4",  // minimum supported version
-            "7.6.6",  // latest 7.x
             "8.14.5", // latest 8.x
-            "9.6.1",  // latest stable version
+            "9.6.1",
+            "9.7.1",  // latest stable version
         ]
     )
     fun `deltaCoverage task should be completed successfully on Gradle release`(
