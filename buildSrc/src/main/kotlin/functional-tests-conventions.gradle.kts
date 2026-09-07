@@ -41,6 +41,7 @@ testing.suites {
 
                 systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
                 systemProperty("kotest.framework.classpath.scanning.config.disable", "true")
+                systemProperty("mockk.junit.extension.requireParallelTesting", "true")
 
                 testLogging {
                     events(TestLogEvent.SKIPPED, TestLogEvent.FAILED, TestLogEvent.PASSED)

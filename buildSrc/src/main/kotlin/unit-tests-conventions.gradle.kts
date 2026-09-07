@@ -28,6 +28,7 @@ testing {
                     systemProperty("junit.jupiter.execution.parallel.config.strategy", "fixed")
                     systemProperty("junit.jupiter.execution.parallel.config.fixed.parallelism", 2)
                     systemProperty("kotest.framework.classpath.scanning.config.disable", "true")
+                    systemProperty("mockk.junit.extension.requireParallelTesting", "true")
 
                     testLogging {
                         events(TestLogEvent.SKIPPED, TestLogEvent.FAILED, TestLogEvent.PASSED)
