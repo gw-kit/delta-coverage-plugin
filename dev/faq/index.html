@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -31,7 +31,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -2071,10 +2071,10 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>./gradlew<span class="w"> </span>deltaCoverage<span class="w"> </span>-PexplainOnly
 </code></pre></div></p>
 <h3 id="how-do-i-compare-with-a-different-branch">How do I compare with a different branch?<a class="headerlink" href="#how-do-i-compare-with-a-different-branch" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">diffSource</span><span class="p">.</span><span class="na">git</span><span class="p">.</span><span class="na">compareWith</span><span class="p">(</span><span class="s">&quot;refs/remotes/origin/develop&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">diffSource</span><span class="p">.</span><span class="na">git</span><span class="p">.</span><span class="na">compareWith</span><span class="p">(</span><span class="s">"refs/remotes/origin/develop"</span><span class="p">)</span>
 </code></pre></div>
 <p>Or via command line:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>./gradlew<span class="w"> </span>deltaCoverage<span class="w"> </span>-PdiffBase<span class="o">=</span><span class="s2">&quot;refs/remotes/origin/develop&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>./gradlew<span class="w"> </span>deltaCoverage<span class="w"> </span>-PdiffBase<span class="o">=</span><span class="s2">"refs/remotes/origin/develop"</span>
 </code></pre></div></p>
 <div class="admonition info">
 <p class="admonition-title">CLI</p>
@@ -2123,13 +2123,13 @@
 </code></pre></div>
 <h3 id="can-i-have-different-thresholds-for-different-modules">Can I have different thresholds for different modules?<a class="headerlink" href="#can-i-have-different-thresholds-for-different-modules" title="Permanent link">&para;</a></h3>
 <p>Yes, use views with class filters:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">view</span><span class="p">(</span><span class="s">&quot;core&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="n">includeClasses</span><span class="p">.</span><span class="na">value</span><span class="p">(</span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;**/core/**/*.class&quot;</span><span class="p">))</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">view</span><span class="p">(</span><span class="s">"core"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="n">includeClasses</span><span class="p">.</span><span class="na">value</span><span class="p">(</span><span class="n">listOf</span><span class="p">(</span><span class="s">"**/core/**/*.class"</span><span class="p">))</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="n">violationRules</span><span class="p">.</span><span class="na">failIfCoverageLessThan</span><span class="p">(</span><span class="m">0.95</span><span class="p">)</span>
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="p">}</span>
 <a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="n">view</span><span class="p">(</span><span class="s">&quot;legacy&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="n">includeClasses</span><span class="p">.</span><span class="na">value</span><span class="p">(</span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;**/legacy/**/*.class&quot;</span><span class="p">))</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="n">view</span><span class="p">(</span><span class="s">"legacy"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="n">includeClasses</span><span class="p">.</span><span class="na">value</span><span class="p">(</span><span class="n">listOf</span><span class="p">(</span><span class="s">"**/legacy/**/*.class"</span><span class="p">))</span>
 <a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="n">violationRules</span><span class="p">.</span><span class="na">failIfCoverageLessThan</span><span class="p">(</span><span class="m">0.5</span><span class="p">)</span>
 <a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="p">}</span>
 </code></pre></div>
@@ -2236,7 +2236,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "navigation.tabs", "navigation.top", "content.code.copy", "content.code.select", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "stable", "provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

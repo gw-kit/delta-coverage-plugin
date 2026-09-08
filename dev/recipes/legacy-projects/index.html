@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -31,7 +31,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1943,7 +1943,7 @@
 </ol>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">configure</span><span class="o">&lt;</span><span class="n">io</span><span class="p">.</span><span class="na">github</span><span class="p">.</span><span class="na">surpsg</span><span class="p">.</span><span class="na">deltacoverage</span><span class="p">.</span><span class="na">gradle</span><span class="p">.</span><span class="na">DeltaCoverageConfiguration</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="n">diffSource</span><span class="p">.</span><span class="na">git</span><span class="p">.</span><span class="na">compareWith</span><span class="p">(</span><span class="s">&quot;refs/remotes/origin/main&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="n">diffSource</span><span class="p">.</span><span class="na">git</span><span class="p">.</span><span class="na">compareWith</span><span class="p">(</span><span class="s">"refs/remotes/origin/main"</span><span class="p">)</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="n">reports</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">        </span><span class="n">html</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
@@ -1984,19 +1984,19 @@
 <h3 id="option-2-exclude-specific-files">Option 2: Exclude Specific Files<a class="headerlink" href="#option-2-exclude-specific-files" title="Permanent link">&para;</a></h3>
 <p>Temporarily exclude problematic files:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">excludeClasses</span><span class="p">.</span><span class="na">value</span><span class="p">(</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;**/LegacyMonolith.class&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="n">listOf</span><span class="p">(</span><span class="s">"**/LegacyMonolith.class"</span><span class="p">)</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="p">)</span>
 </code></pre></div>
 <h3 id="option-3-lower-view-specific-threshold">Option 3: Lower View-Specific Threshold<a class="headerlink" href="#option-3-lower-view-specific-threshold" title="Permanent link">&para;</a></h3>
 <p>Create a separate view for legacy modules:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">reportViews</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="n">view</span><span class="p">(</span><span class="s">&quot;legacyModule&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">        </span><span class="n">includeClasses</span><span class="p">.</span><span class="na">value</span><span class="p">(</span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;**/legacy/**/*.class&quot;</span><span class="p">))</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="n">view</span><span class="p">(</span><span class="s">"legacyModule"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">        </span><span class="n">includeClasses</span><span class="p">.</span><span class="na">value</span><span class="p">(</span><span class="n">listOf</span><span class="p">(</span><span class="s">"**/legacy/**/*.class"</span><span class="p">))</span>
 <a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">        </span><span class="n">violationRules</span><span class="p">.</span><span class="na">failIfCoverageLessThan</span><span class="p">(</span><span class="m">0.5</span><span class="p">)</span>
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
 <a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">test</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">getting</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">        </span><span class="n">excludeClasses</span><span class="p">.</span><span class="na">value</span><span class="p">(</span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;**/legacy/**/*.class&quot;</span><span class="p">))</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">        </span><span class="n">excludeClasses</span><span class="p">.</span><span class="na">value</span><span class="p">(</span><span class="n">listOf</span><span class="p">(</span><span class="s">"**/legacy/**/*.class"</span><span class="p">))</span>
 <a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">        </span><span class="n">violationRules</span><span class="p">.</span><span class="na">failIfCoverageLessThan</span><span class="p">(</span><span class="m">0.9</span><span class="p">)</span>
 <a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="p">}</span>
@@ -2019,7 +2019,7 @@
 <h3 id="exclude-generated-code">Exclude Generated Code<a class="headerlink" href="#exclude-generated-code" title="Permanent link">&para;</a></h3>
 <p>Generated code shouldn't affect your metrics:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">excludeClasses</span><span class="p">.</span><span class="na">value</span><span class="p">(</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;**/generated/**/*.*&quot;</span><span class="p">)</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="n">listOf</span><span class="p">(</span><span class="s">"**/generated/**/*.*"</span><span class="p">)</span>
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="p">)</span>
 </code></pre></div>
 <h3 id="use-ci-reports">Use CI Reports<a class="headerlink" href="#use-ci-reports" title="Permanent link">&para;</a></h3>
@@ -2088,7 +2088,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "navigation.tabs", "navigation.top", "content.code.copy", "content.code.select", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "stable", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
