@@ -24,7 +24,9 @@ The plugin ID changed from `io.github.surpsg.delta-coverage` to `io.github.gw-ki
 
 ### JVM Requirement
 
-v3.x requires JVM 17 or newer. If you're on JVM 11, stay on v2.5.x.
+v3.0 – 3.6.x requires JVM 17 or newer. If you're on JVM 11, stay on v2.5.x.
+
+Starting from v3.7, the minimum requirements are Gradle 8.14 and JVM 21.
 
 ### Configuration Changes
 

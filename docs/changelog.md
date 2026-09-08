@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+### Changes
+
+- Minimum supported Gradle version raised to 8.14 (dropped support for Gradle 7.x).
+- Minimum supported JVM version raised to 21 (dropped support for JVM 17).
+
+### Dependency updates
+
+- Updated Gradle to [9.7.1](https://github.com/gradle/gradle/releases/tag/v9.7.1).
+
+---
+
 ## 3.6.0
 
 ### New Features
