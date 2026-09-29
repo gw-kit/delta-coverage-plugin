@@ -9,20 +9,15 @@ import java.io.File
 
 internal open class AntSourceIncludeFilter(
     private val patterns: List<String>
-) : SourceFilter {
+) : ClassesFilter {
 
     private val matcher: PatternMatcher = PatternMatcherFactory.getPatternsMatcher(true, false, patterns)
 
-    override fun filter(inputSource: SourceFilter.InputSource): FileCollection {
+    override fun filter(files: FileCollection): FileCollection {
         return if (patterns.isEmpty()) {
-            inputSource.originSources
+            files
         } else {
-            log.info(
-                "Applied patterns {} to source: {}",
-                patterns,
-                inputSource.sourceType.resourceName(inputSource.provider)
-            )
-            filterCollectionFiles(inputSource.originSources)
+            filterCollectionFiles(files)
         }
     }
 
@@ -45,10 +40,6 @@ internal open class AntSourceIncludeFilter(
             .map { it.toString() }
             .toList()
             .toTypedArray()
-    }
-
-    companion object {
-        private val log: Logger = LoggerFactory.getLogger(AntSourceIncludeFilter::class.java)
     }
 }
 

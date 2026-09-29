@@ -2,15 +2,18 @@ package io.github.surpsg.deltacoverage.gradle.task
 
 import io.github.surpsg.deltacoverage.config.DeltaCoverageConfig
 import io.github.surpsg.deltacoverage.diff.DiffSource
+import io.github.surpsg.deltacoverage.gradle.CoverageEngine
+import io.github.surpsg.deltacoverage.gradle.ReportsConfiguration
+import io.github.surpsg.deltacoverage.gradle.ViolationRules
 import io.github.surpsg.deltacoverage.gradle.config.ConfigMapper
+import io.github.surpsg.deltacoverage.gradle.sources.filter.ClassesFilter
 import io.github.surpsg.deltacoverage.gradle.task.internal.GradleReportGenerator
-import io.github.surpsg.deltacoverage.gradle.task.internal.ResolvedViewSources
-import io.github.surpsg.deltacoverage.gradle.task.internal.ViewExplainReportGenerator
-import io.github.surpsg.deltacoverage.gradle.utils.resolveByPath
 import io.github.surpsg.deltacoverage.report.DeltaReportFacadeFactory
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
@@ -26,7 +29,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import javax.inject.Inject
-import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration as GradleDeltaCoverageConfig
 
 @DisableCachingByDefault
 open class DeltaCoverageTask @Inject constructor(
@@ -41,6 +43,9 @@ open class DeltaCoverageTask @Inject constructor(
 
     @Input
     val viewName: Property<String> = objectFactory.property(String::class.java)
+
+    @Input
+    val coverageEngine: Property<CoverageEngine> = objectFactory.property(CoverageEngine::class.java)
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -57,73 +62,68 @@ open class DeltaCoverageTask @Inject constructor(
     @get:Internal
     val classesFiles: Property<FileCollection> = objectFactory.property(FileCollection::class.java)
 
+    @get:Input
+    val includeClasses: ListProperty<String> = objectFactory.listProperty(String::class.java)
+        .convention(emptyList())
+
+    @get:Input
+    val excludeClasses: ListProperty<String> = objectFactory.listProperty(String::class.java)
+        .convention(emptyList())
+
     @Nested
-    val deltaCoverageConfigProperty: Property<GradleDeltaCoverageConfig> = objectFactory.property(
-        GradleDeltaCoverageConfig::class.java
-    )
+    val violationRules: Property<ViolationRules> = objectFactory.property(ViolationRules::class.java)
 
-    @get:Input
-    val explainEnabled: Property<Boolean> = objectFactory.property(Boolean::class.java)
-        .convention(project.hasProperty(EXPLAIN_PROPERTY))
+    @Nested
+    val reports: Property<ReportsConfiguration> = objectFactory.property(ReportsConfiguration::class.java)
+//
+//    @get:Input
+//    val explainEnabled: Property<Boolean> = objectFactory.property(Boolean::class.java)
+//        .convention(project.hasProperty(EXPLAIN_PROPERTY))
+//
+//    @get:Input
+//    val explainOnlyEnabled: Property<Boolean> = objectFactory.property(Boolean::class.java)
+//        .convention(project.hasProperty(EXPLAIN_ONLY_PROPERTY))
 
-    @get:Input
-    val explainOnlyEnabled: Property<Boolean> = objectFactory.property(Boolean::class.java)
-        .convention(project.hasProperty(EXPLAIN_ONLY_PROPERTY))
-
-    private val projectDirProperty: File = project.projectDir
+    @get:OutputDirectory
+    val reportsDir: DirectoryProperty = objectFactory.directoryProperty()
+        .convention(
+            project.layout.buildDirectory.map { it.dir("reports/$BASE_COVERAGE_REPORTS_DIR") }
+        )
 
     private val rootProjectDirProperty: File = project.rootProject.projectDir
 
-    @OutputDirectory
-    fun getOutputDir(): File {
-        val baseReportDirPath: String = deltaCoverageConfigProperty.get().reportConfiguration.baseReportDir.get()
-        return projectDirProperty
-            .resolveByPath(baseReportDirPath)
-            .resolve(BASE_COVERAGE_REPORTS_DIR)
-    }
-
     @TaskAction
     fun executeAction() {
-        val gradleCoverageConfig: GradleDeltaCoverageConfig = deltaCoverageConfigProperty.get()
-        log.info("Delta-Coverage plugin configuration: $gradleCoverageConfig")
-
         sequenceOf(
-            explainReport(),
+//            explainReport(),
             coverageReportsGenerator(),
         ).forEach(GradleReportGenerator::generateReport)
     }
 
-    private fun explainReport(): GradleReportGenerator =
-        if (explainEnabled.get() || explainOnlyEnabled.get()) {
-            ViewExplainReportGenerator(
-                view = viewName.get(),
-                outputDir = getOutputDir(),
-                gradleConfig = deltaCoverageConfigProperty.get(),
-                rootProject = project.rootProject,
-                resolvedSources = ResolvedViewSources(
-                    sources = sourcesFiles.get().files,
-                    classes = classesFiles.get().files,
-                    coverageBinaries = coverageBinaryFiles.get().files,
-                )
-            )
-        } else {
-            GradleReportGenerator.NOOP
-        }
+//    private fun explainReport(): GradleReportGenerator =
+//        if (explainEnabled.get() || explainOnlyEnabled.get()) {
+//            ViewExplainReportGenerator(
+//                view = viewName.get(),
+//                outputDir = reportsDir.asFile.get(),
+//                gradleConfig = deltaCoverageConfigProperty.get(),
+//                rootProject = project.rootProject,
+//                resolvedSources = ResolvedViewSources(
+//                    sources = sourcesFiles.get().files,
+//                    classes = classesFiles.get().files,
+//                    coverageBinaries = coverageBinaryFiles.get().files,
+//                )
+//            )
+//        } else {
+//            GradleReportGenerator.NOOP
+//        }
 
     private fun coverageReportsGenerator(): GradleReportGenerator {
-        if (explainOnlyEnabled.get()) {
-            return GradleReportGenerator.NOOP
-        }
-
         return object : GradleReportGenerator {
-            val gradleCoverageConfig: GradleDeltaCoverageConfig = deltaCoverageConfigProperty.get()
-
-            val diffSource: DiffSource = obtainDiffSource(getOutputDir(), gradleCoverageConfig)
+            val diffSource: DiffSource = obtainDiffSource(reportsDir.asFile.get())
 
             val deltaCoverageConfig: DeltaCoverageConfig = buildDeltaCoverageConfig(
                 diffSource,
                 classesRoots.get(),
-                gradleCoverageConfig,
             )
 
             override fun generateReport() = DeltaReportFacadeFactory
@@ -134,10 +134,10 @@ open class DeltaCoverageTask @Inject constructor(
 
     private fun obtainDiffSource(
         reportDir: File,
-        gradleCoverageConfig: GradleDeltaCoverageConfig,
     ): DiffSource = ConfigMapper.convertToDiffSource(
         rootProjectDirProperty,
-        gradleCoverageConfig.diffSource,
+        TODO(),
+//        gradleCoverageConfig.diffSource,
     ).apply {
         val savedFile = saveDiffTo(reportDir)
         log.info("Diff content saved to file://{}", savedFile.absolutePath)
@@ -146,20 +146,17 @@ open class DeltaCoverageTask @Inject constructor(
     private fun buildDeltaCoverageConfig(
         diffSource: DiffSource,
         classesRoots: FileCollection,
-        gradleCoverageConfig: GradleDeltaCoverageConfig,
-    ): DeltaCoverageConfig {
-        val view: String = viewName.get()
-        return ConfigMapper.convertToCoreConfig(
-            viewName = view,
-            reportLocation = getOutputDir(),
-            diffSource = diffSource,
-            deltaCoverageConfig = gradleCoverageConfig,
-            sourcesFiles = sourcesFiles.get().files,
-            classesFiles = classesFiles.get().files,
-            classesRoots = classesRoots.files,
-            coverageBinaryFiles = coverageBinaryFiles.get().files,
-        )
-    }
+    ): DeltaCoverageConfig = ConfigMapper.buildCoreConfig(
+        deltaCoverageTask = this,
+        diffSource = diffSource, // todo
+
+        excludeClassesPatterns = excludeClasses.get().toSet(),
+        classesRoots = classesRoots.files,
+        classesFiles = ClassesFilter.build {
+            include(includeClasses.get())
+            exclude(excludeClasses.get())
+        }.filter(classesFiles.get()).files,
+    )
 
     companion object {
         const val BASE_COVERAGE_REPORTS_DIR = "coverage-reports"

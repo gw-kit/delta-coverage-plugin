@@ -10,9 +10,9 @@ import io.github.surpsg.deltacoverage.config.ViolationRule
 import io.github.surpsg.deltacoverage.diff.DiffSource
 import io.github.surpsg.deltacoverage.gradle.DiffSourceConfiguration
 import io.github.surpsg.deltacoverage.gradle.ViolationRules
+import io.github.surpsg.deltacoverage.gradle.task.DeltaCoverageTask
 import java.io.File
 import io.github.surpsg.deltacoverage.gradle.CoverageEntity as GradleCoverageEntity
-import io.github.surpsg.deltacoverage.gradle.DeltaCoverageConfiguration as GradleDeltaCoverageConfig
 import io.github.surpsg.deltacoverage.gradle.ViolationRule as GradleViolationRule
 
 internal object ConfigMapper {
@@ -34,55 +34,51 @@ internal object ConfigMapper {
     }
 
     @Suppress("LongParameterList")
-    fun convertToCoreConfig(
-        viewName: String,
-        reportLocation: File,
+    fun buildCoreConfig(
+        deltaCoverageTask: DeltaCoverageTask,
         diffSource: DiffSource,
-        deltaCoverageConfig: GradleDeltaCoverageConfig,
-        sourcesFiles: Set<File>,
         classesFiles: Set<File>,
         classesRoots: Set<File>,
-        coverageBinaryFiles: Set<File>,
+        excludeClassesPatterns: Set<String>,
     ) = DeltaCoverageConfig {
-        coverageEngine = deltaCoverageConfig.coverage.engine.get().asCoreEngine()
-        this.viewName = viewName
+        coverageEngine = deltaCoverageTask.coverageEngine.get().asCoreEngine()
+        this.viewName = deltaCoverageTask.viewName.get()
         this.diffSource = diffSource
 
-        binaryCoverageFiles += coverageBinaryFiles
-        sourceFiles += sourcesFiles
+        binaryCoverageFiles += deltaCoverageTask.coverageBinaryFiles.get().files
+        sourceFiles += deltaCoverageTask.sourcesFiles.get().files
         classFiles += classesFiles
         classRoots += classesRoots
-        excludeClasses += deltaCoverageConfig.excludeClasses.get().map { ant -> ant.antToRegex() }
+        excludeClasses += excludeClassesPatterns.map { ant -> ant.antToRegex() }
 
         reportsConfig = ReportsConfig {
-            baseReportDir = reportLocation.absolutePath
+            baseReportDir = deltaCoverageTask.reportsDir.asFile.get().absolutePath
             html = ReportConfig {
                 outputFileName = "html"
-                enabled = deltaCoverageConfig.reportConfiguration.html.get()
+                deltaCoverageTask.reports.get().html.get()
+                enabled = deltaCoverageTask.reports.get().html.get()
             }
             xml = ReportConfig {
                 outputFileName = "report.xml"
-                enabled = deltaCoverageConfig.reportConfiguration.xml.get()
+                enabled = deltaCoverageTask.reports.get().xml.get()
             }
             console = ReportConfig {
                 outputFileName = "console.txt"
-                enabled = deltaCoverageConfig.reportConfiguration.console.get()
+                enabled = deltaCoverageTask.reports.get().console.get()
             }
             markdown = ReportConfig {
                 outputFileName = "report.md"
-                enabled = deltaCoverageConfig.reportConfiguration.markdown.get()
+                enabled = deltaCoverageTask.reports.get().markdown.get()
             }
-            fullCoverageReport = deltaCoverageConfig.reportConfiguration.fullCoverageReport.get()
+            fullCoverageReport = deltaCoverageTask.reports.get().fullCoverageReport.get()
         }
 
-        coverageRulesConfig = buildCoverageRulesConfig(viewName, deltaCoverageConfig)
+        coverageRulesConfig = buildCoverageRulesConfig(deltaCoverageTask.violationRules.get())
     }
 
     private fun buildCoverageRulesConfig(
-        viewName: String,
-        diffCovConfig: GradleDeltaCoverageConfig
+        rules: ViolationRules,
     ) = CoverageRulesConfig {
-        val rules: ViolationRules = diffCovConfig.reportViews.getByName(viewName).violationRules
         violationRules += rules.rules.get().map { (entity, rule) ->
             buildCoreViolationRule(entity, rule)
         }

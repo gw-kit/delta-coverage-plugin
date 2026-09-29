@@ -23,9 +23,11 @@ internal class CoverageEngineAutoApply {
             CoverageEngine.JACOCO -> JACOCO_PLUGIN_ID
             CoverageEngine.INTELLIJ -> COVER_JET_PLUGIN_ID
         }
-        allprojects.forEach {
-            log.info("Auto-applying {} plugin to project '{}'", pluginId, it.name)
-            it.pluginManager.apply(pluginId)
+        allprojects { proj ->
+            log.info("Auto-applying {} plugin to project '{}'", pluginId, proj.name)
+            proj.plugins.withId("java") {
+                proj.plugins.apply(pluginId)
+            }
         }
     }
 

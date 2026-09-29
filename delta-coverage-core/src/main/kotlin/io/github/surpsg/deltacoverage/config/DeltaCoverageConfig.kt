@@ -2,7 +2,6 @@ package io.github.surpsg.deltacoverage.config
 
 import io.github.surpsg.deltacoverage.CoverageEngine
 import io.github.surpsg.deltacoverage.diff.DiffSource
-import io.github.surpsg.deltacoverage.report.CoverageSummary
 import io.github.surpsg.deltacoverage.report.ReportBound
 import java.io.File
 import java.nio.file.FileSystem
